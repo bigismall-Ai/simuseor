@@ -1,0 +1,250 @@
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../core/api.service';
+import { LibraryModel, errMsg, fmtSize } from '../core/types';
+import { BadgeComponent } from '../ui/badge.component';
+import { EmptyComponent } from '../ui/empty.component';
+import { FieldComponent } from '../ui/field.component';
+import { PageHeaderComponent } from '../ui/page-header.component';
+import { PanelComponent } from '../ui/panel.component';
+
+@Component({
+  selector: 'app-library',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    BadgeComponent,
+    EmptyComponent,
+    FieldComponent,
+    PageHeaderComponent,
+    PanelComponent,
+  ],
+  template: `
+    <ui-page-header title="本地模型库" hint="搜索、标签、收藏、评审状态；下载完成的模型自动入库。" />
+
+    <ui-panel>
+      <div class="form-grid">
+        <ui-field label="搜索（名称 / repo / 标签）">
+          <input [(ngModel)]="q" placeholder="关键词" (keyup.enter)="load()">
+        </ui-field>
+        <ui-field label="来源">
+          <select [(ngModel)]="filterSource">
+            @for (o of sourceOptions; track o.key) {
+              <option [value]="o.key">{{ o.label }}</option>
+            }
+          </select>
+        </ui-field>
+        <ui-field label="评审状态">
+          <select [(ngModel)]="filterReview">
+            <option value="">全部</option>
+            <option value="untried">未试用</option>
+            <option value="keep">保留</option>
+            <option value="discard">弃用</option>
+          </select>
+        </ui-field>
+        <ui-field label="收藏">
+          <div class="check-row">
+            <input type="checkbox" [(ngModel)]="filterFavorite">
+            <span>只看收藏</span>
+          </div>
+        </ui-field>
+      </div>
+
+      <div class="toolbar mt">
+        <button class="primary" (click)="load()">查询</button>
+        <button (click)="reset()">重置</button>
+        <span class="grow"></span>
+        <input class="grow w-320" [(ngModel)]="scanPath" placeholder="导入目录（每个子文件夹=一个模型）">
+        <button (click)="scan()">扫描入库</button>
+      </div>
+
+      @if (message) {
+        <div class="notice" [ngClass]="messageOk ? 'ok' : 'err'">{{ message }}</div>
+      }
+    </ui-panel>
+
+    <ui-panel title="模型列表">
+      @if (loading) {
+        <ui-empty title="加载中…" />
+      }
+      @if (!loading && models.length === 0) {
+        <ui-empty
+          icon="📚"
+          title="暂无模型"
+          hint="下载完成后会自动出现在这里，或用上方的「扫描入库」导入已有目录。"
+        />
+      }
+      @if (!loading && models.length > 0) {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-check"></th>
+                <th>模型</th>
+                <th class="col-source">来源</th>
+                <th class="col-size">大小</th>
+                <th class="col-count">文件</th>
+                <th>标签</th>
+                <th class="col-review">评审</th>
+                <th class="col-actions">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of models; track m.id) {
+                <tr>
+                  <td>
+                    <button class="favorite-btn" (click)="toggleFavorite(m)" title="收藏">
+                      {{ isFav(m) ? '★' : '☆' }}
+                    </button>
+                  </td>
+                  <td>
+                    <div class="cell-name">{{ m.name }}</div>
+                    <div class="mono muted cell-path">{{ m.local_path }}</div>
+                  </td>
+                  <td><ui-badge tone="blue">{{ m.source }}</ui-badge></td>
+                  <td>{{ fmtSize(m.size_bytes) }}</td>
+                  <td>{{ m.file_count }}</td>
+                  <td class="cell-tags">
+                    <input [value]="tagsText(m)" (blur)="saveTags(m, $event)" placeholder="逗号分隔">
+                  </td>
+                  <td>
+                    <select [ngModel]="m.review_state" (ngModelChange)="setReview(m, $event)">
+                      <option value="untried">未试用</option>
+                      <option value="keep">保留</option>
+                      <option value="discard">弃用</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div class="toolbar">
+                      <button (click)="open(m)">打开目录</button>
+                      <button class="danger" (click)="remove(m)">删除</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </ui-panel>
+  `,
+})
+export class LibraryComponent implements OnInit {
+  models: LibraryModel[] = [];
+  q = '';
+  filterSource = '';
+  filterReview = '';
+  filterFavorite = false;
+  scanPath = '';
+  message = '';
+  messageOk = true;
+  loading = false;
+  sourceOptions: { key: string; label: string }[] = [];
+  showDemo = false;
+
+  private shortLabel: Record<string, string> = {
+    huggingface: 'Hugging Face',
+    modelscope: 'ModelScope',
+    civitai: 'Civitai',
+    demo: 'Demo',
+  };
+
+  constructor(private api: ApiService, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.showDemo = this.route.snapshot.queryParamMap.get('demo') === '1';
+    this.api.getSettings().subscribe((s) => {
+      this.sourceOptions = [
+        { key: '', label: '全部' },
+        ...Object.keys(s.sources || {})
+          .filter((k) => k !== 'demo' || this.showDemo)
+          .map((k) => ({ key: k, label: this.shortLabel[k] || s.sources[k].label || k })),
+        { key: 'imported', label: '导入' },
+      ];
+    });
+    this.load();
+  }
+
+  load(): void {
+    this.loading = true;
+    this.api
+      .listLibrary({ q: this.q, source: this.filterSource, review: this.filterReview, favorite: this.filterFavorite })
+      .subscribe({
+        next: (models) => {
+          this.models = models;
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        },
+      });
+  }
+
+  reset(): void {
+    this.q = '';
+    this.filterSource = '';
+    this.filterReview = '';
+    this.filterFavorite = false;
+    this.load();
+  }
+
+  scan(): void {
+    if (!this.scanPath) return;
+    this.api.scanLibrary(this.scanPath).subscribe({
+      next: (res) => {
+        this.message = `扫描完成，新增 ${res.created} 个模型`;
+        this.messageOk = true;
+        this.load();
+      },
+      error: (err) => {
+        this.message = errMsg(err, '扫描失败');
+        this.messageOk = false;
+      },
+    });
+  }
+
+  isFav(m: LibraryModel): boolean {
+    return !!m.favorite;
+  }
+
+  toggleFavorite(m: LibraryModel): void {
+    this.api.patchLibrary(m.id, { favorite: !this.isFav(m) }).subscribe(() => this.load());
+  }
+
+  setReview(m: LibraryModel, value: string): void {
+    this.api.patchLibrary(m.id, { review_state: value }).subscribe(() => this.load());
+  }
+
+  tagsText(m: LibraryModel): string {
+    return (m.tags || []).join(', ');
+  }
+
+  saveTags(m: LibraryModel, event: Event): void {
+    const raw = (event.target as HTMLInputElement).value;
+    const tags = raw
+      .split(/[，,]/)
+      .map((t) => t.trim())
+      .filter((t) => !!t);
+    this.api.patchLibrary(m.id, { tags }).subscribe(() => this.load());
+  }
+
+  open(m: LibraryModel): void {
+    this.api.openLibrary(m.id).subscribe({
+      next: () => {},
+      error: (err) => {
+        this.message = errMsg(err, '打开失败');
+        this.messageOk = false;
+      },
+    });
+  }
+
+  remove(m: LibraryModel): void {
+    if (!confirm(`从模型库删除「${m.name}」记录？（不会删除磁盘文件）`)) return;
+    this.api.deleteLibrary(m.id).subscribe(() => this.load());
+  }
+
+  fmtSize = fmtSize;
+}

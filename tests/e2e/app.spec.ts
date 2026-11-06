@@ -1,0 +1,85 @@
+import { expect, test } from '@playwright/test';
+import { resolve } from 'node:path';
+
+// 截图固定落在 tests/artifacts/，与执行目录无关
+const ART = resolve(__dirname, '../artifacts');
+
+test.describe('Model Downloader Web UI', () => {
+  test('三个页面渲染与导航', async ({ page }) => {
+    await page.goto('/downloads');
+    await expect(page.getByText('新建下载')).toBeVisible();
+    await expect(page.getByRole('link', { name: '下载任务' })).toBeVisible();
+    await expect(page.locator('select').first().locator('option', { hasText: 'Demo' })).toHaveCount(0);
+    await page.screenshot({ path: ART + '/01-downloads.png', fullPage: true });
+
+    await page.getByRole('link', { name: '设置' }).click();
+    await expect(page.getByText('默认策略').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Hugging Face' })).toBeVisible();
+    await page.screenshot({ path: ART + '/03-settings.png', fullPage: true });
+
+    await page.getByRole('link', { name: '模型库' }).click();
+    await expect(page.getByText('本地模型库')).toBeVisible();
+    await page.screenshot({ path: ART + '/02-library.png', fullPage: true });
+  });
+
+  test('设置页：保存配置并测试代理', async ({ page }) => {
+    await page.goto('/settings');
+    await page.getByRole('button', { name: '测试代理' }).first().click();
+    await expect(page.getByText(/代理 .*可用/)).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('button', { name: '保存设置' }).click();
+    await expect(page.getByText('设置已保存')).toBeVisible();
+    await page.screenshot({ path: ART + '/07-settings-proxy.png', fullPage: true });
+  });
+
+  test('demo 源：解析 → 勾选 → 下载 → 入库', async ({ page }) => {
+    await page.goto('/downloads?demo=1');
+
+    await page.locator('select').first().selectOption('demo');
+    await page.getByPlaceholder('如 microsoft/Phi-3-mini-4k-instruct').fill('demo/text-gen-1.5');
+    await page.getByRole('button', { name: '解析文件' }).click();
+
+    await expect(page.getByText('model.safetensors').first()).toBeVisible();
+    await expect(page.getByText('5 个文件')).toBeVisible();
+    await page.screenshot({ path: ART + '/04-resolved-files.png', fullPage: true });
+
+    await page.getByRole('button', { name: '开始下载' }).click();
+    const firstTask = page.locator('.task').first();
+    await expect(firstTask).toContainText('demo/text-gen-1.5');
+    await expect(firstTask.locator('.head').getByText(/下载中|已完成/).first()).toBeVisible();
+    await page.screenshot({ path: ART + '/05-downloading.png', fullPage: true });
+
+    await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 30_000 });
+    await page.screenshot({ path: ART + '/06-task-completed.png', fullPage: true });
+
+    await page.getByRole('link', { name: '模型库' }).click();
+    await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
+    await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
+
+    await page.getByTitle('收藏').first().click();
+    await expect(page.getByText('★').first()).toBeVisible();
+  });
+
+  test('解析失败有错误提示', async ({ page }) => {
+    await page.goto('/downloads?demo=1');
+    await page.locator('select').first().selectOption('demo');
+    await page.getByPlaceholder('如 microsoft/Phi-3-mini-4k-instruct').fill('bad/repo');
+    await page.getByRole('button', { name: '解析文件' }).click();
+    await expect(page.locator('.notice.err')).toBeVisible();
+    await page.screenshot({ path: ART + '/09-resolve-error.png', fullPage: true });
+  });
+
+  test('模型发现：搜索列表并跳转下载', async ({ page }) => {
+    await page.goto('/discover?demo=1');
+    await expect(page.getByRole('heading', { name: '模型发现' })).toBeVisible();
+    await page.getByRole('button', { name: 'Demo', exact: true }).click();
+    await page.getByPlaceholder('搜索模型关键词，如 qwen / lora / flux').fill('text');
+    await page.getByTestId('search-btn').click();
+    await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
+    await page.screenshot({ path: ART + '/10-discover.png', fullPage: true });
+
+    await page.getByTestId('card-download').first().click();
+    await expect(page).toHaveURL(/\/downloads\?source=demo&repo_id=demo%2Ftext-gen-1\.5/);
+    await expect(page.getByText('model.safetensors').first()).toBeVisible({ timeout: 15_000 });
+    await page.screenshot({ path: ART + '/11-discover-to-download.png', fullPage: true });
+  });
+});

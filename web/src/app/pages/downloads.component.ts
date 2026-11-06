@@ -1,0 +1,412 @@
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../core/api.service';
+import { AppSettings, RepoInfo, Task, errMsg, fmtSize, pct } from '../core/types';
+import { BadgeTone, BadgeComponent } from '../ui/badge.component';
+import { EmptyComponent } from '../ui/empty.component';
+import { FieldComponent } from '../ui/field.component';
+import { PageHeaderComponent } from '../ui/page-header.component';
+import { PanelComponent } from '../ui/panel.component';
+
+@Component({
+  selector: 'app-downloads',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    BadgeComponent,
+    EmptyComponent,
+    FieldComponent,
+    PageHeaderComponent,
+    PanelComponent,
+  ],
+  template: `
+    <ui-page-header title="下载任务" hint="解析仓库 → 勾选文件 → aria2 下载，进度实时刷新。" />
+
+    <ui-panel
+      title="新建下载"
+      hint="选择下载源并解析仓库，勾选文件后开始下载（Rodel 式文件勾选，aria2 内核）。"
+    >
+      <div class="form-grid">
+        <ui-field label="下载源">
+          <select [(ngModel)]="source" (ngModelChange)="onSourceChange()">
+            @for (s of visibleSourceKeys; track s) {
+              <option [value]="s">{{ settings?.sources?.[s]?.label || s }}</option>
+            }
+          </select>
+        </ui-field>
+        <ui-field label="模型 ID">
+          <input [(ngModel)]="repoId" placeholder="如 microsoft/Phi-3-mini-4k-instruct">
+        </ui-field>
+        <ui-field label="Revision（可选）">
+          <input [(ngModel)]="revision" placeholder="main / master / tag">
+        </ui-field>
+        <ui-field label="下载策略">
+          <select [(ngModel)]="strategy">
+            <option value="direct">direct - aria2 直连</option>
+            <option value="proxy">proxy - 走代理</option>
+            <option value="mirror">mirror - 多站点分片</option>
+            <option value="sdk">sdk - 官方下载 SDK</option>
+          </select>
+        </ui-field>
+        <ui-field label="保存目录（可选，留空用设置值）">
+          <input [(ngModel)]="saveDir" [placeholder]="currentSaveDir()">
+        </ui-field>
+      </div>
+
+      <div class="toolbar mt">
+        <button class="primary" (click)="resolveRepo()" [disabled]="resolving || !repoId">
+          {{ resolving ? '解析中…' : '解析文件' }}
+        </button>
+        <span class="muted">{{ proxySummary() }}</span>
+      </div>
+
+      @if (error) {
+        <div class="notice err">{{ error }}</div>
+      }
+
+      @if (repo) {
+        <div class="mt">
+          <div class="toolbar">
+            <strong>{{ repo.display_name }}</strong>
+            <ui-badge tone="blue">{{ repo.source }}</ui-badge>
+            <span class="muted">{{ repo.files.length }} 个文件</span>
+            <span class="grow"></span>
+            <span class="muted">已选 {{ selectedCount() }} 个 / {{ fmtSize(selectedSize()) }}</span>
+            <button class="primary" (click)="startDownload()" [disabled]="selectedCount() === 0 || starting">
+              {{ starting ? '创建中…' : '开始下载' }}
+            </button>
+          </div>
+
+          <div class="table-wrap mt">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-check"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
+                  <th>文件</th>
+                  <th class="col-size">大小</th>
+                  <th class="col-progress">候选站点</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (file of repo.files; track file.path) {
+                  <tr>
+                    <td><input type="checkbox" [checked]="isSelected(file.path)" (change)="toggleOne(file.path, $event)"></td>
+                    <td>
+                      <div class="mono">{{ file.path }}</div>
+                      <div class="mono muted cell-path">
+                        @for (c of file.candidates.slice(0, 2); track c) {
+                          <span>{{ hostOf(c) }}</span>@if (!$last) { · }
+                        }
+                        @if (file.candidates.length > 2) { +{{ file.candidates.length - 2 }} }
+                      </div>
+                    </td>
+                    <td>{{ fmtSize(file.size) }}</td>
+                    <td class="muted">{{ file.candidates.length }} 个</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </ui-panel>
+
+    <ui-panel title="下载任务" hint="进度每秒自动刷新；断点续传由 aria2 维护（.aria2 文件）。">
+      <div panel-actions class="segmented">
+        @for (t of taskTabs; track t.key) {
+          <button [class.active]="taskFilter === t.key" (click)="taskFilter = t.key">{{ t.label }}</button>
+        }
+      </div>
+
+      @if (filteredTasks.length === 0) {
+        <ui-empty icon="📥" [title]="'暂无' + activeTabLabel + '任务'" hint="上方解析并开始下载后，任务会出现在这里。" />
+      }
+
+      @for (task of filteredTasks; track task.id) {
+        <div class="task">
+          <div class="head">
+            <span class="title">{{ task.repo_id }}</span>
+            <ui-badge [tone]="statusTone(task.status)">{{ statusLabel(task.status) }}</ui-badge>
+            <ui-badge tone="gray">{{ task.strategy }}</ui-badge>
+            <span class="meta">{{ fmtSize(task.done_bytes) }} / {{ fmtSize(task.total_bytes) }}</span>
+            <div class="actions">
+              @if (task.status === 'downloading' || task.status === 'pending') {
+                <button (click)="pause(task)">暂停</button>
+                <button class="danger" (click)="cancel(task)">取消</button>
+              }
+              @if (task.status === 'paused') {
+                <button class="primary" (click)="resume(task)">继续</button>
+                <button class="danger" (click)="cancel(task)">取消</button>
+              }
+              @if (task.status === 'completed' || task.status === 'failed' || task.status === 'canceled') {
+                <button class="danger" (click)="remove(task)">删除记录</button>
+              }
+            </div>
+          </div>
+          <div class="progress" [ngClass]="task.status">
+            <div [style.width.%]="pct(task.done_bytes, task.total_bytes)"></div>
+          </div>
+          <div class="meta mt">{{ task.target_dir }}</div>
+          <details class="files">
+            <summary>文件明细（{{ task.files.length }}）</summary>
+            <div class="table-wrap mt">
+              <table>
+                <thead>
+                  <tr>
+                    <th>文件</th>
+                    <th class="col-progress">进度</th>
+                    <th class="col-status">状态</th>
+                    <th class="col-url">来源 URL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (f of task.files; track f.id) {
+                    <tr>
+                      <td class="mono">{{ f.path }}</td>
+                      <td>{{ fmtSize(f.done_bytes) }} / {{ fmtSize(f.size) }}</td>
+                      <td><ui-badge [tone]="statusTone(f.status)">{{ statusLabel(f.status) }}</ui-badge></td>
+                      <td class="mono muted" [title]="f.url || ''">{{ hostOf(f.url) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      }
+    </ui-panel>
+  `,
+})
+export class DownloadsComponent implements OnInit, OnDestroy {
+  settings: AppSettings | null = null;
+  sourceKeys: string[] = [];
+  source = 'huggingface';
+  repoId = '';
+  revision = '';
+  strategy = 'direct';
+  saveDir = '';
+  repo: RepoInfo | null = null;
+  selected = new Set<string>();
+  tasks: Task[] = [];
+  taskFilter = 'all';
+  resolving = false;
+  starting = false;
+  error = '';
+  showDemo = false;
+  private timer: ReturnType<typeof setInterval> | null = null;
+  private autoSource = '';
+  private autoRepo = '';
+
+  taskTabs = [
+    { key: 'all', label: '全部' },
+    { key: 'active', label: '进行中' },
+    { key: 'completed', label: '已完成' },
+  ];
+
+  constructor(private api: ApiService, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((p) => {
+      this.showDemo = p['demo'] === '1';
+      if (p['source'] && p['repo_id']) {
+        this.autoSource = p['source'];
+        this.autoRepo = p['repo_id'];
+        this.tryAutoResolve();
+      }
+    });
+    this.api.getSettings().subscribe((s) => {
+      this.settings = s;
+      this.sourceKeys = Object.keys(s.sources || {}).filter((k) => k !== 'demo');
+      if (!this.autoSource) {
+        this.onSourceChange();
+      }
+      this.tryAutoResolve();
+    });
+    this.refreshTasks();
+    this.timer = setInterval(() => this.refreshTasks(), 1500);
+  }
+
+  get visibleSourceKeys(): string[] {
+    return this.showDemo ? [...this.sourceKeys, 'demo'] : this.sourceKeys;
+  }
+
+  get filteredTasks(): Task[] {
+    if (this.taskFilter === 'all') return this.tasks;
+    if (this.taskFilter === 'active') {
+      return this.tasks.filter((t) => !['completed', 'failed', 'canceled'].includes(t.status));
+    }
+    return this.tasks.filter((t) => t.status === this.taskFilter);
+  }
+
+  get activeTabLabel(): string {
+    const tab = this.taskTabs.find((t) => t.key === this.taskFilter);
+    return tab && tab.key !== 'all' ? tab.label : '';
+  }
+
+  private tryAutoResolve(): void {
+    if (!this.autoSource || !this.autoRepo || !this.settings) return;
+    if (!this.settings.sources?.[this.autoSource]) {
+      this.autoSource = '';
+      return;
+    }
+    this.source = this.autoSource;
+    this.strategy = this.settings.download?.strategy || this.settings.default_strategy || 'direct';
+    this.repoId = this.autoRepo;
+    this.revision = '';
+    this.autoSource = '';
+    this.resolveRepo();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  onSourceChange(): void {
+    this.strategy = this.settings?.download?.strategy || this.settings?.default_strategy || 'direct';
+    this.repo = null;
+    this.selected.clear();
+    this.error = '';
+  }
+
+  currentSaveDir(): string {
+    return this.settings?.download?.save_dir || '';
+  }
+
+  proxySummary(): string {
+    const cfg = this.settings?.sources?.[this.source];
+    if (!cfg) return '';
+    const url = this.settings?.proxy?.url || '';
+    if (this.strategy === 'proxy') {
+      return cfg.proxy_enabled ? `代理已启用：${url}` : '注意：proxy 策略但该源代理未启用，将直连';
+    }
+    return `代理设置：${cfg.proxy_enabled ? '已开启 ' + url : '已禁用'}（proxy 策略时生效）`;
+  }
+
+  resolveRepo(): void {
+    this.resolving = true;
+    this.error = '';
+    this.api.resolve(this.source, this.repoId, this.revision).subscribe({
+      next: (repo) => {
+        this.repo = repo;
+        this.selected = new Set(repo.files.map((f) => f.path));
+        this.resolving = false;
+      },
+      error: (err) => {
+        this.error = errMsg(err, '解析失败，请检查模型 ID / 网络 / token');
+        this.resolving = false;
+      },
+    });
+  }
+
+  isSelected(path: string): boolean {
+    return this.selected.has(path);
+  }
+
+  toggleOne(path: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) this.selected.add(path);
+    else this.selected.delete(path);
+  }
+
+  allSelected(): boolean {
+    return !!this.repo && this.selected.size === this.repo.files.length;
+  }
+
+  toggleAll(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked && this.repo) this.selected = new Set(this.repo.files.map((f) => f.path));
+    else this.selected.clear();
+  }
+
+  selectedCount(): number {
+    return this.selected.size;
+  }
+
+  selectedSize(): number {
+    if (!this.repo) return 0;
+    return this.repo.files.filter((f) => this.selected.has(f.path)).reduce((sum, f) => sum + f.size, 0);
+  }
+
+  startDownload(): void {
+    if (!this.repo) return;
+    this.starting = true;
+    this.error = '';
+    this.api
+      .createTask({
+        source: this.source,
+        repo_id: this.repo.repo_id,
+        revision: this.repo.revision,
+        files: [...this.selected],
+        strategy: this.strategy,
+        save_dir: this.saveDir,
+      })
+      .subscribe({
+        next: () => {
+          this.starting = false;
+          this.refreshTasks();
+        },
+        error: (err) => {
+          this.error = errMsg(err, '创建任务失败');
+          this.starting = false;
+        },
+      });
+  }
+
+  refreshTasks(): void {
+    this.api.listTasks().subscribe((tasks) => (this.tasks = tasks));
+  }
+
+  pause(task: Task): void {
+    this.api.pauseTask(task.id).subscribe(() => this.refreshTasks());
+  }
+
+  resume(task: Task): void {
+    this.api.resumeTask(task.id).subscribe(() => this.refreshTasks());
+  }
+
+  cancel(task: Task): void {
+    this.api.cancelTask(task.id).subscribe(() => this.refreshTasks());
+  }
+
+  remove(task: Task): void {
+    this.api.deleteTask(task.id).subscribe(() => this.refreshTasks());
+  }
+
+  fmtSize = fmtSize;
+  pct = pct;
+
+  statusLabel(status: string): string {
+    const map: Record<string, string> = {
+      pending: '排队中',
+      downloading: '下载中',
+      queued: '排队',
+      active: '下载中',
+      paused: '已暂停',
+      completed: '已完成',
+      failed: '失败',
+      canceled: '已取消',
+    };
+    return map[status] || status;
+  }
+
+  statusTone(status: string): BadgeTone {
+    if (status === 'completed') return 'green';
+    if (status === 'failed') return 'red';
+    if (status === 'paused') return 'orange';
+    if (status === 'downloading' || status === 'active') return 'blue';
+    return 'gray';
+  }
+
+  hostOf(url?: string): string {
+    if (!url) return '-';
+    if (url.startsWith('demo://')) return 'demo';
+    try {
+      return new URL(url).host;
+    } catch {
+      return url.slice(0, 18);
+    }
+  }
+}

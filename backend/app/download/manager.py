@@ -1,0 +1,387 @@
+"""下载管理器：任务生命周期、四种策略（sdk/direct/proxy/mirror）、进度轮询、完成后入库。"""
+from __future__ import annotations
+
+import json
+import threading
+import time
+from pathlib import Path
+
+from ..config import load_settings
+from ..db import execute, new_id, now_iso, query
+from ..sources import get_adapter
+from ..sources.base import SourceError
+from .aria2_client import Aria2Client, Aria2Error
+
+TERMINAL = {"completed", "failed", "canceled"}
+
+
+class DownloadManager:
+    def __init__(self) -> None:
+        self._aria2: Aria2Client | None = None
+        self._poller_started = False
+        self._pause_events: dict[str, threading.Event] = {}
+        self._canceled: set[str] = set()
+        self._host_cursor = 0
+
+    # ---------------- aria2 懒加载 ----------------
+    def _client(self) -> Aria2Client:
+        if self._aria2 is None:
+            cfg = load_settings()["aria2"]
+            self._aria2 = Aria2Client(
+                int(cfg.get("rpc_port", 6800)),
+                str(cfg.get("rpc_secret", "")),
+                int(cfg.get("max_concurrent", 3)),
+            )
+        return self._aria2
+
+    def _ensure_poller(self) -> None:
+        if not self._poller_started:
+            self._poller_started = True
+            threading.Thread(target=self._poll_loop, daemon=True).start()
+
+    # ---------------- 任务创建 ----------------
+    def create_task(
+        self,
+        source: str,
+        repo_id: str,
+        revision: str,
+        file_paths: list[str],
+        strategy: str = "",
+        save_dir: str = "",
+    ) -> dict:
+        settings = load_settings()
+        src_cfg = settings["sources"].get(source)
+        if not src_cfg:
+            raise SourceError(f"未配置的下载源: {source}")
+        adapter = get_adapter(source)
+        repo = adapter.resolve(repo_id, revision or "", src_cfg)
+        selected = {p for p in file_paths if p}
+        files = [f for f in repo.files if not selected or f.path in selected]
+        if not files:
+            raise SourceError("没有选中任何文件")
+
+        strategy = (strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "direct").lower()
+        base_dir = Path(save_dir) if save_dir else Path(settings["download"]["save_dir"])
+        target = base_dir / source
+        if adapter.uses_repo_subdir:
+            target = target / repo.display_name.replace("/", "--")
+        target.mkdir(parents=True, exist_ok=True)
+
+        task_id = new_id()
+        ts = now_iso()
+        total = sum(f.size for f in files)
+        execute(
+            "INSERT INTO tasks (id, source, repo_id, revision, strategy, save_dir, target_dir, status, total_bytes, done_bytes, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (task_id, source, repo.repo_id, repo.revision, strategy, str(base_dir), str(target), "pending", total, 0, ts, ts),
+        )
+        for f in files:
+            execute(
+                "INSERT INTO task_files (id, task_id, path, size, done_bytes, status, candidates) VALUES (?,?,?,?,?,?,?)",
+                (new_id(), task_id, f.path, f.size, 0, "queued", json.dumps(f.candidates, ensure_ascii=False)),
+            )
+        self._ensure_poller()
+        threading.Thread(target=self._start_task, args=(task_id, repo.repo_id, repo.revision), daemon=True).start()
+        return self.get_task(task_id)
+
+    # ---------------- 启动下载 ----------------
+    def _start_task(self, task_id: str, repo_id: str, revision: str) -> None:
+        task = self._task_row(task_id)
+        if not task or task["status"] in TERMINAL:
+            return
+        execute("UPDATE tasks SET status='downloading', updated_at=? WHERE id=?", (now_iso(), task_id))
+        src_cfg = load_settings()["sources"].get(task["source"], {})
+        adapter = get_adapter(task["source"])
+        target = Path(task["target_dir"])
+        rows = query("SELECT * FROM task_files WHERE task_id=? AND status IN ('queued','active')", (task_id,))
+
+        if task["source"] == "demo":
+            for row in rows:
+                threading.Thread(target=self._demo_file, args=(task_id, row, target), daemon=True).start()
+            return
+
+        if task["strategy"] == "sdk" and adapter.supports_sdk():
+            threading.Thread(target=self._sdk_download, args=(task_id, repo_id, revision, rows, target, src_cfg), daemon=True).start()
+            return
+
+        for index, row in enumerate(rows):
+            threading.Thread(target=self._aria2_file, args=(task_id, row, target, task["strategy"], src_cfg, index), daemon=True).start()
+
+    # ---------------- 策略实现 ----------------
+    def _pick_url(self, candidates: list[str], strategy: str, index: int) -> str:
+        if not candidates:
+            return ""
+        if strategy == "mirror" and len(candidates) > 1:
+            hosts: dict[str, list[str]] = {}
+            for url in candidates:
+                host = url.split("/")[2] if "://" in url else url
+                hosts.setdefault(host, []).append(url)
+            keys = list(hosts.keys())
+            picked = keys[index % len(keys)] if keys else ""
+            self._host_cursor += 1
+            return hosts[picked][0] if picked else candidates[0]
+        return candidates[0]
+
+    def _aria2_file(self, task_id: str, row: dict, target: Path, strategy: str, src_cfg: dict, index: int) -> None:
+        if task_id in self._canceled:
+            return
+        candidates = json.loads(row.get("candidates") or "[]")
+        url = self._pick_url(candidates, strategy, index)
+        if not url:
+            execute("UPDATE task_files SET status='failed', error='无可用下载地址' WHERE id=?", (row["id"],))
+            return
+        try:
+            client = self._client()
+            settings = load_settings()
+            aria_cfg = settings["aria2"]
+            options = {
+                "dir": str(target),
+                "out": row["path"],
+                "continue": "true",
+                "file-allocation": "none",
+                "max-connection-per-server": str(int(aria_cfg.get("connections", 8))),
+                "split": str(int(aria_cfg.get("split", 8))),
+            }
+            proxy_url = settings["proxy"]["url"]
+            if strategy == "proxy" and (src_cfg or {}).get("proxy_enabled") and proxy_url:
+                options["http-proxy"] = proxy_url
+                options["https-proxy"] = proxy_url
+            token = (src_cfg or {}).get("token") or ""
+            if token and not url.startswith("demo://") and "token=" not in url:
+                options["header"] = [f"Authorization: Bearer {token}"]
+            gid = client.add_uri([url], options)
+            execute(
+                "UPDATE task_files SET status='active', gid=?, url=?, error=NULL WHERE id=?",
+                (gid, url, row["id"]),
+            )
+        except (Aria2Error, Exception) as exc:  # noqa: BLE001
+            self._fallback_or_fail(task_id, row, candidates, target, strategy, src_cfg, index, str(exc))
+
+    def _fallback_or_fail(self, task_id, row, candidates, target, strategy, src_cfg, index, error):
+        """当前 URL 失败时尝试候选里的下一个站点（多站点回退）。"""
+        current = row.get("url") or ""
+        rest = [u for u in candidates if u != current]
+        if rest:
+            new_row = dict(row)
+            new_row["candidates"] = json.dumps(rest)
+            execute("UPDATE task_files SET candidates=?, error=? WHERE id=?", (json.dumps(rest), error, row["id"]))
+            self._aria2_file(task_id, new_row, target, strategy, src_cfg, index)
+        else:
+            execute("UPDATE task_files SET status='failed', error=? WHERE id=?", (error[:500], row["id"]))
+
+    def _sdk_download(self, task_id, repo_id, revision, rows, target: Path, src_cfg: dict) -> None:
+        adapter = get_adapter(self._task_row(task_id)["source"])
+        try:
+            def on_done(path: str) -> None:
+                for row in rows:
+                    if row["path"] == path:
+                        execute("UPDATE task_files SET status='completed', done_bytes=size WHERE id=?", (row["id"],))
+
+            adapter.sdk_download(repo_id, revision, [r["path"] for r in rows], target, src_cfg, on_file_done=on_done)
+            for row in rows:
+                execute("UPDATE task_files SET status='completed', done_bytes=size WHERE id=?", (row["id"],))
+        except Exception as exc:  # noqa: BLE001
+            # SDK 失败自动回退 aria2 直连（Rodel 式稳态）
+            for index, row in enumerate(rows):
+                done = query("SELECT status FROM task_files WHERE id=?", (row["id"],))
+                if done and done[0]["status"] == "completed":
+                    continue
+                threading.Thread(target=self._aria2_file, args=(task_id, row, target, "direct", src_cfg, index), daemon=True).start()
+
+    def _demo_file(self, task_id: str, row: dict, target: Path) -> None:
+        fid = row["id"]
+        size = int(row["size"])
+        event = threading.Event()
+        event.set()
+        self._pause_events[fid] = event
+        path = target / row["path"]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        written = int(row["done_bytes"] or 0)
+        with open(path, "ab" if written else "wb") as fh:
+            while written < size:
+                if task_id in self._canceled:
+                    execute("UPDATE task_files SET status='canceled' WHERE id=?", (fid,))
+                    return
+                if not event.is_set():
+                    time.sleep(0.1)
+                    continue
+                chunk = min(65536, size - written)
+                fh.write(b"0" * chunk)
+                written += chunk
+                if written % 262144 < 65536 or written >= size:
+                    execute("UPDATE task_files SET done_bytes=? WHERE id=?", (written, fid))
+                time.sleep(0.03)
+        execute("UPDATE task_files SET done_bytes=?, status='completed' WHERE id=?", (size, fid))
+
+    # ---------------- 进度轮询 ----------------
+    def _poll_loop(self) -> None:
+        while True:
+            time.sleep(1.0)
+            try:
+                self._poll_once()
+            except Exception:  # noqa: BLE001
+                continue
+
+    def _poll_once(self) -> None:
+        active = query("SELECT * FROM task_files WHERE status='active' AND gid IS NOT NULL")
+        for row in active:
+            try:
+                status = self._client().tell_status(row["gid"])
+            except Aria2Error:
+                continue
+            state = status.get("status")
+            done = int(status.get("completedLength") or 0)
+            total = int(status.get("totalLength") or row["size"] or 0)
+            if state == "complete":
+                execute("UPDATE task_files SET status='completed', done_bytes=? WHERE id=?", (max(done, total), row["id"]))
+            elif state in ("error", "removed"):
+                task = self._task_row(row["task_id"])
+                candidates = json.loads(row.get("candidates") or "[]")
+                if len([u for u in candidates if u != (row.get("url") or "")]) > 0:
+                    self._fallback_or_fail(
+                        row["task_id"], row, candidates, Path(task["target_dir"]), task["strategy"],
+                        load_settings()["sources"].get(task["source"], {}), 0, f"aria2 error {status.get('errorCode')}",
+                    )
+                else:
+                    execute("UPDATE task_files SET status='failed', error=? WHERE id=?", (f"aria2 error {status.get('errorCode')}", row["id"]))
+            else:
+                execute("UPDATE task_files SET done_bytes=?, size=CASE WHEN ? > 0 THEN ? ELSE size END WHERE id=?", (done, total, total, row["id"]))
+
+        for task in query("SELECT * FROM tasks WHERE status NOT IN ('completed','failed','canceled')"):
+            self._refresh_task(task["id"])
+
+    def _refresh_task(self, task_id: str) -> None:
+        files = query("SELECT * FROM task_files WHERE task_id=?", (task_id,))
+        if not files:
+            return
+        total = sum(int(f["size"] or 0) for f in files)
+        done = sum(int(f["done_bytes"] or 0) for f in files)
+        statuses = {f["status"] for f in files}
+        task = self._task_row(task_id)
+        if statuses <= {"completed"}:
+            execute("UPDATE tasks SET status='completed', done_bytes=?, total_bytes=?, updated_at=? WHERE id=?", (done, total, now_iso(), task_id))
+            self.register_library(task_id)
+        elif statuses <= TERMINAL:
+            final = "failed" if "failed" in statuses else "canceled"
+            execute("UPDATE tasks SET status=?, done_bytes=?, total_bytes=?, updated_at=? WHERE id=?", (final, done, total, now_iso(), task_id))
+        else:
+            execute("UPDATE tasks SET done_bytes=?, total_bytes=?, updated_at=? WHERE id=?", (done, total, now_iso(), task_id))
+
+    # ---------------- 控制 ----------------
+    def pause_task(self, task_id: str) -> dict:
+        for row in query("SELECT * FROM task_files WHERE task_id=? AND status='active'", (task_id,)):
+            if row["gid"]:
+                try:
+                    self._client().pause(row["gid"])
+                except Aria2Error:
+                    pass
+            execute("UPDATE task_files SET status='paused' WHERE id=?", (row["id"],))
+            if row["id"] in self._pause_events:
+                self._pause_events[row["id"]].clear()
+        execute("UPDATE tasks SET status='paused', updated_at=? WHERE id=?", (now_iso(), task_id))
+        return self.get_task(task_id)
+
+    def resume_task(self, task_id: str) -> dict:
+        for row in query("SELECT * FROM task_files WHERE task_id=? AND status='paused'", (task_id,)):
+            if row["gid"]:
+                try:
+                    self._client().unpause(row["gid"])
+                    execute("UPDATE task_files SET status='active' WHERE id=?", (row["id"],))
+                    continue
+                except Aria2Error:
+                    pass
+            execute("UPDATE task_files SET status='queued' WHERE id=?", (row["id"],))
+        execute("UPDATE tasks SET status='downloading', updated_at=? WHERE id=?", (now_iso(), task_id))
+        rows = query("SELECT * FROM task_files WHERE task_id=? AND status='queued'", (task_id,))
+        if rows:
+            task = self._task_row(task_id)
+            src_cfg = load_settings()["sources"].get(task["source"], {})
+            for index, row in enumerate(rows):
+                if task["source"] == "demo":
+                    threading.Thread(target=self._demo_file, args=(task_id, row, Path(task["target_dir"])), daemon=True).start()
+                else:
+                    threading.Thread(target=self._aria2_file, args=(task_id, row, Path(task["target_dir"]), task["strategy"], src_cfg, index), daemon=True).start()
+        for fid, event in self._pause_events.items():
+            event.set()
+        return self.get_task(task_id)
+
+    def cancel_task(self, task_id: str) -> dict:
+        self._canceled.add(task_id)
+        for row in query("SELECT * FROM task_files WHERE task_id=? AND status IN ('active','paused','queued')", (task_id,)):
+            if row["gid"]:
+                try:
+                    self._client().remove(row["gid"])
+                except Aria2Error:
+                    pass
+            execute("UPDATE task_files SET status='canceled' WHERE id=?", (row["id"],))
+        execute("UPDATE tasks SET status='canceled', updated_at=? WHERE id=?", (now_iso(), task_id))
+        return self.get_task(task_id)
+
+    def delete_task(self, task_id: str) -> dict:
+        task = self._task_row(task_id)
+        if not task:
+            raise SourceError("任务不存在")
+        if task["status"] not in TERMINAL and task["status"] != "paused":
+            raise SourceError("请先取消任务再删除")
+        execute("DELETE FROM task_files WHERE task_id=?", (task_id,))
+        execute("DELETE FROM tasks WHERE id=?", (task_id,))
+        return {"deleted": task_id}
+
+    # ---------------- 查询 ----------------
+    def _task_row(self, task_id: str) -> dict | None:
+        rows = query("SELECT * FROM tasks WHERE id=?", (task_id,))
+        return rows[0] if rows else None
+
+    def get_task(self, task_id: str) -> dict:
+        task = self._task_row(task_id)
+        if not task:
+            raise SourceError("任务不存在")
+        files = query("SELECT * FROM task_files WHERE task_id=? ORDER BY path", (task_id,))
+        for f in files:
+            f["candidates"] = json.loads(f.get("candidates") or "[]")
+        task["files"] = files
+        return task
+
+    def list_tasks(self) -> list[dict]:
+        result = []
+        for task in query("SELECT * FROM tasks ORDER BY created_at DESC LIMIT 50"):
+            files = query("SELECT * FROM task_files WHERE task_id=? ORDER BY path", (task["id"],))
+            for f in files:
+                f["candidates"] = json.loads(f.get("candidates") or "[]")
+            task["files"] = files
+            result.append(task)
+        return result
+
+    # ---------------- 入库（AbyssBeacon 式本地库） ----------------
+    def register_library(self, task_id: str) -> None:
+        task = self._task_row(task_id)
+        if not task:
+            return
+        files = query("SELECT * FROM task_files WHERE task_id=? AND status='completed'", (task_id,))
+        if not files:
+            return
+        existing = query("SELECT id FROM library_models WHERE local_path=?", (task["target_dir"],))
+        model_id = existing[0]["id"] if existing else new_id()
+        size = sum(int(f["size"] or 0) for f in files)
+        name = Path(task["target_dir"]).name
+        ts = now_iso()
+        if existing:
+            execute(
+                "UPDATE library_models SET name=?, size_bytes=?, file_count=? WHERE id=?",
+                (name, size, len(files), model_id),
+            )
+            execute("DELETE FROM library_files WHERE model_id=?", (model_id,))
+        else:
+            execute(
+                "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, favorite, review_state, notes, created_at)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                (model_id, name, task["repo_id"], task["source"], task["target_dir"], size, len(files), "[]", 0, "untried", "", ts),
+            )
+        for f in files:
+            execute(
+                "INSERT INTO library_files (id, model_id, path, size) VALUES (?,?,?,?)",
+                (new_id(), model_id, f["path"], int(f["size"] or 0)),
+            )
+
+
+manager = DownloadManager()

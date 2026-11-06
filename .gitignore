@@ -1,0 +1,34 @@
+# 运行时状态：不可重建，需要备份
+var/
+
+# ComfyUI 运行时：可重建
+comfy/
+
+# 权重：可重下
+models/
+
+# 部署配置
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# 前端
+node_modules/
+web/dist/
+web/.angular/
+*.tsbuildinfo
+
+# 测试产物
+tests/artifacts/
+tests/test-results/
+tests/playwright-report/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
