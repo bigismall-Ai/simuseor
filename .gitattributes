@@ -1,0 +1,22 @@
+# 统一换行符：仓库内一律 LF，Windows 侧脚本用 CRLF
+# 目的：项目要部署到 Linux 服务器，shell 脚本带 CRLF 会报 bad interpreter
+* text=auto eol=lf
+
+*.sh    text eol=lf
+*.py    text eol=lf
+*.ts    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# 二进制/免转换
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
