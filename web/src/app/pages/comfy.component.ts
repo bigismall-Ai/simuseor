@@ -47,7 +47,7 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
           </ui-field>
           <ui-field label="Python">
             <span>{{ plan.python_version }}</span>
-            <div class="muted">{{ plan.python_available ? '本机已有可用版本' : '需要先安装' }}</div>
+            <div class="muted">{{ plan.python_source === 'download' ? '将自动下载内置运行时' : '使用本机已有版本' }}</div>
           </ui-field>
           <ui-field label="磁盘空间">
             <span>{{ plan.disk_ok ? '足够安装' : '空间不足' }}</span>
@@ -241,7 +241,8 @@ export class ComfyComponent implements OnInit, OnDestroy {
   get canInstall(): boolean {
     const plan = this.env?.plan;
     if (!plan) return false;
-    return plan.tier !== 'blocked' && plan.python_available && plan.disk_ok;
+    // 不再要求本机有 Python——安装时会下载内置运行时
+    return plan.tier !== 'blocked' && plan.disk_ok;
   }
 
   /** 页面刷新后接管仍在进行的安装任务 */
@@ -256,7 +257,7 @@ export class ComfyComponent implements OnInit, OnDestroy {
             name: job.name,
             workspace: job.workspace,
             comfy_dir: '',
-            venv_dir: '',
+            environment: '',
             python: '',
             channel: '',
           },
@@ -443,16 +444,15 @@ export class ComfyComponent implements OnInit, OnDestroy {
   }
 
   get pythonLabel(): string {
+    if (this.plan.python_source === 'download') return `内置 ${this.plan.python_version}`;
     const usable = this.device.pythons.filter((item) => item.trusted);
-    if (!usable.length) {
-      const bundled = this.device.pythons[0];
-      return bundled ? `${bundled.version}（应用自带，不可用）` : '未检测到 Python';
-    }
+    if (!usable.length) return `内置 ${this.plan.python_version}`;
     return usable.map((item) => item.version).join(' · ');
   }
 
   get pythonNote(): string {
-    if (!this.plan.python_available) return `需要安装 ${this.plan.python_version}`;
+    // 没有可用 Python 不再是问题：安装时会下载内置运行时
+    if (this.plan.python_source === 'download') return '安装时自动下载便携版（约 48MB）';
     // 把解释器的真实路径显示出来——只显示版本号会让人误以为是自己装的
     const chosen = this.device.pythons.find(
       (item) => item.trusted && item.version.startsWith(this.plan.python_version),

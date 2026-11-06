@@ -98,6 +98,17 @@ export interface WorkflowItem extends SearchItem {
   /** 该仓库里的工作流文件（.json / .zip） */
   files: string[];
   file_count: number;
+  /** 缩略图（模板 / Civitai / GitHub 可能有） */
+  thumbnail?: string;
+  /** 依赖的底模 / 自定义节点 */
+  requires?: string[];
+}
+
+export interface WorkflowInstance {
+  name: string;
+  path: string;
+  workflows_dir: string;
+  count: number;
 }
 
 export function fmtNum(n: number): string {
@@ -196,6 +207,8 @@ export interface ComfyPlan {
   torch_channel: string;
   python_version: string;
   python_available: boolean;
+  /** system：用本机 Python；download：安装时下载内置运行时 */
+  python_source: 'system' | 'download';
   disk_ok: boolean;
   disk_required_gb: number;
   actions: ComfyAction[];
@@ -221,7 +234,7 @@ export interface ComfyPreview {
     name: string;
     workspace: string;
     comfy_dir: string;
-    venv_dir: string;
+    environment: string;
     python: string;
     channel: string;
   };

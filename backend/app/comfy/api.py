@@ -58,8 +58,8 @@ def preview_install(name: str = "", tag: str = "") -> dict[str, Any]:
             "name": spec.name,
             "workspace": str(spec.workspace),
             "comfy_dir": str(spec.comfy_dir),
-            "venv_dir": str(spec.venv_dir),
-            "python": spec.python_version,
+            "environment": str(spec.environment),
+            "python": spec.runtime_version,
             "channel": spec.torch_channel,
         },
         "steps": [
@@ -97,8 +97,8 @@ def start_install(name: str = "", tag: str = "") -> dict[str, Any]:
                 "name": spec.name,
                 "workspace": str(spec.workspace),
                 "comfy_dir": str(spec.comfy_dir),
-                "venv_dir": str(spec.venv_dir),
-                "python": spec.python_version,
+                "environment": str(spec.environment),
+                "python": spec.runtime_version,
                 "channel": spec.torch_channel,
             },
             "steps": [

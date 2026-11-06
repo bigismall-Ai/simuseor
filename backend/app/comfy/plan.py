@@ -52,7 +52,11 @@ class InstallPlan(BaseModel):
     backend: str = Field(description="cuda | rocm | directml | xpu | mps | cpu")
     torch_channel: str = Field(description="语义通道，如 cu130 / rocm7.2，不是 URL")
     python_version: str = Field(description="建议使用的主版本，如 3.13")
-    python_available: bool = Field(description="本机是否已有 >= 3.10 的解释器")
+    python_available: bool = Field(description="本机是否已有 >= 3.10 的可信解释器")
+    python_source: str = Field(
+        default="system",
+        description="system | download。download 表示安装时下载内置运行时，不再要求用户自备 Python",
+    )
     disk_ok: bool = Field(description="目标盘是否够装")
     disk_required_gb: float = ENV_REQUIRED_GB
     actions: list[Action] = Field(default_factory=list)
@@ -79,7 +83,7 @@ def build_plan(report: DeviceReport) -> InstallPlan:
     gpu = _usable_gpu(report)
     choice = _choose_backend(report, gpu, warnings, actions, block_reasons)
 
-    python_available = _resolve_python(report, choice.python_version, actions)
+    python_available, python_source = _resolve_python(report, choice.python_version, actions)
     disk_ok, disk_required = _resolve_disk(report, actions, block_reasons)
 
     tier = "blocked" if block_reasons else choice.tier
@@ -89,6 +93,7 @@ def build_plan(report: DeviceReport) -> InstallPlan:
         torch_channel=choice.torch_channel,
         python_version=choice.python_version,
         python_available=python_available,
+        python_source=python_source,
         disk_ok=disk_ok,
         disk_required_gb=disk_required,
         actions=actions,
@@ -313,9 +318,14 @@ def _is_virtual(gpu: GpuInfo) -> bool:
 
 
 # ---------------- Python ----------------
-def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action]) -> bool:
-    # 只认可信解释器：应用自带的运行时（如 WorkBuddy 的 vendor python）
-    # 会随宿主升级/卸载消失，拿它建的环境迟早会坏
+def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action]) -> tuple[bool, str]:
+    """返回 (本机是否有可用解释器, 来源 system|download)。
+
+    本机没有可用 Python 也不阻塞安装——installer 会下载内置运行时。
+    因此这里只产出 info 级说明，不再产出 warn/block。
+    """
+    # 只认可信解释器：应用自带的运行时会随宿主升级/卸载消失，
+    # venv 则挂在别的解释器上，拿它再建环境等于循环依赖
     trusted = [info for info in report.pythons if info.trusted]
     parsed = [(version, info.path) for info in trusted if (version := _parse_python(info.version))]
     versions = {version for version, _ in parsed}
@@ -323,7 +333,7 @@ def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action])
     too_new = sorted(version for version in versions if version > MAX_PYTHON)
 
     if _parse_python(suggested) in supported:
-        return True
+        return True, "system"
 
     if supported:
         # 优先用不高于建议值的最高版本：新于建议值的解释器未必有对应的 torch 轮子
@@ -341,34 +351,28 @@ def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action])
                 ),
             )
         )
-        return True
+        return True, "system"
 
-    # 有 Python 但都超出 PyTorch 轮子的覆盖范围（例如只有 3.14）
     if too_new:
         newest = too_new[-1]
-        actions.append(
-            Action(
-                level="warn",
-                title=f"需要安装 Python {suggested}",
-                detail=(
-                    f"检测到 Python {newest[0]}.{newest[1]}，但 PyTorch 官方轮子尚未覆盖该版本，"
-                    f"装不上可用的 GPU 构建。请安装 Python {suggested} 后继续。"
-                ),
+        why = f"本机只有 Python {newest[0]}.{newest[1]}，超出了 PyTorch 官方轮子的覆盖范围。"
+    else:
+        untrusted = [info for info in report.pythons if not info.trusted]
+        why = "本机没有可直接使用的 Python。"
+        if untrusted:
+            shown = "、".join(info.version or "未知版本" for info in untrusted[:3])
+            why += (
+                f"检测到 {shown}，但它们要么是应用自带的运行时（随宿主软件升级消失），"
+                f"要么是虚拟环境（挂在别的解释器上）。"
             )
+    actions.append(
+        Action(
+            level="info",
+            title=f"将下载内置 Python {suggested}",
+            detail=f"{why}安装时会下载约 48MB 的便携版运行时，无需自行安装 Python。",
         )
-        return False
-
-    detail = "没有检测到 Python 3.10 或更新的解释器，而 ComfyUI 至少需要 Python 3.10。请先安装后再继续。"
-    untrusted = [info for info in report.pythons if not info.trusted]
-    if untrusted:
-        shown = "、".join(info.version or "未知版本" for info in untrusted[:3])
-        detail = (
-            f"检测到 {shown}，但它们都不能作为持久环境：应用自带的运行时会随宿主软件"
-            f"升级或卸载而消失，虚拟环境则挂在别的解释器上，用它再建环境等于循环依赖。"
-            f"请安装独立的 Python {suggested} 后再继续。"
-        )
-    actions.append(Action(level="warn", title=f"需要安装 Python {suggested}", detail=detail))
-    return False
+    )
+    return False, "download"
 
 
 def _parsed_pythons(report: DeviceReport) -> set[tuple[int, int]]:

@@ -18,6 +18,22 @@ COMFY_DIR = ROOT / "comfy"
 COMFY_MIRROR = "https://cnb.cool/bigismall/Comfy-Org/ComfyUI.git"
 COMFY_FALLBACK = "https://github.com/Comfy-Org/ComfyUI.git"
 
+# 基础环境（Python + torch + ComfyUI 依赖）：跟硬件走，一台机器装一次，所有实例共享。
+# 放在 instances 下并用点前缀，遍历实例时天然被跳过——它不是"一个实例"。
+COMFY_ENV_DIR = COMFY_DIR / "instances" / ".environment"
+COMFY_ENV_NAME = "3.13.18"
+# python-build-standalone 20261026 构建，已镜像到 CNB（公开仓库，匿名可下载）
+COMFY_PYTHON_URLS = {
+    ("windows", "x86_64"): "https://cnb.cool/bigismall/Comfy-Org/ComfyUI/-/releases/download/runtime-3.13.18/cpython-3.13.18-win.tar.gz",
+    ("linux", "x86_64"): "https://cnb.cool/bigismall/Comfy-Org/ComfyUI/-/releases/download/runtime-3.13.18/cpython-3.13.18-linux.tar.gz",
+    ("macos", "arm64"): "https://cnb.cool/bigismall/Comfy-Org/ComfyUI/-/releases/download/runtime-3.13.18/cpython-3.13.18-macos-arm64.tar.gz",
+}
+COMFY_PYTHON_SHA256 = {
+    "cpython-3.13.18-win.tar.gz": "ebe90cc1dce2dd2d7afa1f0aa9b6c269c7c0174aeabdc6a801381602b7283424",
+    "cpython-3.13.18-linux.tar.gz": "126343c54daff4068efc1ac269518d0cc202d57857794948103dd1454e8881be",
+    "cpython-3.13.18-macos-arm64.tar.gz": "e5af2fde6a937a0e0c795a0c595c4efb70578d57463a2657c819992b9b9acbac",
+}
+
 SETTINGS_PATH = DATA_DIR / "settings.json"
 SECRETS_PATH = DATA_DIR / "secrets.json"
 DB_PATH = DATA_DIR / "model_downloader.db"
@@ -26,8 +42,8 @@ WEB_DIST_CANDIDATES = [ROOT / "web" / "dist" / "browser", ROOT / "web" / "dist"]
 # strategy:
 #   sdk    - 走官方下载 SDK（huggingface_hub / modelscope），失败自动回退 aria2 直连
 #   direct - aria2 直连下载（默认）
-#   proxy  - aria2 + 全局代理（每源可关，代理地址统一在 proxy.url）
 #   mirror - 多站点分片：文件按候选站点轮询分配 + aria2 多连接分片，失败自动换站重试
+# 代理与策略解耦：每源 proxy_enabled 开启时，aria2 下载经 proxy.host:port
 DEFAULT_SETTINGS: dict = {
     "app": {"host": "127.0.0.1", "port": 8000},
     "aria2": {
@@ -39,7 +55,7 @@ DEFAULT_SETTINGS: dict = {
     },
     "default_strategy": "direct",
     "download": {"save_dir": "models", "strategy": "direct"},
-    "proxy": {"url": "http://127.0.0.1:7890"},
+    "proxy": {"host": "127.0.0.1", "port": 7890},
     "sources": {
         "huggingface": {
             "label": "Hugging Face",
@@ -60,6 +76,20 @@ DEFAULT_SETTINGS: dict = {
             "token": "",
             "proxy_enabled": True,
             "full_catalog": False,
+            "mirror": "",
+            "use_mirror": False,
+        },
+        "github": {
+            "label": "GitHub",
+            "token": "",
+            "proxy_enabled": True,
+            "mirror": "",
+            "use_mirror": False,
+        },
+        "templates": {
+            "label": "ComfyUI 官方模板",
+            "token": "",
+            "proxy_enabled": False,
             "mirror": "",
             "use_mirror": False,
         },
@@ -116,6 +146,28 @@ def relativize_save_dir(value: str) -> str:
         return str(p.resolve().relative_to(ROOT))
     except (ValueError, OSError):
         return str(value)
+
+
+def build_proxy_url(proxy: dict) -> str:
+    """host/port 拼成代理 URL（aria2 / httpx 消费）。host 可自带 scheme。"""
+    host = str((proxy or {}).get("host") or "").strip()
+    if not host:
+        return ""
+    if "://" not in host:
+        host = "http://" + host
+    port = str((proxy or {}).get("port") or "").strip()
+    return f"{host}:{port}" if port else host
+
+
+def split_proxy_url(url: str) -> dict:
+    """旧 proxy.url 拆成 {host, port}；scheme 保留在 host 上（socks5:// 等不丢）。"""
+    raw = str(url or "").strip()
+    if not raw:
+        return {}
+    head, sep, tail = raw.rpartition(":")
+    if sep and tail.strip().isdigit() and "/" not in tail:
+        return {"host": head, "port": int(tail.strip())}
+    return {"host": raw}
 
 
 def _migrate(data: dict) -> dict:
