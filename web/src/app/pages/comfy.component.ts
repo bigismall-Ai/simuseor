@@ -102,7 +102,7 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
           </ui-field>
           <ui-field label="Python">
             <span>{{ pythonLabel }}</span>
-            <div class="muted">{{ pythonNote }}</div>
+            <div class="mono muted" style="word-break: break-all">{{ pythonNote }}</div>
           </ui-field>
           <ui-field label="磁盘">
             <span>{{ diskLabel }}</span>
@@ -443,13 +443,21 @@ export class ComfyComponent implements OnInit, OnDestroy {
   }
 
   get pythonLabel(): string {
-    const list = this.device.pythons;
-    if (!list.length) return '未检测到 Python';
-    return list.map((item) => item.version).join(' · ');
+    const usable = this.device.pythons.filter((item) => item.trusted);
+    if (!usable.length) {
+      const bundled = this.device.pythons[0];
+      return bundled ? `${bundled.version}（应用自带，不可用）` : '未检测到 Python';
+    }
+    return usable.map((item) => item.version).join(' · ');
   }
 
   get pythonNote(): string {
-    return this.plan.python_available ? `将使用 ${this.plan.python_version}` : `需要安装 ${this.plan.python_version}`;
+    if (!this.plan.python_available) return `需要安装 ${this.plan.python_version}`;
+    // 把解释器的真实路径显示出来——只显示版本号会让人误以为是自己装的
+    const chosen = this.device.pythons.find(
+      (item) => item.trusted && item.version.startsWith(this.plan.python_version),
+    );
+    return chosen ? chosen.path : `将使用 ${this.plan.python_version}`;
   }
 
   get diskLabel(): string {

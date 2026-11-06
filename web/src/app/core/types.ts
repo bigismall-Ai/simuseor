@@ -149,6 +149,8 @@ export interface ComfyPython {
   version: string;
   path: string;
   source: string;
+  /** 是否为可长期依赖的解释器；应用自带的运行时为 false */
+  trusted: boolean;
 }
 
 export interface ComfyDisk {

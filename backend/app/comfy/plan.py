@@ -314,7 +314,10 @@ def _is_virtual(gpu: GpuInfo) -> bool:
 
 # ---------------- Python ----------------
 def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action]) -> bool:
-    parsed = [(version, info.path) for info in report.pythons if (version := _parse_python(info.version))]
+    # 只认可信解释器：应用自带的运行时（如 WorkBuddy 的 vendor python）
+    # 会随宿主升级/卸载消失，拿它建的环境迟早会坏
+    trusted = [info for info in report.pythons if info.trusted]
+    parsed = [(version, info.path) for info in trusted if (version := _parse_python(info.version))]
     versions = {version for version, _ in parsed}
     supported = sorted(version for version in versions if MIN_PYTHON <= version <= MAX_PYTHON)
     too_new = sorted(version for version in versions if version > MAX_PYTHON)
@@ -355,21 +358,21 @@ def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action])
         )
         return False
 
-    actions.append(
-        Action(
-            level="warn",
-            title=f"需要先安装 Python {suggested}",
-            detail=(
-                "没有检测到 Python 3.10 或更新的解释器，而 ComfyUI 至少需要 Python 3.10。"
-                "请先安装后再继续。"
-            ),
+    detail = "没有检测到 Python 3.10 或更新的解释器，而 ComfyUI 至少需要 Python 3.10。请先安装后再继续。"
+    untrusted = [info for info in report.pythons if not info.trusted]
+    if untrusted:
+        shown = "、".join(info.version or "未知版本" for info in untrusted[:3])
+        detail = (
+            f"检测到 {shown}，但它们都不能作为持久环境：应用自带的运行时会随宿主软件"
+            f"升级或卸载而消失，虚拟环境则挂在别的解释器上，用它再建环境等于循环依赖。"
+            f"请安装独立的 Python {suggested} 后再继续。"
         )
-    )
+    actions.append(Action(level="warn", title=f"需要安装 Python {suggested}", detail=detail))
     return False
 
 
 def _parsed_pythons(report: DeviceReport) -> set[tuple[int, int]]:
-    return {version for info in report.pythons if (version := _parse_python(info.version))}
+    return {version for info in report.pythons if info.trusted and (version := _parse_python(info.version))}
 
 
 # ---------------- 磁盘 ----------------

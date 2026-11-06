@@ -335,3 +335,50 @@ def test_python_prefers_not_newer_than_suggested() -> None:
     plan = build_plan(report)
     assert plan.python_available is True
     assert any("3.12" in action.title for action in plan.actions)
+
+
+# ---------------- 解释器可信度 ----------------
+def test_is_trusted_python_rejects_toolchain_paths() -> None:
+    """应用自带的运行时不能用来建持久环境。"""
+    from app.comfy.probe import is_trusted_python
+
+    # WorkBuddy 的 vendor python（符号链接到应用安装目录）
+    assert not is_trusted_python(r"C:/Users/Moc/.workbuddy/binaries/python/versions/3.13.12/python.exe")
+    assert not is_trusted_python(r"D:/Program Files/WorkBuddy/resources/vendor/python/python.exe")
+    # 正常来源必须放行——官方安装器默认就装在 AppData\Local\Programs
+    assert is_trusted_python(r"C:/Users/Moc/AppData/Local/Programs/Python/Python313/python.exe")
+    assert is_trusted_python("D:/ProgramData/miniconda3/python.exe")
+    assert is_trusted_python("/usr/bin/python3")
+    assert is_trusted_python("/opt/homebrew/bin/python3.13")
+
+
+def test_plan_rejects_toolchain_python() -> None:
+    """只有应用自带 3.13 时不能直接用，必须提示装独立 Python。"""
+    report = make_report(
+        pythons=(),
+    )
+    report.pythons = [
+        PythonInfo(
+            version="3.13.14",
+            path=r"C:/Users/Moc/.workbuddy/binaries/python/versions/3.13.12/python.exe",
+            source="path",
+            trusted=False,
+        )
+    ]
+    plan = build_plan(report)
+    assert plan.python_available is False
+    assert any("应用自带" in action.detail for action in plan.actions)
+
+
+def test_pick_python_skips_untrusted() -> None:
+    from app.comfy.installer import pick_python
+
+    report = make_report(pythons=())
+    report.pythons = [
+        PythonInfo(version="3.13.14", path="C:/toolchain/python.exe", source="path", trusted=False),
+        PythonInfo(version="3.12.7", path="C:/Py312/python.exe", source="path", trusted=True),
+    ]
+    plan = build_plan(report)
+    chosen = pick_python(report, plan)
+    assert chosen is not None
+    assert chosen.version.startswith("3.12")

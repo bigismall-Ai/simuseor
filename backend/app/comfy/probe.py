@@ -199,7 +199,12 @@ def _collect_pythons(ctx: ProbeContext) -> list[PythonInfo]:
         if not version:
             missing_version.append(str(path))
         pythons.append(
-            PythonInfo(version=version, path=str(path), source=_python_source(str(path), hint))
+            PythonInfo(
+                version=version,
+                path=str(path),
+                source=_python_source(str(path), hint),
+                trusted=is_trusted_python(str(path)),
+            )
         )
 
     if missing_version:
@@ -245,6 +250,38 @@ def _python_source(path: str, hint: str) -> str:
     if hint == "launcher":
         return "launcher"
     return "path"
+
+
+# 工具链自带的解释器：随宿主应用升级或卸载而消失，不能用来建持久环境。
+# 只列明确已知的路径特征——不能粗暴排除 AppData\Local\Programs，
+# 因为 Python 官方安装器默认就装在那里。
+TOOLCHAIN_PYTHON_MARKERS = (
+    "/.workbuddy/",              # WorkBuddy 的 vendor python（符号链接到应用目录）
+    "/resources/vendor/python",  # Electron 应用内置运行时
+    "/resources/app/python",     # 同类打包方式
+)
+
+
+def is_trusted_python(path: str) -> bool:
+    """能否作为长期依赖。
+
+    排除两类：
+    1. 应用自带的运行时（WorkBuddy 的 vendor python 等）——随宿主升级/卸载消失
+    2. 虚拟环境里的解释器——venv 是派生环境，用它当另一个环境的来源是循环依赖，
+       而且它自己的存亡还挂在基座解释器上
+    """
+    low = path.replace("\\", "/").lower()
+    if any(marker in low for marker in TOOLCHAIN_PYTHON_MARKERS):
+        return False
+    # venv 内的 python 旁边（或上一级）一定有 pyvenv.cfg
+    candidate = Path(path)
+    for parent in (candidate.parent, candidate.parent.parent):
+        try:
+            if (parent / "pyvenv.cfg").is_file():
+                return False
+        except OSError:
+            continue
+    return True
 
 
 # ---------------- 磁盘 ----------------

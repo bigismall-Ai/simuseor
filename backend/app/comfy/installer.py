@@ -122,7 +122,9 @@ def pick_python(report: DeviceReport, plan: InstallPlan) -> PythonInfo | None:
     与 plan 的判定保持同一套规则，避免"方案说 3.13、实际用 3.9"。
     """
     target = _parse(plan.python_version)
-    parsed = [(version, info) for info in report.pythons if (version := _parse(info.version))]
+    # 与 plan 保持同一口径：跳过应用自带的运行时
+    trusted = [info for info in report.pythons if info.trusted]
+    parsed = [(version, info) for info in trusted if (version := _parse(info.version))]
     if not parsed:
         return None
     exact = [info for version, info in parsed if version == target]

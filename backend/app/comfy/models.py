@@ -20,6 +20,11 @@ class PythonInfo(BaseModel):
     version: str = ""
     path: str
     source: str = Field(default="path", description="launcher | path | conda | pyenv | homebrew | system")
+    trusted: bool = Field(
+        default=True,
+        description="是否为可长期依赖的解释器。工具链自带的（如 WorkBuddy 的 vendor python）"
+        "标记为 False——那些路径会随应用升级或卸载消失，不能用来建持久环境。",
+    )
 
 
 class DiskInfo(BaseModel):
