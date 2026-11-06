@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppSettings, LibraryModel, RepoInfo, SearchItem, Task } from './types';
+import { AppSettings, ComfyEnv, LibraryModel, RepoInfo, SearchItem, Task } from './types';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -104,5 +104,11 @@ export class ApiService {
 
   testProxy(url: string): Observable<{ proxy: { ok: boolean; status?: number; error?: string; latency_ms: number }; direct: { ok: boolean; status?: number; error?: string; latency_ms: number } }> {
     return this.http.post<any>(`${this.base}/proxy/test`, { url });
+  }
+
+  /** ComfyUI 设备探测 + 安装方案。refresh=true 跳过服务端 60 秒缓存。 */
+  comfyEnv(refresh = false): Observable<ComfyEnv> {
+    const params = refresh ? new HttpParams().set('refresh', 'true') : undefined;
+    return this.http.get<ComfyEnv>(`${this.base}/comfy/env`, { params });
   }
 }

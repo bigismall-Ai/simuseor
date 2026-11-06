@@ -91,4 +91,23 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page).toHaveURL(/\/downloads/);
     await expect(page.locator('.task').first()).toContainText('demo/', { timeout: 15_000 });
   });
+
+  test('环境管理：显示本机设备与安装方案', async ({ page }) => {
+    await page.goto('/comfy');
+    await expect(page.getByRole('heading', { name: '环境管理' })).toBeVisible();
+
+    // 探测要跑 nvidia-smi / CIM，给足时间；徽章必须是三种结论之一
+    await expect(page.getByText(/可启用显卡加速|可用，但有性能限制|当前无法安装/)).toBeVisible({
+      timeout: 20_000,
+    });
+
+    // 设备卡不能停在占位文案上
+    await expect(page.getByText('待检测')).toHaveCount(0);
+    await expect(page.getByText('检测时间')).toBeVisible();
+    await page.screenshot({ path: ART + '/12-comfy-env.png', fullPage: true });
+
+    // 重新检测（带 refresh=true，绕过服务端 60 秒缓存）
+    await page.getByRole('button', { name: '重新检测' }).click();
+    await expect(page.getByRole('button', { name: '重新检测' })).toBeEnabled({ timeout: 20_000 });
+  });
 });

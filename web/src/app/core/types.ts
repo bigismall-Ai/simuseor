@@ -125,3 +125,75 @@ export function errMsg(err: unknown, fallback: string): string {
   }
   return fallback;
 }
+
+// ---------------- ComfyUI 环境（/api/comfy/env） ----------------
+export interface ComfyGpu {
+  vendor: string;
+  name: string;
+  driver_version: string;
+  vram_mb: number | null;
+  compute_cap: string | null;
+  source: string;
+  is_discrete: boolean;
+}
+
+export interface ComfyPython {
+  version: string;
+  path: string;
+  source: string;
+}
+
+export interface ComfyDisk {
+  path: string;
+  total_gb: number;
+  free_gb: number;
+}
+
+export interface ComfyInstance {
+  name: string;
+  path: string;
+  version: string | null;
+  python: string | null;
+  port: number | null;
+  created_at: string | null;
+}
+
+export interface ComfyDevice {
+  os: string;
+  os_version: string;
+  os_build: string;
+  arch: string;
+  is_wsl: boolean;
+  gpus: ComfyGpu[];
+  primary_gpu: ComfyGpu | null;
+  pythons: ComfyPython[];
+  disks: ComfyDisk[];
+  instances: ComfyInstance[];
+  warnings: string[];
+  probed_at: string;
+}
+
+export interface ComfyAction {
+  level: 'info' | 'warn' | 'block';
+  title: string;
+  detail: string;
+  url: string | null;
+}
+
+export interface ComfyPlan {
+  tier: 'full' | 'limited' | 'blocked';
+  backend: string;
+  torch_channel: string;
+  python_version: string;
+  python_available: boolean;
+  disk_ok: boolean;
+  disk_required_gb: number;
+  actions: ComfyAction[];
+  warnings: string[];
+  blocked_reason: string | null;
+}
+
+export interface ComfyEnv {
+  device: ComfyDevice;
+  plan: ComfyPlan;
+}

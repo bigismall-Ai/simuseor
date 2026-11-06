@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
 from .api.routes import router
+from .comfy.api import router as comfy_router
 from .config import get_web_dist
 from .db import init_db
 from .sources.base import SourceError
@@ -21,6 +22,7 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="Model Downloader", version="0.1.0", lifespan=lifespan)
 app.include_router(router)
+app.include_router(comfy_router)
 
 
 @app.exception_handler(SourceError)
