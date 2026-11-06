@@ -38,7 +38,7 @@
       "free_gb": 65.8
     }
   ],
-  "installs": [],
+  "instances": [],
   "warnings": [],
   "raw": {
     "lspci": "ca:00.0 VGA compatible controller [0300]: NVIDIA Corporation Device [10de:2bb3] (rev a1)",
@@ -48,5 +48,5 @@
     "python -V /usr/bin/python3": "3.12.3",
     "/proc/version": "Linux version 7.0.0-34-generic (buildd@lcy02-amd64-117) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #34~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 15:38:29 UTC 2"
   },
-  "probed_at": "2026-11-06T14:11:10+08:00"
+  "probed_at": "2026-11-06T14:18:42+08:00"
 }

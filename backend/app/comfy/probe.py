@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Callable, TypeVar
 
 from ..config import COMFY_DIR, ROOT
-from .models import DeviceReport, DiskInfo, ExistingInstall, GpuInfo, PythonInfo
+from .models import DeviceReport, DiskInfo, GpuInfo, ManagedInstance, PythonInfo
 from .platforms import LinuxGpuProbe, MacOSGpuProbe, ProbeContext, WindowsGpuProbe
 
 GPU_PROBES = {
@@ -49,7 +49,7 @@ def probe_device() -> DeviceReport:
     os_version, os_build = _guard(ctx, "操作系统版本", lambda: _describe_os(os_name), ("", ""))
     pythons = _guard(ctx, "Python", lambda: _collect_pythons(ctx), [])
     disks = _guard(ctx, "磁盘", lambda: _collect_disks(os_name), [])
-    installs = _guard(ctx, "已有 ComfyUI 安装", lambda: _collect_installs(ctx), [])
+    instances = _guard(ctx, "自有实例", lambda: _collect_instances(ctx), [])
     is_wsl = _guard(ctx, "WSL", lambda: _is_wsl(os_name, ctx), False)
 
     return DeviceReport(
@@ -62,7 +62,7 @@ def probe_device() -> DeviceReport:
         primary_gpu=primary,
         pythons=pythons,
         disks=disks,
-        installs=installs,
+        instances=instances,
         warnings=list(ctx.warnings),
         raw=dict(ctx.raw),
         probed_at=datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -295,76 +295,35 @@ def _mount_point(path: Path) -> Path:
     return current
 
 
-# ---------------- 已有安装 ----------------
-def _collect_installs(ctx: ProbeContext) -> list[ExistingInstall]:
-    installs: list[ExistingInstall] = []
-    seen: set[str] = set()
+# ---------------- 自有实例 ----------------
+def _collect_instances(ctx: ProbeContext) -> list[ManagedInstance]:
+    """只认本项目在 COMFY_DIR/instances 下创建的实例。
 
-    def add(path: Path, kind: str, version: str | None, note: str) -> None:
-        key = os.path.normcase(str(path.resolve()) if path.exists() else str(path))
-        if key in seen:
-            return
-        seen.add(key)
-        installs.append(ExistingInstall(path=str(path), kind=kind, version=version, note=note))
+    用户自行安装的 ComfyUI（官方便携版、Desktop、整合包）不探测、不接管：
+    那些环境的版本、依赖、端口都由用户自己维护，我们不承担它的状态。
+    """
+    instances: list[ManagedInstance] = []
+    meta_dir = COMFY_DIR / "instances"
+    if not meta_dir.is_dir():
+        return instances
 
-    # 1) 本项目管理的实例：comfy/instances/*/instance.json
-    for meta in sorted((COMFY_DIR / "instances").glob("*/instance.json")):
+    for meta in sorted(meta_dir.glob("*/instance.json")):
         try:
             data = json.loads(meta.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             ctx.warnings.append(f"实例元数据无法解析: {meta} ({exc})")
             continue
-        version = _first_str(data, ("version", "comfyui_version", "ref"))
-        note = f"本项目管理的实例（元数据 {meta.name}）"
-        if isinstance(data.get("python"), str):
-            note += f"，Python {data['python']}"
-        add(meta.parent, "our-instance", version, note)
-
-    # 2) 常见安装位置
-    home = Path.home()
-    for path, kind, note in (
-        (home / "ComfyUI", "comfyui-repo", "用户主目录下的 ComfyUI 克隆"),
-        (home / "Documents" / "comfy", "desktop", "ComfyUI Desktop 默认目录"),
-        (home / "Documents" / "ComfyUI", "desktop", "ComfyUI Desktop 默认目录"),
-    ):
-        if path.is_dir():
-            add(path, _guess_kind(path, kind), _comfy_version(path), note)
-
-    # 3) 含 main.py 且带 .venv / venv / python_embeded 的目录（只扫一层，控制耗时）
-    for root in (COMFY_DIR, home):
-        try:
-            children = sorted(
-                child
-                for child in root.iterdir()
-                if child.is_dir() and not _skip_install_dir(child.name)
+        instances.append(
+            ManagedInstance(
+                name=meta.parent.name,
+                path=str(meta.parent),
+                version=_first_str(data, ("version", "comfyui_version", "ref")),
+                python=_first_str(data, ("python", "python_version")),
+                port=_first_int(data, "port"),
+                created_at=_first_str(data, ("created_at",)),
             )
-        except OSError:
-            continue
-        for child in children:
-            if not (child / "main.py").is_file():
-                continue
-            embedded = (child / "python_embeded").is_dir()
-            virtualenv = (child / ".venv").is_dir() or (child / "venv").is_dir()
-            if not (embedded or virtualenv):
-                continue
-            kind = "bundle" if embedded else "comfyui-repo"
-            runtime = "python_embeded" if embedded else "虚拟环境"
-            add(child, kind, _comfy_version(child), f"检测到 main.py + {runtime}")
-
-    return installs
-
-
-# 扫描用户主目录时跳过的目录名：系统目录 + 各类垃圾箱。
-# 隐藏目录（.Trash / .cache 等）另由前缀判断排除——删掉的 ComfyUI 会躺在废纸篓里，
-# 早期实现因此把 ~/.Trash 误报成"已有安装"。
-INSTALL_SCAN_SKIP = {
-    "AppData", "Library", "node_modules", "Windows", "ProgramData",
-    "$RECYCLE.BIN", "System Volume Information",
-}
-
-
-def _skip_install_dir(name: str) -> bool:
-    return name.startswith(".") or name in INSTALL_SCAN_SKIP
+        )
+    return instances
 
 
 def _first_str(data: object, keys: tuple[str, ...]) -> str | None:
@@ -377,18 +336,10 @@ def _first_str(data: object, keys: tuple[str, ...]) -> str | None:
     return None
 
 
-def _guess_kind(path: Path, default: str) -> str:
-    if (path / "python_embeded").is_dir():
-        return "bundle"
-    return default
-
-
-def _comfy_version(path: Path) -> str | None:
-    """ComfyUI 仓库根目录的 comfyui_version.py 里有 __version__。"""
-    version_file = path / "comfyui_version.py"
-    try:
-        text = version_file.read_text(encoding="utf-8", errors="replace")
-    except OSError:
+def _first_int(data: object, key: str) -> int | None:
+    if not isinstance(data, dict):
         return None
-    match = re.search(r"__version__\s*=\s*['\"]([^'\"]+)['\"]", text)
-    return match.group(1) if match else None
+    try:
+        return int(data.get(key))  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None

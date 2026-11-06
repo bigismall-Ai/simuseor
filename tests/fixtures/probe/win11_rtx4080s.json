@@ -80,7 +80,7 @@
       "free_gb": 2194.4
     }
   ],
-  "installs": [],
+  "instances": [],
   "warnings": [],
   "raw": {
     "nvidia-smi": "NVIDIA GeForce RTX 4080 SUPER, 610.88, 16376, 8.9",
@@ -92,5 +92,5 @@
     "python -V D:\\ProgramData\\miniconda3\\python.exe": "3.9.25",
     "python -V E:\\Projects\\model-downloader\\.venv\\Scripts\\python.exe": "3.13.14"
   },
-  "probed_at": "2026-11-06T14:11:10+08:00"
+  "probed_at": "2026-11-06T14:18:32+08:00"
 }

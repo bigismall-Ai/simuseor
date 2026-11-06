@@ -28,11 +28,19 @@ class DiskInfo(BaseModel):
     free_gb: float
 
 
-class ExistingInstall(BaseModel):
+class ManagedInstance(BaseModel):
+    """本项目在 COMFY_DIR/instances 下创建的实例。
+
+    只反映我们自己装的那份。用户机器上已有的 ComfyUI（官方便携版、Desktop、
+    整合包）不在探测范围内——我们不管理别人的环境，只保证自己这份可控。
+    """
+
+    name: str = Field(description="实例目录名，同时作为实例标识")
     path: str
-    kind: str = Field(description="our-instance | comfyui-repo | desktop | bundle")
-    version: str | None = None
-    note: str = ""
+    version: str | None = Field(default=None, description="ComfyUI 版本 / tag")
+    python: str | None = Field(default=None, description="该实例 venv 的 Python 版本")
+    port: int | None = None
+    created_at: str | None = None
 
 
 class DeviceReport(BaseModel):
@@ -45,7 +53,7 @@ class DeviceReport(BaseModel):
     primary_gpu: GpuInfo | None = None
     pythons: list[PythonInfo] = Field(default_factory=list)
     disks: list[DiskInfo] = Field(default_factory=list)
-    installs: list[ExistingInstall] = Field(default_factory=list)
+    instances: list[ManagedInstance] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     raw: dict[str, str] = Field(default_factory=dict)
     probed_at: str = ""

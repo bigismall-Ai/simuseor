@@ -48,7 +48,7 @@
       "free_gb": 3143.3
     }
   ],
-  "installs": [],
+  "instances": [],
   "warnings": [
     "macOS 为统一内存架构：显存字段填的是系统内存总量，不是独立显存"
   ],
@@ -62,5 +62,5 @@
     "python -V /Users/moc/.pyenv/versions/3.14.4/bin/python3": "3.14.4",
     "python -V /private/tmp/cp/.venv/bin/python": "3.9.6"
   },
-  "probed_at": "2026-11-06T14:11:10+08:00"
+  "probed_at": "2026-11-06T14:18:52+08:00"
 }
