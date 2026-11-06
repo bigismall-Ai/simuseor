@@ -104,6 +104,8 @@ class InstallSpec:
     # 由 plan 实测选出；为空时退回内置默认顺序
     torch_index: str = ""
     pip_index: str = ""
+    torch_index_note: str = ""
+    pip_index_note: str = ""
 
     @property
     def comfy_dir(self) -> Path:
@@ -189,6 +191,8 @@ def make_spec(
         torch_channel=plan.torch_channel,
         torch_index=plan.torch_index,
         pip_index=plan.pip_index,
+        torch_index_note=plan.torch_index_note,
+        pip_index_note=plan.pip_index_note,
         tag=tag,
     )
 
@@ -261,7 +265,7 @@ def build_steps(spec: InstallSpec) -> list[Step]:
                     key="torch",
                     title="安装 PyTorch",
                     detail=(
-                        f"从 {_host_label(index_url)} 安装 {spec.torch_channel} 版本"
+                        f"从 {spec.torch_index_note or _host_label(index_url)} 安装 {spec.torch_channel} 版本"
                         if index_url
                         else "从 PyPI 安装默认版本（Apple 芯片走 Metal 加速）"
                     ),

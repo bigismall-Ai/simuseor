@@ -12,10 +12,13 @@ import platform
 import re
 import shutil
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, TypeVar
+
+from urllib.parse import urljoin
 
 import httpx
 
@@ -400,8 +403,16 @@ TORCH_MIRRORS: list[tuple[str, str]] = [
     ("南大", "https://mirror.nju.edu.cn/pytorch/whl/{channel}/"),
     ("官方", "https://download.pytorch.org/whl/{channel}"),
 ]
-MIRROR_SAMPLE_BYTES = 262144
-MIRROR_TIMEOUT = 2.5
+# 测速读的必须是"真实 wheel 的前若干字节"，不能是索引页。
+# 索引页只有 6KB，读它得到的是网页加载时间，和 2GB wheel 的吞吐无关
+# ——第一版就是这么错的：同一批源两次测出 51 / 0 KB/s，而实际下载是 4.7 MB/s。
+MIRROR_SAMPLE_BYTES = 512 * 1024
+MIRROR_TIMEOUT = 5.0
+MIRROR_CACHE_TTL = 600.0
+MIRROR_UA = "model-downloader/0.1"
+
+_cache: dict[str, tuple[float, list["MirrorProbe"]]] = {}
+_cache_lock = threading.Lock()
 
 
 def probe_mirrors(
@@ -409,23 +420,36 @@ def probe_mirrors(
     *,
     sample: int = MIRROR_SAMPLE_BYTES,
     timeout: float = MIRROR_TIMEOUT,
-) -> list[MirrorProbe]:
-    """并发测各软件源速度。任何单个源失败都不影响其它源。"""
-    # (类型, 展示名, 索引根地址, 用于测速的具体页面, 通道)
-    # 测速要打到一个真实存在的包页；但记录的 url 必须是索引根，
-    # 否则 pip --index-url 会指向 .../simple/pip/ 这种子页。
+    use_cache: bool = True,
+) -> list["MirrorProbe"]:
+    """并发测各软件源的真实下载速度。
+
+    每个源两步：先取包索引页，从中找一个与当前平台匹配的 wheel，
+    再对它发 Range 请求读 sample 字节计时。这样测到的是 wheel 的吞吐，
+    而不是索引页的响应速度。
+
+    结果缓存 10 分钟：预演和真正安装会各调一次，没必要重复测。
+    """
+    key = f"{channel}:{sample}:{timeout}"
+    if use_cache:
+        with _cache_lock:
+            cached = _cache.get(key)
+            if cached and time.time() - cached[0] < MIRROR_CACHE_TTL:
+                return cached[1]
+
+    # (类型, 展示名, 索引根地址, 用于取 wheel 的包名, 通道)
+    # 记录的 url 必须是索引根，否则 pip --index-url 会指向子页。
     tasks: list[tuple[str, str, str, str, str]] = [
-        ("pip", label, base, base.rstrip("/") + "/pip/", "") for label, base in PIP_MIRRORS
+        ("pip", label, base, "pip", "") for label, base in PIP_MIRRORS
     ]
     for label, template in TORCH_MIRRORS:
-        url = template.format(channel=channel)
-        tasks.append(("torch", label, url, url, channel))
+        tasks.append(("torch", label, template.format(channel=channel), "torch", channel))
 
     results: list[MirrorProbe] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(tasks)) as pool:
         futures = {
-            pool.submit(_measure, probe_url, sample, timeout): (kind, label, base, ch)
-            for kind, label, base, probe_url, ch in tasks
+            pool.submit(_probe_source, base, package, sample, timeout): (kind, label, base, ch)
+            for kind, label, base, package, ch in tasks
         }
         for future in concurrent.futures.as_completed(futures):
             kind, label, base, ch = futures[future]
@@ -436,22 +460,76 @@ def probe_mirrors(
             results.append(
                 MirrorProbe(kind=kind, label=label, url=base, channel=ch, ok=ok, speed_kbps=round(kbps, 1))
             )
+
+    with _cache_lock:
+        _cache[key] = (time.time(), results)
     return results
 
 
+def _probe_source(base: str, package: str, sample: int, timeout: float) -> tuple[bool, float]:
+    """取索引页 → 挑一个平台匹配的 wheel → 读前 sample 字节计时。"""
+    wheel = _resolve_wheel(base.rstrip("/") + "/" + package + "/", min(timeout, 3.0))
+    if wheel is None:
+        return False, 0.0
+    return _measure(wheel, sample, timeout)
+
+
+def _resolve_wheel(page_url: str, timeout: float) -> str | None:
+    """从 PEP 503 索引页里找出一个和当前平台匹配的 wheel 绝对地址。"""
+    try:
+        response = httpx.get(
+            page_url, timeout=timeout, follow_redirects=True, headers={"User-Agent": MIRROR_UA}
+        )
+    except Exception:  # noqa: BLE001
+        return None
+    if response.status_code >= 400:
+        return None
+    links = re.findall(r'href="([^"]+\.whl[^"]*)"', response.text)
+    if not links:
+        return None
+    best = max(links, key=_wheel_score)
+    return urljoin(page_url, best)
+
+
+def _wheel_score(link: str) -> int:
+    """越像"本机能用的那个包"分越高；只是为了让测速打在同一个量级的文件上。"""
+    low = link.lower()
+    score = 0
+    for tag in _platform_tags():
+        if tag in low:
+            score += 4
+    python_tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
+    if python_tag in low:
+        score += 2
+    return score
+
+
+def _platform_tags() -> tuple[str, ...]:
+    machine = platform.machine().lower()
+    if sys.platform == "win32":
+        return ("win_amd64",) if machine in ("amd64", "x86_64") else ("win32",)
+    if sys.platform == "darwin":
+        return ("macosx", "arm64" if machine in ("arm64", "aarch64") else "x86_64")
+    return ("manylinux", "linux_x86_64" if machine in ("x86_64", "amd64") else "linux_aarch64")
+
+
 def _measure(url: str, sample: int, timeout: float) -> tuple[bool, float]:
-    """读固定字节数并计时，得到近似吞吐。超时或报错都算不可用。"""
+    """读 Range 指定的一段字节并计时。服务器忽略 Range 时靠字节上限提前收手。"""
     started = time.time()
     got = 0
+    headers = {"Range": f"bytes=0-{sample - 1}", "User-Agent": MIRROR_UA}
     try:
-        with httpx.stream("GET", url, timeout=timeout, follow_redirects=True) as response:
+        with httpx.stream("GET", url, headers=headers, timeout=timeout, follow_redirects=True) as response:
             if response.status_code >= 400:
                 return False, 0.0
             for chunk in response.iter_bytes(65536):
                 got += len(chunk)
-                if got >= sample:
+                if got >= sample or time.time() - started >= timeout:
                     break
     except Exception:  # noqa: BLE001
+        return False, 0.0
+    # 读到的太少没法判断吞吐，按不可用处理——真那么慢也不该选它
+    if got < 32 * 1024:
         return False, 0.0
     elapsed = max(time.time() - started, 0.001)
     return True, (got / 1024) / elapsed

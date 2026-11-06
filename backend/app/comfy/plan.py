@@ -53,6 +53,8 @@ class InstallPlan(BaseModel):
     torch_channel: str = Field(description="语义通道，如 cu130 / rocm7.2，不是 URL")
     torch_index: str = Field(default="", description="实测选出的 torch 索引 URL；空表示用默认")
     pip_index: str = Field(default="", description="实测选出的 PyPI 索引 URL；空表示用默认")
+    torch_index_note: str = Field(default="", description="选中 torch 源的说明，如 南大 · 实测 2.2 MB/s")
+    pip_index_note: str = Field(default="", description="选中 PyPI 源的说明")
     python_version: str = Field(description="建议使用的主版本，如 3.13")
     python_available: bool = Field(description="本机是否已有 >= 3.10 的可信解释器")
     python_source: str = Field(
@@ -99,6 +101,8 @@ def build_plan(report: DeviceReport, mirrors: list[MirrorProbe] | None = None) -
         torch_channel=choice.torch_channel,
         torch_index=_pick_index(mirrors, "torch", choice.torch_channel),
         pip_index=_pick_index(mirrors, "pip", ""),
+        torch_index_note=_index_note(mirrors, "torch", choice.torch_channel),
+        pip_index_note=_index_note(mirrors, "pip", ""),
         python_version=choice.python_version,
         python_available=python_available,
         python_source=python_source,
@@ -485,3 +489,18 @@ def _pick_index(mirrors: list[MirrorProbe] | None, kind: str, channel: str) -> s
     if not candidates:
         return ""
     return max(candidates, key=lambda item: item.speed_kbps).url
+
+
+def _index_note(mirrors: list[MirrorProbe] | None, kind: str, channel: str) -> str:
+    """选中源的说明：把实测速度写出来，用户一眼能看出不是写死的。"""
+    if not mirrors:
+        return ""
+    candidates = [
+        item
+        for item in mirrors
+        if item.kind == kind and item.ok and (not channel or item.channel == channel)
+    ]
+    if not candidates:
+        return ""
+    best = max(candidates, key=lambda item: item.speed_kbps)
+    return f"{best.label} · 实测 {best.speed_kbps / 1024:.1f} MB/s"

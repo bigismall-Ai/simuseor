@@ -437,3 +437,21 @@ def test_plan_uses_probed_index() -> None:
 def test_plan_without_mirrors_leaves_index_empty() -> None:
     plan = build_plan(make_report())
     assert plan.torch_index == "" and plan.pip_index == ""
+
+
+def test_index_note_shows_measured_speed() -> None:
+    """选源说明要带实测速度，用户才能看出不是写死的。"""
+    from app.comfy.plan import _index_note
+
+    mirrors = [
+        _mirror("torch", "南大", "https://n/cu130/", 2207, channel="cu130"),
+        _mirror("torch", "上交", "https://s/cu130/", 1304, channel="cu130"),
+    ]
+    assert _index_note(mirrors, "torch", "cu130") == "南大 · 实测 2.2 MB/s"
+
+
+def test_index_note_empty_when_all_failed() -> None:
+    from app.comfy.plan import _index_note
+
+    mirrors = [_mirror("torch", "南大", "https://n/cu130/", 0, ok=False, channel="cu130")]
+    assert _index_note(mirrors, "torch", "cu130") == ""
