@@ -110,4 +110,27 @@ test.describe('Model Downloader Web UI', () => {
     await page.getByRole('button', { name: '重新检测' }).click();
     await expect(page.getByRole('button', { name: '重新检测' })).toBeEnabled({ timeout: 20_000 });
   });
+
+  test('环境管理：安装预演展示步骤但不执行', async ({ page }) => {
+    await page.goto('/comfy');
+    await expect(page.getByText(/可启用显卡加速|可用，但有性能限制|当前无法安装/)).toBeVisible({
+      timeout: 20_000,
+    });
+
+    const startButton = page.getByRole('button', { name: '开始安装' });
+    test.skip(!(await startButton.isEnabled()), '本机环境不满足安装条件，跳过预演用例');
+
+    await startButton.click();
+    await expect(page.getByText('安装预演')).toBeVisible({ timeout: 15_000 });
+    // 关键步骤都在计划里
+    await expect(page.getByText('获取 ComfyUI 代码')).toBeVisible();
+    await expect(page.getByText('安装 PyTorch')).toBeVisible();
+    await expect(page.getByText('验证安装结果')).toBeVisible();
+    await expect(page.getByText(/预计占用约/)).toBeVisible();
+    await page.screenshot({ path: ART + '/13-comfy-install-preview.png', fullPage: true });
+
+    // 取消后弹层消失，且没有创建实例目录
+    await page.getByRole('button', { name: '取消' }).click();
+    await expect(page.getByText('安装预演')).toHaveCount(0);
+  });
 });

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../core/api.service';
-import { ComfyEnv } from '../core/types';
+import { ComfyEnv, ComfyInstallEvent, ComfyInstallJob, ComfyPreview, ComfyStep } from '../core/types';
 import { BadgeComponent, BadgeTone } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
@@ -70,9 +70,15 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
         }
 
         <div class="toolbar">
-          <button class="primary" disabled>开始安装</button>
+          <button class="primary" (click)="openPreview()" [disabled]="!canInstall || busy">
+            {{ busy ? '安装中…' : '开始安装' }}
+          </button>
           <button disabled>启动</button>
-          <div class="muted">安装与启动将在下一版本接入</div>
+          @if (!canInstall) {
+            <div class="muted">当前状态不满足安装条件，请先处理上方提示</div>
+          } @else if (!busy) {
+            <div class="muted">点击后可先查看完整执行计划，确认后才会开始</div>
+          }
         </div>
       } @else {
         <div class="muted">正在检测本机环境…</div>
@@ -137,17 +143,197 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
         <ui-empty title="还没有安装任何版本" hint="确认上方方案后即可开始安装" />
       }
     </ui-panel>
+
+    @if (preview) {
+      <div class="modal-overlay" (click)="closePreview()">
+        <div class="modal" style="max-height: 92vh" (click)="$event.stopPropagation()">
+          <div class="modal-head">
+            <strong class="mc-title">{{ job ? '正在安装 ComfyUI' : '安装预演' }}</strong>
+            <span class="grow"></span>
+            <button class="ghost" (click)="closePreview()" [disabled]="installing" title="关闭">✕</button>
+          </div>
+
+          <div class="notice info">
+            安装到 <span class="mono">{{ preview.spec.workspace }}</span
+            ><br />
+            Python {{ preview.spec.python }} · {{ preview.spec.channel }} · 预计占用约
+            {{ preview.total_gb }} GB
+          </div>
+
+          <div class="dlg-files" style="padding: 8px 10px; max-height: calc(92vh - 230px)">
+            @for (step of preview.steps; track step.key) {
+              <div
+                class="notice"
+                [class.ok]="stepStatus(step.key) === 'done'"
+                [class.err]="stepStatus(step.key) === 'failed'"
+              >
+                <strong>{{ step.title }}</strong>
+                <span class="muted"> — {{ statusLabel(stepStatus(step.key)) }}</span>
+                <div class="muted">{{ step.detail }}</div>
+                @if (step.command) {
+                  <details>
+                    <summary class="muted">执行命令</summary>
+                    <div class="mono muted" style="word-break: break-all">
+                      $ {{ step.command.join(' ') }}
+                    </div>
+                  </details>
+                }
+              </div>
+            }
+          </div>
+
+          @if (logs.length) {
+            <details class="mt">
+              <summary class="muted">执行日志（{{ logs.length }} 行）</summary>
+              <div class="dlg-files mono" style="padding: 8px 10px; white-space: pre-wrap">
+                {{ logs.join('\n') }}
+              </div>
+            </details>
+          }
+
+          <div class="toolbar mt">
+            @if (job?.result) {
+              <span class="muted">{{ job!.result!.message }}</span>
+            }
+            <span class="grow"></span>
+            @if (!job) {
+              <button (click)="closePreview()">取消</button>
+              <button class="primary" (click)="startInstall()">确认安装</button>
+            } @else if (job!.status === 'running') {
+              <button disabled>安装中，请勿关闭页面…</button>
+            } @else {
+              <button class="primary" (click)="closePreview()">完成</button>
+            }
+          </div>
+        </div>
+      </div>
+    }
   `,
 })
-export class ComfyComponent implements OnInit {
+export class ComfyComponent implements OnInit, OnDestroy {
   env: ComfyEnv | null = null;
   loading = false;
   error = '';
+
+  preview: ComfyPreview | null = null;
+  job: ComfyInstallJob | null = null;
+  installing = false;
+  logs: string[] = [];
+  stepState: Record<string, 'pending' | 'running' | 'done' | 'failed'> = {};
+  private timer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
     this.reload(false);
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
+  }
+
+  /** 弹层打开或安装进行中时，主按钮不该再被点 */
+  get busy(): boolean {
+    return this.installing || this.preview !== null;
+  }
+
+  get canInstall(): boolean {
+    const plan = this.env?.plan;
+    if (!plan) return false;
+    return plan.tier !== 'blocked' && plan.python_available && plan.disk_ok;
+  }
+
+  openPreview(): void {
+    this.api.comfyPreview().subscribe({
+      next: (preview) => {
+        this.preview = preview;
+        this.job = null;
+        this.logs = [];
+        this.stepState = Object.fromEntries(
+          preview.steps.map((step: ComfyStep) => [step.key, 'pending' as const]),
+        );
+      },
+      error: (err) => {
+        this.error = err?.error?.detail || '无法生成安装计划';
+      },
+    });
+  }
+
+  closePreview(): void {
+    if (this.installing) return;
+    this.stopPolling();
+    this.preview = null;
+    this.job = null;
+    this.logs = [];
+    this.stepState = {};
+    // 安装完成或取消后，设备与实例列表都可能变化
+    this.reload(true);
+  }
+
+  startInstall(): void {
+    if (!this.preview || this.installing) return;
+    this.installing = true;
+    this.api.comfyInstall(this.preview.spec.name).subscribe({
+      next: ({ id }) => this.poll(id, 0),
+      error: (err) => {
+        this.installing = false;
+        this.error = err?.error?.detail || '启动安装失败';
+      },
+    });
+  }
+
+  stepStatus(key: string): string {
+    return this.stepState[key] || 'pending';
+  }
+
+  statusLabel(state: string): string {
+    const labels: Record<string, string> = {
+      pending: '待执行',
+      running: '进行中',
+      done: '已完成',
+      failed: '失败',
+    };
+    return labels[state] || state;
+  }
+
+  private poll(id: string, since: number): void {
+    this.api.comfyInstallJob(id, since).subscribe({
+      next: (job) => {
+        this.job = job;
+        this.applyEvents(job.events);
+        if (job.status === 'running') {
+          this.timer = setTimeout(() => this.poll(id, job.total_events), 1200);
+        } else {
+          this.installing = false;
+          this.stopPolling();
+        }
+      },
+      error: () => {
+        this.installing = false;
+        this.stopPolling();
+      },
+    });
+  }
+
+  private applyEvents(events: ComfyInstallEvent[]): void {
+    for (const event of events) {
+      if (event.type === 'step_start' && event.key) {
+        this.stepState[event.key] = 'running';
+      } else if (event.type === 'step_done' && event.key) {
+        this.stepState[event.key] = event.ok ? 'done' : 'failed';
+      } else if (event.type === 'log' && event.line) {
+        this.logs.push(event.line);
+        // pip 输出可能上万行，只留最近 500 行给界面
+        if (this.logs.length > 500) this.logs.splice(0, this.logs.length - 500);
+      }
+    }
+  }
+
+  private stopPolling(): void {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   reload(refresh: boolean): void {

@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppSettings, ComfyEnv, LibraryModel, RepoInfo, SearchItem, Task } from './types';
+import {
+  AppSettings,
+  ComfyEnv,
+  ComfyInstallJob,
+  ComfyPreview,
+  LibraryModel,
+  RepoInfo,
+  SearchItem,
+  Task,
+} from './types';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -114,5 +123,26 @@ export class ApiService {
   comfyEnv(refresh = false): Observable<ComfyEnv> {
     const params = refresh ? new HttpParams().set('refresh', 'true') : undefined;
     return this.http.get<ComfyEnv>(`${this.base}/comfy/env`, { params });
+  }
+
+  /** 安装预演：只返回将要执行的步骤，不写盘。 */
+  comfyPreview(name = '', tag = ''): Observable<ComfyPreview> {
+    let params = new HttpParams();
+    if (name) params = params.set('name', name);
+    if (tag) params = params.set('tag', tag);
+    return this.http.post<ComfyPreview>(`${this.base}/comfy/install/preview`, null, { params });
+  }
+
+  /** 启动真实安装，返回任务 id。 */
+  comfyInstall(name = '', tag = ''): Observable<{ id: string }> {
+    let params = new HttpParams();
+    if (name) params = params.set('name', name);
+    if (tag) params = params.set('tag', tag);
+    return this.http.post<{ id: string }>(`${this.base}/comfy/install`, null, { params });
+  }
+
+  /** 轮询安装进度；since 为已收到的事件数，用于增量拉取。 */
+  comfyInstallJob(id: string, since = 0): Observable<ComfyInstallJob> {
+    return this.http.get<ComfyInstallJob>(`${this.base}/comfy/install/${id}?since=${since}`);
   }
 }

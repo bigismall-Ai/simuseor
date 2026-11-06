@@ -14,6 +14,9 @@ LOG_DIR = VAR_DIR / "logs"
 TMP_DIR = VAR_DIR / "tmp"
 MODELS_DIR = ROOT / "models"
 COMFY_DIR = ROOT / "comfy"
+# ComfyUI 代码来源：CNB 镜像优先（国内快），GitHub 兜底
+COMFY_MIRROR = "https://cnb.cool/bigismall/Comfy-Org/ComfyUI.git"
+COMFY_FALLBACK = "https://github.com/Comfy-Org/ComfyUI.git"
 
 SETTINGS_PATH = DATA_DIR / "settings.json"
 SECRETS_PATH = DATA_DIR / "secrets.json"

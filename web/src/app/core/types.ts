@@ -197,3 +197,46 @@ export interface ComfyEnv {
   device: ComfyDevice;
   plan: ComfyPlan;
 }
+
+export interface ComfyStep {
+  key: string;
+  title: string;
+  detail: string;
+  command: string[] | null;
+  estimated_gb: number;
+}
+
+export interface ComfyPreview {
+  spec: {
+    name: string;
+    workspace: string;
+    comfy_dir: string;
+    venv_dir: string;
+    python: string;
+    channel: string;
+  };
+  steps: ComfyStep[];
+  total_gb: number;
+}
+
+export interface ComfyInstallEvent {
+  type: 'step_start' | 'step_done' | 'log' | 'step_plan';
+  key?: string;
+  title?: string;
+  line?: string;
+  message?: string;
+  ok?: boolean;
+  index?: number;
+  total?: number;
+  at: number;
+}
+
+export interface ComfyInstallJob {
+  id: string;
+  status: 'running' | 'done' | 'failed';
+  name: string;
+  workspace: string;
+  result: { ok: boolean; message: string; log_path: string; instance: ComfyInstance | null } | null;
+  total_events: number;
+  events: ComfyInstallEvent[];
+}
