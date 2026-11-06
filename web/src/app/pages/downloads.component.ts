@@ -52,7 +52,10 @@ import { PanelComponent } from '../ui/panel.component';
           </select>
         </ui-field>
         <ui-field label="保存目录（可选，留空用设置值）">
-          <input [(ngModel)]="saveDir" [placeholder]="currentSaveDir()">
+          <div class="toolbar">
+            <input class="grow mono" [(ngModel)]="saveDir" [placeholder]="currentSaveDir()">
+            <button (click)="browseSaveDir()">选择文件夹…</button>
+          </div>
         </ui-field>
       </div>
 
@@ -273,6 +276,18 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   currentSaveDir(): string {
     return this.settings?.download?.save_dir || '';
+  }
+
+  browseSaveDir(): void {
+    this.api.browseFolder(this.saveDir || this.currentSaveDir()).subscribe({
+      next: (res) => {
+        if (res.path) this.saveDir = res.path;
+        else if (res.error) this.error = res.error;
+      },
+      error: () => {
+        this.error = '无法打开目录选择框';
+      },
+    });
   }
 
   proxySummary(): string {

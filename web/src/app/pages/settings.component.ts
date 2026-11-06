@@ -18,7 +18,10 @@ import { PanelComponent } from '../ui/panel.component';
       <ui-panel title="全局" hint="保存路径、代理地址与默认下载策略对所有下载源生效。">
         <div class="form-grid">
           <ui-field label="默认保存路径">
-            <input [(ngModel)]="settings.download.save_dir">
+            <div class="toolbar">
+              <input class="grow mono" [value]="settings.download.save_dir" readonly placeholder="未设置">
+              <button (click)="browseSaveDir()">选择文件夹…</button>
+            </div>
           </ui-field>
           <ui-field label="代理地址">
             <div class="toolbar">
@@ -140,6 +143,24 @@ export class SettingsComponent implements OnInit {
       },
       error: () => {
         this.proxyResult = { ok: false, text: '测试失败' };
+      },
+    });
+  }
+
+  browseSaveDir(): void {
+    const current = this.settings?.download?.save_dir || '';
+    this.api.browseFolder(current).subscribe({
+      next: (res) => {
+        if (res.path && this.settings) {
+          this.settings.download.save_dir = res.path;
+        } else if (res.error) {
+          this.message = res.error;
+          this.messageOk = false;
+        }
+      },
+      error: () => {
+        this.message = '无法打开目录选择框';
+        this.messageOk = false;
       },
     });
   }

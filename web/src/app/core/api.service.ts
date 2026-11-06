@@ -106,6 +106,10 @@ export class ApiService {
     return this.http.post<any>(`${this.base}/proxy/test`, { url });
   }
 
+  browseFolder(path: string): Observable<{ path: string | null; error?: string }> {
+    return this.http.post<{ path: string | null; error?: string }>(`${this.base}/browse-folder`, { path });
+  }
+
   /** ComfyUI 设备探测 + 安装方案。refresh=true 跳过服务端 60 秒缓存。 */
   comfyEnv(refresh = false): Observable<ComfyEnv> {
     const params = refresh ? new HttpParams().set('refresh', 'true') : undefined;

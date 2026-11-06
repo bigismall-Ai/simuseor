@@ -1,7 +1,9 @@
-"""REST API：设置 / 解析 / 任务 / 本地模型库 / 代理测试。"""
+"""REST API：设置 / 解析 / 任务 / 本地模型库 / 代理测试 / 目录选择。"""
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -46,6 +48,10 @@ class ScanRequest(BaseModel):
 
 class ProxyTestRequest(BaseModel):
     url: str = ""
+
+
+class BrowseFolderRequest(BaseModel):
+    path: str = ""
 
 
 @router.get("/health")
@@ -283,4 +289,90 @@ def proxy_test(body: ProxyTestRequest) -> dict:
 
     result["proxy"] = probe(True)
     result["direct"] = probe(False)
+    return result
+
+
+# ---------------- 系统目录选择框 ----------------
+def _browse_folder(initial: str) -> tuple[str | None, str | None]:
+    """打开系统原生目录选择框。返回 (选中路径 | None, 错误信息 | None)；用户取消时两者皆 None。"""
+    try:
+        if os.name == "nt":
+            return _browse_folder_windows(initial)
+        if sys.platform == "darwin":
+            return _browse_folder_mac(initial)
+        return _browse_folder_linux(initial)
+    except Exception as exc:  # noqa: BLE001
+        return None, f"无法打开目录选择框: {exc}"
+
+
+def _powershell_exe() -> str:
+    """解析 powershell 绝对路径：服务进程 PATH 可能被裁剪，兜底走 SystemRoot。"""
+    import shutil
+
+    exe = shutil.which("powershell") or shutil.which("powershell.exe")
+    if exe:
+        return exe
+    root = os.environ.get("SystemRoot", r"C:\Windows")
+    return str(Path(root) / "System32" / "WindowsPowerShell" / "v1.0" / "powershell.exe")
+
+
+def _browse_folder_windows(initial: str) -> tuple[str | None, str | None]:
+    init = str(initial or "").replace("'", "''")
+    init_line = f"$dlg.SelectedPath = '{init}'" if init else ""
+    script = (
+        "Add-Type -AssemblyName System.Windows.Forms; "
+        "$dlg = New-Object System.Windows.Forms.FolderBrowserDialog; "
+        "$dlg.Description = '选择保存目录'; "
+        f"{init_line}; "
+        "if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { $dlg.SelectedPath }"
+    )
+    proc = subprocess.run(  # noqa: S603
+        [_powershell_exe(), "-NoProfile", "-NonInteractive", "-Command", script],
+        capture_output=True, text=True, timeout=300, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr.strip() or "目录选择框调用失败")[:300]
+    path = proc.stdout.strip()
+    return (path, None) if path else (None, None)
+
+
+def _browse_folder_mac(initial: str) -> tuple[str | None, str | None]:
+    init = str(initial or "").replace('"', '\\"')
+    default_loc = f' default location (POSIX file "{init}")' if init else ""
+    script = f'POSIX path of (choose folder with prompt "选择保存目录"{default_loc})'
+    proc = subprocess.run(  # noqa: S603
+        ["osascript", "-e", script], capture_output=True, text=True, timeout=300
+    )
+    if proc.returncode != 0:
+        if "User canceled" in (proc.stderr or ""):
+            return None, None
+        return None, (proc.stderr.strip() or "目录选择框调用失败")[:300]
+    return (proc.stdout.strip().rstrip("/"), None) if proc.stdout.strip() else (None, None)
+
+
+def _browse_folder_linux(initial: str) -> tuple[str | None, str | None]:
+    import shutil
+
+    init = str(initial or "")
+    if shutil.which("zenity"):
+        cmd = ["zenity", "--file-selection", "--directory", "--title=选择保存目录"]
+        if init:
+            cmd.append(f"--filename={init}")
+    elif shutil.which("kdialog"):
+        cmd = ["kdialog", "--getexistingdirectory", init or str(Path.home())]
+    else:
+        return None, "未找到 zenity/kdialog，无法打开目录选择框"
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # noqa: S603
+    if proc.returncode != 0:
+        return None, None  # 用户取消
+    path = proc.stdout.strip()
+    return (path, None) if path else (None, None)
+
+
+@router.post("/browse-folder")
+def browse_folder(body: BrowseFolderRequest) -> dict:
+    path, error = _browse_folder(body.path)
+    result: dict = {"path": path}
+    if error:
+        result["error"] = error
     return result
