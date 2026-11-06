@@ -68,18 +68,27 @@ test.describe('Model Downloader Web UI', () => {
     await page.screenshot({ path: ART + '/09-resolve-error.png', fullPage: true });
   });
 
-  test('模型发现：搜索列表并跳转下载', async ({ page }) => {
+  test('模型发现：搜索、行内下载弹层创建任务', async ({ page }) => {
     await page.goto('/discover?demo=1');
     await expect(page.getByRole('heading', { name: '模型发现' })).toBeVisible();
     await page.getByRole('button', { name: 'Demo', exact: true }).click();
     await page.getByPlaceholder('搜索模型关键词，如 qwen / lora / flux').fill('text');
     await page.getByTestId('search-btn').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
+    // URL 同步了筛选状态
+    await expect(page).toHaveURL(/\/discover\?.*source=demo/);
     await page.screenshot({ path: ART + '/10-discover.png', fullPage: true });
 
+    // 行内弹层：解析 → 创建任务
     await page.getByTestId('card-download').first().click();
-    await expect(page).toHaveURL(/\/downloads\?source=demo&repo_id=demo%2Ftext-gen-1\.5/);
-    await expect(page.getByText('model.safetensors').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('dialog-files')).toBeVisible({ timeout: 15_000 });
+    await page.getByTestId('dialog-create').click();
+    await expect(page.getByText('已创建下载任务')).toBeVisible({ timeout: 15_000 });
     await page.screenshot({ path: ART + '/11-discover-to-download.png', fullPage: true });
+
+    // 跳到下载任务页验证任务存在
+    await page.getByTestId('dialog-goto-tasks').click();
+    await expect(page).toHaveURL(/\/downloads/);
+    await expect(page.locator('.task').first()).toContainText('demo/', { timeout: 15_000 });
   });
 });

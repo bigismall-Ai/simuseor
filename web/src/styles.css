@@ -633,6 +633,77 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 .check-row span { color: var(--muted); font-size: 12.5px; }
 
+/* ================= 筛选 chips（任务类型 / 热门关键词） ================= */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.chip-count {
+  opacity: 0.65;
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+/* ================= 骨架卡片 ================= */
+.skel-card { gap: 10px; pointer-events: none; }
+.skel-line { height: 13px; border-radius: 5px; }
+.w-40 { width: 40%; }
+.w-60 { width: 60%; }
+.w-80 { width: 80%; }
+
+/* ================= 行内下载弹层 ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.55);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal {
+  width: min(680px, 100%);
+  max-height: min(80vh, 720px);
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.dlg-files { max-height: 340px; overflow-y: auto; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); }
+.dlg-files td { background: none; }
+.dlg-files tr:hover td { background: var(--hover); }
+
 /* ================= 骨架屏 ================= */
 .skeleton {
   background: linear-gradient(90deg, var(--border-soft) 25%, var(--panel-2) 50%, var(--border-soft) 75%);
