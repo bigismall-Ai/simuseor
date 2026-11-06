@@ -101,6 +101,9 @@ class InstallSpec:
     fallback_url: str = COMFY_FALLBACK
     tag: str | None = None
     runtime_version: str = COMFY_ENV_NAME
+    # 由 plan 实测选出；为空时退回内置默认顺序
+    torch_index: str = ""
+    pip_index: str = ""
 
     @property
     def comfy_dir(self) -> Path:
@@ -184,6 +187,8 @@ def make_spec(
         workspace=COMFY_ENV_DIR.parent / instance_name,
         environment=COMFY_ENV_DIR,
         torch_channel=plan.torch_channel,
+        torch_index=plan.torch_index,
+        pip_index=plan.pip_index,
         tag=tag,
     )
 
@@ -191,7 +196,11 @@ def make_spec(
 # ---------------- 步骤生成（纯函数） ----------------
 def build_steps(spec: InstallSpec) -> list[Step]:
     """产出完整步骤序列。不触碰文件系统，可安全用于预演。"""
-    index_url = TORCH_MIRRORS.get(spec.torch_channel) or TORCH_INDEX.get(spec.torch_channel)
+    index_url = (
+        spec.torch_index
+        or TORCH_MIRRORS.get(spec.torch_channel)
+        or TORCH_INDEX.get(spec.torch_channel)
+    )
     steps: list[Step] = [
         Step(
             key="prepare",
@@ -252,7 +261,7 @@ def build_steps(spec: InstallSpec) -> list[Step]:
                     key="torch",
                     title="安装 PyTorch",
                     detail=(
-                        f"从 {'交大镜像' if index_url in TORCH_MIRRORS.values() else 'PyTorch 官方索引'}安装 {spec.torch_channel} 版本"
+                        f"从 {_host_label(index_url)} 安装 {spec.torch_channel} 版本"
                         if index_url
                         else "从 PyPI 安装默认版本（Apple 芯片走 Metal 加速）"
                     ),
@@ -271,7 +280,8 @@ def build_steps(spec: InstallSpec) -> list[Step]:
                     str(spec.env_python), "-m", "pip", "install",
                     "--target", str(spec.env_site), "--upgrade",
                     "-r", "requirements.txt",
-                ],
+                ]
+                + (["--index-url", spec.pip_index] if spec.pip_index else []),
                 cwd=spec.comfy_dir,
                 timeout=PIP_TIMEOUT,
                 estimated_gb=1.5,
@@ -640,3 +650,18 @@ def _iter_lines(proc: subprocess.Popen) -> Iterator[str]:
     assert proc.stdout is not None
     for line in proc.stdout:
         yield line
+
+
+def _host_label(url: str) -> str:
+    """把索引 URL 变成人能认的短标签。"""
+    for host, label in (
+        ("mirror.sjtu.edu.cn", "上交镜像"),
+        ("mirror.nju.edu.cn", "南大镜像"),
+        ("aliyun.com", "阿里云镜像"),
+        ("tuna.tsinghua.edu.cn", "清华镜像"),
+        ("pytorch.org", "PyTorch 官方源"),
+        ("pypi.org", "PyPI 官方源"),
+    ):
+        if host in url:
+            return label
+    return url

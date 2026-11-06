@@ -62,3 +62,18 @@ class DeviceReport(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     raw: dict[str, str] = Field(default_factory=dict)
     probed_at: str = ""
+
+
+class MirrorProbe(BaseModel):
+    """一次软件源测速结果。
+
+    安装前并发测各镜像的下载速度，选最快的那个——国内不同地区、不同运营商
+    的最优镜像不一样，写死一个源在部分网络下会很慢。
+    """
+
+    kind: str = Field(description="pip | torch")
+    label: str = Field(description="展示名，如 上交 / 清华")
+    url: str
+    channel: str = Field(default="", description="torch 源对应的 CUDA 通道")
+    ok: bool = False
+    speed_kbps: float = Field(default=0.0, description="实测下载速度 KB/s")

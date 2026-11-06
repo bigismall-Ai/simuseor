@@ -14,7 +14,7 @@ from fastapi import APIRouter, HTTPException
 
 from .installer import InstallSpec, build_steps, make_spec, run_install
 from .plan import build_plan
-from .probe import probe_device
+from .probe import probe_device, probe_mirrors
 
 router = APIRouter(prefix="/api/comfy", tags=["comfy"])
 
@@ -183,6 +183,9 @@ def get_install(job_id: str, since: int = 0) -> dict[str, Any]:
 def _make_spec(name: str, tag: str) -> InstallSpec:
     report = probe_device()
     plan = build_plan(report)
+    # 测速约 2 秒（并发）：拿到 torch_channel 之后才能测对应通道的镜像，
+    # 所以先算一遍方案。环境页的 GET /env 不测速，保证进页面够快。
+    plan = build_plan(report, probe_mirrors(plan.torch_channel))
     try:
         return make_spec(report, plan, name=name.strip(), tag=tag.strip() or None)
     except ValueError as exc:

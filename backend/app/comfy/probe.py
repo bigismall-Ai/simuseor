@@ -5,18 +5,22 @@
 """
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import os
 import platform
 import re
 import shutil
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, TypeVar
 
+import httpx
+
 from ..config import COMFY_DIR, ROOT
-from .models import DeviceReport, DiskInfo, GpuInfo, ManagedInstance, PythonInfo
+from .models import DeviceReport, DiskInfo, GpuInfo, ManagedInstance, MirrorProbe, PythonInfo
 from .platforms import LinuxGpuProbe, MacOSGpuProbe, ProbeContext, WindowsGpuProbe
 
 GPU_PROBES = {
@@ -380,3 +384,74 @@ def _first_int(data: object, key: str) -> int | None:
         return int(data.get(key))  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return None
+
+
+# ---------------- 软件源测速 ----------------
+# 安装前并发测速选最快的源。写死单个源在部分网络下会很慢：
+# 官方 PyPI 在国内约 1MB/s，国内镜像能到 5MB/s 以上；反过来在海外，
+# 国内镜像可能反而慢。所以让实测数据决定。
+PIP_MIRRORS: list[tuple[str, str]] = [
+    ("清华", "https://pypi.tuna.tsinghua.edu.cn/simple"),
+    ("阿里云", "https://mirrors.aliyun.com/pypi/simple"),
+    ("官方", "https://pypi.org/simple"),
+]
+TORCH_MIRRORS: list[tuple[str, str]] = [
+    ("上交", "https://mirror.sjtu.edu.cn/pytorch-wheels/{channel}/"),
+    ("南大", "https://mirror.nju.edu.cn/pytorch/whl/{channel}/"),
+    ("官方", "https://download.pytorch.org/whl/{channel}"),
+]
+MIRROR_SAMPLE_BYTES = 262144
+MIRROR_TIMEOUT = 2.5
+
+
+def probe_mirrors(
+    channel: str,
+    *,
+    sample: int = MIRROR_SAMPLE_BYTES,
+    timeout: float = MIRROR_TIMEOUT,
+) -> list[MirrorProbe]:
+    """并发测各软件源速度。任何单个源失败都不影响其它源。"""
+    # (类型, 展示名, 索引根地址, 用于测速的具体页面, 通道)
+    # 测速要打到一个真实存在的包页；但记录的 url 必须是索引根，
+    # 否则 pip --index-url 会指向 .../simple/pip/ 这种子页。
+    tasks: list[tuple[str, str, str, str, str]] = [
+        ("pip", label, base, base.rstrip("/") + "/pip/", "") for label, base in PIP_MIRRORS
+    ]
+    for label, template in TORCH_MIRRORS:
+        url = template.format(channel=channel)
+        tasks.append(("torch", label, url, url, channel))
+
+    results: list[MirrorProbe] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(tasks)) as pool:
+        futures = {
+            pool.submit(_measure, probe_url, sample, timeout): (kind, label, base, ch)
+            for kind, label, base, probe_url, ch in tasks
+        }
+        for future in concurrent.futures.as_completed(futures):
+            kind, label, base, ch = futures[future]
+            try:
+                ok, kbps = future.result()
+            except Exception:  # noqa: BLE001
+                ok, kbps = False, 0.0
+            results.append(
+                MirrorProbe(kind=kind, label=label, url=base, channel=ch, ok=ok, speed_kbps=round(kbps, 1))
+            )
+    return results
+
+
+def _measure(url: str, sample: int, timeout: float) -> tuple[bool, float]:
+    """读固定字节数并计时，得到近似吞吐。超时或报错都算不可用。"""
+    started = time.time()
+    got = 0
+    try:
+        with httpx.stream("GET", url, timeout=timeout, follow_redirects=True) as response:
+            if response.status_code >= 400:
+                return False, 0.0
+            for chunk in response.iter_bytes(65536):
+                got += len(chunk)
+                if got >= sample:
+                    break
+    except Exception:  # noqa: BLE001
+        return False, 0.0
+    elapsed = max(time.time() - started, 0.001)
+    return True, (got / 1024) / elapsed

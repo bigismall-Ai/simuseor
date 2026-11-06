@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel, Field
 
-from .models import DeviceReport, GpuInfo
+from .models import DeviceReport, GpuInfo, MirrorProbe
 
 # 安装 ComfyUI 环境（venv + torch + 依赖）所需空间
 ENV_REQUIRED_GB = 8.0
@@ -51,6 +51,8 @@ class InstallPlan(BaseModel):
     tier: str = Field(description="full | limited | blocked")
     backend: str = Field(description="cuda | rocm | directml | xpu | mps | cpu")
     torch_channel: str = Field(description="语义通道，如 cu130 / rocm7.2，不是 URL")
+    torch_index: str = Field(default="", description="实测选出的 torch 索引 URL；空表示用默认")
+    pip_index: str = Field(default="", description="实测选出的 PyPI 索引 URL；空表示用默认")
     python_version: str = Field(description="建议使用的主版本，如 3.13")
     python_available: bool = Field(description="本机是否已有 >= 3.10 的可信解释器")
     python_source: str = Field(
@@ -74,8 +76,12 @@ class _Choice:
     python_version: str
 
 
-def build_plan(report: DeviceReport) -> InstallPlan:
-    """根据探测结果推导安装方案。纯函数，多次调用结果一致。"""
+def build_plan(report: DeviceReport, mirrors: list[MirrorProbe] | None = None) -> InstallPlan:
+    """根据探测结果推导安装方案。
+
+    mirrors 是 probe_mirrors() 的测速结果。传了就用实测最快的源，
+    没传（或全部不可用）就留空，由 installer 用默认顺序。
+    """
     warnings = list(report.warnings)
     actions: list[Action] = []
     block_reasons: list[str] = []
@@ -91,6 +97,8 @@ def build_plan(report: DeviceReport) -> InstallPlan:
         tier=tier,
         backend=choice.backend,
         torch_channel=choice.torch_channel,
+        torch_index=_pick_index(mirrors, "torch", choice.torch_channel),
+        pip_index=_pick_index(mirrors, "pip", ""),
         python_version=choice.python_version,
         python_available=python_available,
         python_source=python_source,
@@ -463,3 +471,17 @@ def _windows_build(report: DeviceReport) -> int | None:
         return int(match.group(1))
     match = re.search(r"\b(\d{5,})\b", report.os_version or "")
     return int(match.group(1)) if match else None
+
+
+def _pick_index(mirrors: list[MirrorProbe] | None, kind: str, channel: str) -> str:
+    """从测速结果里挑同类型里最快的可用源。"""
+    if not mirrors:
+        return ""
+    candidates = [
+        item
+        for item in mirrors
+        if item.kind == kind and item.ok and (not channel or item.channel == channel)
+    ]
+    if not candidates:
+        return ""
+    return max(candidates, key=lambda item: item.speed_kbps).url

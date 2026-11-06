@@ -382,3 +382,58 @@ def test_pick_python_skips_untrusted() -> None:
     chosen = pick_python(report, plan)
     assert chosen is not None
     assert chosen.version.startswith("3.12")
+
+
+# ---------------- 镜像测速选源 ----------------
+def _mirror(kind: str, label: str, url: str, kbps: float, ok: bool = True, channel: str = ""):
+    from app.comfy.models import MirrorProbe
+
+    return MirrorProbe(kind=kind, label=label, url=url, channel=channel, ok=ok, speed_kbps=kbps)
+
+
+def test_pick_index_chooses_fastest() -> None:
+    from app.comfy.plan import _pick_index
+
+    mirrors = [
+        _mirror("pip", "清华", "https://a/simple", 60),
+        _mirror("pip", "阿里云", "https://b/simple", 700),
+        _mirror("pip", "官方", "https://c/simple", 80),
+    ]
+    assert _pick_index(mirrors, "pip", "") == "https://b/simple"
+
+
+def test_pick_index_skips_failed_and_wrong_channel() -> None:
+    from app.comfy.plan import _pick_index
+
+    mirrors = [
+        _mirror("torch", "上交", "https://s/cu130/", 900, ok=False, channel="cu130"),
+        _mirror("torch", "南大", "https://n/cu126/", 800, channel="cu126"),
+        _mirror("torch", "官方", "https://p/cu130/", 10, channel="cu130"),
+    ]
+    # 上交不可用、南大通道不匹配 → 只剩官方
+    assert _pick_index(mirrors, "torch", "cu130") == "https://p/cu130/"
+
+
+def test_pick_index_empty_without_mirrors() -> None:
+    from app.comfy.plan import _pick_index
+
+    assert _pick_index(None, "pip", "") == ""
+    assert _pick_index([], "pip", "") == ""
+
+
+def test_plan_uses_probed_index() -> None:
+    """传了测速结果，plan 就该用最快的源，而不是内置默认。"""
+    report = make_report()
+    mirrors = [
+        _mirror("torch", "南大", "https://mirror.nju.edu.cn/pytorch/whl/cu130/", 500, channel="cu130"),
+        _mirror("torch", "上交", "https://mirror.sjtu.edu.cn/pytorch-wheels/cu130/", 40, channel="cu130"),
+        _mirror("pip", "阿里云", "https://mirrors.aliyun.com/pypi/simple", 800),
+    ]
+    plan = build_plan(report, mirrors)
+    assert plan.torch_index == "https://mirror.nju.edu.cn/pytorch/whl/cu130/"
+    assert plan.pip_index == "https://mirrors.aliyun.com/pypi/simple"
+
+
+def test_plan_without_mirrors_leaves_index_empty() -> None:
+    plan = build_plan(make_report())
+    assert plan.torch_index == "" and plan.pip_index == ""
