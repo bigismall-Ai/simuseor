@@ -1,42 +1,39 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { Subscription, catchError, forkJoin, map, of, timer } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { AppSettings, RepoInfo, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
+import { RepoInfo, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { ModelCardComponent } from '../ui/model-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
 
-interface SourceGroup {
+/** 合并后的模型：同一模型在多个来源的条目聚合到一行 */
+interface MergedRow {
+  /** 归一化模型名，仅用于跨源匹配 */
   key: string;
-  label: string;
+  /** 行唯一标识（首条的 source/id），同名不同源的行不会重复 */
+  id: string;
+  inLibrary: boolean;
   items: SearchItem[];
-  page: number;
-  loading: boolean;
-  done: boolean;
-  error: string;
-}
-
-interface SingleResult {
-  items: SearchItem[];
-  page: number;
-  loading: boolean;
-  done: boolean;
-  error: string;
 }
 
 interface DownloadDialog {
-  item: SearchItem;
+  row: MergedRow;
+  active: number;
   repo: RepoInfo | null;
   selected: Set<string>;
   loading: boolean;
   creating: boolean;
   done: boolean;
   error: string;
+}
+
+interface SourceError {
+  label: string;
+  message: string;
 }
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -64,23 +61,17 @@ const TASK_LABELS: Record<string, string> = {
 };
 
 const HOT_KEYWORDS = ['qwen', 'flux', 'lora', 'sdxl', 'whisper', 'embedding'];
-const GROUP_PAGE_SIZE = 8;
-const SINGLE_PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-discover',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    BadgeComponent,
-    EmptyComponent,
-    ModelCardComponent,
-    PageHeaderComponent,
-    PanelComponent,
-  ],
+  imports: [FormsModule, BadgeComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
   template: `
-    <ui-page-header title="模型发现" hint="跨源搜索 → 任务类型筛选 → 行内勾选文件创建下载；状态保存在地址栏，可刷新可分享。" />
+    <ui-page-header
+      title="模型发现"
+      hint="跨源搜索合并为一个列表：同一模型多来源时卡片会显示多个来源徽章，下载时可选择来源。"
+    />
 
     <ui-panel>
       <div class="toolbar mb">
@@ -92,7 +83,7 @@ const SINGLE_PAGE_SIZE = 20;
           (keyup.enter)="searchNow()"
           data-testid="search-input"
         />
-        <button class="primary" (click)="searchNow()" [disabled]="anyLoading" data-testid="search-btn">搜索</button>
+        <button class="primary" (click)="searchNow()" [disabled]="loading" data-testid="search-btn">搜索</button>
       </div>
 
       <div class="toolbar">
@@ -103,6 +94,7 @@ const SINGLE_PAGE_SIZE = 20;
         </div>
         <span class="grow"></span>
         <div class="segmented">
+          <button [class.active]="sort === 'trending'" (click)="setSort('trending')" title="按站点默认推荐">✦ 综合</button>
           <button [class.active]="sort === 'downloads'" (click)="setSort('downloads')" title="按下载量">⬇ 下载量</button>
           <button [class.active]="sort === 'likes'" (click)="setSort('likes')" title="按点赞">♥ 点赞</button>
           <button [class.active]="sort === 'recent'" (click)="setSort('recent')" title="最新更新">↻ 最新</button>
@@ -113,7 +105,7 @@ const SINGLE_PAGE_SIZE = 20;
         </div>
       </div>
 
-      @if (taskChips.length > 1) {
+      @if (taskChips.length > 1 || task) {
         <div class="chip-row mt">
           <button class="filter-chip" [class.active]="task === ''" (click)="setTask('')">全部类型</button>
           @for (c of taskChips; track c.key) {
@@ -125,8 +117,12 @@ const SINGLE_PAGE_SIZE = 20;
       }
     </ui-panel>
 
+    @for (e of errors; track e.label) {
+      <div class="notice err">{{ e.label }} 搜索失败：{{ e.message }}</div>
+    }
+
     <!-- 首次加载骨架 -->
-    @if (anyLoading && totalItems === 0) {
+    @if (loading && rows.length === 0) {
       <div class="grid">
         @for (i of skeletons; track i) {
           <div class="model-card skel-card">
@@ -140,170 +136,72 @@ const SINGLE_PAGE_SIZE = 20;
     }
 
     <!-- 网格视图 -->
-    @if (totalItems > 0 && view === 'grid') {
-      @if (source === 'all') {
-        @for (g of groups; track g.key) {
-          <ui-panel [title]="g.label">
-            <div panel-actions class="toolbar">
-              @if (g.loading) {
-                <span class="muted">搜索中…</span>
-              } @else {
-                <span class="muted">{{ g.items.length }} 个结果</span>
-              }
-            </div>
-            @if (g.error) {
-              <div class="notice err">{{ g.label }} 搜索失败：{{ g.error }}</div>
-            }
-            @if (g.items.length) {
-              <div class="grid">
-                @for (item of g.items; track item.source + '/' + item.id) {
-                  <md-model-card [item]="item" [inLibrary]="inLibrary(item)" (download)="openDialog(item)" />
-                }
-              </div>
-              @if (!g.done) {
-                <div class="mc-more">
-                  <button (click)="loadMoreGroup(g)" [disabled]="g.loading">
-                    {{ g.loading ? '加载中…' : '加载更多' }}
-                  </button>
-                </div>
-              }
-            }
-          </ui-panel>
+    @if (view === 'grid' && rows.length > 0) {
+      <div class="grid">
+        @for (row of rows; track row.id) {
+          <md-model-card [items]="row.items" [inLibrary]="row.inLibrary" (download)="openDialog(row)" />
         }
-      } @else {
-        <ui-panel [title]="sourceLabel(source)">
-          <div panel-actions class="toolbar">
-            @if (single.loading) {
-              <span class="muted">搜索中…</span>
-            } @else {
-              <span class="muted">{{ single.items.length }} 个结果</span>
-            }
-          </div>
-          @if (single.error) {
-            <div class="notice err">{{ single.error }}</div>
-          }
-          @if (single.items.length) {
-            <div class="grid">
-              @for (item of single.items; track item.source + '/' + item.id) {
-                <md-model-card [item]="item" [inLibrary]="inLibrary(item)" (download)="openDialog(item)" />
-              }
-            </div>
-            @if (!single.done) {
-              <div class="mc-more">
-                <button (click)="loadMoreSingle()" [disabled]="single.loading">
-                  {{ single.loading ? '加载中…' : '加载更多' }}
-                </button>
-              </div>
-            }
-          }
-        </ui-panel>
-      }
+      </div>
     }
 
     <!-- 列表视图 -->
-    @if (totalItems > 0 && view === 'list') {
-      <ui-panel [title]="source === 'all' ? '全部来源' : sourceLabel(source)">
-        <div panel-actions class="toolbar">
-          <span class="muted">{{ totalItems }} 个结果</span>
-        </div>
-        @if (source === 'all') {
-          @for (g of groups; track g.key) {
-            @if (g.error) {
-              <div class="notice err">{{ g.label }} 搜索失败：{{ g.error }}</div>
-            }
-            @if (g.items.length) {
-              <h3 class="list-group-title">{{ g.label }}（{{ g.items.length }}）</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>模型</th>
-                      <th class="col-review">任务</th>
-                      <th class="col-size">下载量</th>
-                      <th class="col-size">点赞</th>
-                      <th class="col-size">更新</th>
-                      <th class="col-actions">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (item of g.items; track item.source + '/' + item.id) {
-                      <tr>
-                        <td>
-                          <div class="cell-name">{{ item.name }}</div>
-                          <div class="mono muted cell-path">{{ item.author }}</div>
-                        </td>
-                        <td class="muted">{{ item.task ? taskLabel(item.task) : '-' }}</td>
-                        <td>{{ fmtNum(item.downloads) }}</td>
-                        <td>{{ fmtNum(item.likes) }}</td>
-                        <td class="muted">{{ item.updated_at ? shortDate(item.updated_at) : '-' }}</td>
-                        <td>
-                          <div class="toolbar">
-                            @if (inLibrary(item)) {
-                              <ui-badge tone="green">已在库</ui-badge>
-                            }
-                            <button class="primary" (click)="openDialog(item)">下载</button>
-                          </div>
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-          }
-        } @else {
-          @if (single.error) {
-            <div class="notice err">{{ single.error }}</div>
-          }
-          <div class="table-wrap">
-            <table>
-              <thead>
+    @if (view === 'list' && rows.length > 0) {
+      <ui-panel title="搜索结果" [hint]="rows.length + ' 个模型'">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>模型</th>
+                <th class="col-source">来源</th>
+                <th class="col-review">任务</th>
+                <th class="col-size">下载量</th>
+                <th class="col-size">点赞</th>
+                <th class="col-size">更新</th>
+                <th class="col-actions">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows; track row.id) {
                 <tr>
-                  <th>模型</th>
-                  <th class="col-review">任务</th>
-                  <th class="col-size">下载量</th>
-                  <th class="col-size">点赞</th>
-                  <th class="col-size">更新</th>
-                  <th class="col-actions">操作</th>
+                  <td>
+                    <div class="cell-name">{{ row.items[0].name }}</div>
+                    <div class="mono muted cell-path">{{ row.items[0].author }}</div>
+                  </td>
+                  <td>
+                    <div class="toolbar">
+                      @for (it of row.items; track it.source) {
+                        <ui-badge [tone]="sourceTone(it.source)">{{ it.source }}</ui-badge>
+                      }
+                    </div>
+                  </td>
+                  <td class="muted">{{ row.items[0].task ? taskLabel(row.items[0].task) : '-' }}</td>
+                  <td>{{ fmtNum(maxDownloads(row)) }}</td>
+                  <td>{{ fmtNum(maxLikes(row)) }}</td>
+                  <td class="muted">{{ latestUpdate(row) }}</td>
+                  <td>
+                    <div class="toolbar">
+                      @if (row.inLibrary) {
+                        <ui-badge tone="green">已在库</ui-badge>
+                      }
+                      <button class="primary" (click)="openDialog(row)">下载</button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                @for (item of single.items; track item.source + '/' + item.id) {
-                  <tr>
-                    <td>
-                      <div class="cell-name">{{ item.name }}</div>
-                      <div class="mono muted cell-path">{{ item.author }}</div>
-                    </td>
-                    <td class="muted">{{ item.task ? taskLabel(item.task) : '-' }}</td>
-                    <td>{{ fmtNum(item.downloads) }}</td>
-                    <td>{{ fmtNum(item.likes) }}</td>
-                    <td class="muted">{{ item.updated_at ? shortDate(item.updated_at) : '-' }}</td>
-                    <td>
-                      <div class="toolbar">
-                        @if (inLibrary(item)) {
-                          <ui-badge tone="green">已在库</ui-badge>
-                        }
-                        <button class="primary" (click)="openDialog(item)">下载</button>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-          @if (single.items.length && !single.done) {
-            <div class="mc-more">
-              <button (click)="loadMoreSingle()" [disabled]="single.loading">
-                {{ single.loading ? '加载中…' : '加载更多' }}
-              </button>
-            </div>
-          }
-        }
+              }
+            </tbody>
+          </table>
+        </div>
       </ui-panel>
     }
 
+    @if (rows.length > 0 && !done) {
+      <div class="mc-more">
+        <button (click)="loadMore()" [disabled]="loading">{{ loading ? '加载中…' : '加载更多' }}</button>
+      </div>
+    }
+
     <!-- 空状态 + 热门关键词 -->
-    @if (!anyLoading && totalItems === 0) {
+    @if (!loading && rows.length === 0) {
       <ui-panel>
         <ui-empty icon="📭" title="没有找到匹配的模型" hint="试试其他关键词、切换下载源，或从热门关键词开始：" />
         <div class="chip-row">
@@ -314,16 +212,28 @@ const SINGLE_PAGE_SIZE = 20;
       </ui-panel>
     }
 
-    <!-- 行内下载弹层 -->
+    <!-- 行内下载弹层（多来源可切换） -->
     @if (dlg) {
       <div class="modal-overlay" (click)="closeDialog()">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-head">
-            <strong class="mc-title">{{ dlg.item.name }}</strong>
-            <ui-badge tone="blue">{{ dlg.item.source }}</ui-badge>
+            <strong class="mc-title">{{ activeItem()?.name }}</strong>
             <span class="grow"></span>
             <button class="ghost" (click)="closeDialog()" title="关闭">✕</button>
           </div>
+
+          @if (dlg.row.items.length > 1) {
+            <div class="toolbar mb">
+              <span class="muted">下载来源</span>
+              <div class="segmented">
+                @for (it of dlg.row.items; track it.source) {
+                  <button [class.active]="dlg.active === $index" (click)="switchSource($index)">
+                    {{ sourceLabel(it.source) }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
 
           @if (dlg.done) {
             <ui-empty icon="✅" title="已创建下载任务" hint="文件正在后台下载，可到下载任务页查看进度。">
@@ -343,7 +253,9 @@ const SINGLE_PAGE_SIZE = 20;
                   {{ fmtSize(dlgSize()) }}
                 </span>
                 <span class="grow"></span>
-                <button (click)="toggleAllDlg()">{{ dlg.selected.size === dlg.repo.files.length ? '取消全选' : '全选' }}</button>
+                <button (click)="toggleAllDlg()">
+                  {{ dlg.selected.size === dlg.repo.files.length ? '取消全选' : '全选' }}
+                </button>
               </div>
               <div class="table-wrap dlg-files" data-testid="dialog-files">
                 <table>
@@ -381,36 +293,30 @@ const SINGLE_PAGE_SIZE = 20;
       </div>
     }
   `,
-  styles: `
-    .list-group-title {
-      margin: 14px 0 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-  `,
 })
 export class DiscoverComponent implements OnInit, OnDestroy {
   q = '';
   source = 'all';
-  sort = 'downloads';
+  sort = 'trending';
   task = '';
   view: 'grid' | 'list' = 'grid';
   showDemo = false;
 
-  groups: SourceGroup[] = [];
-  single: SingleResult = { items: [], page: 1, loading: false, done: false, error: '' };
+  rows: MergedRow[] = [];
+  errors: SourceError[] = [];
+  loading = false;
+  done = false;
 
   sourceTabs: { key: string; label: string }[] = [];
-  settings: AppSettings | null = null;
-  private libraryKeys = new Set<string>();
-
   dlg: DownloadDialog | null = null;
   dlgStrategy = 'direct';
 
   readonly hotKeywords = HOT_KEYWORDS;
-  readonly skeletons = [1, 2, 3, 4, 5, 6];
+  readonly skeletons = [1, 2, 3, 4, 5];
 
+  private rawItems: SearchItem[] = [];
+  private page = 1;
+  private libraryKeys = new Set<string>();
   private debounceSub: Subscription | null = null;
   private suppressParamSync = false;
 
@@ -424,7 +330,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       }
       const q = p['q'] ?? '';
       const source = p['source'] ?? 'all';
-      const sort = p['sort'] ?? 'downloads';
+      const sort = p['sort'] ?? 'trending';
       const task = p['task'] ?? '';
       const view = p['view'] === 'list' ? 'list' : 'grid';
       const changed =
@@ -444,10 +350,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.debounceSub?.unsubscribe();
   }
 
-  /** 初始化源列表 / 设置 / 模型库索引，然后执行首次搜索 */
   private bootstrap(): void {
     this.api.getSettings().subscribe((s) => {
-      this.settings = s;
       this.dlgStrategy = s.download?.strategy || s.default_strategy || 'direct';
       const tabs = Object.keys(s.sources || {})
         .filter((k) => k !== 'demo' || this.showDemo)
@@ -503,117 +407,119 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.syncUrl();
   }
 
-  /** 重置分页并重新搜索所有源 */
   private applyFilters(): void {
-    if (this.source === 'all') {
-      this.groups = this.enabledSources().map((key) => ({
-        key,
-        label: SOURCE_LABELS[key] || key,
-        items: [],
-        page: 1,
-        loading: true,
-        done: false,
-        error: '',
-      }));
-      for (const g of this.groups) this.fetchGroup(g, 1);
-    } else {
-      this.single = { items: [], page: 1, loading: true, done: false, error: '' };
-      this.fetchSingle(1);
+    this.page = 1;
+    this.rawItems = [];
+    this.rows = [];
+    this.errors = [];
+    this.done = false;
+    this.fetchPage(1);
+  }
+
+  loadMore(): void {
+    this.fetchPage(this.page + 1);
+  }
+
+  // ---------- 并发搜索 + 跨源合并 ----------
+
+  private fetchPage(page: number): void {
+    const sources = this.source === 'all' ? this.enabledSources() : [this.source];
+    if (!sources.length) {
+      this.loading = false;
+      return;
     }
-    this.syncUrl();
+    this.loading = true;
+    const requests = sources.map((key) =>
+      this.api
+        .search({
+          q: this.q,
+          source: key,
+          sort: this.sort,
+          task: this.task,
+          limit: PAGE_SIZE,
+          page,
+        })
+        .pipe(
+          map((res) => ({ key, items: res.items, full: res.items.length >= PAGE_SIZE, error: '' })),
+          catchError((err) =>
+            of({ key, items: [] as SearchItem[], full: false, error: errMsg(err, '搜索失败，请检查网络') }),
+          ),
+        ),
+    );
+
+    forkJoin(requests).subscribe((parts) => {
+      const fresh = parts.flatMap((p) => p.items);
+      this.rawItems = page === 1 ? fresh : [...this.rawItems, ...fresh];
+      this.page = page;
+      this.errors = parts
+        .filter((p) => !!p.error)
+        .map((p) => ({ label: SOURCE_LABELS[p.key] || p.key, message: p.error }));
+      this.rows = this.buildRows(this.rawItems);
+      this.done = parts.every((p) => !p.full);
+      this.loading = false;
+      this.syncUrl();
+    });
   }
 
   private enabledSources(): string[] {
-    if (!this.sourceTabs.length) return [];
     return this.sourceTabs.filter((t) => t.key !== 'all').map((t) => t.key);
   }
 
-  private fetchGroup(group: SourceGroup, page: number): void {
-    group.loading = true;
-    group.error = '';
-    this.api
-      .search({
-        q: this.q,
-        source: group.key,
-        sort: this.sort,
-        task: this.task,
-        limit: GROUP_PAGE_SIZE,
-        page,
-      })
-      .subscribe({
-        next: (res) => {
-          if (page === 1) group.items = res.items;
-          else group.items = [...group.items, ...res.items];
-          group.page = page;
-          group.done = res.items.length < GROUP_PAGE_SIZE;
-          group.loading = false;
-        },
-        error: (err) => {
-          group.error = errMsg(err, '搜索失败');
-          group.loading = false;
-          group.done = true;
-        },
-      });
+  /** 归一化模型名作为跨源归并键 */
+  private mergeKey(item: SearchItem): string {
+    const raw = item.name || item.id.split('/').pop() || item.id;
+    return raw
+      .toLowerCase()
+      .replace(/[（）()]/g, '')
+      .replace(/[\s._\-/]+/g, '');
   }
 
-  private fetchSingle(page: number): void {
-    this.single.loading = true;
-    this.single.error = '';
-    this.api
-      .search({
-        q: this.q,
-        source: this.source,
-        sort: this.sort,
-        task: this.task,
-        limit: SINGLE_PAGE_SIZE,
-        page,
-      })
-      .subscribe({
-        next: (res) => {
-          this.single.items = page === 1 ? res.items : [...this.single.items, ...res.items];
-          this.single.page = page;
-          this.single.done = res.items.length < SINGLE_PAGE_SIZE;
-          this.single.loading = false;
-          const errs = Object.entries(res.errors || {});
-          if (errs.length && this.single.items.length === 0) {
-            this.single.error = errs.map(([k, v]) => `${SOURCE_LABELS[k] || k}：${v}`).join('；');
-          }
-        },
-        error: (err) => {
-          this.single.error = errMsg(err, '搜索失败，请检查网络');
-          this.single.loading = false;
-          this.single.done = true;
-        },
-      });
+  /** 短名/泛化名（如 lora、flux2）容易撞名，只对足够具体的名字做跨源合并 */
+  private canMerge(key: string): boolean {
+    return key.length >= 6;
   }
 
-  loadMoreGroup(group: SourceGroup): void {
-    this.fetchGroup(group, group.page + 1);
+  private buildRows(items: SearchItem[]): MergedRow[] {
+    const map = new Map<string, MergedRow>();
+    const rows: MergedRow[] = [];
+    for (const item of items) {
+      const key = this.mergeKey(item);
+      const row = map.get(key);
+      // 同源同名视为不同模型（可能是不同作者的同名仓库），单起一行，绝不丢弃
+      if (!row || !this.canMerge(key) || row.items.some((i) => i.source === item.source)) {
+        const fresh: MergedRow = {
+          key,
+          id: `${item.source}/${item.id}`,
+          inLibrary: false,
+          items: [item],
+        };
+        rows.push(fresh);
+        if (!row) map.set(key, fresh);
+        continue;
+      }
+      row.items.push(item);
+    }
+    for (const row of rows) {
+      row.inLibrary = row.items.some((i) => this.libraryKeys.has(`${i.source}/${i.id}`));
+    }
+    return this.sortRows(rows);
   }
 
-  loadMoreSingle(): void {
-    this.fetchSingle(this.single.page + 1);
+  private sortRows(rows: MergedRow[]): MergedRow[] {
+    // 综合：保留各站点返回的原始顺序，与官网默认排序一致
+    if (this.sort === 'trending') return rows;
+    return rows.sort((a, b) => {
+      if (this.sort === 'likes') return this.maxLikes(b) - this.maxLikes(a);
+      if (this.sort === 'recent') return this.latestUpdate(b).localeCompare(this.latestUpdate(a));
+      return this.maxDownloads(b) - this.maxDownloads(a);
+    });
   }
 
-  // ---------- 派生状态 ----------
+  // ---------- 派生展示 ----------
 
-  get anyLoading(): boolean {
-    if (this.dlg?.loading || this.dlg?.creating) return true;
-    if (this.source === 'all') return this.groups.some((g) => g.loading);
-    return this.single.loading;
-  }
-
-  get totalItems(): number {
-    if (this.source === 'all') return this.groups.reduce((n, g) => n + g.items.length, 0);
-    return this.single.items.length;
-  }
-
-  /** 从当前结果聚合任务类型 chips */
   get taskChips(): { key: string; count: number }[] {
     const counts = new Map<string, number>();
-    const all =
-      this.source === 'all' ? this.groups.flatMap((g) => g.items) : this.single.items;
-    for (const item of all) {
+    for (const item of this.rawItems) {
       if (item.task) counts.set(item.task, (counts.get(item.task) || 0) + 1);
     }
     return [...counts.entries()]
@@ -622,8 +528,16 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       .slice(0, 6);
   }
 
-  inLibrary(item: SearchItem): boolean {
-    return this.libraryKeys.has(`${item.source}/${item.id}`);
+  maxDownloads(row: MergedRow): number {
+    return Math.max(...row.items.map((i) => i.downloads || 0), 0);
+  }
+
+  maxLikes(row: MergedRow): number {
+    return Math.max(...row.items.map((i) => i.likes || 0), 0);
+  }
+
+  latestUpdate(row: MergedRow): string {
+    return row.items.reduce((max, i) => (i.updated_at > max ? i.updated_at : max), '').slice(0, 10);
   }
 
   // ---------- URL 同步 ----------
@@ -632,7 +546,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     const params: Record<string, string> = {};
     if (this.q) params['q'] = this.q;
     if (this.source !== 'all') params['source'] = this.source;
-    if (this.sort !== 'downloads') params['sort'] = this.sort;
+    if (this.sort !== 'trending') params['sort'] = this.sort;
     if (this.task) params['task'] = this.task;
     if (this.view !== 'grid') params['view'] = this.view;
     if (this.showDemo) params['demo'] = '1';
@@ -644,17 +558,49 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   // ---------- 行内下载弹层 ----------
 
-  openDialog(item: SearchItem): void {
-    this.dlg = { item, repo: null, selected: new Set(), loading: true, creating: false, done: false, error: '' };
+  openDialog(row: MergedRow): void {
+    this.dlg = {
+      row,
+      active: 0,
+      repo: null,
+      selected: new Set(),
+      loading: true,
+      creating: false,
+      done: false,
+      error: '',
+    };
+    this.loadRepo();
+  }
+
+  activeItem(): SearchItem | null {
+    return this.dlg ? this.dlg.row.items[this.dlg.active] : null;
+  }
+
+  switchSource(index: number): void {
+    if (!this.dlg || this.dlg.active === index) return;
+    this.dlg.active = index;
+    this.dlg.repo = null;
+    this.dlg.selected = new Set();
+    this.dlg.error = '';
+    this.dlg.done = false;
+    this.loadRepo();
+  }
+
+  private loadRepo(): void {
+    const dialog = this.dlg;
+    const item = this.activeItem();
+    if (!dialog || !item) return;
+    dialog.loading = true;
+    dialog.error = '';
     this.api.resolve(item.source, item.id, '').subscribe({
       next: (repo) => {
-        if (!this.dlg || this.dlg.item !== item) return;
+        if (!this.dlg || this.dlg !== dialog || this.dlg.active !== dialog.active) return;
         this.dlg.repo = repo;
         this.dlg.selected = new Set(repo.files.map((f) => f.path));
         this.dlg.loading = false;
       },
       error: (err) => {
-        if (!this.dlg) return;
+        if (!this.dlg || this.dlg !== dialog) return;
         this.dlg.error = errMsg(err, '解析失败，请检查模型 ID / 网络 / token');
         this.dlg.loading = false;
       },
@@ -686,12 +632,13 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   createTask(): void {
-    if (!this.dlg?.repo) return;
+    const item = this.activeItem();
+    if (!this.dlg?.repo || !item) return;
     this.dlg.creating = true;
     this.dlg.error = '';
     this.api
       .createTask({
-        source: this.dlg.item.source,
+        source: item.source,
         repo_id: this.dlg.repo.repo_id,
         revision: this.dlg.repo.revision,
         files: [...this.dlg.selected],
@@ -702,7 +649,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
           if (this.dlg) {
             this.dlg.creating = false;
             this.dlg.done = true;
-            this.libraryKeys.add(`${this.dlg.item.source}/${this.dlg.item.id}`);
+            this.dlg.row.inLibrary = true;
+            this.libraryKeys.add(`${item.source}/${item.id}`);
           }
         },
         error: (err) => {
@@ -724,12 +672,15 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     return SOURCE_LABELS[key] || key;
   }
 
-  taskLabel(task: string): string {
-    return TASK_LABELS[task] || task;
+  sourceTone(source: string): 'blue' | 'green' | 'orange' | 'gray' {
+    if (source === 'huggingface') return 'blue';
+    if (source === 'modelscope') return 'green';
+    if (source === 'civitai') return 'orange';
+    return 'gray';
   }
 
-  shortDate(value: string): string {
-    return value ? value.slice(0, 10) : '';
+  taskLabel(task: string): string {
+    return TASK_LABELS[task] || task;
   }
 
   fmtNum = fmtNum;

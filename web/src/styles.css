@@ -435,7 +435,7 @@ tr:hover td { background: var(--hover); }
 
 .col-check { width: 36px; }
 .col-size { width: 110px; }
-.col-source { width: 110px; }
+.col-source { width: 170px; }
 .col-count { width: 70px; }
 .col-review { width: 110px; }
 .col-actions { width: 200px; }
