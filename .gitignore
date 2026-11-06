@@ -1,8 +1,8 @@
 # 运行时状态：不可重建，需要备份
 var/
 
-# ComfyUI 运行时：可重建
-comfy/
+# ComfyUI 运行时：可重建（只忽略根目录，避免误伤 backend/app/comfy 源码）
+/comfy/
 
 # 权重：可重下
 models/
