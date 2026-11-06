@@ -103,6 +103,7 @@ class LinuxGpuProbe:
         if result is None or not result.out:
             return {}
         names: dict[str, str] = {}
+        kept: list[str] = []
         for line in result.out.splitlines():
             stripped = line.strip()
             match = LSPCI_LINE.match(stripped)
@@ -111,11 +112,14 @@ class LinuxGpuProbe:
             low = stripped.lower()
             if "vga" not in low and "3d controller" not in low and "display controller" not in low:
                 continue
+            kept.append(stripped)
             model = REV_SUFFIX.sub("", PCI_ID_SUFFIX.sub("", match.group("name"), count=1)).strip()
             slot = match.group("slot")
             # lspci 的 BDF 可能不带 4 位域号，两种写法都存一份
             names[slot] = model
             names[_slot_without_domain(slot)] = model
+        # exec 默认把整份 lspci 输出写进 raw（一台服务器可达 8KB），这里只保留显卡相关行
+        ctx.raw["lspci"] = "\n".join(kept) if kept else "（未发现 VGA / 3D / Display 控制器）"
         return names
 
 

@@ -1,0 +1,96 @@
+{
+  "os": "windows",
+  "os_version": "11 (26100)",
+  "os_build": "26100",
+  "arch": "x86_64",
+  "is_wsl": false,
+  "gpus": [
+    {
+      "vendor": "nvidia",
+      "name": "NVIDIA GeForce RTX 4080 SUPER",
+      "driver_version": "610.88",
+      "vram_mb": 16376,
+      "compute_cap": "8.9",
+      "source": "nvidia-smi",
+      "is_discrete": true
+    },
+    {
+      "vendor": "intel",
+      "name": "Intel(R) UHD Graphics 770",
+      "driver_version": "32.0.101.7088",
+      "vram_mb": null,
+      "compute_cap": null,
+      "source": "cim",
+      "is_discrete": false
+    },
+    {
+      "vendor": "unknown",
+      "name": "GameViewer Virtual Display Adapter",
+      "driver_version": "15.6.5.199",
+      "vram_mb": null,
+      "compute_cap": null,
+      "source": "cim",
+      "is_discrete": false
+    },
+    {
+      "vendor": "unknown",
+      "name": "Parsec Virtual Display Adapter",
+      "driver_version": "0.45.0.0",
+      "vram_mb": null,
+      "compute_cap": null,
+      "source": "cim",
+      "is_discrete": false
+    }
+  ],
+  "primary_gpu": {
+    "vendor": "nvidia",
+    "name": "NVIDIA GeForce RTX 4080 SUPER",
+    "driver_version": "610.88",
+    "vram_mb": 16376,
+    "compute_cap": "8.9",
+    "source": "nvidia-smi",
+    "is_discrete": true
+  },
+  "pythons": [
+    {
+      "version": "3.13.14",
+      "path": "C:\\Users\\Moc\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe",
+      "source": "path"
+    },
+    {
+      "version": "3.9.25",
+      "path": "D:\\ProgramData\\miniconda3\\python.exe",
+      "source": "conda"
+    },
+    {
+      "version": "3.13.14",
+      "path": "E:\\Projects\\model-downloader\\.venv\\Scripts\\python.exe",
+      "source": "path"
+    }
+  ],
+  "disks": [
+    {
+      "path": "C:\\",
+      "total_gb": 405.8,
+      "free_gb": 102.0
+    },
+    {
+      "path": "E:\\",
+      "total_gb": 3815.4,
+      "free_gb": 2194.4
+    }
+  ],
+  "installs": [],
+  "warnings": [],
+  "raw": {
+    "nvidia-smi": "NVIDIA GeForce RTX 4080 SUPER, 610.88, 16376, 8.9",
+    "cim": "[\n    {\n        \"Name\":  \"GameViewer Virtual Display Adapter\",\n        \"DriverVersion\":  \"15.6.5.199\",\n        \"AdapterCompatibility\":  \"GameViewer\",\n        \"PNPDeviceID\":  \"ROOT\\\\DISPLAY\\\\0001\"\n    },\n    {\n        \"Name\":  \"Parsec Virtual Display Adapter\",\n        \"DriverVersion\":  \"0.45.0.0\",\n        \"AdapterCompatibility\":  \"Parsec Cloud, Inc.\",\n        \"PNPDeviceID\":  \"ROOT\\\\DISPLAY\\\\0002\"\n    },\n    {\n        \"Name\":  \"Intel(R) UHD Graphics 770\",\n        \"DriverVersion\":  \"32.0.101.7088\",\n        \"AdapterCompatibility\":  \"Intel Corporation\",\n        \"PNPDeviceID\":  \"PCI\\\\VEN_8086\\u0026DEV_A780\\u0026SUBSYS_7E251462\\u0026REV_04\\\\3\\u002611583659\\u00260\\u002610\"\n    },\n    {\n        \"Name\":  \"NVIDIA GeForce RTX 4080 SUPER\",\n        \"DriverVersion\":  \"32.0.16.1088\",\n        \"AdapterCompatibility\":  \"NVIDIA\",\n        \"PNPDeviceID\":  \"PCI\\\\VEN_10DE\\u0026DEV_2702\\u0026SUBSYS_41401458\\u0026REV_A1\\\\4\\u0026C0A2542\\u00260\\u00260008\"\n    }\n]",
+    "registry.qwMemorySize": "{\"nvidiageforcertx4080super\": 17171480576}",
+    "py -0p": "无法执行: [WinError 2] 系统找不到指定的文件。",
+    "where python": "C:\\Users\\Moc\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe\nD:\\ProgramData\\miniconda3\\python.exe\nC:\\Users\\Moc\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "python -V C:\\Users\\Moc\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe": "3.13.14",
+    "python -V D:\\ProgramData\\miniconda3\\python.exe": "3.9.25",
+    "python -V E:\\Projects\\model-downloader\\.venv\\Scripts\\python.exe": "3.13.14"
+  },
+  "probed_at": "2026-11-06T14:11:10+08:00"
+}

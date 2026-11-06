@@ -263,6 +263,7 @@ def _collect_disks(os_name: str) -> list[DiskInfo]:
 
     disks: list[DiskInfo] = []
     seen: set[str] = set()
+    seen_usage: set[tuple[float, float]] = set()
     for target in targets:
         key = os.path.normcase(str(target))
         if key in seen:
@@ -272,13 +273,18 @@ def _collect_disks(os_name: str) -> list[DiskInfo]:
             usage = shutil.disk_usage(target)
         except OSError:
             continue
-        disks.append(
-            DiskInfo(
-                path=str(target),
-                total_gb=round(usage.total / (1024**3), 1),
-                free_gb=round(usage.free / (1024**3), 1),
-            )
+        info = DiskInfo(
+            path=str(target),
+            total_gb=round(usage.total / (1024**3), 1),
+            free_gb=round(usage.free / (1024**3), 1),
         )
+        # macOS 的 / 与 /System/Volumes/Data 共享同一 APFS 容器，容量完全相同；
+        # 重复报两条会让界面出现两行一样的数字
+        signature = (info.total_gb, info.free_gb)
+        if signature in seen_usage:
+            continue
+        seen_usage.add(signature)
+        disks.append(info)
     return disks
 
 
@@ -327,7 +333,11 @@ def _collect_installs(ctx: ProbeContext) -> list[ExistingInstall]:
     # 3) 含 main.py 且带 .venv / venv / python_embeded 的目录（只扫一层，控制耗时）
     for root in (COMFY_DIR, home):
         try:
-            children = sorted(child for child in root.iterdir() if child.is_dir())
+            children = sorted(
+                child
+                for child in root.iterdir()
+                if child.is_dir() and not _skip_install_dir(child.name)
+            )
         except OSError:
             continue
         for child in children:
@@ -342,6 +352,19 @@ def _collect_installs(ctx: ProbeContext) -> list[ExistingInstall]:
             add(child, kind, _comfy_version(child), f"检测到 main.py + {runtime}")
 
     return installs
+
+
+# 扫描用户主目录时跳过的目录名：系统目录 + 各类垃圾箱。
+# 隐藏目录（.Trash / .cache 等）另由前缀判断排除——删掉的 ComfyUI 会躺在废纸篓里，
+# 早期实现因此把 ~/.Trash 误报成"已有安装"。
+INSTALL_SCAN_SKIP = {
+    "AppData", "Library", "node_modules", "Windows", "ProgramData",
+    "$RECYCLE.BIN", "System Volume Information",
+}
+
+
+def _skip_install_dir(name: str) -> bool:
+    return name.startswith(".") or name in INSTALL_SCAN_SKIP
 
 
 def _first_str(data: object, keys: tuple[str, ...]) -> str | None:

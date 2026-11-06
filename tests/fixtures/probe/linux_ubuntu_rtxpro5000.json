@@ -1,0 +1,52 @@
+{
+  "os": "linux",
+  "os_version": "Ubuntu 24.04.5 LTS",
+  "os_build": "",
+  "arch": "x86_64",
+  "is_wsl": false,
+  "gpus": [
+    {
+      "vendor": "nvidia",
+      "name": "NVIDIA RTX PRO 5000 72GB Blackwell",
+      "driver_version": "595.91.07",
+      "vram_mb": 73415,
+      "compute_cap": "12.0",
+      "source": "nvidia-smi",
+      "is_discrete": true
+    }
+  ],
+  "primary_gpu": {
+    "vendor": "nvidia",
+    "name": "NVIDIA RTX PRO 5000 72GB Blackwell",
+    "driver_version": "595.91.07",
+    "vram_mb": 73415,
+    "compute_cap": "12.0",
+    "source": "nvidia-smi",
+    "is_discrete": true
+  },
+  "pythons": [
+    {
+      "version": "3.12.3",
+      "path": "/usr/bin/python3",
+      "source": "system"
+    }
+  ],
+  "disks": [
+    {
+      "path": "/",
+      "total_gb": 466.4,
+      "free_gb": 65.8
+    }
+  ],
+  "installs": [],
+  "warnings": [],
+  "raw": {
+    "lspci": "ca:00.0 VGA compatible controller [0300]: NVIDIA Corporation Device [10de:2bb3] (rev a1)",
+    "nvidia-smi": "NVIDIA RTX PRO 5000 72GB Blackwell, 595.91.07, 73415, 12.0",
+    "which -a python3": "/usr/bin/python3\n/bin/python3\n/usr/bin/python3.12\n/bin/python3.12",
+    "pyenv versions": "无法执行: [Errno 2] No such file or directory: 'pyenv'",
+    "python -V /usr/bin/python3": "3.12.3",
+    "/proc/version": "Linux version 7.0.0-34-generic (buildd@lcy02-amd64-117) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #34~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 15:38:29 UTC 2"
+  },
+  "probed_at": "2026-11-06T14:11:10+08:00"
+}
