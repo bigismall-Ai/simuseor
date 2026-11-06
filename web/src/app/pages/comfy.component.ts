@@ -23,40 +23,23 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
   standalone: true,
   imports: [CommonModule, BadgeComponent, EmptyComponent, FieldComponent, PageHeaderComponent, PanelComponent],
   template: `
-    <ui-page-header
-      title="环境管理"
-      hint="ComfyUI 独立安装在工作区，与后端 Python 环境完全隔离；模型仍挂在「模型库」的保存路径，不重复占磁盘。"
-    />
+    <ui-page-header title="环境管理" hint="ComfyUI 独立运行在你的电脑上，与本站环境互不影响。" />
 
-    <ui-panel title="ComfyUI" hint="先检测本机硬件，据此决定装哪个加速版本。">
+    <ui-panel title="ComfyUI">
       <div panel-actions>
         <ui-badge [tone]="tierTone">{{ tierLabel }}</ui-badge>
-        <button (click)="reload(true)" [disabled]="loading">{{ loading ? '检测中…' : '重新检测' }}</button>
       </div>
 
       @if (error) {
         <div class="notice err">
           {{ error }}
-          <button class="inline" (click)="reload(true)">重试</button>
+          <button (click)="reload(true)">重试</button>
         </div>
       } @else if (env) {
-        <div class="form-grid">
-          <ui-field label="加速方式">
-            <span>{{ backend.title }}</span>
-            <div class="mono muted">{{ backend.detail }} · {{ plan.torch_channel }}</div>
-          </ui-field>
-          <ui-field label="Python">
-            <span>{{ plan.python_version }}</span>
-            <div class="muted">{{ plan.python_source === 'download' ? '将自动下载内置运行时' : '使用本机已有版本' }}</div>
-          </ui-field>
-          <ui-field label="磁盘空间">
-            <span>{{ plan.disk_ok ? '足够安装' : '空间不足' }}</span>
-            <div class="muted">需要约 {{ plan.disk_required_gb }} GB</div>
-          </ui-field>
-        </div>
+        <p>{{ summary }}</p>
 
-        @for (action of plan.actions; track action.title) {
-          <div class="notice" [class.err]="action.level === 'block'" [class.info]="action.level === 'info'">
+        @for (action of visibleActions; track action.title) {
+          <div class="notice" [class.err]="action.level === 'block'">
             <strong>{{ action.title }}</strong>
             <div>{{ action.detail }}</div>
             @if (action.url) {
@@ -65,82 +48,61 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
           </div>
         }
 
-        @if (plan.blocked_reason) {
-          <div class="notice err">当前无法安装：{{ plan.blocked_reason }}</div>
-        }
-
         <div class="toolbar">
           <button class="primary" (click)="openPreview()" [disabled]="!canInstall || busy">
             {{ busy ? '安装中…' : '开始安装' }}
           </button>
-          <button disabled>启动</button>
-          @if (!canInstall) {
-            <div class="muted">当前状态不满足安装条件，请先处理上方提示</div>
-          } @else if (!busy) {
-            <div class="muted">点击后可先查看完整执行计划，确认后才会开始</div>
-          }
+          <button (click)="reload(true)" [disabled]="loading">{{ loading ? '检测中…' : '重新检测' }}</button>
         </div>
+
+        <details class="mt">
+          <summary class="muted">设备详情</summary>
+          <div class="form-grid mt">
+            <ui-field label="显卡">
+              <span>{{ gpuName }}</span>
+              <div class="mono muted">{{ gpuDetail }}</div>
+            </ui-field>
+            <ui-field label="显存">
+              <span>{{ vramLabel }}</span>
+              <div class="muted">{{ vramNote }}</div>
+            </ui-field>
+            <ui-field label="系统">
+              <span>{{ osLabel }}</span>
+              <div class="mono muted">{{ device.arch }}</div>
+            </ui-field>
+            <ui-field label="Python">
+              <span>{{ pythonLabel }}</span>
+              <div class="mono muted" style="word-break: break-all">{{ pythonNote }}</div>
+            </ui-field>
+            <ui-field label="磁盘">
+              <span>{{ diskLabel }}</span>
+              <div class="muted">{{ diskNote }}</div>
+            </ui-field>
+            <ui-field label="检测时间">
+              <span class="mono">{{ device.probed_at }}</span>
+            </ui-field>
+          </div>
+          @if (otherGpus) {
+            <p class="muted">其他显示适配器：{{ otherGpus }}</p>
+          }
+        </details>
       } @else {
         <div class="muted">正在检测本机环境…</div>
       }
     </ui-panel>
 
-    <ui-panel title="设备" hint="只读检测，不会安装或修改任何东西。">
-      @if (env) {
-        <div class="form-grid">
-          <ui-field label="显卡">
-            <span>{{ gpuName }}</span>
-            <div class="mono muted">{{ gpuDetail }}</div>
-          </ui-field>
-          <ui-field label="显存">
-            <span>{{ vramLabel }}</span>
-            <div class="muted">{{ vramNote }}</div>
-          </ui-field>
-          <ui-field label="系统">
-            <span>{{ osLabel }}</span>
-            <div class="mono muted">{{ device.arch }}</div>
-          </ui-field>
-          <ui-field label="Python">
-            <span>{{ pythonLabel }}</span>
-            <div class="mono muted" style="word-break: break-all">{{ pythonNote }}</div>
-          </ui-field>
-          <ui-field label="磁盘">
-            <span>{{ diskLabel }}</span>
-            <div class="muted">{{ diskNote }}</div>
-          </ui-field>
-          <ui-field label="检测时间">
-            <span class="mono">{{ device.probed_at }}</span>
-          </ui-field>
-        </div>
-
-        @if (device.warnings.length) {
+    <ui-panel title="已安装版本">
+      @if (env && env.device.instances.length) {
+        @for (instance of env.device.instances; track instance.name) {
           <div class="notice">
-            @for (warning of device.warnings; track warning) {
-              <div>{{ warning }}</div>
+            <strong>{{ instance.name }}</strong>
+            @if (instance.version) {
+              <span class="muted">{{ instance.version }}</span>
             }
           </div>
         }
-        @if (otherGpus) {
-          <p class="muted">其他显示适配器：{{ otherGpus }}</p>
-        }
       } @else {
-        <div class="muted">待检测</div>
-      }
-    </ui-panel>
-
-    <ui-panel title="版本" hint="代码来源为 CNB 镜像，按标签检出；每个版本独立环境，可随时回滚。">
-      @if (env && env.device.instances.length) {
-        @for (instance of env.device.instances; track instance.name) {
-          <div class="notice info">
-            <strong>{{ instance.name }}</strong>
-            <div class="mono muted">
-              {{ instance.version || '未知版本' }} · Python {{ instance.python || '?' }} ·
-              {{ instance.port ? '端口 ' + instance.port : '未分配端口' }}
-            </div>
-          </div>
-        }
-      } @else {
-        <ui-empty title="还没有安装任何版本" hint="确认上方方案后即可开始安装" />
+        <ui-empty title="还没有安装" hint="点击上方「开始安装」即可，检测到本机硬件后会自动选合适的版本。" />
       }
     </ui-panel>
 
@@ -154,10 +116,8 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
           </div>
 
           <div class="notice info">
-            安装到 <span class="mono">{{ preview.spec.workspace }}</span
-            ><br />
-            Python {{ preview.spec.python }} · {{ preview.spec.channel }} · 预计占用约
-            {{ preview.total_gb }} GB
+            安装到 <span class="mono">{{ preview.spec.workspace }}</span><br />
+            预计占用约 {{ preview.total_gb }} GB
           </div>
 
           <div class="dlg-files" style="padding: 8px 10px; max-height: calc(92vh - 230px)">
@@ -185,9 +145,7 @@ const BACKEND_LABELS: Record<string, { title: string; detail: string }> = {
           @if (logs.length) {
             <details class="mt">
               <summary class="muted">执行日志（{{ logs.length }} 行）</summary>
-              <div class="dlg-files mono" style="padding: 8px 10px; white-space: pre-wrap">
-                {{ logs.join('\n') }}
-              </div>
+              <div class="dlg-files mono" style="padding: 8px 10px; white-space: pre-wrap">{{ logs.join('\n') }}</div>
             </details>
           }
 
@@ -236,6 +194,24 @@ export class ComfyComponent implements OnInit, OnDestroy {
   /** 弹层打开或安装进行中时，主按钮不该再被点 */
   get busy(): boolean {
     return this.installing || this.preview !== null;
+  }
+
+  /** 一句话结论：用户只想知道"能不能装" */
+  get summary(): string {
+    const plan = this.plan;
+    const gpu = this.device.primary_gpu?.name;
+    if (plan.tier === 'blocked') {
+      return `当前无法安装：${plan.blocked_reason || '环境不满足要求'}`;
+    }
+    if (plan.tier === 'limited') {
+      return `可以安装，但性能会受限${gpu ? `（${gpu}）` : ''}。`;
+    }
+    return `这台电脑可以启用显卡加速${gpu ? `（${gpu}）` : ''}，安装后即可使用。`;
+  }
+
+  /** 只展示需要用户处理的提示；info 级都是技术说明，收进详情里 */
+  get visibleActions() {
+    return this.plan.actions.filter((action) => action.level !== 'info');
   }
 
   get canInstall(): boolean {

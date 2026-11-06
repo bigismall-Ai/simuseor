@@ -101,8 +101,10 @@ test.describe('Model Downloader Web UI', () => {
       timeout: 20_000,
     });
 
-    // 设备卡不能停在占位文案上
+    // 设备卡不能停在占位文案上；技术细节收在折叠区里
     await expect(page.getByText('待检测')).toHaveCount(0);
+    await expect(page.getByText('设备详情')).toBeVisible();
+    await page.getByText('设备详情').click();
     await expect(page.getByText('检测时间')).toBeVisible();
     await page.screenshot({ path: ART + '/12-comfy-env.png', fullPage: true });
 
