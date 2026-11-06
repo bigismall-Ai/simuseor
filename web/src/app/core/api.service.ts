@@ -10,6 +10,7 @@ import {
   RepoInfo,
   SearchItem,
   Task,
+  WorkflowItem,
 } from './types';
 
 @Injectable({ providedIn: 'root' })
@@ -30,8 +31,8 @@ export class ApiService {
     return this.http.put<AppSettings>(`${this.base}/settings`, settings);
   }
 
-  resolve(source: string, repoId: string, revision: string): Observable<RepoInfo> {
-    return this.http.post<RepoInfo>(`${this.base}/resolve`, { source, repo_id: repoId, revision });
+  resolve(source: string, repoId: string, revision: string, task = ''): Observable<RepoInfo> {
+    return this.http.post<RepoInfo>(`${this.base}/resolve`, { source, repo_id: repoId, revision, task });
   }
 
   search(params: {
@@ -55,6 +56,27 @@ export class ApiService {
     );
   }
 
+  searchWorkflows(params: {
+    q?: string;
+    source?: string;
+    limit?: number;
+    page?: number;
+  }): Observable<{ items: WorkflowItem[]; errors: Record<string, string>; done: boolean }> {
+    let httpParams = new HttpParams();
+    if (params.q) httpParams = httpParams.set('q', params.q);
+    if (params.source) httpParams = httpParams.set('source', params.source);
+    httpParams = httpParams.set('limit', String(params.limit ?? 12));
+    httpParams = httpParams.set('page', String(params.page ?? 1));
+    return this.http.get<{ items: WorkflowItem[]; errors: Record<string, string>; done: boolean }>(
+      `${this.base}/workflows`,
+      { params: httpParams },
+    );
+  }
+
+  resolveWorkflow(source: string, repoId: string): Observable<RepoInfo> {
+    return this.http.post<RepoInfo>(`${this.base}/workflows/resolve`, { source, repo_id: repoId });
+  }
+
   createTask(body: {
     source: string;
     repo_id: string;
@@ -62,6 +84,8 @@ export class ApiService {
     files: string[];
     strategy: string;
     save_dir?: string;
+    target_folder?: string;
+    task?: string;
   }): Observable<Task> {
     return this.http.post<Task>(`${this.base}/tasks`, body);
   }
@@ -144,5 +168,10 @@ export class ApiService {
   /** 轮询安装进度；since 为已收到的事件数，用于增量拉取。 */
   comfyInstallJob(id: string, since = 0): Observable<ComfyInstallJob> {
     return this.http.get<ComfyInstallJob>(`${this.base}/comfy/install/${id}?since=${since}`);
+  }
+
+  /** 当前可接管的安装任务（刷新页面后恢复进度用）。 */
+  comfyCurrentInstall(): Observable<{ job: ComfyInstallJob | null }> {
+    return this.http.get<{ job: ComfyInstallJob | null }>(`${this.base}/comfy/install/current`);
   }
 }

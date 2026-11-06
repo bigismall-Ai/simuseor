@@ -72,7 +72,7 @@ def nvidia_report(**overrides) -> DeviceReport:
 # ---------------- 步骤结构 ----------------
 def test_steps_cover_full_pipeline() -> None:
     steps = build_steps(spec())
-    assert [s.key for s in steps] == ["prepare", "clone", "venv", "pip", "torch", "requirements", "verify"]
+    assert [s.key for s in steps] == ["prepare", "clone", "models", "venv", "pip", "torch", "requirements", "verify"]
 
 
 def test_torch_before_requirements() -> None:
@@ -218,5 +218,51 @@ def test_dry_run_creates_no_dirs(tmp_path) -> None:
     events: list[dict] = []
     result = run_install(s, events.append, dry_run=True)
     assert result.ok
-    assert len([e for e in events if e["type"] == "step_plan"]) == 7
+    assert len([e for e in events if e["type"] == "step_plan"]) == 8
     assert not (workspace / "ComfyUI").exists()
+
+
+# ---------------- 刷新后接管（/install/current） ----------------
+def _fake_job(job_id: str, status: str, started: str) -> dict:
+    return {
+        "id": job_id,
+        "status": status,
+        "name": f"v-{job_id}",
+        "workspace": f"C:/comfy/instances/{job_id}",
+        "spec": {"name": f"v-{job_id}", "workspace": "", "comfy_dir": "", "venv_dir": "", "python": "3.13", "channel": "cu130"},
+        "steps": [{"key": "prepare", "title": "准备工作目录", "detail": "", "command": None, "estimated_gb": 0.0}],
+        "events": [],
+        "result": None,
+        "started_at": started,
+    }
+
+
+def test_current_install_none_when_empty() -> None:
+    from app.comfy import api
+
+    api._jobs.clear()
+    assert api.get_current_install()["job"] is None
+
+
+def test_current_install_prefers_running() -> None:
+    """有正在跑的任务时，刷新页面必须接管它，而不是最近完成的那个。"""
+    from app.comfy import api
+
+    api._jobs.clear()
+    api._jobs["done1"] = _fake_job("done1", "done", "2026-11-06T15:00:00")
+    api._jobs["run2"] = _fake_job("run2", "running", "2026-11-06T14:00:00")
+    picked = api.get_current_install()["job"]
+    assert picked is not None and picked["id"] == "run2"
+    # 接管所需的字段必须齐全
+    assert picked["steps"] and picked["spec"]
+
+
+def test_current_install_falls_back_to_latest() -> None:
+    """没有运行中的任务时返回最近一次，让用户还能看到失败原因。"""
+    from app.comfy import api
+
+    api._jobs.clear()
+    api._jobs["a"] = _fake_job("a", "failed", "2026-11-06T14:00:00")
+    api._jobs["b"] = _fake_job("b", "done", "2026-11-06T15:00:00")
+    picked = api.get_current_install()["job"]
+    assert picked is not None and picked["id"] == "b"

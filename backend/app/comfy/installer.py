@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Callable, Iterator
 
 from ..config import COMFY_DIR, COMFY_FALLBACK, COMFY_MIRROR, LOG_DIR
+from .model_dirs import models_root, write_extra_model_paths
 from .models import DeviceReport, ManagedInstance, PythonInfo
 from .plan import InstallPlan
 
@@ -182,6 +183,11 @@ def build_steps(spec: InstallSpec) -> list[Step]:
             + [spec.repo_url, str(spec.comfy_dir)],
             timeout=900,
             estimated_gb=0.5,
+        ),
+        Step(
+            key="models",
+            title="接入共享模型目录",
+            detail=f"写入 extra_model_paths.yaml，直接使用项目里的 {models_root()}（与实例目录平级，不复制权重）",
         ),
         Step(
             key="venv",
@@ -360,6 +366,15 @@ def _run_step(
 
     if step.key == "clone":
         return _clone(step, spec, send, log)
+
+    if step.key == "models":
+        try:
+            path = write_extra_model_paths(spec.comfy_dir)
+        except (OSError, ValueError) as exc:
+            return False, f"写入 extra_model_paths.yaml 失败: {exc}"
+        log(f"$ 写入 {path}")
+        send({"type": "log", "line": f"共享模型目录已接入: {path}"})
+        return True, "已接入共享模型目录"
 
     if step.command is None:
         return True, "跳过"

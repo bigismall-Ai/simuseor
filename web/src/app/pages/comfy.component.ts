@@ -226,6 +226,7 @@ export class ComfyComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.reload(false);
+    this.restoreInstall();
   }
 
   ngOnDestroy(): void {
@@ -241,6 +242,37 @@ export class ComfyComponent implements OnInit, OnDestroy {
     const plan = this.env?.plan;
     if (!plan) return false;
     return plan.tier !== 'blocked' && plan.python_available && plan.disk_ok;
+  }
+
+  /** 页面刷新后接管仍在进行的安装任务 */
+  private restoreInstall(): void {
+    this.api.comfyCurrentInstall().subscribe({
+      next: ({ job }) => {
+        // 只接管正在跑的；已完成的任务不主动弹窗打扰
+        if (!job || job.status !== 'running') return;
+        this.job = job;
+        this.preview = {
+          spec: job.spec ?? {
+            name: job.name,
+            workspace: job.workspace,
+            comfy_dir: '',
+            venv_dir: '',
+            python: '',
+            channel: '',
+          },
+          steps: job.steps,
+          total_gb: Math.round(job.steps.reduce((sum, step) => sum + step.estimated_gb, 0) * 10) / 10,
+        };
+        this.logs = [];
+        this.stepState = Object.fromEntries(
+          job.steps.map((step: ComfyStep) => [step.key, 'pending' as const]),
+        );
+        // 重放已有事件，把步骤状态和日志补回来
+        this.applyEvents(job.events);
+        this.installing = true;
+        this.poll(job.id, job.total_events);
+      },
+    });
   }
 
   openPreview(): void {

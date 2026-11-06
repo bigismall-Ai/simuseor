@@ -28,6 +28,8 @@ export interface RepoInfo {
   revision: string;
   source: string;
   files: RemoteFile[];
+  /** 后端建议的 ComfyUI 模型目录（checkpoints / loras / ...） */
+  target_folder?: string;
 }
 
 export interface TaskFile {
@@ -90,6 +92,12 @@ export interface SearchItem {
   task: string;
   url: string;
   updated_at: string;
+}
+
+export interface WorkflowItem extends SearchItem {
+  /** 该仓库里的工作流文件（.json / .zip） */
+  files: string[];
+  file_count: number;
 }
 
 export function fmtNum(n: number): string {
@@ -236,6 +244,8 @@ export interface ComfyInstallJob {
   status: 'running' | 'done' | 'failed';
   name: string;
   workspace: string;
+  spec: ComfyPreview['spec'] | null;
+  steps: ComfyStep[];
   result: { ok: boolean; message: string; log_path: string; instance: ComfyInstance | null } | null;
   total_events: number;
   events: ComfyInstallEvent[];

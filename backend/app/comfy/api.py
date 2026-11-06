@@ -86,11 +86,31 @@ def start_install(name: str = "", tag: str = "") -> dict[str, Any]:
             raise HTTPException(status_code=409, detail="已有安装正在进行，请等待完成")
         job_id = uuid.uuid4().hex[:12]
         RUNNING.add(job_id)
+        # 步骤随任务一起存下来：页面刷新后重新接管时，靠它重建弹层内容
+        steps = build_steps(spec)
         _jobs[job_id] = {
             "id": job_id,
             "status": "running",
             "name": spec.name,
             "workspace": str(spec.workspace),
+            "spec": {
+                "name": spec.name,
+                "workspace": str(spec.workspace),
+                "comfy_dir": str(spec.comfy_dir),
+                "venv_dir": str(spec.venv_dir),
+                "python": spec.python_version,
+                "channel": spec.torch_channel,
+            },
+            "steps": [
+                {
+                    "key": step.key,
+                    "title": step.title,
+                    "detail": step.detail,
+                    "command": step.command,
+                    "estimated_gb": step.estimated_gb,
+                }
+                for step in steps
+            ],
             "events": [],
             "result": None,
             "started_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -124,6 +144,22 @@ def start_install(name: str = "", tag: str = "") -> dict[str, Any]:
     return {"id": job_id}
 
 
+@router.get("/install/current")
+def get_current_install() -> dict[str, Any]:
+    """返回可接管的安装任务。
+
+    刷新页面后前端靠这个接口恢复：优先返回正在跑的，没有则返回最近一次
+    完成/失败的，让用户还能看到结果和日志。
+    """
+    running = [job for job in _jobs.values() if job["status"] == "running"]
+    if running:
+        return {"job": running[-1]}
+    if _jobs:
+        latest = max(_jobs.values(), key=lambda job: job["started_at"])
+        return {"job": latest}
+    return {"job": None}
+
+
 @router.get("/install/{job_id}")
 def get_install(job_id: str, since: int = 0) -> dict[str, Any]:
     """返回任务状态与事件。since 用于增量拉取（只返回该下标之后的事件）。"""
@@ -136,6 +172,8 @@ def get_install(job_id: str, since: int = 0) -> dict[str, Any]:
         "status": job["status"],
         "name": job["name"],
         "workspace": job["workspace"],
+        "spec": job.get("spec"),
+        "steps": job.get("steps", []),
         "result": job["result"],
         "total_events": len(events),
         "events": events[since:],
