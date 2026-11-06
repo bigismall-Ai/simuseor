@@ -72,8 +72,11 @@ class ModelScopeAdapter(SourceAdapter):
             "search": q or "",
             "page_size": max(1, min(int(limit), 50)),
             "page": max(1, int(page)),
-            "sort": sort_map.get(sort, "downloads"),
         }
+        # 综合：不传 sort，等同官网默认排序
+        sort_key = sort_map.get(sort)
+        if sort_key:
+            params["sort"] = sort_key
         try:
             resp = httpx.get(
                 f"{API}/openapi/v1/models",

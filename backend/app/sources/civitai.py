@@ -21,8 +21,11 @@ class CivitaiAdapter(SourceAdapter):
         params = {
             "query": q or "",
             "limit": max(1, min(int(limit), 50)),
-            "sort": sort_map.get(sort, "Most Downloaded"),
         }
+        # 综合：不传 sort，等同官网默认排序
+        sort_key = sort_map.get(sort)
+        if sort_key:
+            params["sort"] = sort_key
         if q:
             # Civitai 限制：关键词搜索不支持 page 参数（游标分页），只返回首页
             if int(page) > 1:
@@ -33,6 +36,8 @@ class CivitaiAdapter(SourceAdapter):
         # （z.number() 不做字符串转数字，任何取值都报 ZodError），这里用官方遗留的 nsfw 参数。
         if (cfg or {}).get("full_catalog"):
             params["nsfw"] = "true"
+        # 原始页面链接跟随可见性：完整目录走 civitai.red（.com 只有 SFW），API 仍用 civitai.com
+        web_base = "https://civitai.red" if (cfg or {}).get("full_catalog") else "https://civitai.com"
         headers = {"User-Agent": "model-downloader/0.1"}
         token = (cfg or {}).get("token") or ""
         if token:
@@ -61,7 +66,7 @@ class CivitaiAdapter(SourceAdapter):
                     "likes": int(stats.get("favoriteCount") or 0),
                     "tags": (m.get("tags") or [])[:6],
                     "task": m.get("type") or "",
-                    "url": f"https://civitai.com/models/{m.get('id')}",
+                    "url": f"{web_base}/models/{m.get('id')}",
                     "updated_at": (versions[0].get("createdAt") if versions else "") or "",
                 }
             )

@@ -6,7 +6,7 @@ import threading
 import time
 from pathlib import Path
 
-from ..config import load_settings
+from ..config import load_settings, resolve_save_dir
 from ..db import execute, new_id, now_iso, query
 from ..sources import get_adapter
 from ..sources.base import SourceError
@@ -61,7 +61,7 @@ class DownloadManager:
             raise SourceError("没有选中任何文件")
 
         strategy = (strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "direct").lower()
-        base_dir = Path(save_dir) if save_dir else Path(settings["download"]["save_dir"])
+        base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
         target = base_dir / source
         if adapter.uses_repo_subdir:
             target = target / repo.display_name.replace("/", "--")

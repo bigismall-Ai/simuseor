@@ -76,10 +76,13 @@ class HuggingFaceAdapter(SourceAdapter):
             "search": q or "",
             "limit": max(1, min(int(limit), 50)),
             "page": max(1, int(page)),
-            "sort": sort_map.get(sort, "downloads"),
-            "direction": "-1",
             "full": "false",
         }
+        # 综合：不传 sort/direction，等同官网默认排序（trendingScore）
+        sort_key = sort_map.get(sort)
+        if sort_key:
+            params["sort"] = sort_key
+            params["direction"] = "-1"
         if task:
             params["filter"] = task
         try:
