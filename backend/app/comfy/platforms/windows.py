@@ -17,6 +17,7 @@ from .base import (
     is_discrete_gpu,
     normalize_name,
     query_nvidia_smi,
+    shares_system_memory,
     to_int,
 )
 
@@ -79,6 +80,7 @@ class WindowsGpuProbe:
             bytes_total = vram_map.get(normalize_name(name))
             vram_mb = int(bytes_total // (1024 * 1024)) if bytes_total else None
             discrete = is_discrete_gpu(vendor, name)
+            shared = shares_system_memory(vendor, name, discrete)
 
             if vendor == "nvidia" and not wddm_warned:
                 ctx.warnings.append("NVIDIA 驱动版本取自 CIM（WDDM 版本），可能不是 nvidia-smi 报告的真实驱动版本")
@@ -91,10 +93,12 @@ class WindowsGpuProbe:
                     vendor=vendor,
                     name=name,
                     driver_version=str(item.get("DriverVersion") or ""),
-                    vram_mb=vram_mb,
+                    # 核显注册表里的 qwMemorySize 是共享内存配额，不是独立显存
+                    vram_mb=None if shared else vram_mb,
                     compute_cap=None,
                     source="cim",
                     is_discrete=discrete,
+                    memory_shared=shared,
                 )
             )
         return gpus
@@ -120,6 +124,8 @@ def _vendor(name: str, compatibility: str) -> str:
         return "amd"
     if "intel" in text:
         return "intel"
+    if "ascend" in text or "huawei" in text:
+        return "ascend"
     if "apple" in text:
         return "apple"
     return "unknown"

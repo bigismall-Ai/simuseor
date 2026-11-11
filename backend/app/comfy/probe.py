@@ -22,8 +22,16 @@ from urllib.parse import urljoin
 
 import httpx
 
-from ..config import COMFY_DIR, ROOT
-from .models import DeviceReport, DiskInfo, GpuInfo, ManagedInstance, MirrorProbe, PythonInfo
+from ..config import COMFY_DIR, COMFY_ENV_DIR, COMFY_ENV_NAME, ROOT
+from .models import (
+    DeviceReport,
+    DiskInfo,
+    GpuInfo,
+    ManagedInstance,
+    MirrorProbe,
+    PythonInfo,
+    RuntimeStatus,
+)
 from .platforms import LinuxGpuProbe, MacOSGpuProbe, ProbeContext, WindowsGpuProbe
 
 GPU_PROBES = {
@@ -58,13 +66,17 @@ def probe_device() -> DeviceReport:
     disks = _guard(ctx, "磁盘", lambda: _collect_disks(os_name), [])
     instances = _guard(ctx, "自有实例", lambda: _collect_instances(ctx), [])
     is_wsl = _guard(ctx, "WSL", lambda: _is_wsl(os_name, ctx), False)
+    memory_gb = _guard(ctx, "内存", lambda: _system_memory_gb(os_name, ctx), None)
+    arch = _detect_arch()
 
     return DeviceReport(
         os=os_name,
         os_version=os_version,
         os_build=os_build,
-        arch=_detect_arch(),
+        arch=arch,
         is_wsl=is_wsl,
+        memory_gb=memory_gb,
+        unified_memory=_is_unified_memory(os_name, arch, gpus),
         gpus=gpus,
         primary_gpu=primary,
         pythons=pythons,
@@ -138,6 +150,65 @@ def _is_wsl(os_name: str, ctx: ProbeContext) -> bool:
     return "microsoft" in text.lower()
 
 
+# ---------------- 内存 / 统一内存 ----------------
+def _system_memory_gb(os_name: str, ctx: ProbeContext) -> float | None:
+    """系统内存总量（GB）。统一内存机器能加载多大模型取决于这个值，而不是显存。"""
+    if os.name == "nt":
+        import ctypes  # noqa: PLC0415 - 仅 Windows 需要
+
+        class MemoryStatus(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", ctypes.c_uint32),
+                ("dwMemoryLoad", ctypes.c_uint32),
+                ("ullTotalPhys", ctypes.c_uint64),
+                ("ullAvailPhys", ctypes.c_uint64),
+                ("ullTotalPageFile", ctypes.c_uint64),
+                ("ullAvailPageFile", ctypes.c_uint64),
+                ("ullTotalVirtual", ctypes.c_uint64),
+                ("ullAvailVirtual", ctypes.c_uint64),
+                ("ullAvailExtendedVirtual", ctypes.c_uint64),
+            ]
+
+        status = MemoryStatus()
+        status.dwLength = ctypes.sizeof(status)
+        if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+            return None
+        return round(status.ullTotalPhys / (1024**3), 1)
+
+    if os_name == "macos":
+        result = ctx.exec(["sysctl", "-n", "hw.memsize"], "sysctl hw.memsize", record_warning=False)
+        try:
+            total = int((result.out or "").strip()) if result else 0
+        except ValueError:
+            total = 0
+        return round(total / (1024**3), 1) if total > 0 else None
+
+    text = Path("/proc/meminfo").read_text(encoding="utf-8", errors="replace")
+    for line in text.splitlines():
+        if line.startswith("MemTotal:"):
+            return round(int(line.split()[1]) / 1048576, 1)
+    return None
+
+
+def _is_unified_memory(os_name: str, arch: str, gpus: list[GpuInfo]) -> bool:
+    """整机层面的统一内存架构（UMA）判定。
+
+    只有「主计算显卡也与 CPU 共用同一份内存」才算：Apple Silicon、
+    Grace / GB10（DGX Spark）、AMD AI Max+ 395 这类纯 APU。
+    机器上只要有带独立显存的显卡，核显共享系统内存就只是显示输出用，
+    整机不能算 UMA（否则会把 RTX 4080 + UHD 770 的普通桌面误标成统一内存）。
+    """
+    if os_name == "macos" and arch == "arm64":
+        return True
+    # Grace / GB10（DGX Spark）是 ARM + 统一内存，nvidia-smi 仍报"显存"，其实是系统内存
+    if os_name == "linux" and arch == "arm64" and any(gpu.vendor == "nvidia" for gpu in gpus):
+        return True
+    real = [gpu for gpu in gpus if gpu.vendor not in ("", "unknown")]
+    if any(gpu.is_discrete for gpu in real):
+        return False
+    return any(gpu.memory_shared for gpu in real)
+
+
 # ---------------- Python ----------------
 def _collect_pythons(ctx: ProbeContext) -> list[PythonInfo]:
     candidates: list[tuple[str, str]] = []  # (路径, 来源提示)
@@ -185,7 +256,7 @@ def _collect_pythons(ctx: ProbeContext) -> list[PythonInfo]:
 
     # 本项目自带的虚拟环境 + ComfyUI 实例的虚拟环境
     candidates.append((str(_venv_python(ROOT / ".venv")), "path"))
-    for instance in (COMFY_DIR / "instances").glob("*"):
+    for instance in COMFY_DIR.glob("*"):
         candidates.append((str(_venv_python(instance / "venv")), "path"))
     candidates.append((sys.executable, "path"))
 
@@ -339,32 +410,111 @@ def _mount_point(path: Path) -> Path:
     return current
 
 
+# ---------------- 共享基础环境 ----------------
+def probe_runtime() -> RuntimeStatus:
+    """只读检查 comfy/.environment：内置 Python 与 torch 是否已装上。
+
+    不启动解释器、不 import torch——直接读 site-packages 里的 version.py，
+    避免为了显示一行版本号付出几秒的加载代价。
+    """
+    python_exe = COMFY_ENV_DIR / "python" / (
+        "python.exe" if os.name == "nt" else "bin/python3"
+    )
+    site = COMFY_ENV_DIR / "site-packages"
+    torch_version = _package_version(site, "torch")
+    channel = torch_version.rsplit("+", 1)[-1] if torch_version and "+" in torch_version else None
+
+    python_ready = python_exe.is_file()
+    torch_ready = (site / "torch").is_dir()
+    return RuntimeStatus(
+        ready=python_ready and torch_ready,
+        python_ready=python_ready,
+        python_version=COMFY_ENV_NAME,
+        python_source="cnb",
+        python_cached=any((COMFY_ENV_DIR / "cache").glob("cpython-*.tar.gz")),
+        torch_ready=torch_ready,
+        torch_version=torch_version,
+        torchvision_version=_package_version(site, "torchvision"),
+        torchaudio_version=_package_version(site, "torchaudio"),
+        cuda_runtime=_torch_cuda_runtime(site),
+        torch_channel=channel,
+        lock_ready=(COMFY_ENV_DIR / "requirements.lock").is_file(),
+        path=str(COMFY_ENV_DIR),
+    )
+
+
+def _package_version(site: Path, name: str) -> str | None:
+    """优先读 <pkg>/version.py，退回 dist-info 的 METADATA。"""
+    try:
+        text = (site / name / "version.py").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        text = ""
+    match = re.search(r"__version__\s*=\s*['\"]([^'\"]+)", text)
+    if match:
+        return match.group(1)
+    for meta in sorted(site.glob(f"{name}-*.dist-info/METADATA")):
+        try:
+            text = meta.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        match = re.search(r"^Version:\s*(\S+)", text, re.M)
+        if match:
+            return match.group(1)
+    return None
+
+
+def _torch_cuda_runtime(site: Path) -> str | None:
+    """torch/version.py 里形如 `cuda: Optional[str] = '13.0'`。"""
+    try:
+        text = (site / "torch" / "version.py").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+    match = re.search(r"^cuda\s*(?::[^=]+)?=\s*['\"]([^'\"]+)", text, re.M)
+    return match.group(1) if match else None
+
+
 # ---------------- 自有实例 ----------------
 def _collect_instances(ctx: ProbeContext) -> list[ManagedInstance]:
-    """只认本项目在 COMFY_DIR/instances 下创建的实例。
+    """只认本项目在 COMFY_DIR 下创建的实例。
 
     用户自行安装的 ComfyUI（官方便携版、Desktop、整合包）不探测、不接管：
     那些环境的版本、依赖、端口都由用户自己维护，我们不承担它的状态。
     """
     instances: list[ManagedInstance] = []
-    meta_dir = COMFY_DIR / "instances"
+    meta_dir = COMFY_DIR
     if not meta_dir.is_dir():
         return instances
 
-    for meta in sorted(meta_dir.glob("*/instance.json")):
-        try:
-            data = json.loads(meta.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            ctx.warnings.append(f"实例元数据无法解析: {meta} ({exc})")
+    for entry in sorted(meta_dir.iterdir()):
+        # 点前缀目录是共享基础环境（.environment），不是实例
+        if not entry.is_dir() or entry.name.startswith("."):
             continue
+
+        meta = entry / "instance.json"
+        data: object = {}
+        registered = True
+        if meta.is_file():
+            try:
+                data = json.loads(meta.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                ctx.warnings.append(f"实例元数据无法解析: {meta} ({exc})")
+                registered = False
+        elif (entry / "ComfyUI").is_dir():
+            # 早期安装没写 instance.json，但目录结构是我们自己的；标成未登记，
+            # 用户才能在界面里把它清理掉，而不是留一堆看不见的垃圾目录。
+            registered = False
+        else:
+            continue  # 用户在 comfy/ 下放的其他目录，不认、不接管
+
         instances.append(
             ManagedInstance(
-                name=meta.parent.name,
-                path=str(meta.parent),
+                name=entry.name,
+                path=str(entry),
                 version=_first_str(data, ("version", "comfyui_version", "ref")),
                 python=_first_str(data, ("python", "python_version")),
                 port=_first_int(data, "port"),
                 created_at=_first_str(data, ("created_at",)),
+                registered=registered,
             )
         )
     return instances
@@ -413,6 +563,8 @@ MIRROR_UA = "model-downloader/0.1"
 
 _cache: dict[str, tuple[float, list["MirrorProbe"]]] = {}
 _cache_lock = threading.Lock()
+# 正在后台预热的 channel，避免连点两次多跑一轮测速
+_warming: set[str] = set()
 
 
 def probe_mirrors(
@@ -464,6 +616,45 @@ def probe_mirrors(
     with _cache_lock:
         _cache[key] = (time.time(), results)
     return results
+
+
+def cached_mirrors(
+    channel: str,
+    *,
+    sample: int = MIRROR_SAMPLE_BYTES,
+    timeout: float = MIRROR_TIMEOUT,
+) -> list["MirrorProbe"] | None:
+    """只读缓存，绝不发起测速。
+
+    预演弹层要立刻出现，不能为「选最快的源」阻塞好几秒；没有缓存时调用方
+    先按默认源出计划，再让它后台预热。
+    """
+    key = f"{channel}:{sample}:{timeout}"
+    with _cache_lock:
+        entry = _cache.get(key)
+    if entry and time.time() - entry[0] < MIRROR_CACHE_TTL:
+        return entry[1]
+    return None
+
+
+def warm_mirrors(channel: str) -> None:
+    """后台跑一次测速，供下一次预演/安装直接命中缓存。失败无所谓。"""
+    key = f"{channel}:{MIRROR_SAMPLE_BYTES}:{MIRROR_TIMEOUT}"
+    with _cache_lock:
+        if key in _warming:
+            return
+        _warming.add(key)
+
+    def run() -> None:
+        try:
+            probe_mirrors(channel)
+        except Exception:  # noqa: BLE001 - 预热只是优化，失败不能冒泡
+            pass
+        finally:
+            with _cache_lock:
+                _warming.discard(key)
+
+    threading.Thread(target=run, name=f"mirror-warm-{channel}", daemon=True).start()
 
 
 def _probe_source(base: str, package: str, sample: int, timeout: float) -> tuple[bool, float]:

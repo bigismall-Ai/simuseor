@@ -9,10 +9,12 @@ import re
 from pathlib import Path
 
 from ..models import GpuInfo
-from .base import ProbeContext, is_discrete_gpu, query_nvidia_smi
+from .base import ProbeContext, RAW_LIMIT, is_discrete_gpu, query_nvidia_smi, shares_system_memory
 
 DRM_ROOT = Path("/sys/class/drm")
 PROC_NVIDIA_VERSION = Path("/proc/driver/nvidia/version")
+ASCEND_DEVICES = Path("/dev")
+ASCEND_TOOLKIT = Path("/usr/local/Ascend/ascend-toolkit")
 VENDOR_MAP = {0x1002: "amd", 0x8086: "intel", 0x10DE: "nvidia"}
 LSPCI_LINE = re.compile(r"^(?P<slot>[0-9a-fA-F:.]+)\s+[^:]+:\s*(?P<name>.+)$")
 PCI_ID_SUFFIX = re.compile(r"\s*\[[0-9a-fA-F]{4}:[0-9a-fA-F]{4}\]")
@@ -29,7 +31,37 @@ class LinuxGpuProbe:
         if not gpus:
             gpus.extend(self._proc_nvidia(ctx, names))
         gpus.extend(self._drm(ctx, names))
+        gpus.extend(self._ascend(ctx, names))
         return gpus
+
+    def _ascend(self, ctx: ProbeContext, names: dict[str, str]) -> list[GpuInfo]:
+        """昇腾 NPU 不出现在 DRM 显卡列表里，靠 /dev/davinci* 或 CANN 安装目录识别。"""
+        cards = sorted(ASCEND_DEVICES.glob("davinci[0-9]*"))
+        if not cards and not ASCEND_TOOLKIT.is_dir():
+            return []
+
+        result = ctx.exec(["npu-smi", "info"], "npu-smi", record_warning=False)
+        if result and result.out:
+            ctx.raw["npu-smi"] = result.out.strip()[:RAW_LIMIT]
+        model = next(
+            (name for name in names.values() if "ascend" in name.lower() or "huawei" in name.lower()),
+            "",
+        )
+        label = model or "Ascend NPU"
+        if len(cards) > 1:
+            label = f"{label} ×{len(cards)}"
+        return [
+            GpuInfo(
+                vendor="ascend",
+                name=label,
+                driver_version="",
+                vram_mb=None,
+                compute_cap=None,
+                source="davinci",
+                is_discrete=True,
+                memory_shared=False,
+            )
+        ]
 
     def _proc_nvidia(self, ctx: ProbeContext, names: dict[str, str]) -> list[GpuInfo]:
         try:
@@ -85,15 +117,19 @@ class LinuxGpuProbe:
                 or names.get(_slot_without_domain(slot or ""))
                 or f"{vendor.upper()} device {_read_hex(device / 'device') or 0:04x}"
             )
+            discrete = is_discrete_gpu(vendor, name)
+            shared = shares_system_memory(vendor, name, discrete)
             gpus.append(
                 GpuInfo(
                     vendor=vendor,
                     name=name,
                     driver_version="",
-                    vram_mb=_vram_mb(device) if vendor == "amd" else None,
+                    # 核显 / APU 的 sysfs "显存"只是预留的一小块，不能当成可用容量
+                    vram_mb=None if shared else (_vram_mb(device) if vendor == "amd" else None),
                     compute_cap=None,
                     source="sysfs",
-                    is_discrete=is_discrete_gpu(vendor, name),
+                    is_discrete=discrete,
+                    memory_shared=shared,
                 )
             )
         return gpus
@@ -110,7 +146,10 @@ class LinuxGpuProbe:
             if not match:
                 continue
             low = stripped.lower()
-            if "vga" not in low and "3d controller" not in low and "display controller" not in low:
+            if not any(
+                key in low
+                for key in ("vga", "3d controller", "display controller", "processing accelerators")
+            ):
                 continue
             kept.append(stripped)
             model = REV_SUFFIX.sub("", PCI_ID_SUFFIX.sub("", match.group("name"), count=1)).strip()

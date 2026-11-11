@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from .api.routes import router
 from .comfy.api import router as comfy_router
-from .config import get_web_dist
+from .config import get_web_dist, migrate_legacy_comfy_layout
 from .db import init_db
 from .sources.base import SourceError
 
@@ -17,6 +17,7 @@ from .sources.base import SourceError
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
+    migrate_legacy_comfy_layout()
     yield
 
 

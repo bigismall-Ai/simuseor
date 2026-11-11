@@ -13,14 +13,15 @@ DATA_DIR = VAR_DIR / "data"
 LOG_DIR = VAR_DIR / "logs"
 TMP_DIR = VAR_DIR / "tmp"
 MODELS_DIR = ROOT / "models"
+# comfy/ 直接放共享基础环境和各实例，不再包一层 instances/
 COMFY_DIR = ROOT / "comfy"
 # ComfyUI 代码来源：CNB 镜像优先（国内快），GitHub 兜底
 COMFY_MIRROR = "https://cnb.cool/bigismall/Comfy-Org/ComfyUI.git"
 COMFY_FALLBACK = "https://github.com/Comfy-Org/ComfyUI.git"
 
 # 基础环境（Python + torch + ComfyUI 依赖）：跟硬件走，一台机器装一次，所有实例共享。
-# 放在 instances 下并用点前缀，遍历实例时天然被跳过——它不是"一个实例"。
-COMFY_ENV_DIR = COMFY_DIR / "instances" / ".environment"
+# 与实例平级放在 comfy/ 下，点前缀让遍历实例时天然跳过——它不是"一个实例"。
+COMFY_ENV_DIR = COMFY_DIR / ".environment"
 COMFY_ENV_NAME = "3.13.18"
 # python-build-standalone 20261026 构建，已镜像到 CNB（公开仓库，匿名可下载）
 COMFY_PYTHON_URLS = {
@@ -55,6 +56,9 @@ DEFAULT_SETTINGS: dict = {
     },
     "default_strategy": "direct",
     "download": {"save_dir": "models", "strategy": "direct"},
+    # ComfyUI 依赖轮子缓存上限（GB）。同一包只留最新版本，总量超出按最久未用淘汰；
+    # 0 或负数表示不限制。缓存跟着共享环境 comfy/.environment/cache 走。
+    "comfy": {"cache_limit_gb": 4},
     "proxy": {"host": "127.0.0.1", "port": 7890},
     "sources": {
         "huggingface": {
@@ -160,18 +164,26 @@ def build_proxy_url(proxy: dict) -> str:
 
 
 def split_proxy_url(url: str) -> dict:
-    """旧 proxy.url 拆成 {host, port}；scheme 保留在 host 上（socks5:// 等不丢）。"""
+    """旧 proxy.url 拆成 {host, port}；非 http 的 scheme 保留在 host 上（socks5:// 等不丢）。"""
     raw = str(url or "").strip()
     if not raw:
         return {}
     head, sep, tail = raw.rpartition(":")
     if sep and tail.strip().isdigit() and "/" not in tail:
-        return {"host": head, "port": int(tail.strip())}
-    return {"host": raw}
+        host, port = head, int(tail.strip())
+    else:
+        host, port = raw, ""
+    if host.startswith("http://"):
+        host = host[len("http://"):]
+    out = {"host": host}
+    if port != "":
+        out["port"] = port
+    return out
 
 
 def _migrate(data: dict) -> dict:
-    """旧配置迁移：每源 save_dir/strategy/proxy{enabled,url} -> 顶层 download/proxy + 每源 proxy_enabled。"""
+    """旧配置迁移：每源 save_dir/strategy/proxy{enabled,url} -> 顶层 download/proxy + 每源 proxy_enabled；
+    旧 proxy.url 拆成 host/port；旧 proxy 策略并入 direct（代理改由每源 proxy_enabled 控制）。"""
     old_url = ""
     old_dirs: list[str] = []
     for cfg in (data.get("sources") or {}).values():
@@ -192,8 +204,17 @@ def _migrate(data: dict) -> dict:
         parent = str(Path(old_dirs[0]).parent)
         if parent != str(MODELS_DIR):
             download["save_dir"] = parent
-    if old_url and not (data.get("proxy") or {}).get("url"):
-        data.setdefault("proxy", {})["url"] = old_url
+    proxy = data.setdefault("proxy", {})
+    if old_url and not proxy.get("host") and not proxy.get("url"):
+        proxy.update(split_proxy_url(old_url))
+    if proxy.get("url") and not proxy.get("host"):
+        proxy.update(split_proxy_url(str(proxy.pop("url"))))
+    else:
+        proxy.pop("url", None)
+    if str(download.get("strategy") or "").lower() == "proxy":
+        download["strategy"] = "direct"
+    if str(data.get("default_strategy") or "").lower() == "proxy":
+        data["default_strategy"] = "direct"
     return data
 
 
@@ -219,11 +240,13 @@ def load_settings() -> dict:
         isinstance(cfg, dict) and "token" in cfg
         for cfg in (data.get("sources") or {}).values()
     )
+    had_legacy_proxy = bool((data.get("proxy") or {}).get("url"))
     legacy_tokens = _split_tokens(data)
-    if had_tokens:
+    if had_tokens or had_legacy_proxy:
         sec = secrets.setdefault("sources", {})
         for name, token in legacy_tokens.items():
             sec.setdefault(name, {})["token"] = token
+        _migrate(data)  # 顺手把 proxy.url 拆成 host/port、proxy 策略并入 direct
         # 迁移时顺手把 save_dir 规范成相对形式
         dl = data.setdefault("download", {})
         if dl.get("save_dir"):
@@ -257,9 +280,53 @@ def save_settings(settings: dict) -> dict:
             sec.pop(name, None)  # 显式传空 token 视为清除
     dl = out.setdefault("download", {})
     dl["save_dir"] = relativize_save_dir(str(dl.get("save_dir") or ""))
+    # proxy 统一存 host/port（PUT 里带旧 url 字段也拆掉）
+    px = out.setdefault("proxy", {})
+    if px.get("url") and not px.get("host"):
+        px.update(split_proxy_url(str(px.pop("url"))))
+    else:
+        px.pop("url", None)
+    if str(dl.get("strategy") or "").lower() == "proxy":
+        dl["strategy"] = "direct"
+    if str(out.get("default_strategy") or "").lower() == "proxy":
+        out["default_strategy"] = "direct"
+    # 设置页不认识 comfy 段（缓存上限等），别让一次保存把它冲回默认值
+    if "comfy" not in out:
+        kept = _read_json(SETTINGS_PATH).get("comfy")
+        if isinstance(kept, dict) and kept:
+            out["comfy"] = kept
     _write_json(SECRETS_PATH, secrets)
     _write_json(SETTINGS_PATH, out)
     return settings
+
+
+def migrate_legacy_comfy_layout() -> list[str]:
+    """把早期 comfy/instances/ 里的东西平铺到 comfy/（纯移动，不删任何文件）。
+
+    旧布局 comfy/instances/{.environment, vXXX}，comfy/ 只是个空包装层。
+    新布局直接是 comfy/{.environment, vXXX}。同盘 rename 是瞬时操作，内容不变，
+    因此已装好的 torch、ComfyUI 代码都可以直接沿用，不需要重新下载。
+    目标已存在时跳过，绝不覆盖；空壳目录能删就删，删不掉也不影响迁移结果。
+    """
+    legacy = COMFY_DIR / "instances"
+    if not legacy.is_dir():
+        return []
+    # 万一真有个实例就叫 instances，别把它当旧容器拆了
+    if (legacy / "instance.json").is_file() or (legacy / "ComfyUI").is_dir():
+        return []
+    moved: list[str] = []
+    for child in sorted(legacy.iterdir()):
+        dest = COMFY_DIR / child.name
+        if dest.exists():
+            continue
+        child.rename(dest)
+        moved.append(child.name)
+    try:
+        if not any(legacy.iterdir()):
+            legacy.rmdir()
+    except Exception:  # noqa: BLE001 - 宿主可能拦截删除 API；留个空目录也不影响功能
+        pass
+    return moved
 
 
 def get_web_dist() -> Path | None:

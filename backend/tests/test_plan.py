@@ -25,6 +25,8 @@ def make_report(
     os_build: str = "26100",
     arch: str = "x86_64",
     is_wsl: bool = False,
+    memory_gb: float | None = None,
+    unified_memory: bool = False,
     gpus: list[GpuInfo] | None = None,
     primary: GpuInfo | None = None,
     pythons: tuple[str, ...] = ("3.12.3",),
@@ -40,6 +42,8 @@ def make_report(
         os_build=os_build,
         arch=arch,
         is_wsl=is_wsl,
+        memory_gb=memory_gb,
+        unified_memory=unified_memory,
         gpus=gpu_list,
         primary_gpu=primary,
         pythons=[PythonInfo(version=version, path=f"C:/Python/{index}/python.exe") for index, version in enumerate(pythons)],
@@ -84,15 +88,15 @@ def test_fixture_linux_rtxpro5000_full_cu130() -> None:
     plan = build_plan(load_fixture("linux_ubuntu_rtxpro5000.json"))
     assert (plan.tier, plan.backend, plan.torch_channel) == ("full", "cuda", "cu130")
     assert plan.python_version == "3.13"
-    # 本机只有 3.12，但仍满足 ComfyUI 最低要求
+    # 本机只有 3.12，但仍满足 ComfyUI 最低要求；安装实际固定用内置 3.13.18
     assert plan.python_available is True
-    assert any("3.12" in action.title for action in plan.actions)
+    assert any("内置 Python 3.13.18" in action.title for action in plan.actions)
 
 
 def test_fixture_macos_m4_full_mps() -> None:
     plan = build_plan(load_fixture("macos_m4_16g.json"))
     assert (plan.tier, plan.backend, plan.torch_channel) == ("full", "mps", "mps")
-    assert plan.python_version == "3.12"
+    assert plan.python_version == "3.13"
     assert plan.disk_ok is True
 
 
@@ -102,7 +106,7 @@ def test_rtx3060_driver552_uses_cu126_with_upgrade_hint() -> None:
         make_report(gpus=[nvidia(name="NVIDIA GeForce RTX 3060", driver="552.22", compute_cap="8.6")])
     )
     assert (plan.tier, plan.backend, plan.torch_channel) == ("full", "cuda", "cu126")
-    assert plan.python_version == "3.12"
+    assert plan.python_version == "3.13"
     upgrade = [action for action in plan.actions if action.url]
     assert upgrade, "应有升级驱动以获得 cu130 的建议"
     assert "580" in upgrade[0].detail
@@ -132,10 +136,11 @@ def test_amd_linux_rocm() -> None:
         )
     )
     assert (plan.tier, plan.backend, plan.torch_channel) == ("full", "rocm", "rocm7.2")
-    assert plan.python_version == "3.12"
+    assert plan.python_version == "3.13"
 
 
-def test_amd_win10_directml() -> None:
+def test_amd_win10_falls_back_to_cpu_without_cp313_wheel() -> None:
+    """PyTorch 官方 ROCm 索引无 win_amd64、torch-directml 无 cp313 轮子，不能给装不上的方案。"""
     plan = build_plan(
         make_report(
             os_version="10 (19045)",
@@ -143,18 +148,19 @@ def test_amd_win10_directml() -> None:
             gpus=[GpuInfo(vendor="amd", name="AMD Radeon RX 7800 XT", is_discrete=True)],
         )
     )
-    assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "directml", "directml")
-    assert any("DirectML" in action.detail for action in plan.actions)
+    assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "cpu", "cpu")
+    assert any("DirectML" in action.detail and "3.13" in action.detail for action in plan.actions)
 
 
-def test_amd_win11_with_python313_full_rocm() -> None:
+def test_amd_win11_also_falls_back_to_cpu() -> None:
+    """Win11 + 系统装了 3.13 也没用：ROCm 官方索引根本没有 Windows 轮子。"""
     plan = build_plan(
         make_report(
             pythons=("3.13.5",),
             gpus=[GpuInfo(vendor="amd", name="AMD Radeon RX 7900 XTX", is_discrete=True)],
         )
     )
-    assert (plan.tier, plan.backend, plan.torch_channel) == ("full", "rocm", "rocm7.2")
+    assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "cpu", "cpu")
     assert plan.python_version == "3.13"
 
 
@@ -166,7 +172,8 @@ def test_intel_arc_xpu() -> None:
     assert any("实验" in action.detail for action in plan.actions)
 
 
-def test_intel_mac_falls_back_to_cpu() -> None:
+def test_intel_mac_blocked_without_runtime_package() -> None:
+    """Intel Mac 没有上架内置运行时包，不能静默装一个 x86_64 跑不了的解释器。"""
     plan = build_plan(
         make_report(
             os="macos",
@@ -176,7 +183,8 @@ def test_intel_mac_falls_back_to_cpu() -> None:
             gpus=[GpuInfo(vendor="apple", name="Intel Iris Plus")],
         )
     )
-    assert (plan.tier, plan.backend) == ("limited", "cpu")
+    assert (plan.tier, plan.backend) == ("blocked", "cpu")
+    assert "x86_64" in (plan.blocked_reason or "")
 
 
 def test_no_gpu_cpu() -> None:
@@ -219,8 +227,8 @@ def test_python_only_39_not_available() -> None:
     assert any("Python" in action.title for action in plan.actions)
 
 
-def test_python_fallback_not_newer_than_suggested() -> None:
-    """建议 3.13 时，优先用 3.11 而不是尚未被 torch 支持的 3.14。"""
+def test_system_python_mix_does_not_change_plan() -> None:
+    """本机 3.11 + 3.14 混杂也不影响方案：安装固定用内置 3.13.18。"""
     plan = build_plan(
         make_report(
             pythons=("3.11.9", "3.14.4"),
@@ -228,8 +236,9 @@ def test_python_fallback_not_newer_than_suggested() -> None:
         )
     )
     assert plan.python_version == "3.13"
+    assert plan.torch_channel == "cu130"
     assert plan.python_available is True
-    assert any("3.11" in action.title for action in plan.actions)
+    assert any("内置 Python 3.13.18" in action.title for action in plan.actions)
 
 
 # ---------------- C. 不变量 ----------------
@@ -321,20 +330,23 @@ def test_amd_wsl_falls_back_to_cpu() -> None:
     assert plan.tier == "limited"
 
 
-def test_python_too_new_not_selected() -> None:
-    """本机只有 3.14 时不能选它：PyTorch 轮子尚未覆盖，装了也拿不到 torch。"""
+def test_builtin_python_independent_of_system_version() -> None:
+    """内置 Python 固定 3.13.18，本机只有 3.14 也不该影响方案或文案。"""
     report = make_report(pythons=("3.14.0",))
     plan = build_plan(report)
     assert plan.python_available is False
-    assert any("3.14" in action.detail for action in plan.actions)
+    assert plan.torch_channel == "cu130"
+    assert any("内置 Python 3.13.18" in action.title for action in plan.actions)
 
 
-def test_python_prefers_not_newer_than_suggested() -> None:
-    """同时有 3.12 和 3.14 时应选 3.12，不越级。"""
+def test_system_python_versions_do_not_leak_into_copy() -> None:
+    """系统里同时有 3.12 / 3.14 时，页面也不能出现「将下载内置 Python 3.12」。"""
     report = make_report(pythons=("3.12.7", "3.14.0"))
     plan = build_plan(report)
     assert plan.python_available is True
-    assert any("3.12" in action.title for action in plan.actions)
+    titles = " ".join(action.title for action in plan.actions)
+    assert "内置 Python 3.13.18" in titles
+    assert "3.12" not in titles
 
 
 # ---------------- 解释器可信度 ----------------
@@ -353,7 +365,7 @@ def test_is_trusted_python_rejects_toolchain_paths() -> None:
 
 
 def test_plan_rejects_toolchain_python() -> None:
-    """只有应用自带 3.13 时不能直接用，必须提示装独立 Python。"""
+    """只有应用自带 3.13 时不能算可用解释器，安装仍走内置运行时。"""
     report = make_report(
         pythons=(),
     )
@@ -367,7 +379,8 @@ def test_plan_rejects_toolchain_python() -> None:
     ]
     plan = build_plan(report)
     assert plan.python_available is False
-    assert any("应用自带" in action.detail for action in plan.actions)
+    assert plan.python_source == "download"
+    assert any("不依赖系统里已装的 Python" in action.detail for action in plan.actions)
 
 
 def test_pick_python_skips_untrusted() -> None:
@@ -455,3 +468,136 @@ def test_index_note_empty_when_all_failed() -> None:
 
     mirrors = [_mirror("torch", "南大", "https://n/cu130/", 0, ok=False, channel="cu130")]
     assert _index_note(mirrors, "torch", "cu130") == ""
+
+
+# ---------------- E. 异种硬件与统一内存 ----------------
+def test_ascend_falls_back_to_cpu_with_explicit_notice() -> None:
+    """昇腾需要 CANN + torch_npu，不能假装它支持 CUDA/ROCm，也不能静默略过。"""
+    plan = build_plan(
+        make_report(
+            os="linux",
+            os_version="Ubuntu 24.04",
+            gpus=[GpuInfo(vendor="ascend", name="Ascend 910B ×2", is_discrete=True)],
+        )
+    )
+    assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "cpu", "cpu")
+    assert any("CANN" in action.detail for action in plan.actions)
+
+
+def test_intel_igpu_is_not_treated_as_xpu() -> None:
+    report = make_report(
+        gpus=[
+            GpuInfo(
+                vendor="intel",
+                name="Intel(R) UHD Graphics 770",
+                is_discrete=False,
+                memory_shared=True,
+            )
+        ]
+    )
+    plan = build_plan(report)
+    assert (plan.backend, plan.torch_channel) == ("cpu", "cpu")
+
+
+def test_intel_arc_140t_igpu_still_cpu() -> None:
+    """Lunar Lake 核显名字带数字，不能被当成 Arc 独显。"""
+    from app.comfy.platforms.base import is_discrete_gpu, shares_system_memory
+
+    name = "Intel(R) Arc(TM) 140T GPU"
+    assert is_discrete_gpu("intel", name) is False
+    assert shares_system_memory("intel", name, False) is True
+
+
+def test_strix_halo_apu_linux_uses_cpu_with_memory_note() -> None:
+    """AMD 395+ 是统一内存 APU：不该装 ROCm 独显轮子，提示里要说明内存够大。"""
+    plan = build_plan(
+        make_report(
+            os="linux",
+            os_version="Ubuntu 24.04",
+            memory_gb=128.0,
+            unified_memory=True,
+            gpus=[
+                GpuInfo(
+                    vendor="amd",
+                    name="AMD Radeon 8060S Graphics",
+                    is_discrete=False,
+                    memory_shared=True,
+                )
+            ],
+        )
+    )
+    assert (plan.tier, plan.backend) == ("limited", "cpu")
+    assert any("128 GB" in action.detail for action in plan.actions)
+
+
+def test_strix_halo_apu_windows_uses_cpu() -> None:
+    """Windows 上的 APU 既没有 ROCm 轮子也没有 DirectML 轮子，只能按 CPU 装。"""
+    plan = build_plan(
+        make_report(
+            memory_gb=128.0,
+            unified_memory=True,
+            gpus=[
+                GpuInfo(
+                    vendor="amd",
+                    name="AMD Radeon 8060S Graphics",
+                    is_discrete=False,
+                    memory_shared=True,
+                )
+            ],
+        )
+    )
+    assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "cpu", "cpu")
+    assert any("128 GB" in action.detail or "统一内存" in action.detail for action in plan.actions)
+
+
+def test_large_unified_memory_cpu_message_is_not_generic() -> None:
+    plan = build_plan(make_report(gpus=[], memory_gb=128.0, unified_memory=True))
+    action = next(item for item in plan.actions if "CPU" in item.title)
+    assert "128 GB" in action.detail
+    assert "数倍到数十倍" not in action.detail
+
+
+def test_arm64_linux_blocked_like_dgx_spark() -> None:
+    """GB10 能被识别成 NVIDIA，但 ARM Linux 没有内置运行时包，必须明确挡住。"""
+    plan = build_plan(
+        make_report(
+            os="linux",
+            os_version="Ubuntu 24.04",
+            arch="arm64",
+            memory_gb=128.0,
+            unified_memory=True,
+            gpus=[
+                GpuInfo(
+                    vendor="nvidia",
+                    name="NVIDIA GB10",
+                    driver_version="580.00",
+                    compute_cap="12.1",
+                    is_discrete=True,
+                )
+            ],
+        )
+    )
+    assert plan.tier == "blocked"
+    assert "arm64" in (plan.blocked_reason or "")
+    assert any(action.level == "block" for action in plan.actions)
+
+
+def test_windows_amd_never_emits_uninstallable_channel() -> None:
+    """不管系统装的是 3.12 还是 3.13，Windows AMD 都不能选 rocm / directml。"""
+    for pythons in (("3.12.3",), ("3.13.5",), ()):
+        plan = build_plan(
+            make_report(
+                pythons=pythons,
+                gpus=[GpuInfo(vendor="amd", name="AMD Radeon RX 7900 XTX", is_discrete=True)],
+            )
+        )
+        assert (plan.tier, plan.backend, plan.torch_channel) == ("limited", "cpu", "cpu")
+        assert plan.torch_channel not in {"rocm7.2", "rocm6.4", "directml"}
+
+
+def test_every_channel_has_an_install_recipe() -> None:
+    """plan 可能产出的通道必须在 installer 里有对应索引或特殊包，别再出现空映射。"""
+    from app.comfy.installer import SPECIAL_PACKAGES, TORCH_INDEX
+
+    channels = {"cu130", "cu126", "rocm7.2", "rocm6.4", "xpu", "cpu", "mps", "directml"}
+    assert channels <= (set(TORCH_INDEX) | set(SPECIAL_PACKAGES))

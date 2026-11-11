@@ -57,6 +57,7 @@ class MacOSGpuProbe:
                     compute_cap=None,
                     source="system_profiler",
                     is_discrete=is_discrete_gpu(vendor, name),
+                    memory_shared=vendor == "apple",
                 )
             )
         return gpus

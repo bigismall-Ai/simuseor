@@ -99,16 +99,32 @@ def to_int(value: str | None) -> int | None:
 def is_discrete_gpu(vendor: str, name: str) -> bool:
     """按厂商 + 型号关键词判断独显。"""
     low = name.lower()
-    if vendor == "nvidia":
+    if vendor in ("nvidia", "ascend"):
         return True
     if vendor == "amd":
-        # APU 通常只叫 "AMD Radeon(TM) Graphics"，不含具体型号
+        # APU 通常只叫 "AMD Radeon(TM) Graphics"、"Radeon 8060S Graphics"，不含 RX / PRO
         return any(key in low for key in ("radeon rx", "radeon pro", "radeon vii", "instinct", "firepro"))
     if vendor == "intel":
+        # Lunar Lake 的核显叫 "Intel Arc 140T GPU"，带数字但仍是核显
+        if re.search(r"\b[0-9]{3}t\b", low):
+            return False
         # "Intel(R) Arc(TM) Graphics" 是核显；带型号数字的 Arc 才是独显
         return "arc" in low and any(ch.isdigit() for ch in low)
     # Apple Silicon 是统一内存，不算独显
     return False
+
+
+def shares_system_memory(vendor: str, name: str, is_discrete: bool) -> bool:
+    """核显 / APU 用的是系统内存，不是独立显存。
+
+    统一内存机器（Strix Halo、GB10、Apple Silicon）能加载的模型大小取决于
+    系统内存而不是显存，方案推导需要用这个标记区分对待。
+    """
+    if vendor == "apple":
+        return True
+    if vendor == "intel" and re.search(r"\b[0-9]{3}t\b", name.lower()):
+        return True
+    return not is_discrete and vendor in ("amd", "intel", "nvidia")
 
 
 def query_nvidia_smi(ctx: ProbeContext) -> list[GpuInfo]:

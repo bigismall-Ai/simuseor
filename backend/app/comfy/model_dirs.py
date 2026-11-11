@@ -1,6 +1,6 @@
 """ComfyUI 模型目录约定：统一落盘位置 + extra_model_paths.yaml 生成。
 
-`models/` 是项目级共享仓库（与 `comfy/` 实例目录平级），ComfyUI 实例通过
+`models/` 是项目级共享仓库（与 `comfy/` 平级），`comfy/<name>/ComfyUI` 实例通过
 `extra_model_paths.yaml` 直接挂载它，因此不需要把权重复制进每个实例。
 下载任务按目录名（checkpoints / loras / ...）归类，避免把模型堆在按来源分的目录里。
 """

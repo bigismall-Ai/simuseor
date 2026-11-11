@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel, Field
 
+from ..config import COMFY_ENV_NAME
 from .models import DeviceReport, GpuInfo, MirrorProbe
 
 # 安装 ComfyUI 环境（venv + torch + 依赖）所需空间
@@ -19,16 +20,25 @@ ENV_REQUIRED_GB = 8.0
 DISK_COMFORT_GB = 20.0
 # ComfyUI 自身的最低 Python 要求
 MIN_PYTHON = (3, 10)
-# PyTorch 官方轮子当前覆盖到的最高 Python。高于此版本即使装了也拿不到 torch 轮子，
-# 因此不能因为"本机有 3.14"就选它——宁可提示用户装 3.12/3.13。
+# 内置解释器的版本边界：只用于统计"本机是否存在可信且版本合适的解释器"
+# （API 的 python_available 字段），安装本身一律使用内置 3.13.18，不挑系统 Python。
 MAX_PYTHON = (3, 13)
 # NVIDIA 驱动门槛：低于 527 装不了 cu126；580 起可用 cu130
 NVIDIA_DRIVER_MIN = 527
 NVIDIA_DRIVER_CU130 = 580
 # Turing（含）之后的算力下限
 NVIDIA_MIN_COMPUTE_CAP = 7.5
-# Windows 11 起始 build
-WIN11_BUILD = 22000
+
+# 内置便携 Python 目前只上架了这三个组合。其它架构（ARM Linux 工作站、
+# Windows on ARM、Intel Mac）必须明确挡住，否则 pip 会装到错误架构的解释器上。
+RUNTIME_PLATFORMS = {
+    ("windows", "x86_64"),
+    ("linux", "x86_64"),
+    ("macos", "arm64"),
+}
+# 统一内存机器（Strix Halo / GB10 / Apple Silicon）按系统内存判断能装多大模型
+LARGE_MEMORY_GB = 64.0
+LOW_MEMORY_GB = 16.0
 
 NVIDIA_DRIVER_URL = "https://www.nvidia.com/Download/index.aspx"
 
@@ -93,6 +103,7 @@ def build_plan(report: DeviceReport, mirrors: list[MirrorProbe] | None = None) -
 
     python_available, python_source = _resolve_python(report, choice.python_version, actions)
     disk_ok, disk_required = _resolve_disk(report, actions, block_reasons)
+    _check_runtime(report, actions, block_reasons)
 
     tier = "blocked" if block_reasons else choice.tier
     return InstallPlan(
@@ -124,14 +135,31 @@ def _choose_backend(
 ) -> _Choice:
     if gpu is None:
         actions.append(_cpu_action(report, "没有检测到可用的独立显卡"))
-        return _Choice("limited", "cpu", "cpu", "3.12")
+        return _Choice("limited", "cpu", "cpu", "3.13")
 
     vendor = (gpu.vendor or "unknown").lower()
     if vendor == "nvidia":
         return _nvidia_choice(gpu, warnings, actions, block_reasons)
     if vendor == "amd":
-        return _amd_choice(report, actions)
+        return _amd_choice(report, gpu, actions)
+    if vendor == "ascend":
+        # 昇腾走 CANN + torch_npu，驱动与运行时由系统提供，pip 装不了也不该猜
+        actions.append(
+            Action(
+                level="warn",
+                title="将以 CPU 运行，NPU 加速需另行配置",
+                detail=(
+                    f"检测到 {gpu.name}。昇腾依赖系统里的 CANN 驱动和 torch_npu，"
+                    "本项目不会自动安装这一套；本次先按 CPU 装好 ComfyUI，"
+                    "确认 NPU 驱动可用后可手动接入，不影响出图。"
+                ),
+            )
+        )
+        return _Choice("limited", "cpu", "cpu", "3.13")
     if vendor == "intel":
+        if gpu.memory_shared or not gpu.is_discrete:
+            actions.append(_cpu_action(report, "检测到的是 Intel 核显，加速只对 Arc 独立显卡可用"))
+            return _Choice("limited", "cpu", "cpu", "3.13")
         actions.append(
             Action(
                 level="warn",
@@ -142,13 +170,13 @@ def _choose_backend(
                 ),
             )
         )
-        return _Choice("limited", "xpu", "xpu", "3.12")
+        return _Choice("limited", "xpu", "xpu", "3.13")
     if vendor == "apple":
         return _apple_choice(report, actions)
 
     # 未知厂商：不猜，按 CPU 保守处理
     actions.append(_cpu_action(report, f"显卡厂商无法识别（{gpu.name}）"))
-    return _Choice("limited", "cpu", "cpu", "3.12")
+    return _Choice("limited", "cpu", "cpu", "3.13")
 
 
 def _nvidia_choice(
@@ -181,23 +209,23 @@ def _nvidia_choice(
                 url=NVIDIA_DRIVER_URL,
             )
         )
-        return _Choice("blocked", "cuda", "cu126", "3.12")
+        return _Choice("blocked", "cuda", "cu126", "3.13")
 
     # 算力未知：按老架构保守处理，不猜它是新卡
     if compute_cap is None:
-        warnings.append("未能读取显卡算力（compute_cap），已按保守方案（cu126 / Python 3.12）处理")
+        warnings.append("未能读取显卡算力（compute_cap），已按保守方案（cu126）处理")
         actions.append(
             Action(
                 level="warn",
                 title="按兼容模式安装（未能识别显卡架构）",
                 detail=(
                     f"{name} 的算力信息读取失败，无法判断架构新旧。"
-                    "已选择兼容性最好的 CUDA 12.6（cu126）+ Python 3.12 组合；"
+                    "已选择兼容性最好的 CUDA 12.6（cu126）组合；"
                     "若确认是 RTX 20 系及以后，升级驱动后可改用更新的通道。"
                 ),
             )
         )
-        return _Choice("limited", "cuda", "cu126", "3.12")
+        return _Choice("limited", "cuda", "cu126", "3.13")
 
     if compute_cap < NVIDIA_MIN_COMPUTE_CAP:
         actions.append(
@@ -211,7 +239,7 @@ def _nvidia_choice(
                 ),
             )
         )
-        return _Choice("limited", "cuda", "cu126", "3.12")
+        return _Choice("limited", "cuda", "cu126", "3.13")
 
     # 新架构：再按驱动分档
     if driver_major is None:
@@ -222,11 +250,11 @@ def _nvidia_choice(
                 title="按兼容模式安装（未能读取驱动版本）",
                 detail=(
                     "无法解析当前驱动版本，为避免装出不匹配的包，"
-                    "本次使用 CUDA 12.6（cu126）+ Python 3.12。"
+                    "本次使用 CUDA 12.6（cu126）。"
                 ),
             )
         )
-        return _Choice("full", "cuda", "cu126", "3.12")
+        return _Choice("full", "cuda", "cu126", "3.13")
 
     if driver_major >= NVIDIA_DRIVER_CU130:
         return _Choice("full", "cuda", "cu130", "3.13")
@@ -243,48 +271,75 @@ def _nvidia_choice(
                 url=NVIDIA_DRIVER_URL,
             )
         )
-        return _Choice("full", "cuda", "cu126", "3.12")
+        return _Choice("full", "cuda", "cu126", "3.13")
 
     # 驱动已确认 >= NVIDIA_DRIVER_MIN，但不足以使用 cu130
-    return _Choice("full", "cuda", "cu126", "3.12")
+    return _Choice("full", "cuda", "cu126", "3.13")
 
 
-def _amd_choice(report: DeviceReport, actions: list[Action]) -> _Choice:
+def _amd_choice(report: DeviceReport, gpu: GpuInfo, actions: list[Action]) -> _Choice:
     os_name = (report.os or "").lower()
+    # 集成显卡 / APU（Strix Halo 395+、Radeon 8x0M 等）共用系统内存，
+    # sysfs / 注册表里那点"显存"只是预留量，不能按独显方案装 ROCm
+    apu = gpu.memory_shared or not gpu.is_discrete
 
     if os_name == "linux":
         if report.is_wsl:
             # ROCm 官方不支持 WSL，WSL 内的 AMD 卡无法走 HIP
             actions.append(_cpu_action(report, "ROCm 不支持 WSL，WSL 内的 AMD 显卡无法加速"))
-            return _Choice("limited", "cpu", "cpu", "3.12")
-        return _Choice("full", "rocm", "rocm7.2", "3.12")
+            return _Choice("limited", "cpu", "cpu", "3.13")
+        if apu:
+            memory_note = (
+                f"机器有 {report.memory_gb:.0f} GB 统一内存，能加载较大模型，但速度仍明显慢于独显。"
+                if report.memory_gb
+                else ""
+            )
+            actions.append(
+                Action(
+                    level="warn",
+                    title="将以 CPU 运行，集成显卡暂不自动加速",
+                    detail=(
+                        f"{gpu.name} 是集成显卡，与 CPU 共用系统内存；ROCm 官方只覆盖部分独立显卡，"
+                        f"本次按 CPU 安装，避免装上一个无法使用的加速库。{memory_note}"
+                        "如果系统已单独装好对应架构的 ROCm，可手动切换。"
+                    ),
+                )
+            )
+            return _Choice("limited", "cpu", "cpu", "3.13")
+        return _Choice("full", "rocm", "rocm7.2", "3.13")
 
     if os_name == "windows":
-        build = _windows_build(report)
-        has_313 = (3, 13) in _parsed_pythons(report)
-        if build is not None and build >= WIN11_BUILD and has_313:
-            return _Choice("full", "rocm", "rocm7.2", "3.13")
+        # 内置 Python 固定 3.13.18（cp313）。实测 PyTorch 官方 ROCm 索引
+        # （rocm7.2 / 7.1 / 7.0 / 6.4 / 6.3）只有 Linux 轮子，没有 win_amd64；
+        # torch-directml 最高只发布到 cp312。两条 Windows AMD 加速路都装不上，
+        # 与其给一个注定失败的安装方案，不如如实按 CPU 装好 ComfyUI。
+        memory_note = (
+            f"这台机器有 {report.memory_gb:.0f} GB 统一内存，能加载较大的模型。"
+            if report.unified_memory and (report.memory_gb or 0) >= LARGE_MEMORY_GB
+            else ""
+        )
         actions.append(
             Action(
                 level="warn",
-                title="可以安装，但速度会明显低于预期",
+                title="将以 CPU 运行，Windows 上的 AMD 加速暂不可用",
                 detail=(
-                    f"当前系统为 {report.os_version or 'Windows'}，AMD 显卡只能使用 DirectML 后端，"
-                    "性能明显低于 ROCm。升级到 Windows 11 并安装 Python 3.13 后，"
-                    "可切换到 ROCm 通道获得更好性能。"
+                    f"检测到 {gpu.name}。内置 Python 是 3.13，而 PyTorch 官方的 ROCm "
+                    "轮子目前只提供 Linux 版，DirectML 插件也还没出 3.13 版；"
+                    "为避免装上用不了的加速库，本次按 CPU 安装，ComfyUI 仍可出图但速度慢。"
+                    f"{memory_note}等官方补齐对应轮子后会自动启用加速。"
                 ),
             )
         )
-        return _Choice("limited", "directml", "directml", "3.12")
+        return _Choice("limited", "cpu", "cpu", "3.13")
 
     # macOS 上没有现代 AMD 驱动，按 CPU 处理
     actions.append(_cpu_action(report, "当前系统没有可用的现代 AMD 显卡驱动"))
-    return _Choice("limited", "cpu", "cpu", "3.12")
+    return _Choice("limited", "cpu", "cpu", "3.13")
 
 
 def _apple_choice(report: DeviceReport, actions: list[Action]) -> _Choice:
     if (report.os or "").lower() == "macos" and (report.arch or "").lower() == "arm64":
-        return _Choice("full", "mps", "mps", "3.12")
+        return _Choice("full", "mps", "mps", "3.13")
 
     actions.append(
         Action(
@@ -296,12 +351,23 @@ def _apple_choice(report: DeviceReport, actions: list[Action]) -> _Choice:
             ),
         )
     )
-    return _Choice("limited", "cpu", "cpu", "3.12")
+    return _Choice("limited", "cpu", "cpu", "3.13")
 
 
 def _cpu_action(report: DeviceReport, reason: str) -> Action:
     found = "、".join(gpu.name for gpu in report.gpus if gpu.name) or "无"
-    detail = f"{reason}（探测到的显示适配器：{found}）。CPU 可以出图，但耗时通常是显卡的数倍到数十倍。"
+    detail = f"{reason}（探测到的显示适配器：{found}）。"
+    memory = report.memory_gb or 0
+    if report.unified_memory and memory >= LARGE_MEMORY_GB:
+        # 128GB 的 Spark / Strix Halo 和 8GB 笔记本都走 CPU，但不能给同一句结论
+        detail += (
+            f"这台机器有 {memory:.0f} GB 统一内存，能加载较大的模型，"
+            "只是生成速度仍明显慢于显卡加速。"
+        )
+    elif memory and memory < LOW_MEMORY_GB:
+        detail += f"系统内存只有 {memory:.0f} GB，较大的模型可能装不下，生成速度也很慢。"
+    else:
+        detail += "CPU 可以出图，但耗时通常是显卡的数倍到数十倍。"
     if report.warnings:
         detail += " 探测过程中还有告警，详见 warnings。"
     return Action(level="warn", title="将以 CPU 运行，生成速度很慢", detail=detail)
@@ -318,7 +384,11 @@ def _usable_gpu(report: DeviceReport) -> GpuInfo | None:
         candidates.append(report.primary_gpu)
     candidates.extend(report.gpus)
     for gpu in candidates:
-        if _is_virtual(gpu) or (gpu.vendor or "").lower() == "unknown":
+        vendor = (gpu.vendor or "").lower()
+        if _is_virtual(gpu) or vendor == "unknown":
+            continue
+        # Intel 核显（UHD / Iris / Arc 140T）没有 XPU 轮子，别把它当加速卡
+        if vendor == "intel" and (gpu.memory_shared or not gpu.is_discrete):
             continue
         return gpu
     return None
@@ -331,64 +401,30 @@ def _is_virtual(gpu: GpuInfo) -> bool:
 
 # ---------------- Python ----------------
 def _resolve_python(report: DeviceReport, suggested: str, actions: list[Action]) -> tuple[bool, str]:
-    """返回 (本机是否有可用解释器, 来源 system|download)。
+    """返回 (本机是否有可信解释器, 来源 system|download)，并产出一条说明。
 
-    本机没有可用 Python 也不阻塞安装——installer 会下载内置运行时。
-    因此这里只产出 info 级说明，不再产出 warn/block。
+    架构改成内置便携 Python 之后，安装**不再使用**系统里的任何解释器：
+    `suggested` 和各 _Choice 里的 3.12/3.13 是早期"从本机挑 Python"时代的
+    遗留值，仅保留字段兼容，不能再拿它写面向用户的文案（否则会出现
+    「将下载内置 Python 3.12」而实际装的是 3.13.18）。
+    这里仍统计本机解释器来填 python_available，但提示统一说明内置版本。
     """
-    # 只认可信解释器：应用自带的运行时会随宿主升级/卸载消失，
-    # venv 则挂在别的解释器上，拿它再建环境等于循环依赖
+    del suggested
     trusted = [info for info in report.pythons if info.trusted]
-    parsed = [(version, info.path) for info in trusted if (version := _parse_python(info.version))]
-    versions = {version for version, _ in parsed}
-    supported = sorted(version for version in versions if MIN_PYTHON <= version <= MAX_PYTHON)
-    too_new = sorted(version for version in versions if version > MAX_PYTHON)
+    parsed = [_parse_python(info.version) for info in trusted]
+    has_usable = any(v and MIN_PYTHON <= v <= MAX_PYTHON for v in parsed)
 
-    if _parse_python(suggested) in supported:
-        return True, "system"
-
-    if supported:
-        # 优先用不高于建议值的最高版本：新于建议值的解释器未必有对应的 torch 轮子
-        target = _parse_python(suggested) or MIN_PYTHON
-        not_newer = [version for version in supported if version <= target]
-        best = not_newer[-1] if not_newer else supported[0]
-        path = next(path for version, path in parsed if version == best)
-        actions.append(
-            Action(
-                level="info",
-                title=f"将使用本机已有的 Python {best[0]}.{best[1]}",
-                detail=(
-                    f"建议使用 Python {suggested}，但本机没有安装；"
-                    f"改为使用已检测到的 {best[0]}.{best[1]}（{path}），功能不受影响。"
-                ),
-            )
-        )
-        return True, "system"
-
-    if too_new:
-        newest = too_new[-1]
-        why = f"本机只有 Python {newest[0]}.{newest[1]}，超出了 PyTorch 官方轮子的覆盖范围。"
-    else:
-        untrusted = [info for info in report.pythons if not info.trusted]
-        why = "本机没有可直接使用的 Python。"
-        if untrusted:
-            shown = "、".join(info.version or "未知版本" for info in untrusted[:3])
-            why += (
-                f"检测到 {shown}，但它们要么是应用自带的运行时（随宿主软件升级消失），"
-                f"要么是虚拟环境（挂在别的解释器上）。"
-            )
     actions.append(
         Action(
             level="info",
-            title=f"将下载内置 Python {suggested}",
-            detail=f"{why}安装时会下载约 48MB 的便携版运行时，无需自行安装 Python。",
+            title=f"将使用内置 Python {COMFY_ENV_NAME}",
+            detail=(
+                "运行时随安装自动准备，不依赖系统里已装的 Python；"
+                "所有 ComfyUI 版本共用这一套。"
+            ),
         )
     )
-    return False, "download"
-
-
-def _parsed_pythons(report: DeviceReport) -> set[tuple[int, int]]:
-    return {version for info in report.pythons if info.trusted and (version := _parse_python(info.version))}
+    return has_usable, "system" if has_usable else "download"
 
 
 # ---------------- 磁盘 ----------------
@@ -445,6 +481,32 @@ def _resolve_disk(
     return True, ENV_REQUIRED_GB
 
 
+# ---------------- 内置运行时兼容性 ----------------
+def _check_runtime(
+    report: DeviceReport, actions: list[Action], block_reasons: list[str]
+) -> None:
+    """内置 Python 是绑死版本的便携包，架构不匹配时不能让它静默装错。
+
+    DGX Spark / Grace 这类 ARM Linux 统一内存工作站、Windows on ARM、
+    Intel Mac 都会被挡在这里，而不是等 pip 装到一半才发现解释器跑不起来。
+    """
+    key = ((report.os or "").lower(), (report.arch or "").lower())
+    if key in RUNTIME_PLATFORMS:
+        return
+    block_reasons.append(f"尚未为 {report.os} / {report.arch} 准备内置运行环境")
+    actions.append(
+        Action(
+            level="block",
+            title="这台设备的架构还不支持",
+            detail=(
+                f"本机是 {report.os} / {report.arch}（例如 ARM 工作站、DGX Spark、Intel Mac）。"
+                "内置便携 Python 目前只有 Windows x86_64、Linux x86_64、macOS arm64 三个包，"
+                "直接安装会拿到架构不匹配的解释器。需要先给这个架构补一份对应的运行时包。"
+            ),
+        )
+    )
+
+
 # ---------------- 解析工具 ----------------
 def _parse_compute_cap(text: str | None) -> float | None:
     if not text:
@@ -464,17 +526,6 @@ def _parse_python(text: str | None) -> tuple[int, int] | None:
         return None
     match = re.match(r"\s*(\d+)\.(\d+)", text)
     return (int(match.group(1)), int(match.group(2))) if match else None
-
-
-def _windows_build(report: DeviceReport) -> int | None:
-    match = re.search(r"\d+", report.os_build or "")
-    if match:
-        return int(match.group(0))
-    match = re.search(r"\((\d+)\)", report.os_version or "")
-    if match:
-        return int(match.group(1))
-    match = re.search(r"\b(\d{5,})\b", report.os_version or "")
-    return int(match.group(1)) if match else None
 
 
 def _pick_index(mirrors: list[MirrorProbe] | None, kind: str, channel: str) -> str:

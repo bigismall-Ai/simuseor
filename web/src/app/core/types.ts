@@ -12,8 +12,17 @@ export interface AppSettings {
   aria2: { rpc_port: number; rpc_secret: string; connections: number; split: number; max_concurrent: number };
   default_strategy: string;
   download: { save_dir: string; strategy: string };
-  proxy: { url: string };
+  proxy: { host: string; port: number | string };
   sources: Record<string, SourceConfig>;
+}
+
+/** host/port 拼成代理 URL；host 可自带 scheme（socks5:// 等）。 */
+export function proxyUrl(proxy?: { host?: string; port?: number | string } | null): string {
+  const host = (proxy?.host || '').trim();
+  if (!host) return '';
+  const base = host.includes('://') ? host : `http://${host}`;
+  const port = String(proxy?.port ?? '').trim();
+  return port ? `${base}:${port}` : base;
 }
 
 export interface RemoteFile {
@@ -154,6 +163,8 @@ export interface ComfyGpu {
   compute_cap: string | null;
   source: string;
   is_discrete: boolean;
+  /** 核显 / APU：与 CPU 共用系统内存，没有独立显存 */
+  memory_shared?: boolean;
 }
 
 export interface ComfyPython {
@@ -177,6 +188,8 @@ export interface ComfyInstance {
   python: string | null;
   port: number | null;
   created_at: string | null;
+  /** false = 没有 instance.json 的安装残留目录，可清理 */
+  registered?: boolean;
 }
 
 export interface ComfyDevice {
@@ -185,6 +198,10 @@ export interface ComfyDevice {
   os_build: string;
   arch: string;
   is_wsl: boolean;
+  /** 系统内存总量；统一内存机器据此判断能加载多大模型 */
+  memory_gb: number | null;
+  /** 显卡与 CPU 共用同一份内存（Apple Silicon / APU / GB10 等） */
+  unified_memory: boolean;
   gpus: ComfyGpu[];
   primary_gpu: ComfyGpu | null;
   pythons: ComfyPython[];
@@ -216,9 +233,29 @@ export interface ComfyPlan {
   blocked_reason: string | null;
 }
 
+/** 共享基础环境 instances/.environment 的实装状态（只读探测的结果） */
+export interface ComfyRuntime {
+  ready: boolean;
+  python_ready: boolean;
+  python_version: string;
+  python_source: string;
+  python_cached: boolean;
+  torch_ready: boolean;
+  torch_version: string | null;
+  torchvision_version: string | null;
+  torchaudio_version: string | null;
+  cuda_runtime: string | null;
+  torch_channel: string | null;
+  lock_ready: boolean;
+  path: string;
+}
+
 export interface ComfyEnv {
   device: ComfyDevice;
   plan: ComfyPlan;
+  runtime: ComfyRuntime;
+  /** 后端正在删除的实例名（删除是慢操作，刷新页面后状态从这里恢复） */
+  deleting_instances?: string[];
 }
 
 export interface ComfyStep {
@@ -229,7 +266,29 @@ export interface ComfyStep {
   estimated_gb: number;
 }
 
+/** 基础环境 / ComfyUI 实例是两类独立安装任务，各自只在自己的卡片里触发。 */
+export type ComfyInstallKind = 'environment' | 'instance' | 'full';
+
+export interface ComfyEnvIssue {
+  code: string;
+  title: string;
+  detail: string;
+  fix: 'install' | null;
+}
+
+/** 「环境检测」的实测结果：启动内置解释器 import torch，不是只读文件探测。 */
+export interface ComfyEnvCheck {
+  ok: boolean;
+  python: string | null;
+  torch: string | null;
+  backend: string | null;
+  accelerator: boolean | null;
+  issues: ComfyEnvIssue[];
+  checked_at: string;
+}
+
 export interface ComfyPreview {
+  kind: ComfyInstallKind;
   spec: {
     name: string;
     workspace: string;
@@ -242,8 +301,25 @@ export interface ComfyPreview {
   total_gb: number;
 }
 
+export type ComfyPhase = 'download' | 'unpack' | 'clone' | 'resolve' | 'install' | 'done' | 'idle';
+
+/** 后端按 250ms 推送的真实进度（字节数、速度、ETA）。 */
+export interface ComfyProgress {
+  phase: ComfyPhase;
+  label: string;
+  done: number;
+  size: number;
+  /** -1 表示总量未知，前端显示无限进度条 */
+  percent: number;
+  /** 字节/秒 */
+  speed: number;
+  eta: number | null;
+  /** 后端按步骤权重折算的总进度（0-100），优先于前端本地估算 */
+  overall?: number;
+}
+
 export interface ComfyInstallEvent {
-  type: 'step_start' | 'step_done' | 'log' | 'step_plan';
+  type: 'step_start' | 'step_done' | 'log' | 'step_plan' | 'progress';
   key?: string;
   title?: string;
   line?: string;
@@ -251,12 +327,23 @@ export interface ComfyInstallEvent {
   ok?: boolean;
   index?: number;
   total?: number;
+  phase?: ComfyPhase;
+  label?: string;
+  done?: number;
+  size?: number;
+  percent?: number;
+  speed?: number;
+  eta?: number | null;
+  /** 后端算好的总进度（0-100），每个事件都带，便于刷新接管后不掉进度 */
+  overall?: number;
   at: number;
 }
 
 export interface ComfyInstallJob {
   id: string;
   status: 'running' | 'done' | 'failed';
+  kind: ComfyInstallKind;
+  repair?: boolean;
   name: string;
   workspace: string;
   spec: ComfyPreview['spec'] | null;
