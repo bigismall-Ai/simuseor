@@ -1,0 +1,11 @@
+/* Tailwind v4 入口：只取 theme + utilities，不引 preflight。
+   preflight 会重置原生元素，把现有页面（依赖 styles.css 的元素选择器）打乱。
+   本文件在 angular.json 里排在 styles.css 之前，让 styles.css 的 :root 覆盖 --radius-sm 等同名 token。 */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+
+@source "./app/lab";
+
+@theme {
+  --font-mono: "Cascadia Mono", "JetBrains Mono", Consolas, ui-monospace, monospace;
+}

@@ -25,11 +25,40 @@ interface DownloadDialog {
   active: number;
   repo: RepoInfo | null;
   selected: Set<string>;
+  /** 落盘目录（ComfyUI 模型分类），由后端建议、用户可改 */
+  folder: string;
   loading: boolean;
   creating: boolean;
   done: boolean;
   error: string;
 }
+
+/** ComfyUI 模型目录；顺序与后端 model_dirs.py 保持一致 */
+const FOLDER_OPTIONS: { key: string; label: string }[] = [
+  { key: 'checkpoints', label: 'checkpoints · 主模型' },
+  { key: 'diffusion_models', label: 'diffusion_models · 扩散主干' },
+  { key: 'text_encoders', label: 'text_encoders · 文本编码器' },
+  { key: 'vae', label: 'vae · VAE' },
+  { key: 'loras', label: 'loras · LoRA' },
+  { key: 'controlnet', label: 'controlnet · ControlNet' },
+  { key: 'upscale_models', label: 'upscale_models · 放大模型' },
+  { key: 'embeddings', label: 'embeddings · TextualInversion' },
+  { key: 'clip_vision', label: 'clip_vision · 视觉编码' },
+  { key: 'style_models', label: 'style_models · 风格模型' },
+  { key: 'model_patches', label: 'model_patches · 模型补丁' },
+  { key: 'photomaker', label: 'photomaker · PhotoMaker' },
+  { key: 'vae_approx', label: 'vae_approx · 预览 VAE' },
+  { key: 'hypernetworks', label: 'hypernetworks · 超网络' },
+  { key: 'gligen', label: 'gligen · GLIGEN' },
+  { key: 'sams', label: 'sams · SAM 分割' },
+  { key: 'ultralytics', label: 'ultralytics · YOLO 检测' },
+  { key: 'rmbg', label: 'rmbg · 背景移除' },
+  { key: 'audio_encoders', label: 'audio_encoders · 音频编码' },
+  { key: 'configs', label: 'configs · 配置' },
+  { key: 'diffusers', label: 'diffusers · Diffusers 目录' },
+  { key: 'onnx', label: 'onnx · ONNX' },
+  { key: 'workflows', label: 'workflows · 工作流' },
+];
 
 interface SourceError {
   label: string;
@@ -248,6 +277,15 @@ const PAGE_SIZE = 20;
             }
             @if (dlg.repo) {
               <div class="toolbar mb">
+                <span class="muted">存放目录</span>
+                <select [(ngModel)]="dlg.folder" data-testid="dialog-folder">
+                  @for (f of folders; track f.key) {
+                    <option [value]="f.key">{{ f.label }}</option>
+                  }
+                </select>
+                <span class="muted mono">models/{{ dlg.folder }}/{{ dlg.repo.display_name }}</span>
+              </div>
+              <div class="toolbar mb">
                 <span class="muted">
                   共 {{ dlg.repo.files.length }} 个文件 · 已选 {{ dlg.selected.size }} 个 /
                   {{ fmtSize(dlgSize()) }}
@@ -312,6 +350,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   dlgStrategy = 'direct';
 
   readonly hotKeywords = HOT_KEYWORDS;
+  readonly folders = FOLDER_OPTIONS;
   readonly skeletons = [1, 2, 3, 4, 5];
 
   private rawItems: SearchItem[] = [];
@@ -354,7 +393,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.api.getSettings().subscribe((s) => {
       this.dlgStrategy = s.download?.strategy || s.default_strategy || 'direct';
       const tabs = Object.keys(s.sources || {})
-        .filter((k) => k !== 'demo' || this.showDemo)
+        .filter((k) => (k === 'demo' ? this.showDemo : ['huggingface', 'modelscope', 'civitai'].includes(k)))
         .map((k) => ({ key: k, label: SOURCE_LABELS[k] || s.sources[k].label || k }));
       this.sourceTabs = [{ key: 'all', label: '全部' }, ...tabs];
       if (this.source !== 'all' && !s.sources?.[this.source]) {
@@ -564,6 +603,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       active: 0,
       repo: null,
       selected: new Set(),
+      folder: '',
       loading: true,
       creating: false,
       done: false,
@@ -592,10 +632,11 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     if (!dialog || !item) return;
     dialog.loading = true;
     dialog.error = '';
-    this.api.resolve(item.source, item.id, '').subscribe({
+    this.api.resolve(item.source, item.id, '', item.task).subscribe({
       next: (repo) => {
         if (!this.dlg || this.dlg !== dialog || this.dlg.active !== dialog.active) return;
         this.dlg.repo = repo;
+        this.dlg.folder = repo.target_folder || 'checkpoints';
         this.dlg.selected = new Set(repo.files.map((f) => f.path));
         this.dlg.loading = false;
       },
@@ -643,6 +684,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         revision: this.dlg.repo.revision,
         files: [...this.dlg.selected],
         strategy: this.dlgStrategy,
+        target_folder: this.dlg.folder,
+        task: item.task,
       })
       .subscribe({
         next: () => {

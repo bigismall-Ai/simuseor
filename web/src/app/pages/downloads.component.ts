@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/api.service';
-import { AppSettings, RepoInfo, Task, errMsg, fmtSize, pct } from '../core/types';
+import { AppSettings, RepoInfo, Task, errMsg, fmtSize, pct, proxyUrl } from '../core/types';
 import { BadgeTone, BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
@@ -46,7 +46,6 @@ import { PanelComponent } from '../ui/panel.component';
         <ui-field label="下载策略">
           <select [(ngModel)]="strategy">
             <option value="direct">direct - aria2 直连</option>
-            <option value="proxy">proxy - 走代理</option>
             <option value="mirror">mirror - 多站点分片</option>
             <option value="sdk">sdk - 官方下载 SDK</option>
           </select>
@@ -293,11 +292,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   proxySummary(): string {
     const cfg = this.settings?.sources?.[this.source];
     if (!cfg) return '';
-    const url = this.settings?.proxy?.url || '';
-    if (this.strategy === 'proxy') {
-      return cfg.proxy_enabled ? `代理已启用：${url}` : '注意：proxy 策略但该源代理未启用，将直连';
-    }
-    return `代理设置：${cfg.proxy_enabled ? '已开启 ' + url : '已禁用'}（proxy 策略时生效）`;
+    const url = proxyUrl(this.settings?.proxy);
+    return cfg.proxy_enabled ? `代理已启用：${url}` : '代理已禁用（该源直连）';
   }
 
   resolveRepo(): void {
