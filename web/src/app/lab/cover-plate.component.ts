@@ -58,7 +58,7 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
                   [attr.d]="meta.mark"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="1.9"
+                  stroke-width="2.4"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
