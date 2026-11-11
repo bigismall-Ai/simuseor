@@ -16,6 +16,10 @@ class CivitaiAdapter(SourceAdapter):
     name = "civitai"
     uses_repo_subdir = False
 
+    def __init__(self) -> None:
+        # 关键词搜索游标缓存：key=(query,sort,nsfw,limit) → cursors[i] 为获取第 i+1 页所需游标（None 表示首页/末页）
+        self._cursors: dict[tuple, list[str | None]] = {}
+
     def search(self, q: str, limit: int, page: int, sort: str, cfg: dict, task: str = "") -> dict:
         sort_map = {"downloads": "Most Downloaded", "likes": "Highest Rated", "recent": "Newest"}
         params = {
@@ -26,12 +30,6 @@ class CivitaiAdapter(SourceAdapter):
         sort_key = sort_map.get(sort)
         if sort_key:
             params["sort"] = sort_key
-        if q:
-            # Civitai 限制：关键词搜索不支持 page 参数（游标分页），只返回首页
-            if int(page) > 1:
-                return {"items": [], "total": 0}
-        else:
-            params["page"] = max(1, int(page))
         # CivitAI Red 可见性=完整目录（含成熟内容）。注意 browsingLevel 的 GET 校验有缺陷
         # （z.number() 不做字符串转数字，任何取值都报 ZodError），这里用官方遗留的 nsfw 参数。
         if (cfg or {}).get("full_catalog"):
@@ -42,16 +40,16 @@ class CivitaiAdapter(SourceAdapter):
         token = (cfg or {}).get("token") or ""
         if token:
             headers["Authorization"] = f"Bearer {token}"
-        try:
-            resp = httpx.get(
-                f"{API}/models", params=params, headers=headers, timeout=30, follow_redirects=True
-            )
-        except httpx.HTTPError as exc:
-            raise SourceError(f"Civitai 搜索失败: {exc}") from exc
-        if resp.status_code >= 400:
-            raise SourceError(f"Civitai 搜索错误 {resp.status_code}")
+        page = max(1, int(page))
+        if q:
+            # Civitai 关键词搜索不支持 page 参数，走游标分页（缓存各页游标避免重复翻页）
+            data = self._fetch_query_page(params, headers, page)
+        else:
+            data = self._fetch({**params, "page": page}, headers)
         items = []
-        for m in resp.json().get("items") or []:
+        for m in data.get("items") or []:
+            if m.get("type") == "Workflows":
+                continue  # 工作流统一走工作流发现页，模型发现里屏蔽
             stats = m.get("stats") or {}
             versions = m.get("modelVersions") or []
             desc = re.sub(r"<[^>]+>", " ", m.get("description") or "")
@@ -73,6 +71,54 @@ class CivitaiAdapter(SourceAdapter):
         if task:
             items = [m for m in items if (m.get("task") or "") == task]
         return {"items": items, "total": len(items)}
+
+    def _fetch(self, params: dict, headers: dict) -> dict:
+        try:
+            resp = httpx.get(
+                f"{API}/models", params=params, headers=headers, timeout=30, follow_redirects=True
+            )
+        except httpx.HTTPError as exc:
+            raise SourceError(f"Civitai 搜索失败: {exc}") from exc
+        if resp.status_code >= 400:
+            raise SourceError(f"Civitai 搜索错误 {resp.status_code}")
+        return resp.json()
+
+    def _fetch_query_page(self, params: dict, headers: dict, page: int) -> dict:
+        """关键词搜索游标翻页：cursors[i] 为获取第 i+1 页的游标，末页之后再记 None。"""
+        key = (params.get("query"), params.get("sort"), params.get("nsfw"), params.get("limit"))
+        cursors = self._cursors.get(key) or [None]
+        data: dict | None = None
+        fetched = 0  # data 对应的页码
+        while len(cursors) <= page:
+            cur = cursors[-1]
+            if cur is None and len(cursors) > 1:
+                break  # 已到末页
+            p = dict(params)
+            if cur is not None:
+                p["cursor"] = cur
+            data = self._fetch(p, headers)
+            fetched = len(cursors)
+            cursors.append(self._next_cursor(data))
+        self._cursors[key] = cursors
+        while len(self._cursors) > 32:  # 有界缓存，淘汰最旧查询
+            self._cursors.pop(next(iter(self._cursors)))
+        if fetched == page and data is not None:
+            return data
+        if page == 1:
+            return self._fetch(dict(params), headers)
+        cur = cursors[page - 1] if page - 1 < len(cursors) else None
+        if cur is None:
+            return {"items": []}  # 已越过末页
+        return self._fetch({**params, "cursor": cur}, headers)
+
+    @staticmethod
+    def _next_cursor(data: dict) -> str | None:
+        meta = data.get("metadata") or {}
+        cur = meta.get("nextCursor")
+        if cur:
+            return str(cur)
+        m = re.search(r"[?&]cursor=([^&]+)", meta.get("nextPage") or "")
+        return m.group(1) if m else None
 
     def resolve(self, repo_id: str, revision: str, cfg: dict) -> RepoInfo:
         cfg = cfg or {}

@@ -11,7 +11,9 @@ import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from ..config import load_settings, save_settings
+from ..comfy.model_dirs import infer_folder
+from .. import workflows as workflow_service
+from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
 from ..db import execute, new_id, now_iso, query
 from ..download.manager import manager
 from ..sources import get_adapter
@@ -24,6 +26,7 @@ class ResolveRequest(BaseModel):
     source: str
     repo_id: str
     revision: str = ""
+    task: str = ""
 
 
 class CreateTaskRequest(BaseModel):
@@ -33,6 +36,21 @@ class CreateTaskRequest(BaseModel):
     files: list[str] = Field(default_factory=list)
     strategy: str = ""
     save_dir: str = ""
+    target_folder: str = ""
+    task: str = ""
+
+
+class WorkflowResolveRequest(BaseModel):
+    source: str
+    repo_id: str
+    revision: str = ""
+
+
+class WorkflowImportRequest(BaseModel):
+    source: str
+    repo_id: str
+    revision: str = ""
+    instance: str
 
 
 class LibraryPatch(BaseModel):
@@ -63,7 +81,10 @@ def health() -> dict:
 # ---------------- 设置 ----------------
 @router.get("/settings")
 def get_settings() -> dict:
-    return load_settings()
+    s = load_settings()
+    # 展示层用相对形态（项目内）；运行时 load_settings 仍解析为绝对
+    s["download"]["save_dir"] = relativize_save_dir(s["download"]["save_dir"])
+    return s
 
 
 @router.put("/settings")
@@ -85,13 +106,56 @@ def resolve(body: ResolveRequest) -> dict:
     if not cfg:
         raise HTTPException(status_code=400, detail=f"未配置的下载源: {body.source}")
     adapter = get_adapter(body.source)
-    return adapter.resolve(body.repo_id, body.revision, cfg).to_dict()
+    repo = adapter.resolve(body.repo_id, body.revision, cfg)
+    payload = repo.to_dict()
+    # 建议的落盘目录（ComfyUI 模型分类），前端可覆盖
+    payload["target_folder"] = infer_folder(body.source, body.task, [f.path for f in repo.files])
+    return payload
+
+
+# ---------------- 工作流发现 ----------------
+@router.get("/workflows")
+def search_workflows(q: str = "", source: str = "all", limit: int = 12, page: int = 1, sort: str = "downloads") -> dict:
+    return workflow_service.search(q, source, limit, page, sort)
+
+
+@router.post("/workflows/resolve")
+def resolve_workflow(body: WorkflowResolveRequest) -> dict:
+    try:
+        return workflow_service.resolve(body.source, body.repo_id, body.revision)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/workflows/instances")
+def workflow_instances() -> dict:
+    return {"items": workflow_service.instances()}
+
+
+@router.post("/workflows/import")
+def import_workflow(body: WorkflowImportRequest) -> dict:
+    try:
+        return workflow_service.import_to_instance(body.source, body.repo_id, body.instance, body.revision)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 # ---------------- 任务 ----------------
 @router.post("/tasks")
 def create_task(body: CreateTaskRequest) -> dict:
-    return manager.create_task(body.source, body.repo_id, body.revision, body.files, body.strategy, body.save_dir)
+    try:
+        return manager.create_task(
+            body.source,
+            body.repo_id,
+            body.revision,
+            body.files,
+            body.strategy,
+            body.save_dir,
+            body.target_folder,
+            body.task,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/tasks")
@@ -271,13 +335,13 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
 # ---------------- 代理测试 ----------------
 @router.post("/proxy/test")
 def proxy_test(body: ProxyTestRequest) -> dict:
-    url = body.url or load_settings()["proxy"]["url"]
+    url = body.url or build_proxy_url(load_settings()["proxy"])
     result: dict = {"proxy_url": url, "proxy": None, "direct": None}
 
     def probe(use_proxy: bool) -> dict:
         started = time.time()
         try:
-            if use_proxy:
+            if use_proxy and url:
                 with httpx.Client(proxy=url, timeout=8, follow_redirects=True) as client:
                     resp = client.get("https://huggingface.co")
             else:
@@ -320,6 +384,7 @@ def _browse_folder_windows(initial: str) -> tuple[str | None, str | None]:
     init = str(initial or "").replace("'", "''")
     init_line = f"$dlg.SelectedPath = '{init}'" if init else ""
     script = (
+        "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; "
         "Add-Type -AssemblyName System.Windows.Forms; "
         "$dlg = New-Object System.Windows.Forms.FolderBrowserDialog; "
         "$dlg.Description = '选择保存目录'; "
@@ -328,7 +393,8 @@ def _browse_folder_windows(initial: str) -> tuple[str | None, str | None]:
     )
     proc = subprocess.run(  # noqa: S603
         [_powershell_exe(), "-NoProfile", "-NonInteractive", "-Command", script],
-        capture_output=True, text=True, timeout=300, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=300, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
     )
     if proc.returncode != 0:
         return None, (proc.stderr.strip() or "目录选择框调用失败")[:300]
@@ -372,7 +438,7 @@ def _browse_folder_linux(initial: str) -> tuple[str | None, str | None]:
 @router.post("/browse-folder")
 def browse_folder(body: BrowseFolderRequest) -> dict:
     path, error = _browse_folder(body.path)
-    result: dict = {"path": path}
+    result: dict = {"path": relativize_save_dir(path) if path else None}
     if error:
         result["error"] = error
     return result

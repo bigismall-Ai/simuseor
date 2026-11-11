@@ -29,6 +29,15 @@ import { ThemeService } from './core/theme.service';
             </svg>
             <span>模型发现</span>
           </a>
+          <a class="nav-item" routerLink="/workflows" routerLinkActive="active">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="1.5" y="2.5" width="4" height="3" rx="0.6" />
+              <rect x="10.5" y="10.5" width="4" height="3" rx="0.6" />
+              <circle cx="11" cy="4" r="1.6" />
+              <path d="M5.5 4h4M3.5 5.5v3.5a1.5 1.5 0 0 0 1.5 1.5h3M12.5 6v3.2" />
+            </svg>
+            <span>工作流发现</span>
+          </a>
           <a class="nav-item" routerLink="/library" routerLinkActive="active">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3h10v10H3zM5 6h6M5 9h6" />

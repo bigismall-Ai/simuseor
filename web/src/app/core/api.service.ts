@@ -4,12 +4,15 @@ import { Observable } from 'rxjs';
 import {
   AppSettings,
   ComfyEnv,
+  ComfyEnvCheck,
   ComfyInstallJob,
+  ComfyInstallKind,
   ComfyPreview,
   LibraryModel,
   RepoInfo,
   SearchItem,
   Task,
+  WorkflowInstance,
   WorkflowItem,
 } from './types';
 
@@ -61,10 +64,12 @@ export class ApiService {
     source?: string;
     limit?: number;
     page?: number;
+    sort?: string;
   }): Observable<{ items: WorkflowItem[]; errors: Record<string, string>; done: boolean }> {
     let httpParams = new HttpParams();
     if (params.q) httpParams = httpParams.set('q', params.q);
     if (params.source) httpParams = httpParams.set('source', params.source);
+    if (params.sort) httpParams = httpParams.set('sort', params.sort);
     httpParams = httpParams.set('limit', String(params.limit ?? 12));
     httpParams = httpParams.set('page', String(params.page ?? 1));
     return this.http.get<{ items: WorkflowItem[]; errors: Record<string, string>; done: boolean }>(
@@ -75,6 +80,21 @@ export class ApiService {
 
   resolveWorkflow(source: string, repoId: string): Observable<RepoInfo> {
     return this.http.post<RepoInfo>(`${this.base}/workflows/resolve`, { source, repo_id: repoId });
+  }
+
+  listWorkflowInstances(): Observable<{ items: WorkflowInstance[] }> {
+    return this.http.get<{ items: WorkflowInstance[] }>(`${this.base}/workflows/instances`);
+  }
+
+  importWorkflow(
+    source: string,
+    repoId: string,
+    instance: string,
+  ): Observable<{ instance: string; dir: string; files: string[] }> {
+    return this.http.post<{ instance: string; dir: string; files: string[] }>(
+      `${this.base}/workflows/import`,
+      { source, repo_id: repoId, instance },
+    );
   }
 
   createTask(body: {
@@ -149,17 +169,28 @@ export class ApiService {
     return this.http.get<ComfyEnv>(`${this.base}/comfy/env`, { params });
   }
 
-  /** 安装预演：只返回将要执行的步骤，不写盘。 */
-  comfyPreview(name = '', tag = ''): Observable<ComfyPreview> {
-    let params = new HttpParams();
+  /** 环境检测：实测内置解释器与 PyTorch，返回可修复的问题列表。 */
+  comfyEnvCheck(): Observable<ComfyEnvCheck> {
+    return this.http.post<ComfyEnvCheck>(`${this.base}/comfy/env/check`, null);
+  }
+
+  /** 安装预演：只返回该类型任务的步骤，不写盘。 */
+  comfyPreview(
+    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false,
+  ): Observable<ComfyPreview> {
+    let params = new HttpParams().set('kind', kind);
+    if (repair) params = params.set('repair', 'true');
     if (name) params = params.set('name', name);
     if (tag) params = params.set('tag', tag);
     return this.http.post<ComfyPreview>(`${this.base}/comfy/install/preview`, null, { params });
   }
 
   /** 启动真实安装，返回任务 id。 */
-  comfyInstall(name = '', tag = ''): Observable<{ id: string }> {
-    let params = new HttpParams();
+  comfyInstall(
+    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false,
+  ): Observable<{ id: string }> {
+    let params = new HttpParams().set('kind', kind);
+    if (repair) params = params.set('repair', 'true');
     if (name) params = params.set('name', name);
     if (tag) params = params.set('tag', tag);
     return this.http.post<{ id: string }>(`${this.base}/comfy/install`, null, { params });
@@ -173,5 +204,10 @@ export class ApiService {
   /** 当前可接管的安装任务（刷新页面后恢复进度用）。 */
   comfyCurrentInstall(): Observable<{ job: ComfyInstallJob | null }> {
     return this.http.get<{ job: ComfyInstallJob | null }>(`${this.base}/comfy/install/current`);
+  }
+
+  /** 删除自有实例目录；共享运行环境和已下载模型不受影响。 */
+  comfyDeleteInstance(name: string): Observable<{ deleted: string }> {
+    return this.http.delete<{ deleted: string }>(`${this.base}/comfy/instances/${encodeURIComponent(name)}`);
   }
 }

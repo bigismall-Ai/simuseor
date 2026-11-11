@@ -3,11 +3,15 @@ from .huggingface import HuggingFaceAdapter
 from .modelscope import ModelScopeAdapter
 from .civitai import CivitaiAdapter
 from .demo import DemoAdapter
+from .github import GithubAdapter
+from .comfytemplates import ComfyTemplatesAdapter
 
 ADAPTERS: dict[str, SourceAdapter] = {
     "huggingface": HuggingFaceAdapter(),
     "modelscope": ModelScopeAdapter(),
     "civitai": CivitaiAdapter(),
+    "github": GithubAdapter(),
+    "templates": ComfyTemplatesAdapter(),
     "demo": DemoAdapter(),
 }
 
