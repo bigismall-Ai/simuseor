@@ -1,4 +1,4 @@
-"""下载管理器：任务生命周期、四种策略（sdk/direct/proxy/mirror）、进度轮询、完成后入库。"""
+"""下载管理器：任务生命周期、三种策略（sdk/direct/mirror）、进度轮询、完成后入库。"""
 from __future__ import annotations
 
 import json
@@ -6,7 +6,8 @@ import threading
 import time
 from pathlib import Path
 
-from ..config import load_settings, resolve_save_dir
+from ..comfy.model_dirs import infer_folder, normalize_folder
+from ..config import build_proxy_url, load_settings, resolve_save_dir
 from ..db import execute, new_id, now_iso, query
 from ..sources import get_adapter
 from ..sources.base import SourceError
@@ -48,6 +49,8 @@ class DownloadManager:
         file_paths: list[str],
         strategy: str = "",
         save_dir: str = "",
+        target_folder: str = "",
+        task: str = "",
     ) -> dict:
         settings = load_settings()
         src_cfg = settings["sources"].get(source)
@@ -62,7 +65,9 @@ class DownloadManager:
 
         strategy = (strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "direct").lower()
         base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
-        target = base_dir / source
+        # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录
+        folder = normalize_folder(target_folder) or infer_folder(source, task, [f.path for f in files])
+        target = base_dir / folder
         if adapter.uses_repo_subdir:
             target = target / repo.display_name.replace("/", "--")
         target.mkdir(parents=True, exist_ok=True)
@@ -142,8 +147,8 @@ class DownloadManager:
                 "max-connection-per-server": str(int(aria_cfg.get("connections", 8))),
                 "split": str(int(aria_cfg.get("split", 8))),
             }
-            proxy_url = settings["proxy"]["url"]
-            if strategy == "proxy" and (src_cfg or {}).get("proxy_enabled") and proxy_url:
+            proxy_url = build_proxy_url(settings.get("proxy") or {})
+            if (src_cfg or {}).get("proxy_enabled") and proxy_url:
                 options["http-proxy"] = proxy_url
                 options["https-proxy"] = proxy_url
             token = (src_cfg or {}).get("token") or ""
