@@ -4,8 +4,11 @@ var/
 # ComfyUI 运行时：可重建（只忽略根目录，避免误伤 backend/app/comfy 源码）
 /comfy/
 
-# 权重：可重下
-models/
+# 用户资产：模型 / 插件 / 工作流 / 出图，运行时数据不进版本库
+/workspace/
+
+# 旧 demo 下载目录（可重下，内容已迁往 workspace/models）
+/models/
 
 # 部署配置
 .env
@@ -18,13 +21,21 @@ __pycache__/
 # 前端
 node_modules/
 web/dist/
+web/dist-tmp/
 web/.angular/
 *.tsbuildinfo
+# 构建窗口期挪 dist 的临时位置
+web/dist-old/
 
 # 测试产物（不限层级：从根目录跑测试也会在此生成）
 artifacts/
 test-results/
 playwright-report/
+# tests/ 根层的一次性调试 / 截图脚本（E2E 用例是 tests/e2e/ 下的 .ts，不受影响）
+tests/*.mjs
+# 临时素材候选与抓取快照
+web/public/**/_candidates/
+/wf.tmp.json
 
 # 系统与编辑器
 .DS_Store
