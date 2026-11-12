@@ -21,6 +21,18 @@ from .aria2_client import Aria2Client, Aria2Error
 TERMINAL = {"completed", "failed", "canceled"}
 
 
+def _is_workflow_target(target: str | Path) -> bool:
+    """目标目录是否落在共享工作流库下。
+
+    工作流不是权重：它有自己的收尾逻辑（解 zip），也不该进本地模型库。
+    """
+    try:
+        Path(target).resolve().relative_to(WORKSPACE_WORKFLOWS_DIR.resolve())
+    except (ValueError, OSError):
+        return False
+    return True
+
+
 class DownloadManager:
     def __init__(self) -> None:
         self._aria2: Aria2Client | None = None
@@ -230,12 +242,21 @@ class DownloadManager:
 
     # ---------------- 进度轮询 ----------------
     def _poll_loop(self) -> None:
+        """每秒把文件进度汇总进任务行。这个线程死了，所有任务会永远停在
+        「下载中 0%」而文件其实已经落盘（2026-11-12 真实发生过）——所以
+        BaseException 也要接住：宿主运行时替换过的删除 API 抛的是 SystemExit，
+        不属于 Exception，一旦从某个收尾路径冒上来就会无声带走整个线程。
+        """
         while True:
             time.sleep(1.0)
             try:
                 self._poll_once()
-            except Exception:  # noqa: BLE001
-                continue
+            except SystemExit as exc:
+                print(f"[download-poller] 收到 SystemExit（多半是宿主删除守卫），忽略继续: {exc}", flush=True)
+            except Exception as exc:  # noqa: BLE001
+                print(f"[download-poller] 轮询出错: {exc!r}", flush=True)
+            except BaseException as exc:  # noqa: BLE001 - 线程绝不能静默死亡
+                print(f"[download-poller] 轮询线程异常({type(exc).__name__}): {exc!r}", flush=True)
 
     def _poll_once(self) -> None:
         active = query("SELECT * FROM task_files WHERE status='active' AND gid IS NOT NULL")
@@ -376,9 +397,7 @@ class DownloadManager:
         任务本身（下载已经完成），所以只吞异常不回报错。
         """
         target = Path(task["target_dir"])
-        try:
-            target.resolve().relative_to(WORKSPACE_WORKFLOWS_DIR.resolve())
-        except ValueError:
+        if not _is_workflow_target(target):
             return
         try:
             from ..workflows import extract_workflow_archives
@@ -390,6 +409,9 @@ class DownloadManager:
     def register_library(self, task_id: str) -> None:
         task = self._task_row(task_id)
         if not task:
+            return
+        # 工作流不进本地模型库：模型库管的是权重文件，工作流已在共享库里
+        if _is_workflow_target(task["target_dir"]):
             return
         files = query("SELECT * FROM task_files WHERE task_id=? AND status='completed'", (task_id,))
         if not files:

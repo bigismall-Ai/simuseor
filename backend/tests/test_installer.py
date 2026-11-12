@@ -343,7 +343,8 @@ def test_run_requirements_succeeds_when_everything_already_installed(tmp_path, m
     ok, message = installer.run_requirements(s, lambda _e: None, lambda _m: None)
     assert ok and "已齐全" in message
     # 记下指纹，第二次直接命中，不再扫索引
-    marker, fingerprint = installer._requirements_marker(s)
+    # 主 ComfyUI 依赖的 cache_key 是 "comfy"，指纹文件名跟着带后缀
+    marker, fingerprint = installer._requirements_marker(s, name="requirements.comfy.done")
     assert marker.is_file() and marker.read_text(encoding="utf-8").strip() == fingerprint
 
 
