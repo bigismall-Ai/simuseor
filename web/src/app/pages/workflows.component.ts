@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { WorkflowInstance, WorkflowItem, errMsg, fmtNum } from '../core/types';
+import { WorkflowItem, errMsg, fmtNum } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { EmptyComponent } from '../ui/empty.component';
@@ -82,17 +82,6 @@ const SORTS = [
         </div>
       </div>
 
-      @if (instances.length) {
-        <div class="wf-import-bar">
-          <span class="muted">导入目标实例</span>
-          <select class="wf-instance" [(ngModel)]="instance" data-testid="wf-instance">
-            @for (ins of instances; track ins.name) {
-              <option [value]="ins.name">{{ ins.name }}（已有 {{ ins.count }} 个工作流）</option>
-            }
-          </select>
-        </div>
-      }
-
       @if (errorText) {
         <div class="notice err">{{ errorText }}</div>
       }
@@ -160,18 +149,10 @@ const SORTS = [
               class="primary btn-xs"
               (click)="download(it)"
               [disabled]="busy === keyOf(it)"
+              title="下载到工作流库，所有 ComfyUI 实例共用"
               [attr.data-testid]="'wf-download-' + it.source"
             >
-              @if (busy === keyOf(it)) { 正在创建… } @else { 下载 }
-            </button>
-            <button
-              class="btn-xs"
-              (click)="importTo(it)"
-              [disabled]="!instance || busy === 'import:' + keyOf(it)"
-              [title]="instance ? '复制到实例的 user/default/workflows' : '本机没有可用 ComfyUI 实例'"
-              [attr.data-testid]="'wf-import-' + it.source"
-            >
-              @if (busy === 'import:' + keyOf(it)) { 导入中… } @else { 导入实例 }
+              @if (busy === keyOf(it)) { 正在创建… } @else { 下载到工作流库 }
             </button>
           </div>
         </article>
@@ -197,21 +178,6 @@ const SORTS = [
       gap: 6px;
       margin-left: auto;
     }
-    .wf-import-bar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 12px;
-      padding-top: 11px;
-      border-top: 1px solid var(--border-soft);
-      font-size: 11.5px;
-    }
-    .wf-instance {
-      width: 250px;
-      max-width: 46vw;
-    }
-
     .wf-list {
       display: flex;
       flex-direction: column;
@@ -346,8 +312,6 @@ export class WorkflowsComponent implements OnInit {
   source = 'all';
   sort = 'downloads';
   items: WorkflowItem[] = [];
-  instances: WorkflowInstance[] = [];
-  instance = '';
   loading = false;
   done = true;
   page = 1;
@@ -357,7 +321,6 @@ export class WorkflowsComponent implements OnInit {
   sourceErrors: { label: string; message: string }[] = [];
 
   ngOnInit(): void {
-    this.loadInstances();
     this.load(1);
   }
 
@@ -377,18 +340,6 @@ export class WorkflowsComponent implements OnInit {
 
   loadMore(): void {
     this.load(this.page + 1);
-  }
-
-  private loadInstances(): void {
-    this.api.listWorkflowInstances().subscribe({
-      next: (res) => {
-        this.instances = res.items || [];
-        this.instance = this.instances[0]?.name || '';
-      },
-      error: () => {
-        this.instances = [];
-      },
-    });
   }
 
   private load(page: number): void {
@@ -442,31 +393,13 @@ export class WorkflowsComponent implements OnInit {
       .subscribe({
         next: (repo) => {
           this.busy = '';
-          this.notice = `已创建下载任务：${repo.files.length} 个工作流文件 → models/workflows`;
+          this.notice = `已创建下载任务：${repo.files.length} 个工作流文件 → 工作流库（压缩包会自动解开）`;
         },
         error: (err) => {
           this.busy = '';
           this.errorText = errMsg(err, '工作流下载失败');
         },
       });
-  }
-
-  importTo(item: WorkflowItem): void {
-    if (!this.instance) return;
-    this.busy = 'import:' + this.keyOf(item);
-    this.notice = '';
-    this.errorText = '';
-    this.api.importWorkflow(item.source, item.id, this.instance).subscribe({
-      next: (res) => {
-        this.busy = '';
-        this.notice = `已导入 ${res.files.length} 个工作流到 ${res.instance}：user/default/workflows`;
-        this.loadInstances();
-      },
-      error: (err) => {
-        this.busy = '';
-        this.errorText = errMsg(err, '导入 ComfyUI 失败');
-      },
-    });
   }
 
   keyOf(item: WorkflowItem): string {

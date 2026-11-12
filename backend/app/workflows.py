@@ -6,11 +6,13 @@
 - ModelScope：关键词搜索后逐个仓库列文件（并发），只保留含工作流文件的仓库
 - GitHub：仓库搜索 + Git Trees 列文件（需 token，未认证会很快触发限流）
 
-下载统一走 `/api/workflows/resolve`，落盘目录固定为 `workflows`。
+下载统一走 `/api/workflows/resolve`，落盘到共享工作流目录
+`workspace/userdata/default/workflows/`——ComfyUI 以 `--user-directory` 指向它，
+所有实例看到的是同一份，不需要往实例目录里复制。
 """
 from __future__ import annotations
 
-import io
+import json
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
@@ -19,7 +21,7 @@ from typing import Callable
 
 import httpx
 
-from .config import ROOT, load_settings
+from .config import COMFY_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
@@ -451,34 +453,99 @@ def resolve(source: str, repo_id: str, revision: str = "") -> dict:
 
 
 def instances() -> list[dict]:
-    """本机 ComfyUI 实例（comfy/<name>/ComfyUI），用于"导入工作流"。"""
-    root = ROOT / "comfy"
+    """本机 ComfyUI 实例（comfy/<name>/ComfyUI）。
+
+    工作流已改为共享目录，所有实例看到的是同一份，所以 workflows_dir 一律
+    指向 workspace/userdata/default/workflows。
+    """
     out: list[dict] = []
-    if not root.is_dir():
+    if not COMFY_DIR.is_dir():
         return out
-    for child in sorted(root.iterdir()):
+    shared = WORKSPACE_WORKFLOWS_DIR
+    count = len(list(shared.glob("*.json"))) if shared.is_dir() else 0
+    for child in sorted(COMFY_DIR.iterdir()):
         if child.name.startswith("."):
             continue  # .environment 是共享基础环境，不是实例
         comfy = child / "ComfyUI"
         if not comfy.is_dir():
             continue
-        wf = comfy / "user" / "default" / "workflows"
-        count = len(list(wf.glob("*.json"))) if wf.is_dir() else 0
-        out.append({"name": child.name, "path": str(comfy), "workflows_dir": str(wf), "count": count})
+        out.append(
+            {
+                "name": child.name,
+                "path": str(comfy),
+                "workflows_dir": str(shared),
+                "count": count,
+            }
+        )
     return out
 
 
-def import_to_instance(source: str, repo_id: str, instance: str, revision: str = "") -> dict:
-    """把工作流直接下载并放进实例的 user/default/workflows/，供 ComfyUI 工作流面板直接打开。"""
-    inst = next((i for i in instances() if i["name"] == instance), None)
-    if not inst:
-        raise SourceError(f"找不到 ComfyUI 实例: {instance}")
+# ---------------- 工作流文件写入 ----------------
+def _looks_like_workflow(data: bytes) -> bool:
+    """ComfyUI 工作流一定带 nodes；仓库里的配置类 json 不能摊进面板。"""
+    try:
+        payload = json.loads(data.decode("utf-8", "replace"))
+    except (ValueError, UnicodeDecodeError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    return isinstance(payload.get("nodes"), list) or isinstance(payload.get("workflow"), dict)
+
+
+def _write_unique(directory: Path, name: str, data: bytes) -> str:
+    """同名不覆盖：追加 -2、-3 后缀。"""
+    target = directory / name
+    if target.exists():
+        stem, suffix = Path(name).stem, Path(name).suffix
+        index = 2
+        while (directory / f"{stem}-{index}{suffix}").exists():
+            index += 1
+        target = directory / f"{stem}-{index}{suffix}"
+    target.write_bytes(data)
+    return target.name
+
+
+def _json_from_archive(directory: Path, archive: Path) -> list[str]:
+    """解开一个 zip：只取工作流 json 平铺到目录，成功后删掉压缩包。"""
+    saved: list[str] = []
+    try:
+        with zipfile.ZipFile(archive) as zf:
+            for name in zf.namelist():
+                if name.startswith("__MACOSX") or name.endswith("/"):
+                    continue
+                if not name.lower().endswith(".json"):
+                    continue
+                data = zf.read(name)
+                if not _looks_like_workflow(data):
+                    continue
+                saved.append(_write_unique(directory, Path(name).name, data))
+    except (zipfile.BadZipFile, OSError):
+        return saved
+    archive.unlink(missing_ok=True)
+    return saved
+
+
+def extract_workflow_archives(directory: Path) -> list[str]:
+    """把目录下的 .zip 全部解成工作流 json（下载任务收尾时调用）。"""
+    if not directory.is_dir():
+        return []
+    saved: list[str] = []
+    for archive in sorted(directory.glob("*.zip")):
+        saved.extend(_json_from_archive(directory, archive))
+    return saved
+
+
+def import_to_instance(source: str, repo_id: str, instance: str = "", revision: str = "") -> dict:
+    """把工作流下载到共享工作流目录。
+
+    `instance` 只为兼容旧调用保留：工作流对所有实例共享，不再复制进实例目录。
+    """
     repo = resolve(source, repo_id, revision)
     headers = dict(UA)
     if source == "github" and _source_cfg(source).get("token"):
         headers["Authorization"] = f"Bearer {_source_cfg(source)['token']}"
 
-    dest = Path(inst["workflows_dir"]) / repo["display_name"].replace("/", "--")
+    dest = WORKSPACE_WORKFLOWS_DIR / repo["display_name"].replace("/", "--")
     dest.mkdir(parents=True, exist_ok=True)
     saved: list[str] = []
     for f in repo["files"]:
@@ -492,14 +559,11 @@ def import_to_instance(source: str, repo_id: str, instance: str, revision: str =
         if resp.status_code >= 400:
             raise SourceError(f"下载失败 {resp.status_code}: {f['path']}")
         if f["path"].lower().endswith(".zip"):
-            with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
-                for name in zf.namelist():
-                    if name.lower().endswith(".json") and not name.startswith("__MACOSX"):
-                        (dest / Path(name).name).write_bytes(zf.read(name))
-                        saved.append(Path(name).name)
-        else:
-            (dest / Path(f["path"]).name).write_bytes(resp.content)
-            saved.append(Path(f["path"]).name)
+            tmp = dest / Path(f["path"]).name
+            tmp.write_bytes(resp.content)
+            saved.extend(_json_from_archive(dest, tmp))
+        elif _looks_like_workflow(resp.content):
+            saved.append(_write_unique(dest, Path(f["path"]).name, resp.content))
     if not saved:
         raise SourceError("没有可导入的工作流文件（.json）")
-    return {"instance": inst["name"], "dir": str(dest), "files": saved}
+    return {"instance": instance, "dir": str(dest), "files": saved}

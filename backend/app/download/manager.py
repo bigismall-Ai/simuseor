@@ -7,7 +7,12 @@ import time
 from pathlib import Path
 
 from ..comfy.model_dirs import infer_folder, normalize_folder
-from ..config import build_proxy_url, load_settings, resolve_save_dir
+from ..config import (
+    WORKSPACE_WORKFLOWS_DIR,
+    build_proxy_url,
+    load_settings,
+    resolve_save_dir,
+)
 from ..db import execute, new_id, now_iso, query
 from ..sources import get_adapter
 from ..sources.base import SourceError
@@ -67,9 +72,14 @@ class DownloadManager:
         base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
         # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录
         folder = normalize_folder(target_folder) or infer_folder(source, task, [f.path for f in files])
-        target = base_dir / folder
-        if adapter.uses_repo_subdir:
-            target = target / repo.display_name.replace("/", "--")
+        if folder == "workflows":
+            # 工作流不是 ComfyUI 的模型类型：落到共享工作流目录，所有实例共用一份，
+            # 不再混在 models/ 下（ComfyUI 也不把 workflows 当模型目录扫描）
+            target = WORKSPACE_WORKFLOWS_DIR / repo.display_name.replace("/", "--")
+        else:
+            target = base_dir / folder
+            if adapter.uses_repo_subdir:
+                target = target / repo.display_name.replace("/", "--")
         target.mkdir(parents=True, exist_ok=True)
 
         task_id = new_id()
@@ -266,6 +276,7 @@ class DownloadManager:
         if statuses <= {"completed"}:
             execute("UPDATE tasks SET status='completed', done_bytes=?, total_bytes=?, updated_at=? WHERE id=?", (done, total, now_iso(), task_id))
             self.register_library(task_id)
+            self._post_process(task)
         elif statuses <= TERMINAL:
             final = "failed" if "failed" in statuses else "canceled"
             execute("UPDATE tasks SET status=?, done_bytes=?, total_bytes=?, updated_at=? WHERE id=?", (final, done, total, now_iso(), task_id))
@@ -358,6 +369,24 @@ class DownloadManager:
         return result
 
     # ---------------- 入库（AbyssBeacon 式本地库） ----------------
+    def _post_process(self, task: dict) -> None:
+        """工作流任务的收尾：把下载到的 zip 解成 json，摊进共享工作流目录。
+
+        ComfyUI 的工作流面板只认 json，zip 摆在那里用户点不开。失败不影响
+        任务本身（下载已经完成），所以只吞异常不回报错。
+        """
+        target = Path(task["target_dir"])
+        try:
+            target.resolve().relative_to(WORKSPACE_WORKFLOWS_DIR.resolve())
+        except ValueError:
+            return
+        try:
+            from ..workflows import extract_workflow_archives
+
+            extract_workflow_archives(target)
+        except Exception:  # noqa: BLE001 - 收尾失败不该把已完成的下载标成失败
+            return
+
     def register_library(self, task_id: str) -> None:
         task = self._task_row(task_id)
         if not task:

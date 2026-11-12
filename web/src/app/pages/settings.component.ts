@@ -21,9 +21,9 @@ import { PanelComponent } from '../ui/panel.component';
     @if (settings) {
       <div class="settings-cols">
         <div class="col">
-          <ui-panel kicker="Storage" title="模型下载目录" hint="下载产物落在这里，默认 models（相对项目目录）。">
+          <ui-panel kicker="Storage" title="模型下载目录" hint="下载产物落在这里，默认 workspace/models（相对项目目录，ComfyUI 直接共享该目录）。">
             <div class="path-row">
-              <input class="mono" [value]="settings.download.save_dir" readonly placeholder="models">
+              <input class="mono" [value]="settings.download.save_dir" readonly placeholder="workspace/models">
               <button (click)="browseSaveDir()">选择…</button>
             </div>
           </ui-panel>

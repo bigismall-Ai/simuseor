@@ -153,14 +153,18 @@ def resolve_save_dir(value: str) -> str:
 
 
 def relativize_save_dir(value: str) -> str:
-    """项目内的绝对路径存为相对路径（可随项目迁移），项目外保持绝对。"""
+    """项目内的绝对路径存为相对路径（可随项目迁移），项目外保持绝对。
+
+    统一用正斜杠：JSON 里存 `workspace\\models` 只有 Windows 认得，
+    项目挪到 macOS / Linux 会变成一个带反斜杠的文件名。
+    """
     if not value:
-        return "models"
+        return "workspace/models"
     try:
         p = Path(value).expanduser()
         if not p.is_absolute():
             p = ROOT / p
-        return str(p.resolve().relative_to(ROOT))
+        return p.resolve().relative_to(ROOT).as_posix()
     except (ValueError, OSError):
         return str(value)
 
