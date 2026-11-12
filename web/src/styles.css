@@ -932,9 +932,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .env-name { color: var(--muted); font-size: 11.5px; letter-spacing: 0.02em; }
 .env-state { justify-self: end; font-size: 10.5px; color: var(--faint); letter-spacing: 0.02em; }
 .env-state.ok { color: var(--ok); }
-.env-note { margin: 8px 0 12px; font-size: 11.5px; line-height: 1.6; }
-.env-actions { margin-top: 14px; }
-.check-box + .env-actions { margin-top: 4px; }
+/* 基础环境、实例、设备三块的通用间距见各自的类；这里只留设备提示行 */
 .device-note { margin: 10px 0 0; font-size: 11.5px; line-height: 1.6; }
 .device-note strong { display: block; color: var(--text-2); font-weight: 600; }
 
@@ -961,6 +959,9 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .instance-meta strong { font-weight: 600; word-break: break-all; }
 /* 每个实例右侧：启动/打开/停止 + 删除 */
 .instance-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+/* 删除是破坏性操作，但在这一行里不该和「启动」抢重量：平时只有文字，悬停才出色 */
+.instance-actions .danger { padding-inline: 6px; border-color: transparent; background: transparent; }
+.instance-actions .danger:hover:not(:disabled) { border-color: transparent; background: var(--err-soft); }
 
 /* 后台安装中的那一行：整行可点，点回进度弹层 */
 .instance-row.installing {
@@ -970,6 +971,109 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 .instance-row.installing:hover { background: color-mix(in oklab, var(--accent-soft) 70%, var(--panel)); }
 .instance-row.installing:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* 实例行：状态点 + 名称/副行 + 动作。副行固定三段（目录 / 版本 / 状态），
+   以前只写目录名和版本，停止的实例看起来像数据缺了一块 */
+.inst-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  margin-left: 2px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+}
+.inst-dot.on { background: var(--ok); border-color: var(--ok); }
+.inst-dot.busy { background: var(--accent); border-color: var(--accent); }
+.instance-meta { flex-direction: column; align-items: stretch; gap: 2px; }
+.inst-title { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.inst-name {
+  padding: 0;
+  max-width: 100%;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font: 600 12.5px/1.4 inherit;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: text;
+}
+.inst-name:hover { border-bottom-color: var(--border-strong); }
+.inst-rename {
+  width: 180px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-xs);
+  font-size: 12.5px;
+}
+.inst-sub {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  font-size: 10.5px;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.inst-sub > span { overflow: hidden; text-overflow: ellipsis; }
+.inst-sub > span + span::before { content: '·'; margin: 0 5px; opacity: 0.6; }
+.inst-port {
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+.inst-pct { color: var(--accent); font-size: 11px; font-weight: 600; }
+
+/* 基础环境横跨整页置顶，三项并排成小格 */
+.env-band { margin-bottom: 14px; }
+.env-band .env-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  border: 0;
+  overflow: visible;
+}
+.env-band .env-list-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.env-band .env-list-row:last-child { border-bottom: 1px solid var(--border); }
+.env-band .env-list-row strong { font-size: 13px; }
+.env-band .env-state { justify-self: start; }
+
+/* 设备卡：四个主项 + 一行元信息，其余收进 details */
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 14px; }
+.spec { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.spec:first-child,
+.spec:nth-child(4) { grid-column: 1 / -1; }
+.spec-label { font-size: 10.5px; color: var(--muted); }
+.spec-value { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.spec-sub { font-size: 10.5px; line-height: 1.45; color: var(--faint); }
+.spec-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.spec-more { margin-top: 10px; font-size: 11px; color: var(--muted); }
+.spec-more summary { cursor: pointer; }
+.spec-more p { margin: 6px 0 0; line-height: 1.55; color: var(--faint); }
+.alias-input { min-width: 200px; }
 
 /* 环境检测：只在点击后出现，问题就地给修复入口 */
 .check-box {

@@ -19,3 +19,20 @@ def validate_instance_name(name: str) -> str:
     if not INSTANCE_NAME_RE.fullmatch(value):
         raise ValueError("实例名不合法：只能用字母、数字、点、下划线、短横线，且不能以符号开头")
     return value
+
+
+#: 显示名上限：够写「ComfyUI 主力 · 工作流测试」这种，再长在列表里就会换行
+ALIAS_MAX = 40
+
+
+def clean_alias(alias: str) -> str:
+    """规范化实例显示名；空串表示没有别名，界面回落显示目录名。
+
+    与 `validate_instance_name` 分开：目录名要拼路径、必须保守；显示名只进
+    JSON 和界面，中文、空格、括号都该允许，只挡控制字符和超长。
+    """
+    value = re.sub(r"\s+", " ", (alias or "").strip())
+    value = "".join(ch for ch in value if ch.isprintable())
+    if len(value) > ALIAS_MAX:
+        raise ValueError(f"名称最多 {ALIAS_MAX} 个字符")
+    return value

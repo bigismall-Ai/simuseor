@@ -193,23 +193,25 @@ export class ApiService {
 
   /** 安装预演：只返回该类型任务的步骤，不写盘。 */
   comfyPreview(
-    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false,
+    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false, alias = '',
   ): Observable<ComfyPreview> {
     let params = new HttpParams().set('kind', kind);
     if (repair) params = params.set('repair', 'true');
     if (name) params = params.set('name', name);
     if (tag) params = params.set('tag', tag);
+    if (alias) params = params.set('alias', alias);
     return this.http.post<ComfyPreview>(`${this.base}/comfy/install/preview`, null, { params });
   }
 
   /** 启动真实安装，返回任务 id。 */
   comfyInstall(
-    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false,
+    name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false, alias = '',
   ): Observable<{ id: string }> {
     let params = new HttpParams().set('kind', kind);
     if (repair) params = params.set('repair', 'true');
     if (name) params = params.set('name', name);
     if (tag) params = params.set('tag', tag);
+    if (alias) params = params.set('alias', alias);
     return this.http.post<{ id: string }>(`${this.base}/comfy/install`, null, { params });
   }
 
@@ -226,6 +228,13 @@ export class ApiService {
   /** 删除自有实例目录；共享运行环境和已下载模型不受影响。 */
   comfyDeleteInstance(name: string): Observable<{ deleted: string }> {
     return this.http.delete<{ deleted: string }>(`${this.base}/comfy/instances/${encodeURIComponent(name)}`);
+  }
+
+  /** 改实例显示名。目录名不可改（那是磁盘路径），别名写在 instance.json 里。 */
+  comfyRenameInstance(name: string, alias: string): Observable<{ name: string; alias: string }> {
+    return this.http.patch<{ name: string; alias: string }>(
+      `${this.base}/comfy/instances/${encodeURIComponent(name)}`, { alias },
+    );
   }
 
   /** 启动实例；同一时间只允许一个实例运行，已有别的在跑时返回 409。 */

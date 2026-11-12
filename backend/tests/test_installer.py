@@ -1500,3 +1500,83 @@ def test_legacy_layout_migration_skips_real_instance_named_instances(tmp_path, m
 
     assert config.migrate_legacy_comfy_layout() == []
     assert (real / "instance.json").is_file()
+
+
+# ---------------- 实例显示名（alias） ----------------
+def test_probe_reads_instance_alias(tmp_path, monkeypatch) -> None:
+    from app.comfy import probe
+    from app.comfy.platforms.base import ProbeContext
+
+    root = tmp_path / "comfy"
+    monkeypatch.setattr(probe, "COMFY_DIR", root)
+    (root / "v-1").mkdir(parents=True)
+    (root / "v-1" / "instance.json").write_text(
+        json.dumps({"version": "0.45.0", "alias": "主力"}), encoding="utf-8"
+    )
+    (root / "v-2").mkdir()
+    (root / "v-2" / "instance.json").write_text(json.dumps({"version": "0.45.0"}), encoding="utf-8")
+
+    items = {item.name: item for item in probe._collect_instances(ProbeContext())}
+    assert items["v-1"].alias == "主力"
+    # 没写别名时保持 None，界面回落显示目录名
+    assert items["v-2"].alias is None
+
+
+def test_clean_alias_trims_and_limits() -> None:
+    from app.comfy.names import ALIAS_MAX, clean_alias
+
+    assert clean_alias("  ComfyUI   主力 ") == "ComfyUI 主力"
+    assert clean_alias("") == ""
+    assert clean_alias("  ") == ""
+    with pytest.raises(ValueError, match="最多"):
+        clean_alias("长" * (ALIAS_MAX + 1))
+
+
+def test_rename_instance_writes_alias(tmp_path, monkeypatch) -> None:
+    from app.comfy import api
+
+    root = tmp_path / "comfy"
+    root.mkdir()
+    monkeypatch.setattr(api, "COMFY_DIR", root)
+    meta = root / "v-1" / "instance.json"
+    meta.parent.mkdir()
+    meta.write_text(json.dumps({"version": "0.45.0", "port": 8188}), encoding="utf-8")
+
+    assert api.rename_instance("v-1", {"alias": " 主力 "}) == {"name": "v-1", "alias": "主力"}
+    data = json.loads(meta.read_text(encoding="utf-8"))
+    assert data["alias"] == "主力"
+    # 其他字段必须原样保留：改名只碰 alias
+    assert data["version"] == "0.45.0" and data["port"] == 8188
+
+    api.rename_instance("v-1", {"alias": ""})
+    assert json.loads(meta.read_text(encoding="utf-8"))["alias"] == ""
+
+
+def test_rename_instance_rejects_unknown_and_illegal(tmp_path, monkeypatch) -> None:
+    from fastapi import HTTPException
+
+    from app.comfy import api
+
+    root = tmp_path / "comfy"
+    root.mkdir()
+    monkeypatch.setattr(api, "COMFY_DIR", root)
+    (root / ".environment").mkdir()
+
+    with pytest.raises(HTTPException) as missing:
+        api.rename_instance("v-none", {"alias": "x"})
+    assert missing.value.status_code == 404
+
+    with pytest.raises(HTTPException) as dotted:
+        api.rename_instance(".environment", {"alias": "x"})
+    assert dotted.value.status_code == 400
+
+
+def test_make_spec_carries_alias() -> None:
+    from app.comfy.installer import make_spec
+    from app.comfy.plan import build_plan
+
+    report = nvidia_report()
+    plan = build_plan(report, {})
+    spec = make_spec(report, plan, name="v-x", alias=" 主力 ")
+    assert spec.alias == "主力"
+    assert spec.name == "v-x"

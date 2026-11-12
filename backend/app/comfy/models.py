@@ -45,6 +45,11 @@ class ManagedInstance(BaseModel):
     """
 
     name: str = Field(description="实例目录名，同时作为实例标识")
+    alias: str | None = Field(
+        default=None,
+        description="用户起的可读名（如「主力」「测试」）。目录名不能改（那是磁盘路径），"
+        "所以显示名单独存一份；为空时界面回落显示 name。",
+    )
     path: str
     version: str | None = Field(default=None, description="ComfyUI 版本 / tag")
     python: str | None = Field(default=None, description="创建时共享基础环境的 Python 版本")

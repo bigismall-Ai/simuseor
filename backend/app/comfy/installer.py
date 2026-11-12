@@ -56,7 +56,7 @@ from ..config import (
 )
 from .model_dirs import write_extra_model_paths
 from .models import DeviceReport, ManagedInstance, PythonInfo
-from .names import validate_instance_name
+from .names import clean_alias, validate_instance_name
 from .plan import InstallPlan
 
 # PyTorch 官方 wheel 索引。plan 输出的 channel 直接对应这里的 key，
@@ -318,6 +318,8 @@ class InstallSpec:
     workspace: Path
     environment: Path
     torch_channel: str
+    #: 用户起的可读名。目录名不能改（磁盘路径），所以单独存一份进 instance.json
+    alias: str = ""
     repo_url: str = COMFY_MIRROR
     fallback_url: str = COMFY_FALLBACK
     tag: str | None = None
@@ -491,6 +493,7 @@ def make_spec(
     name: str = "",
     tag: str | None = None,
     repair: bool = False,
+    alias: str = "",
 ) -> InstallSpec:
     """把 device + plan 折叠成执行所需的规格。缺关键前提时抛 ValueError。"""
     if plan.tier == "blocked":
@@ -513,6 +516,7 @@ def make_spec(
     instance_name = validate_instance_name(instance_name)
     return InstallSpec(
         name=instance_name,
+        alias=clean_alias(alias),
         workspace=COMFY_DIR / instance_name,
         environment=COMFY_ENV_DIR,
         torch_channel=plan.torch_channel,
@@ -877,6 +881,7 @@ def _write_instance_meta(
     meta_path = spec.workspace / "instance.json"
     payload = {
         "name": instance.name,
+        "alias": spec.alias,
         "version": instance.version,
         "python": instance.python,
         "torch_channel": spec.torch_channel,

@@ -509,6 +509,7 @@ def _collect_instances(ctx: ProbeContext) -> list[ManagedInstance]:
         instances.append(
             ManagedInstance(
                 name=entry.name,
+                alias=_first_str(data, ("alias", "label")),
                 path=str(entry),
                 version=_first_str(data, ("version", "comfyui_version", "ref")),
                 python=_first_str(data, ("python", "python_version")),

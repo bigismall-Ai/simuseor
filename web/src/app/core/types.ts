@@ -185,6 +185,8 @@ export interface ComfyDisk {
 
 export interface ComfyInstance {
   name: string;
+  /** 用户起的可读名；为空时界面回落显示 name */
+  alias?: string | null;
   path: string;
   version: string | null;
   python: string | null;

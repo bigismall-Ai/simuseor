@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import stat
@@ -32,7 +33,7 @@ from .installer import (
     run_install,
 )
 from . import runner
-from .names import validate_instance_name
+from .names import clean_alias, validate_instance_name
 from .plan import build_plan
 from .probe import cached_mirrors, probe_device, probe_mirrors, probe_runtime, warm_mirrors
 
@@ -187,6 +188,51 @@ def delete_instance(name: str) -> dict[str, Any]:
     return {"deleted": name}
 
 
+@router.patch("/instances/{name}")
+def rename_instance(name: str, body: dict[str, Any]) -> dict[str, Any]:
+    """改实例的显示名（alias）。
+
+    目录名不动 —— 它是磁盘路径，也是实例标识（端口、日志、job 全都按它索引）。
+    传空串表示清掉别名，界面回落显示目录名。
+    """
+    try:
+        name = validate_instance_name(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    try:
+        alias = clean_alias(str(body.get("alias") or ""))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    root = COMFY_DIR.resolve()
+    target = (root / name).resolve()
+    if target == root or target.parent != root or name.startswith("."):
+        raise HTTPException(status_code=400, detail="实例路径不合法")
+    meta = target / "instance.json"
+    if not meta.is_file():
+        raise HTTPException(status_code=404, detail="实例不存在或未登记")
+
+    try:
+        data = json.loads(meta.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=500, detail=f"实例元数据无法读取：{exc}") from exc
+    if not isinstance(data, dict):
+        raise HTTPException(status_code=500, detail="实例元数据格式异常")
+
+    data["alias"] = alias
+    # 临时文件 + 替换：刷新页面正好撞上写一半的 JSON 时会解析失败，
+    # 那条实例就会在界面上变成「未登记」。
+    tmp = meta.with_name(meta.name + ".tmp")
+    try:
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        tmp.replace(meta)
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"保存失败：{exc}") from exc
+
+    _cache["payload"] = None  # 设备报告里带着实例列表，读完立刻失效
+    return {"name": name, "alias": alias}
+
+
 @router.post("/instances/{name}/start")
 def start_instance(name: str) -> dict[str, Any]:
     """启动实例。返回 state=starting 表示进程已拉起来、还没响应 HTTP。"""
@@ -264,11 +310,11 @@ def check_env() -> dict[str, Any]:
 
 @router.post("/install/preview")
 def preview_install(
-    name: str = "", tag: str = "", kind: str = "full", repair: bool = False
+    name: str = "", tag: str = "", kind: str = "full", repair: bool = False, alias: str = ""
 ) -> dict[str, Any]:
     """预演：只生成步骤，不执行、不写盘。"""
     kind = _check_kind(kind)
-    spec = _make_spec(name, tag, kind, repair, fast=True)
+    spec = _make_spec(name, tag, kind, repair, fast=True, alias=alias)
     steps = build_steps(spec, kind)
     return {
         "kind": kind,
@@ -297,11 +343,11 @@ def preview_install(
 
 @router.post("/install")
 def start_install(
-    name: str = "", tag: str = "", kind: str = "full", repair: bool = False
+    name: str = "", tag: str = "", kind: str = "full", repair: bool = False, alias: str = ""
 ) -> dict[str, Any]:
     """启动安装。立即返回任务 id，进度通过 GET /install/{id} 轮询。"""
     kind = _check_kind(kind)
-    spec = _make_spec(name, tag, kind, repair)
+    spec = _make_spec(name, tag, kind, repair, alias=alias)
 
     with _jobs_lock:
         if RUNNING:
@@ -425,7 +471,7 @@ def _check_kind(kind: str) -> str:
 
 
 def _make_spec(
-    name: str, tag: str, kind: str, repair: bool = False, *, fast: bool = False
+    name: str, tag: str, kind: str, repair: bool = False, *, fast: bool = False, alias: str = ""
 ) -> InstallSpec:
     # 实例只放 ComfyUI 代码，运行依赖靠共享基础环境；环境没装好时不允许建实例。
     if kind == JOB_KIND_INSTANCE and not probe_runtime().ready:
@@ -447,7 +493,12 @@ def _make_spec(
     resolved = "environment" if kind == JOB_KIND_ENV else name.strip()
     try:
         return make_spec(
-            report, plan, name=resolved, tag=tag.strip() or None, repair=repair
+            report,
+            plan,
+            name=resolved,
+            tag=tag.strip() or None,
+            repair=repair,
+            alias=alias if kind == JOB_KIND_INSTANCE else "",
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
