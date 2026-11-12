@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, catchError, forkJoin, map, of, timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { ApiService } from '../core/api.service';
+import { DiscoverCacheService } from '../core/discover-cache.service';
 import { RepoInfo, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
@@ -98,12 +99,15 @@ const PAGE_SIZE = 20;
   imports: [FormsModule, BadgeComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
+      kicker="Discover"
       title="模型发现"
-      hint="跨源搜索合并为一个列表：同一模型多来源时卡片会显示多个来源徽章，下载时可选择来源。"
-    />
+      hint="跨源搜索合并为一个列表。同一模型在多个来源时，卡片上会并列标出来源，下载时再选走哪一边。"
+    >
+      <span class="head-count">{{ rows.length }}{{ done ? '' : '+' }} 个模型</span>
+    </ui-page-header>
 
     <ui-panel>
-      <div class="toolbar mb">
+      <div class="toolbar">
         <input
           class="grow"
           [(ngModel)]="q"
@@ -115,7 +119,7 @@ const PAGE_SIZE = 20;
         <button class="primary" (click)="searchNow()" [disabled]="loading" data-testid="search-btn">搜索</button>
       </div>
 
-      <div class="toolbar">
+      <div class="toolbar mt">
         <div class="segmented">
           @for (t of sourceTabs; track t.key) {
             <button [class.active]="source === t.key" (click)="setSource(t.key)">{{ t.label }}</button>
@@ -123,12 +127,12 @@ const PAGE_SIZE = 20;
         </div>
         <span class="grow"></span>
         <div class="segmented">
-          <button [class.active]="sort === 'trending'" (click)="setSort('trending')" title="按站点默认推荐">✦ 综合</button>
-          <button [class.active]="sort === 'downloads'" (click)="setSort('downloads')" title="按下载量">⬇ 下载量</button>
-          <button [class.active]="sort === 'likes'" (click)="setSort('likes')" title="按点赞">♥ 点赞</button>
-          <button [class.active]="sort === 'recent'" (click)="setSort('recent')" title="最新更新">↻ 最新</button>
+          <button [class.active]="sort === 'trending'" (click)="setSort('trending')" title="按站点默认推荐">综合</button>
+          <button [class.active]="sort === 'downloads'" (click)="setSort('downloads')" title="按下载量">下载量</button>
+          <button [class.active]="sort === 'likes'" (click)="setSort('likes')" title="按点赞">点赞</button>
+          <button [class.active]="sort === 'recent'" (click)="setSort('recent')" title="最新更新">最新</button>
         </div>
-        <div class="segmented">
+        <div class="segmented view-toggle">
           <button [class.active]="view === 'grid'" (click)="setView('grid')" title="网格视图">▦</button>
           <button [class.active]="view === 'list'" (click)="setView('list')" title="列表视图">☰</button>
         </div>
@@ -150,15 +154,14 @@ const PAGE_SIZE = 20;
       <div class="notice err">{{ e.label }} 搜索失败：{{ e.message }}</div>
     }
 
-    <!-- 首次加载骨架 -->
+    <!-- 首次加载骨架：形状与海报卡一致，不要先给一个列表再跳成网格 -->
     @if (loading && rows.length === 0) {
       <div class="grid">
         @for (i of skeletons; track i) {
-          <div class="model-card skel-card">
-            <div class="skeleton skel-line w-40"></div>
-            <div class="skeleton skel-line w-80"></div>
-            <div class="skeleton skel-line"></div>
-            <div class="skeleton skel-line w-60"></div>
+          <div class="skel-card">
+            <div class="skeleton skel-line sk-w-40"></div>
+            <div class="skeleton skel-line sk-w-80"></div>
+            <div class="skeleton skel-line sk-w-60"></div>
           </div>
         }
       </div>
@@ -168,7 +171,12 @@ const PAGE_SIZE = 20;
     @if (view === 'grid' && rows.length > 0) {
       <div class="grid">
         @for (row of rows; track row.id) {
-          <md-model-card [items]="row.items" [inLibrary]="row.inLibrary" (download)="openDialog(row)" />
+          <md-model-card
+            [items]="row.items"
+            [cover]="cache.cover(coverKey(row))"
+            [inLibrary]="row.inLibrary"
+            (download)="openDialog(row)"
+          />
         }
       </div>
     }
@@ -199,7 +207,15 @@ const PAGE_SIZE = 20;
                   <td>
                     <div class="toolbar">
                       @for (it of row.items; track it.source) {
-                        <ui-badge [tone]="sourceTone(it.source)">{{ it.source }}</ui-badge>
+                        <a
+                          class="src-badge"
+                          [href]="it.url"
+                          target="_blank"
+                          rel="noreferrer"
+                          [title]="'打开 ' + sourceLabel(it.source) + ' 上的原始仓库'"
+                        >
+                          <ui-badge [tone]="sourceTone(it.source)">{{ it.source }} ↗</ui-badge>
+                        </a>
                       }
                     </div>
                   </td>
@@ -212,7 +228,7 @@ const PAGE_SIZE = 20;
                       @if (row.inLibrary) {
                         <ui-badge tone="green">已在库</ui-badge>
                       }
-                      <button class="primary" (click)="openDialog(row)">下载</button>
+                      <button class="primary btn-xs" (click)="openDialog(row)">下载</button>
                     </div>
                   </td>
                 </tr>
@@ -232,8 +248,8 @@ const PAGE_SIZE = 20;
     <!-- 空状态 + 热门关键词 -->
     @if (!loading && rows.length === 0) {
       <ui-panel>
-        <ui-empty icon="📭" title="没有找到匹配的模型" hint="试试其他关键词、切换下载源，或从热门关键词开始：" />
-        <div class="chip-row">
+        <ui-empty title="没有找到匹配的模型" hint="换个关键词、切换下载源，或从下面这几个人人都搜的词开始。" />
+        <div class="chip-row center">
           @for (kw of hotKeywords; track kw) {
             <button class="filter-chip" (click)="searchKeyword(kw)">{{ kw }}</button>
           }
@@ -246,9 +262,17 @@ const PAGE_SIZE = 20;
       <div class="modal-overlay" (click)="closeDialog()">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-head">
-            <strong class="mc-title">{{ activeItem()?.name }}</strong>
+            <div class="modal-title">
+              <strong class="mc-title">{{ activeItem()?.name }}</strong>
+              <span class="muted">
+                {{ sourceLabel(activeItem()?.source || '') }}
+                @if (activeItem()?.author) {
+                  · {{ activeItem()?.author }}
+                }
+              </span>
+            </div>
             <span class="grow"></span>
-            <button class="ghost" (click)="closeDialog()" title="关闭">✕</button>
+            <button class="ghost btn-xs" (click)="closeDialog()" title="关闭">✕</button>
           </div>
 
           @if (dlg.row.items.length > 1) {
@@ -331,6 +355,47 @@ const PAGE_SIZE = 20;
       </div>
     }
   `,
+  styles: [
+    `
+      .head-count {
+        font: 500 11px/1 "Cascadia Mono", Consolas, monospace;
+        color: var(--faint);
+        letter-spacing: 0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* 骨架用海报卡的形状，加载完不会从「一列文本」跳成「一格格海报」 */
+      .skel-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 7px;
+        min-height: 202px;
+        padding: 13px;
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: inset 0 0 0 1px var(--border);
+        pointer-events: none;
+      }
+
+      .chip-row.center { justify-content: center; }
+
+      /* 列表视图里来源徽章也是入口：点它直接去原始仓库。去掉下划线，
+         箭头留在徽章文字里，不靠颜色表达「可点」。 */
+      .src-badge { text-decoration: none; display: inline-flex; }
+
+      .view-toggle button { padding: 0 8px; letter-spacing: 0.02em; }
+
+      .modal-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .modal-title .muted { font-size: 11.5px; }
+      .modal { width: min(720px, 100%); }
+    `,
+  ],
 })
 export class DiscoverComponent implements OnInit, OnDestroy {
   q = '';
@@ -358,6 +423,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   private libraryKeys = new Set<string>();
   private debounceSub: Subscription | null = null;
   private suppressParamSync = false;
+  /** 封面批次号：重新搜索时自增，旧批次的回调直接丢弃 */
+  private coverBatch = 0;
+  /** 每次 fetchPage 自增，用来丢弃过期响应（连续改筛选时会有多条在飞） */
+  private fetchToken = 0;
+  /** 各来源的到达情况，按标签顺序拼成列表 */
+  private perSource = new Map<string, { items: SearchItem[]; full: boolean; error: string }>();
+
+  readonly cache = inject(DiscoverCacheService);
 
   constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {}
 
@@ -387,6 +460,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.debounceSub?.unsubscribe();
+    this.coverBatch++; // 丢弃还在路上的封面回调
   }
 
   private bootstrap(): void {
@@ -447,6 +521,21 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   private applyFilters(): void {
+    const key = this.searchKey();
+    const hit = this.cache.getSearch(key);
+    if (hit) {
+      // 有缓存就先渲染，别让人对着骨架屏等三秒
+      this.rawItems = hit.items;
+      this.errors = hit.errors;
+      this.done = hit.done;
+      this.page = hit.page;
+      this.rows = this.buildRows(this.rawItems);
+      this.loading = false;
+      this.fetchCovers(this.rows);
+      if (hit.fresh) return;
+      this.fetchPage(1); // 过期了：先给旧结果，再后台刷新
+      return;
+    }
     this.page = 1;
     this.rawItems = [];
     this.rows = [];
@@ -455,49 +544,124 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.fetchPage(1);
   }
 
+  private searchKey(): string {
+    return `${this.q.trim().toLowerCase()}|${this.source}|${this.sort}|${this.task}`;
+  }
+
+  /** 一组来源的稳定标识：只跟「哪些源、哪些仓库」有关，不含排序 */
+  coverKey(row: MergedRow): string {
+    return row.items
+      .map((i) => `${i.source}:${i.id}`)
+      .sort()
+      .join('|');
+  }
+
+  /**
+   * 封面补齐：先用兜底铭牌把页面铺满，图取回来再替换。
+   *
+   * **一次请求发完，不要分批串行**：分 4 批、每批等上一批回来再做，实测把
+   * 56 组的冷启动从 4 s 拖到 16 s——每批都在等自己那组最慢的仓库。一把发完
+   * 由服务端 16 路并发去取，尾部延迟只付一次。
+   */
+  private fetchCovers(rows: MergedRow[]): void {
+    const batch = ++this.coverBatch;
+    const pending = rows.filter((r) => !this.cache.hasCover(this.coverKey(r)));
+    if (!pending.length) return;
+    const groups = pending.slice(0, 60).map((r) => ({
+      key: this.coverKey(r),
+      items: r.items.map((i) => ({ source: i.source, id: i.id, image: i.image || '' })),
+    }));
+    this.api.covers(groups).subscribe({
+      next: (res) => {
+        if (batch !== this.coverBatch) return;
+        for (const g of groups) this.cache.putCover(g.key, res.covers[g.key] || '');
+      },
+      // 取不到封面只是退回家族铭牌，不该冒错误提示
+      error: () => {
+        if (batch === this.coverBatch) for (const g of groups) this.cache.putCover(g.key, '');
+      },
+    });
+  }
+
   loadMore(): void {
     this.fetchPage(this.page + 1);
   }
 
   // ---------- 并发搜索 + 跨源合并 ----------
 
+  /**
+   * 三源各发一条请求，**谁先回来谁先渲染**。
+   *
+   * 不用 forkJoin 等齐：Civitai 关键词搜索带 20 个模型的完整图集会返回几 MB，
+   * 实测 5~12 s，而魔搭只要 1 s。等齐的话首屏要陪着最慢的那个站一起卡着，
+   * 明明已经能看的卡片也显示不出来。
+   *
+   * 顺序仍然稳定：`rawItems` 按来源标签的固定顺序拼接，不按到达顺序，
+   * 所以晚到的来源只会往下追加，不会把已有卡片顶走。
+   */
   private fetchPage(page: number): void {
     const sources = this.source === 'all' ? this.enabledSources() : [this.source];
     if (!sources.length) {
       this.loading = false;
       return;
     }
+    const token = ++this.fetchToken;
+    if (page === 1) {
+      this.perSource.clear();
+      this.rawItems = [];
+      this.rows = [];
+    }
     this.loading = true;
-    const requests = sources.map((key) =>
-      this.api
-        .search({
-          q: this.q,
-          source: key,
-          sort: this.sort,
-          task: this.task,
-          limit: PAGE_SIZE,
-          page,
-        })
-        .pipe(
-          map((res) => ({ key, items: res.items, full: res.items.length >= PAGE_SIZE, error: '' })),
-          catchError((err) =>
-            of({ key, items: [] as SearchItem[], full: false, error: errMsg(err, '搜索失败，请检查网络') }),
-          ),
-        ),
-    );
 
-    forkJoin(requests).subscribe((parts) => {
-      const fresh = parts.flatMap((p) => p.items);
-      this.rawItems = page === 1 ? fresh : [...this.rawItems, ...fresh];
-      this.page = page;
-      this.errors = parts
-        .filter((p) => !!p.error)
-        .map((p) => ({ label: SOURCE_LABELS[p.key] || p.key, message: p.error }));
-      this.rows = this.buildRows(this.rawItems);
-      this.done = parts.every((p) => !p.full);
-      this.loading = false;
-      this.syncUrl();
-    });
+    for (const key of sources) {
+      this.api.search({ q: this.q, source: key, sort: this.sort, task: this.task, limit: PAGE_SIZE, page }).subscribe({
+        next: (res) => {
+          if (token !== this.fetchToken) return;
+          const prev = this.perSource.get(key);
+          this.perSource.set(key, {
+            items: page === 1 || !prev ? res.items : [...prev.items, ...res.items],
+            full: res.items.length >= PAGE_SIZE,
+            error: '',
+          });
+          this.applyResults(page, token);
+        },
+        error: (err) => {
+          if (token !== this.fetchToken) return;
+          this.perSource.set(key, { items: [], full: false, error: errMsg(err, '搜索失败，请检查网络') });
+          this.applyResults(page, token);
+        },
+      });
+    }
+  }
+
+  /** 把已到达的来源拼成列表；每次有来源回来都跑一次。 */
+  private applyResults(page: number, token: number): void {
+    const order = ['huggingface', 'modelscope', 'civitai', 'demo'];
+    const keys = [...this.perSource.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    const expected = this.source === 'all' ? this.enabledSources() : [this.source];
+    const allBack = expected.every((k) => this.perSource.has(k));
+
+    this.rawItems = keys.flatMap((k) => this.perSource.get(k)?.items || []);
+    this.errors = keys
+      .filter((k) => !!this.perSource.get(k)?.error)
+      .map((k) => ({ label: SOURCE_LABELS[k] || k, message: this.perSource.get(k)!.error }));
+    // 还没回来的来源视为「可能还有下一页」，别提前把「加载更多」收起来
+    this.done = allBack && expected.every((k) => !this.perSource.get(k)?.full);
+    this.page = page;
+    this.rows = this.buildRows(this.rawItems);
+    // 只要有一家回来了就不再显示骨架屏——剩下的空位由后续来源补
+    this.loading = false;
+    this.syncUrl();
+    this.fetchCovers(this.rows);
+
+    if (page === 1 && allBack && !this.errors.length && token === this.fetchToken) {
+      this.cache.putSearch(this.searchKey(), {
+        items: this.rawItems,
+        errors: this.errors,
+        done: this.done,
+        page: this.page,
+      });
+    }
   }
 
   private enabledSources(): string[] {
