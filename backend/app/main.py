@@ -14,6 +14,7 @@ from .comfy.api import router as comfy_router
 from .comfy.runner import stop_all as stop_comfy_instances
 from .config import ensure_workspace, get_web_dist, migrate_legacy_comfy_layout
 from .db import init_db
+from .nodes import warm_catalog
 from .sources.base import SourceError
 
 
@@ -27,6 +28,8 @@ async def lifespan(_app: FastAPI):
     # 在 lifespan 里同步跑等于让端口晚好几秒才开始监听。
     if "pytest" not in sys.modules:
         threading.Thread(target=warm_discover, name="warm-discover", daemon=True).start()
+        # 节点清单 5.6MB，第一次进节点页要等十几秒，同样丢后台先拉
+        warm_catalog()
     try:
         yield
     finally:

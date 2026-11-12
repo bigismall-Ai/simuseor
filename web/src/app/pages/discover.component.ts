@@ -100,7 +100,7 @@ const PAGE_SIZE = 20;
   template: `
     <ui-page-header
       kicker="Discover"
-      title="模型发现"
+      title="发现模型"
       hint="跨源搜索合并为一个列表。同一模型在多个来源时，卡片上会并列标出来源，下载时再选走哪一边。"
     >
       <span class="head-count">{{ rows.length }}{{ done ? '' : '+' }} 个模型</span>

@@ -11,6 +11,12 @@ import {
   ComfyPreview,
   ComfyVersions,
   LibraryModel,
+  LocalWorkflow,
+  NodeItem,
+  NodeJob,
+  NodeMissingReport,
+  NodeStats,
+  InstalledNode,
   RepoInfo,
   SearchItem,
   Task,
@@ -92,6 +98,17 @@ export class ApiService {
 
   resolveWorkflow(source: string, repoId: string): Observable<RepoInfo> {
     return this.http.post<RepoInfo>(`${this.base}/workflows/resolve`, { source, repo_id: repoId });
+  }
+
+  /** 「我的工作流」：共享目录里的本地文件，按修改时间倒序。 */
+  localWorkflows(): Observable<{ dir: string; total: number; items: LocalWorkflow[] }> {
+    return this.http.get<{ dir: string; total: number; items: LocalWorkflow[] }>(
+      `${this.base}/workflows/local`,
+    );
+  }
+
+  openLocalWorkflow(path: string): Observable<{ opened: string }> {
+    return this.http.post<{ opened: string }>(`${this.base}/workflows/local/open`, { path });
   }
 
   listWorkflowInstances(): Observable<{ items: WorkflowInstance[] }> {
@@ -256,5 +273,68 @@ export class ApiService {
     return this.http.get<ComfyInstanceState>(
       `${this.base}/comfy/instances/${encodeURIComponent(name)}/status`,
     );
+  }
+
+  // ---------------- 自定义节点 ----------------
+  searchNodes(params: {
+    q?: string;
+    sort?: string;
+    scope?: string;
+    limit?: number;
+    page?: number;
+  }): Observable<{ items: NodeItem[]; total: number; done: boolean; installed_count: number }> {
+    let httpParams = new HttpParams();
+    if (params.q) httpParams = httpParams.set('q', params.q);
+    if (params.sort) httpParams = httpParams.set('sort', params.sort);
+    if (params.scope) httpParams = httpParams.set('scope', params.scope);
+    httpParams = httpParams.set('limit', String(params.limit ?? 20));
+    httpParams = httpParams.set('page', String(params.page ?? 1));
+    return this.http.get<{ items: NodeItem[]; total: number; done: boolean; installed_count: number }>(
+      `${this.base}/nodes`,
+      { params: httpParams },
+    );
+  }
+
+  nodeStats(): Observable<NodeStats> {
+    return this.http.get<NodeStats>(`${this.base}/nodes/stats`);
+  }
+
+  /** 强制重拉 ComfyUI-Manager 的两份清单（平时 24 小时自动刷新）。 */
+  refreshNodes(): Observable<{ fetched: boolean; count?: number }> {
+    return this.http.post<{ fetched: boolean; count?: number }>(`${this.base}/nodes/refresh`, null);
+  }
+
+  installedNodes(): Observable<{ items: InstalledNode[] }> {
+    return this.http.get<{ items: InstalledNode[] }>(`${this.base}/nodes/installed`);
+  }
+
+  installNode(id: string): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`${this.base}/nodes/install`, { id });
+  }
+
+  nodeJob(id: string, since = 0): Observable<NodeJob> {
+    return this.http.get<NodeJob>(`${this.base}/nodes/job/${id}?since=${since}`);
+  }
+
+  currentNodeJob(): Observable<{ job: NodeJob | null }> {
+    return this.http.get<{ job: NodeJob | null }>(`${this.base}/nodes/job`);
+  }
+
+  toggleNode(dir: string): Observable<{ dir: string; disabled: boolean }> {
+    return this.http.post<{ dir: string; disabled: boolean }>(
+      `${this.base}/nodes/installed/${encodeURIComponent(dir)}/toggle`, null,
+    );
+  }
+
+  removeNode(dir: string, stop = false): Observable<{ deleted: string }> {
+    const params = stop ? new HttpParams().set('stop', 'true') : undefined;
+    return this.http.delete<{ deleted: string }>(
+      `${this.base}/nodes/installed/${encodeURIComponent(dir)}`, { params },
+    );
+  }
+
+  /** 扫工作流库，列出缺哪些节点、各由哪个扩展提供。 */
+  missingNodes(): Observable<NodeMissingReport> {
+    return this.http.get<NodeMissingReport>(`${this.base}/nodes/missing`);
   }
 }

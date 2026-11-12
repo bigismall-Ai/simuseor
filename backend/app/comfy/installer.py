@@ -529,6 +529,22 @@ def make_spec(
     )
 
 
+def shared_spec() -> InstallSpec:
+    """共享基础环境的轻量 spec，只用来装额外依赖（自定义节点）。
+
+    `run_requirements` 只需要解释器、site-packages 与缓存目录，这三样都在
+    `comfy/.environment` 里，与实例无关；comfy_dir 落到 workspace 下，
+    仅作为 pip 的工作目录兜底。
+    """
+    return InstallSpec(
+        name=".environment",
+        workspace=WORKSPACE_DIR,
+        environment=COMFY_ENV_DIR,
+        torch_channel="",
+        runtime_version=COMFY_ENV_NAME,
+    )
+
+
 # ---------------- 步骤生成（纯函数） ----------------
 #: UI 只用 environment / instance：基础环境卡只装运行时，实例卡只装 ComfyUI 代码。
 #: full 是一键全装的旧路径，保留给离线脚本与回归测试，界面不再暴露。
@@ -907,17 +923,24 @@ def _req_name(line: str) -> str | None:
     return match.group(1).lower().replace("_", "-") if match else None
 
 
-def write_filtered_requirements(spec: InstallSpec) -> Path:
+def write_filtered_requirements(
+    spec: InstallSpec,
+    source: Path | None = None,
+    name: str = "requirements.comfy.txt",
+) -> Path:
     """把 requirements.txt 里 torch 系列的条目剔掉，写到缓存目录。
 
     torch 由按硬件选定的通道单独安装；requirements 里的 `torch` 没有版本约束，
     一旦让 pip 参与解析，就会用 PyPI 的 CPU 轮子覆盖共享环境里的加速版本。
     这一步在实例安装时尤其重要：pip 的 `--target` 隐含 `--ignore-installed`。
+
+    `source` 留给自定义节点：它们的 requirements 在各自仓库目录里，
+    过滤后的副本按 `name` 分开存，互不覆盖。
     """
-    source = spec.comfy_dir / "requirements.txt"
+    source = source or (spec.comfy_dir / "requirements.txt")
     cache_dir = spec.environment / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    target = cache_dir / "requirements.comfy.txt"
+    target = cache_dir / name
 
     kept: list[str] = []
     try:
@@ -1577,10 +1600,19 @@ def prune_cache(
     return result
 
 
-def _requirements_marker(spec: InstallSpec) -> tuple[Path, str]:
-    req_file = spec.environment / "cache" / "requirements.comfy.txt"
+def _requirements_marker(
+    spec: InstallSpec,
+    req_file: Path | None = None,
+    name: str = "requirements.done",
+) -> tuple[Path, str]:
+    req_file = req_file or (spec.environment / "cache" / "requirements.comfy.txt")
     fingerprint = hashlib.sha256(req_file.read_bytes()).hexdigest()[:16] if req_file.is_file() else ""
-    return spec.environment / "cache" / "requirements.done", fingerprint
+    return spec.environment / "cache" / name, fingerprint
+
+
+def _pip_cwd(spec: InstallSpec) -> str:
+    """pip 的工作目录：实例里有 ComfyUI 代码就在那跑，共享环境场景退回环境目录。"""
+    return str(spec.comfy_dir if spec.comfy_dir.is_dir() else spec.environment)
 
 
 def build_dependency_closure(
@@ -1681,21 +1713,26 @@ def run_requirements(
     log: Callable[[str], None],
     *,
     key: str = "requirements",
+    requirements: Path | None = None,
+    cache_key: str = "comfy",
 ) -> tuple[bool, str]:
-    """安装 ComfyUI 依赖：只补缺的包，并发下载，离线安装。
+    """安装依赖：只补缺的包，并发下载，离线安装。
 
     1. requirements 里剔除 torch（它按硬件单独装，绝不能让 pip 碰）；
     2. 扫共享 site-packages 判断哪些已装，只处理缺的；
     3. 并发查索引 + 并发下载，读 wheel 元数据递归补全传递依赖；
     4. 最后用 --no-deps 离线装这批轮子（pip 的 --target 会 ignore_installed，
        所以不能让它自己解析，否则会把已装好的包整包重装一遍）。
+
+    `requirements` / `cache_key` 给自定义节点用：不同节点各自的依赖清单与
+    完成指纹必须分开存，否则后装的节点会误判「依赖已齐全」。
     """
-    req_file = write_filtered_requirements(spec)
+    req_file = write_filtered_requirements(spec, requirements, f"requirements.{cache_key}.txt")
     specs = parse_requirements(req_file)
     if not specs:
         return True, "没有需要安装的依赖"
 
-    marker, fingerprint = _requirements_marker(spec)
+    marker, fingerprint = _requirements_marker(spec, req_file, f"requirements.{cache_key}.done")
     if marker.is_file() and marker.read_text(encoding="utf-8").strip() == fingerprint:
         installed = installed_versions(spec.env_site)
         if all(_satisfied(s, installed) for s in specs):
@@ -1736,7 +1773,7 @@ def run_requirements(
     try:
         proc = subprocess.run(
             cmd,
-            cwd=str(spec.comfy_dir),
+            cwd=_pip_cwd(spec),
             capture_output=True,
             encoding="utf-8",
             errors="replace",
@@ -1803,7 +1840,7 @@ def _fallback_requirements(
         title="安装 ComfyUI 依赖",
         detail="普通模式",
         command=cmd,
-        cwd=spec.comfy_dir,
+        cwd=_pip_cwd(spec),
         timeout=PIP_TIMEOUT,
     )
     return _exec(step, send, log)

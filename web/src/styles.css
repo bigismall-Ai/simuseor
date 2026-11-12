@@ -274,6 +274,68 @@ body {
   line-height: 16px;
 }
 
+/*
+ * 可折叠的一级项「发现」：它本身不是目的地，只负责开合，子项才是入口。
+ * 子项缩进后用一条 1px 竖线挂在父项图标正下方（left 17px = 9px padding + 15px 图标的中心），
+ * 既表示归属，又不用重复画三个放大镜。
+ */
+.nav-parent {
+  width: 100%;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  /* button 的 UA 样式带了 justify-content: center，不复位整行会缩到中间去 */
+  justify-content: flex-start;
+  cursor: pointer;
+}
+.nav-parent.on { color: var(--accent); font-weight: 600; }
+.nav-item .nav-caret {
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  opacity: 0.5;
+  transition: transform 0.16s ease, opacity 0.16s ease;
+}
+.nav-parent.open .nav-caret { transform: rotate(90deg); }
+.nav-parent.on .nav-caret { opacity: 0.85; }
+
+.nav-sub {
+  position: relative;
+  margin: 1px 0 2px;
+  padding-left: 28px;
+  animation: nav-sub-in 0.14s ease;
+}
+.nav-sub::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--border);
+}
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  height: 29px;
+  padding: 0 9px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.nav-sub-item:hover { background: var(--hover); color: var(--text); }
+.nav-sub-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+@keyframes nav-sub-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: none; }
+}
+
 .sidebar-foot {
   margin-top: auto;
   padding-top: 10px;
@@ -297,6 +359,7 @@ body {
   font-size: 13px;
   font-weight: 500;
   border-radius: var(--radius-sm);
+  justify-content: flex-start;
 }
 .theme-toggle svg {
   flex: none;
@@ -309,13 +372,102 @@ body {
   stroke-linejoin: round;
 }
 .theme-toggle:hover { background: var(--hover); color: var(--text); }
-.theme-toggle kbd {
+.theme-toggle em {
   margin-left: auto;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+/* 外观选择：点按钮向上弹一层，不占常驻版面。留一个容器好判断「点在框内还是框外」 */
+.appearance { position: relative; }
+
+.theme-pop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 40;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 32px -14px rgb(9 9 11 / 0.3);
+  animation: theme-pop-in 0.14s ease;
+}
+.tp-title {
+  margin: 2px 0 6px;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.tp-opt {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.tp-opt:hover { background: var(--hover); color: var(--text); }
+.tp-opt.on { color: var(--accent); font-weight: 600; }
+.tp-opt.on:hover { background: none; }
+.tp-name { flex: 1; }
+.tp-check {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tp-swatch {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.tp-swatch[data-tone='light'] { background: #fff; border-color: #d6d6dc; }
+.tp-swatch[data-tone='dark'] { background: #18181b; border-color: #3f3f46; }
+.tp-swatch[data-tone='system'] { background: linear-gradient(115deg, #fff 0 50%, #18181b 50% 100%); }
+.tp-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 7px 8px 2px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 11px;
+  color: var(--faint);
+}
+.tp-hint kbd {
   font: 500 10px/1 ui-monospace, Consolas, monospace;
   color: var(--faint);
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   padding: 2px 5px;
+}
+
+@keyframes theme-pop-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ================= 4. 布局与工具类 ================= */
@@ -890,77 +1042,205 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .favorite-btn:hover { background: var(--warn-soft); border-color: transparent; color: var(--star); }
 
 /* ================= 15. 环境管理 ================= */
-/* 左＝环境与实例（宽），右＝设备详情（窄）。比例 1.65:1 是按内容量定的：
-   左边是操作区，右边是只读信息，宽度对半会让右边留出大片空白 */
+/* 实例独占主栏（左），基础环境与设备叠在右栏。右栏固定 320：三项环境 + 四项硬件
+   都在这个宽度里读得下，再宽只会把字拉成一条长线。
+   DOM 顺序把右栏放前面——装环境是建实例的前置，Tab 顺序也该先环境；视觉上靠
+   grid 列位换到右边，所以读起来是「先环境后实例」，看起来是「左实例右环境」。 */
 .env-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.62fr) minmax(300px, 1fr);
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
 }
-.env-main,
+.env-layout ui-panel { display: block; min-width: 0; }
 .env-side {
+  grid-column: 2;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;
   min-width: 0;
 }
-.env-main .panel,
 .env-side .panel { margin-bottom: 0; }
 
-.env-list {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+/* 两栏底边对齐：设备卡吃掉右栏剩下的高度，「更多信息」钉在最底下。
+   以前两栏各按内容高，底边差一截，看起来像没排完。 */
+.env-side .dev-panel { display: flex; flex-direction: column; flex: 1; }
+.env-side .dev-panel > .panel { flex: 1; display: flex; flex-direction: column; }
+
+.inst-panel {
+  grid-column: 1;
+  grid-row: 1;
 }
+/* 主栏要吃掉整行高度：两栏底边齐平，实例少的时候空白留在面板里，而不是页面下半截 */
+.env-layout > .inst-panel { display: flex; flex-direction: column; }
+.inst-panel > .panel { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; }
+
+/* ---------------- 基础环境：三行清单 ---------------- */
+/* 一行一件事：圆点=状态，左边名字，右边版本。以前三项各套一个边框盒子，
+   三个盒子加起来比里面的内容还重，在窄栏里尤其像豆腐块。 */
+.env-list { margin: 0; padding: 0; list-style: none; }
 .env-list-row {
   display: grid;
-  grid-template-columns: minmax(86px, 1fr) minmax(0, 2fr) 58px;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 10px 13px;
+  gap: 9px;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border-soft);
   font-size: 12px;
 }
-.env-list-row:last-child { border-bottom: 0; }
-.env-list-row:hover { background: var(--panel-2); }
-.env-list-row strong {
+.env-list-row:first-child { padding-top: 2px; }
+.env-list-row:last-child { border-bottom: 0; padding-bottom: 2px; }
+.env-mark {
+  justify-self: center;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  background: transparent;
+}
+.env-list-row.ready .env-mark { background: var(--ok); border-color: var(--ok); }
+.env-name { color: var(--text-2); font-size: 12px; letter-spacing: 0.01em; }
+.env-value { display: flex; align-items: center; gap: 7px; justify-self: end; min-width: 0; }
+.env-value strong {
   font: 550 12px/1.4 "Cascadia Mono", Consolas, monospace;
   color: var(--text);
+  text-align: right;
   word-break: break-all;
 }
-.env-name { color: var(--muted); font-size: 11.5px; letter-spacing: 0.02em; }
-.env-state { justify-self: end; font-size: 10.5px; color: var(--faint); letter-spacing: 0.02em; }
-.env-state.ok { color: var(--ok); }
-/* 基础环境、实例、设备三块的通用间距见各自的类；这里只留设备提示行 */
-.device-note { margin: 10px 0 0; font-size: 11.5px; line-height: 1.6; }
+.env-state { font-size: 10px; color: var(--faint); letter-spacing: 0.02em; }
+/* 这张卡只有一件事要做，按钮就占满一行，不用在标题旁挤一个窄按钮 */
+.env-cta { width: 100%; margin-top: 14px; }
+
+/* ---------------- 设备：显卡铭牌 + 读数 ---------------- */
+.dev-plate {
+  padding: 10px 12px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+.dev-plate-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dev-vendor {
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.dev-gpu {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 640;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  word-break: break-word;
+}
+.dev-gpu-meta { display: block; margin-top: 3px; font-size: 10.5px; color: var(--faint); }
+
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.spec { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.spec-label { font-size: 10.5px; color: var(--muted); letter-spacing: 0.02em; }
+/* 显存 / 内存 / 磁盘是这一页唯一的量化读数，字号给到 15 才像「数据」而不像正文 */
+.spec-value {
+  font-size: 15px;
+  font-weight: 620;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.spec-sub { font-size: 10.5px; line-height: 1.45; color: var(--faint); }
+.spec-wide { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+.spec-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.spec-more { margin-top: auto; padding-top: 10px; font-size: 11px; color: var(--muted); }
+.spec-more summary { cursor: pointer; }
+.spec-more p { margin: 6px 0 0; line-height: 1.55; color: var(--faint); }
+.device-note { margin: 12px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
 .device-note strong { display: block; color: var(--text-2); font-weight: 600; }
+
+/* ---------------- 实例卡 ---------------- */
+/* 一个实例一张卡，不再是一条发丝线行：卡片把「名字/状态/版本/动作」圈在一起，
+   列表长起来也不会散架；hover 只动边框和底色，与卡片内容无关。 */
+.inst-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+/* 空状态：一块虚线槽位，说明这里还会长出第一张卡；虚线只在「没有内容」时出现 */
+.inst-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+/* 列表页脚：左边添加入口，右边计数。实例少的时候它把面板收住，不留一截空白边缘。 */
+.inst-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 2px;
+  padding-top: 11px;
+  border-top: 1px solid var(--border-soft);
+}
+.inst-add {
+  height: auto;
+  min-height: 24px;
+  padding: 0;
+  justify-content: flex-start;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.inst-add:hover:not(:disabled) { border-color: transparent; background: transparent; color: var(--accent); }
+.inst-add-plus { font-size: 14px; line-height: 1; opacity: 0.75; }
+.inst-count { font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
 
 .instance-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 11px;
-  border: 1px solid transparent;
-  border-bottom-color: var(--border-soft);
+  min-height: 58px;
+  padding: 10px 12px 10px 13px;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  transition: background 0.13s ease;
+  background: var(--panel-2);
+  transition: border-color 0.14s ease, background 0.14s ease;
 }
-.instance-row:last-child { border-bottom-color: transparent; }
-.instance-row:hover { background: var(--panel-2); }
+.instance-row:hover { border-color: var(--border-strong); background: var(--panel); }
 .instance-meta {
   display: flex;
-  align-items: center;
-  gap: 9px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
   flex: 1;
   min-width: 0;
   font-size: 12px;
 }
 .instance-meta strong { font-weight: 600; word-break: break-all; }
-/* 每个实例右侧：启动/打开/停止 + 删除 */
+/* 每个实例右侧：端口 / 启动 / 打开 / 停止 + 删除 */
 .instance-actions { display: flex; align-items: center; gap: 8px; flex: none; }
-/* 删除是破坏性操作，但在这一行里不该和「启动」抢重量：平时只有文字，悬停才出色 */
-.instance-actions .danger { padding-inline: 6px; border-color: transparent; background: transparent; }
+/* 删除是破坏性操作，但不该和「启动」抢重量：平时只是灰字，悬停才转红 */
+.instance-actions .danger {
+  padding-inline: 6px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
 .instance-actions .danger:hover:not(:disabled) { border-color: transparent; background: var(--err-soft); }
 
 /* 后台安装中的那一行：整行可点，点回进度弹层 */
@@ -972,19 +1252,16 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .instance-row.installing:hover { background: color-mix(in oklab, var(--accent-soft) 70%, var(--panel)); }
 .instance-row.installing:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-/* 实例行：状态点 + 名称/副行 + 动作。副行固定三段（目录 / 版本 / 状态），
-   以前只写目录名和版本，停止的实例看起来像数据缺了一块 */
+/* 实例行：状态点 + 名称/状态徽章 + 副行 + 动作 */
 .inst-dot {
   width: 7px;
   height: 7px;
   flex: none;
-  margin-left: 2px;
   border: 1.5px solid var(--border-strong);
   border-radius: 50%;
 }
 .inst-dot.on { background: var(--ok); border-color: var(--ok); }
 .inst-dot.busy { background: var(--accent); border-color: var(--accent); }
-.instance-meta { flex-direction: column; align-items: stretch; gap: 2px; }
 .inst-title { display: flex; align-items: center; gap: 7px; min-width: 0; }
 .inst-name {
   padding: 0;
@@ -993,7 +1270,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   border-bottom: 1px solid transparent;
   background: transparent;
   color: var(--text);
-  font: 600 12.5px/1.4 inherit;
+  font: 600 13px/1.4 inherit;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -1023,57 +1300,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .inst-port {
   padding: 2px 6px;
   border-radius: var(--radius-xs);
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--chip);
+  color: var(--text-2);
   font-size: 10.5px;
   font-variant-numeric: tabular-nums;
 }
 .inst-pct { color: var(--accent); font-size: 11px; font-weight: 600; }
-
-/* 基础环境横跨整页置顶，三项并排成小格 */
-.env-band { margin-bottom: 14px; }
-.env-band .env-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  border: 0;
-  overflow: visible;
-}
-.env-band .env-list-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 9px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-.env-band .env-list-row:last-child { border-bottom: 1px solid var(--border); }
-.env-band .env-list-row strong { font-size: 13px; }
-.env-band .env-state { justify-self: start; }
-
-/* 设备卡：四个主项 + 一行元信息，其余收进 details */
-.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 14px; }
-.spec { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.spec:first-child,
-.spec:nth-child(4) { grid-column: 1 / -1; }
-.spec-label { font-size: 10.5px; color: var(--muted); }
-.spec-value { font-size: 12.5px; font-weight: 600; color: var(--text); }
-.spec-sub { font-size: 10.5px; line-height: 1.45; color: var(--faint); }
-.spec-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 13px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-soft);
-  font-size: 10.5px;
-  color: var(--faint);
-}
-.spec-more { margin-top: 10px; font-size: 11px; color: var(--muted); }
-.spec-more summary { cursor: pointer; }
-.spec-more p { margin: 6px 0 0; line-height: 1.55; color: var(--faint); }
-.alias-input { min-width: 200px; }
 
 /* 环境检测：只在点击后出现，问题就地给修复入口 */
 .check-box {
@@ -1126,7 +1358,9 @@ details.files[open] summary::before { transform: rotate(90deg); }
 
 .progress-hero { display: flex; align-items: center; gap: 20px; }
 .ring-wrap { position: relative; width: 124px; height: 124px; flex: none; }
-.ring { width: 124px; height: 124px; transform: rotate(-90deg); }
+/* 类名别叫 ring：Tailwind 的 .ring 工具类会给 svg 加 1px box-shadow 方框，
+   光靠这里的 width/height/transform 盖不掉，进度环外面就多出一个方块描边。 */
+.prg-ring { width: 124px; height: 124px; transform: rotate(-90deg); }
 .ring-track { fill: none; stroke: var(--track); stroke-width: 8; }
 .ring-value {
   fill: none;
@@ -1135,8 +1369,8 @@ details.files[open] summary::before { transform: rotate(90deg); }
   stroke-linecap: round;
   transition: stroke-dashoffset 0.45s ease, stroke 0.3s ease;
 }
-.ring.done .ring-value { stroke: var(--ok); }
-.ring.failed .ring-value { stroke: var(--err); }
+.prg-ring.done .ring-value { stroke: var(--ok); }
+.prg-ring.failed .ring-value { stroke: var(--err); }
 .ring-label {
   position: absolute;
   inset: 0;
@@ -1353,7 +1587,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
 
 /* ================= 16. 响应式 ================= */
 @media (max-width: 1040px) {
+  /* 单列时实例仍然排在最前：这一页的主任务是操作实例，环境/设备是它的前置与参考 */
   .env-layout { grid-template-columns: 1fr; }
+  .inst-panel { grid-column: 1; grid-row: 1; }
+  .env-side { grid-column: 1; grid-row: 2; }
+  .env-side .dev-panel { flex: none; }
+  .spec-more { margin-top: 10px; }
   .settings-cols { grid-template-columns: 1fr; }
 }
 
@@ -1364,21 +1603,29 @@ details.files[open] summary::before { transform: rotate(90deg); }
     flex: none;
     height: auto;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
     padding: 8px 12px;
     border-right: none;
     border-bottom: 1px solid var(--border);
-    overflow-x: auto;
+    /* 不能留 overflow: auto——一个方向设 auto，另一个方向的 visible 会被算成 auto，
+       外观弹层向下弹时就会被侧栏边界切掉。导航项已改成换行，不需要横向滚动 */
+    overflow: visible;
   }
   .brand { padding: 0 8px 0 0; }
   .brand-text { display: none; }
-  .nav { flex-direction: row; align-items: center; gap: 2px; }
+  .nav { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px; }
   .nav-group, .nav-item.is-disabled { display: none; }
   .nav-item { white-space: nowrap; }
+  /* 横条里没有竖排缩进的位置：「发现」展开后子项整体另起一行平铺 */
+  .nav-parent { width: auto; }
+  .nav-sub { display: flex; flex-wrap: wrap; flex-basis: 100%; flex-direction: row; gap: 2px; margin: 0; padding-left: 0; }
+  .nav-sub::before { display: none; }
+  .nav-sub-item { height: 30px; }
   .sidebar-foot { margin: 0 0 0 auto; padding: 0; border: none; flex-direction: row; }
   .theme-toggle { width: auto; }
-  .theme-toggle kbd { display: none; }
+  .theme-toggle em { display: none; }
+  .theme-pop { left: auto; right: 0; bottom: auto; top: calc(100% + 8px); width: 184px; }
   .container { padding: 18px 16px 56px; }
 }
 
@@ -1388,6 +1635,6 @@ details.files[open] summary::before { transform: rotate(90deg); }
   .install-left { overflow: visible; padding-right: 0; }
   .log-view { min-height: 180px; max-height: 240px; }
   .progress-hero { gap: 14px; }
-  .ring-wrap, .ring { width: 100px; height: 100px; }
+  .ring-wrap, .prg-ring { width: 100px; height: 100px; }
   .ring-label strong { font-size: 21px; }
 }

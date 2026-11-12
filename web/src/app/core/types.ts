@@ -115,6 +115,19 @@ export interface WorkflowItem extends SearchItem {
   requires?: string[];
 }
 
+/** 本地工作流（共享目录 workspace/userdata/default/workflows 里的文件） */
+export interface LocalWorkflow {
+  name: string;
+  path: string;
+  /** 相对共享目录的子目录，根目录为空串 */
+  folder: string;
+  size: number;
+  /** unix 秒 */
+  mtime: number;
+  nodes: number;
+  format: 'ui' | 'api' | string;
+}
+
 export interface WorkflowInstance {
   name: string;
   path: string;
@@ -392,4 +405,103 @@ export interface ComfyInstallJob {
   result: { ok: boolean; message: string; log_path: string; instance: ComfyInstance | null } | null;
   total_events: number;
   events: ComfyInstallEvent[];
+}
+
+// ---------------- 自定义节点（/api/nodes） ----------------
+export interface NodeItem {
+  id: string;
+  name: string;
+  author: string;
+  repo: string;
+  source: string;
+  description: string;
+  tags: string[];
+  /** 该扩展提供的节点类名（清单截前 10 个用于展示） */
+  nodes: string[];
+  node_count: number;
+  install_type: string;
+  /** 只有 git-clone 类型才允许一键安装 */
+  installable: boolean;
+  /** 与其它扩展重名的节点，装之前值得看一眼 */
+  preemptions: string[];
+  /** 额外依赖：pip 包 / 系统包 */
+  needs: string[];
+  mirror?: string;
+  installed?: boolean;
+}
+
+export interface NodeJobLog {
+  at: number;
+  line: string;
+}
+
+export interface NodeJob {
+  id: string;
+  node: string;
+  name: string;
+  status: 'running' | 'done' | 'failed';
+  stage: string;
+  percent: number;
+  dir: string;
+  error: string;
+  logs: NodeJobLog[];
+  next: number;
+}
+
+export interface InstalledNode {
+  name: string;
+  dir: string;
+  path: string;
+  disabled: boolean;
+  repo: string;
+  id: string;
+  title: string;
+  description: string;
+  node_count: number;
+  nodes: string[];
+  /** 是否能在清单里查到（自建 / 手工 clone 的节点查不到） */
+  tracked: boolean;
+  requirements: boolean;
+  commit: string;
+  size: number;
+}
+
+export interface NodeStats {
+  catalog: number;
+  installed: number;
+  disabled: number;
+  node_classes: number;
+  core_nodes: number;
+  dir: string;
+  runtime: string;
+}
+
+export interface MissingProvider {
+  id: string;
+  name: string;
+  author: string;
+  repo: string;
+  node_count: number;
+  installable: boolean;
+  covers: string[];
+  files?: number;
+}
+
+export interface MissingWorkflow {
+  name: string;
+  file: string;
+  path: string;
+  used: number;
+  missing: number;
+  providers: MissingProvider[];
+  unknown: string[];
+}
+
+export interface NodeMissingReport {
+  workflows: MissingWorkflow[];
+  providers: MissingProvider[];
+  scanned: number;
+  missing_files: number;
+  core_nodes: number;
+  installed_nodes: number;
 }

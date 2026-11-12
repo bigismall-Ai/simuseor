@@ -13,6 +13,10 @@
 from __future__ import annotations
 
 import json
+import os
+import re
+import subprocess
+import sys
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
@@ -44,6 +48,101 @@ def is_workflow_file(path: str) -> bool:
     if name.endswith(".json"):
         return any(k in name for k in ("workflow", "comfy", "工作流"))
     return False
+
+
+# 分词用：下划线 / 连字符 / 标点都算分隔，中文按字保留（中文没有空格分词）
+_SEP_RE = re.compile(r"[^0-9a-z\u3400-\u9fff]+")
+
+
+def _norm_text(value: str) -> str:
+    """归一化成「空格分隔的小写词串」。
+
+    `image_minimax_h3_image_edit` 与查询 `minimax h3 image edit` 必须能对上，
+    所以分隔符一律折叠成空格——之前直接拿整串做子串匹配，带空格就一定搜不到。
+    """
+    return _SEP_RE.sub(" ", (value or "").lower()).strip()
+
+
+def _query_tokens(q: str) -> list[str]:
+    return [t for t in _norm_text(q).split(" ") if t]
+
+
+def _item_haystack(item: dict) -> str:
+    parts = [
+        item.get("id") or "",
+        item.get("name") or "",
+        item.get("description") or "",
+        " ".join(item.get("tags") or []),
+        " ".join(item.get("categories") or []),
+        " ".join(item.get("requires") or []),
+    ]
+    return _norm_text(" ".join(parts))
+
+
+def _relevance(item: dict, tokens: list[str]) -> int:
+    """命中越靠「标题」分数越高；一个词都没命中的返回 -1（应被过滤掉）。"""
+    title = _norm_text(item.get("name") or "")
+    rid = _norm_text(item.get("id") or "")
+    tags = _norm_text(" ".join(item.get("tags") or []))
+    desc = _norm_text(item.get("description") or "")
+    score = 0
+    for token in tokens:
+        if token in title:
+            score += 6
+        elif token in rid:
+            score += 4
+        elif token in tags:
+            score += 2
+        elif token in desc:
+            score += 1
+        else:
+            return -1
+    return score
+
+
+def _hot_score(item: dict, now: float | None = None) -> float:
+    """模板热度：使用量 + 新上线基线。
+
+    官方模板的 usage 由 ComfyUI 前端上报，刚发布的头几天必然是 0。只按 usage
+    排会把所有新模板沉到 760 条的最后——搜「minimax」连排名 19 都进不了前 12。
+    这里给 14 天内发布的条目一个线性衰减的基线，让新模板能进第一屏，
+    但不会压过真正用得多的老模板。
+    """
+    usage = float(item.get("downloads") or 0)
+    stamp = item.get("updated_at") or ""
+    if not stamp:
+        return usage
+    try:
+        published = time.mktime(time.strptime(stamp, "%Y-%m-%d"))
+    except ValueError:
+        return usage
+    age_days = max(0.0, ((now or time.time()) - published) / 86400)
+    if age_days >= 14:
+        return usage
+    return usage + 300.0 * (1 - age_days / 14)
+
+
+def _interleave(parts: list[list[dict]]) -> list[dict]:
+    """按来源轮询合并，保证每个源都能进第一屏。
+
+    之前是各源取 limit 条后按下载量全局排序——官方模板的 usage 只有几千，
+    Hugging Face 仓库动辄几十万下载，模板永远排到后面甚至被挤出 limit 之外。
+    轮询后第一屏每个源都有几条，官方模板不会再被淹没。
+    """
+    out: list[dict] = []
+    seen: set[str] = set()
+    depth = max((len(p) for p in parts), default=0)
+    for rank in range(depth):
+        for part in parts:
+            if rank >= len(part):
+                continue
+            item = part[rank]
+            key = f"{item.get('source')}/{item.get('id')}"
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(item)
+    return out
 
 
 def _source_cfg(name: str) -> dict:
@@ -292,6 +391,8 @@ def _templates() -> list[dict]:
 
     items: list[dict] = []
     for module in resp.json() or []:
+        module_title = (module.get("title") or "").strip()
+        module_cat = (module.get("category") or "").strip()
         for t in module.get("templates") or []:
             name = (t.get("name") or "").strip()
             if not name:
@@ -301,41 +402,44 @@ def _templates() -> list[dict]:
                 thumb = f"https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/{thumb}"
             requires = [m for m in t.get("models") or [] if m]
             requires += [f"节点:{c}" for c in t.get("requiresCustomNodes") or [] if c]
-            items.append(
-                _item(
-                    rid=name,
-                    name=t.get("title") or name,
-                    author=t.get("username") or "ComfyUI 官方",
-                    source="templates",
-                    description=(t.get("description") or "")[:200],
-                    downloads=int(t.get("usage") or 0),
-                    likes=0,
-                    tags=[x for x in t.get("tags") or [] if x],
-                    url=f"{TEMPLATE_WEB}/{name}.json",
-                    updated_at=(t.get("date") or "")[:10],
-                    files=[f"{name}.json"],
-                    thumbnail=thumb,
-                    requires=requires,
-                )
+            entry = _item(
+                rid=name,
+                name=t.get("title") or name,
+                author=t.get("username") or "ComfyUI 官方",
+                source="templates",
+                description=(t.get("description") or "")[:200],
+                downloads=int(t.get("usage") or 0),
+                likes=0,
+                tags=[x for x in t.get("tags") or [] if x],
+                url=f"{TEMPLATE_WEB}/{name}.json",
+                updated_at=(t.get("date") or "")[:10],
+                files=[f"{name}.json"],
+                thumbnail=thumb,
+                requires=requires,
             )
+            # 分类只用于检索与排序（Image / Video / Audio 这些模块标题），不上界面
+            entry["categories"] = [module_title, module_cat]
+            items.append(entry)
     _TEMPLATES_CACHE.update(at=now, items=items)
     return items
 
 
 def _search_templates(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
-    keyword = (q or "").strip().lower()
+    tokens = _query_tokens(q)
     items = _templates()
-    if keyword:
-        items = [
-            it
-            for it in items
-            if keyword
-            in f"{it['name']} {it['id']} {it['description']} {' '.join(it['tags'])}".lower()
-        ]
-    if sort == "latest":
+    if tokens:
+        scored = [(score, it) for it in items if (score := _relevance(it, tokens)) >= 0]
+        # 有关键词时先按相关度（标题命中 > 标签 > 描述）；同相关度再排热度。
+        # 「最新」是明确的时间语义，就别让相关度打乱日期顺序了。
+        if sort == "latest":
+            scored.sort(key=lambda pair: pair[1].get("updated_at") or "", reverse=True)
+        else:
+            scored.sort(key=lambda pair: (pair[0], _hot_score(pair[1])), reverse=True)
+        items = [it for _, it in scored]
+    elif sort == "latest":
         items = sorted(items, key=lambda x: x.get("updated_at") or "", reverse=True)
     else:
-        items = sorted(items, key=lambda x: x.get("downloads") or 0, reverse=True)
+        items = sorted(items, key=lambda x: (_hot_score(x), x.get("updated_at") or ""), reverse=True)
     start = (max(1, int(page)) - 1) * max(1, int(limit))
     end = start + max(1, int(limit))
     return items[start:end], end < len(items)
@@ -413,7 +517,7 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
     # 没配 GitHub token 时，"全部来源"跳过 GitHub（必然限流，避免每次都弹错误）
     if source not in _SEARCHERS and not _source_cfg("github").get("token"):
         names = [name for name in names if name != "github"]
-    items: list[dict] = []
+    parts: dict[str, list[dict]] = {}
     errors: dict[str, str] = {}
     done = True
     with ThreadPoolExecutor(max_workers=len(names)) as pool:
@@ -421,15 +525,14 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
         for future, name in futures.items():
             try:
                 part, has_more = future.result()
-                items.extend(part)
+                parts[name] = part
                 # has_more=False 表示该源已经到底；所有源都到底才算 done
                 done = done and not has_more
             except SourceError as exc:
                 errors[name] = str(exc)
-    if sort == "latest":
-        items.sort(key=lambda x: x.get("updated_at") or "", reverse=True)
-    else:
-        items.sort(key=lambda x: x.get("downloads") or 0, reverse=True)
+    # 按 names 的固定顺序轮询合并：单源结果内保持它自己的排序
+    ordered = [parts[name] for name in names if parts.get(name)]
+    items = _interleave(ordered) if len(ordered) > 1 else (ordered[0] if ordered else [])
     return {"items": items, "errors": errors, "done": done}
 
 
@@ -567,3 +670,77 @@ def import_to_instance(source: str, repo_id: str, instance: str = "", revision: 
     if not saved:
         raise SourceError("没有可导入的工作流文件（.json）")
     return {"instance": instance, "dir": str(dest), "files": saved}
+
+
+# ---------------- 本地工作流（「我的工作流」） ----------------
+MAX_WORKFLOW_BYTES = 8 * 1024 * 1024
+
+
+def _shape(payload: object) -> tuple[int, str]:
+    """返回 (节点数, 格式)。UI 格式是 {nodes:[...]}；API 格式是 {id:{class_type}} 的扁平表。"""
+    if not isinstance(payload, dict):
+        return 0, "unknown"
+    nodes = payload.get("nodes")
+    if isinstance(nodes, list):
+        return len(nodes), "ui"
+    inner = payload.get("workflow")
+    if isinstance(inner, dict) and isinstance(inner.get("nodes"), list):
+        return len(inner["nodes"]), "ui"
+    if payload and all(isinstance(v, dict) and "class_type" in v for v in payload.values()):
+        return len(payload), "api"
+    return 0, "unknown"
+
+
+def local() -> dict:
+    """共享工作流目录里的本地工作流。
+
+    只数节点，不解析依赖——「这条工作流缺哪个模型/节点」是下一步的事。
+    目录里可能混着 ComfyUI 自己的配置文件，认不出工作流形状的直接跳过。
+    """
+    root = WORKSPACE_WORKFLOWS_DIR
+    items: list[dict] = []
+    if root.is_dir():
+        for path in root.rglob("*.json"):
+            try:
+                stat = path.stat()
+                if stat.st_size > MAX_WORKFLOW_BYTES:
+                    continue
+                payload = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+            except (OSError, ValueError):
+                continue
+            nodes, fmt = _shape(payload)
+            if fmt == "unknown":
+                continue
+            parent = path.parent.relative_to(root)
+            items.append(
+                {
+                    "name": path.stem,
+                    "path": str(path),
+                    "folder": "" if parent == Path(".") else parent.as_posix(),
+                    "size": stat.st_size,
+                    "mtime": int(stat.st_mtime),
+                    "nodes": nodes,
+                    "format": fmt,
+                }
+            )
+    items.sort(key=lambda it: it["mtime"], reverse=True)
+    return {"dir": str(root), "total": len(items), "items": items}
+
+
+def open_local(path: str) -> dict:
+    """在系统文件管理器里定位这个工作流文件。路径必须落在共享工作流目录内。"""
+    root = WORKSPACE_WORKFLOWS_DIR.resolve()
+    target = Path(path).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise SourceError("只能打开共享工作流目录里的文件") from exc
+    if not target.is_file():
+        raise SourceError("文件不存在，可能已被移动或删除")
+    if os.name == "nt":
+        subprocess.Popen(["explorer", "/select,", str(target)])  # noqa: S603
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", "-R", str(target)])  # noqa: S603
+    else:
+        subprocess.Popen(["xdg-open", str(target.parent)])  # noqa: S603
+    return {"opened": str(target)}

@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { WorkflowItem, errMsg, fmtNum } from '../core/types';
+import { LocalWorkflow, WorkflowItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { EmptyComponent } from '../ui/empty.component';
@@ -48,10 +48,71 @@ const SORTS = [
   imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
-      kicker="Workflows"
-      title="工作流发现"
-      hint="以工作流为单位浏览：缩略图、依赖底模、文件清单。可以直接下到 models/workflows，也可以一键导进本地实例。"
+      [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
+      [title]="tab === 'discover' ? '发现工作流' : '工作流'"
+      [hint]="
+        tab === 'discover'
+          ? '从 ComfyUI 官方模板、Hugging Face、Civitai 抓取，下载到工作流库，所有实例共用。'
+          : '本机工作流库，所有 ComfyUI 实例共用。'
+      "
     />
+
+    @if (tab === 'mine') {
+      @if (localError) {
+        <div class="notice err">{{ localError }}</div>
+      }
+
+      @if (!localLoading && !local.length) {
+        <ui-panel>
+          <ui-empty
+            title="还没有本地工作流"
+            hint="从「发现工作流」下载一份，或在 ComfyUI 里保存一条，就会出现在这里。"
+          >
+            <button class="primary btn-xs" routerLink="/workflows/discover">去发现工作流</button>
+          </ui-empty>
+        </ui-panel>
+      } @else {
+        <ui-panel>
+          <div class="lw-bar">
+            <span class="lw-count">{{ localLoading ? '读取中…' : local.length + ' 个工作流' }}</span>
+            @if (localDir) {
+              <span class="lw-dir mono" [title]="localDir">{{ localDir }}</span>
+            }
+            <button class="btn-xs" (click)="loadLocal()" [disabled]="localLoading">刷新</button>
+          </div>
+
+          <div class="lw-head">
+            <span>名称</span>
+            <span class="lw-num">节点</span>
+            <span class="lw-num">大小</span>
+            <span class="lw-right">修改</span>
+            <span></span>
+          </div>
+
+          <div class="lw-list">
+            @for (it of local; track it.path) {
+              <div class="lw-row">
+                <div class="lw-body">
+                  <p class="lw-name" [title]="it.path">
+                    {{ it.name }}
+                    @if (it.format === 'api') {
+                      <span class="lw-tag">API</span>
+                    }
+                  </p>
+                  @if (it.folder && it.folder !== it.name) {
+                    <p class="lw-sub">{{ it.folder }}</p>
+                  }
+                </div>
+                <span class="lw-num">{{ it.nodes }}</span>
+                <span class="lw-num">{{ fmtSize(it.size) }}</span>
+                <time class="lw-time">{{ ago(it.mtime) }}</time>
+                <button class="btn-xs lw-open" (click)="reveal(it)" title="在文件管理器中定位">定位</button>
+              </div>
+            }
+          </div>
+        </ui-panel>
+      }
+    } @else {
 
     <ui-panel>
       <div class="toolbar">
@@ -164,8 +225,96 @@ const SORTS = [
         <button (click)="loadMore()" [disabled]="loading">{{ loading ? '加载中…' : '加载更多' }}</button>
       </div>
     }
+    }
   `,
   styles: `
+    /* 列表上方一条读数：共几条、目录在哪、刷新。目录用等宽字截断，路径长也不换行 */
+    .lw-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 11.5px;
+    }
+    .lw-count { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .lw-dir {
+      min-width: 0;
+      flex: 1;
+      color: var(--faint);
+      font-size: 10.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lw-bar button { margin-left: auto; }
+
+    /* 列头与行共用同一套列宽：数字右对齐成一列，扫读时才不用一行行找 */
+    .lw-head,
+    .lw-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 52px 78px 76px 52px;
+      align-items: center;
+      gap: 12px;
+    }
+    .lw-head {
+      padding: 8px 2px 7px;
+      font-size: 10.5px;
+      color: var(--faint);
+      letter-spacing: 0.02em;
+    }
+    .lw-row {
+      padding: 9px 2px;
+      border-top: 1px solid var(--border-soft);
+    }
+    .lw-row:hover { background: var(--panel-2); }
+    .lw-body { min-width: 0; }
+    .lw-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lw-tag {
+      flex: none;
+      padding: 0 4px;
+      border-radius: var(--radius-xs);
+      background: var(--chip);
+      color: var(--muted);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .lw-sub {
+      margin: 2px 0 0;
+      font-size: 10.5px;
+      color: var(--faint);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lw-num {
+      font-size: 11.5px;
+      color: var(--text-2);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .lw-right { text-align: right; }
+    .lw-time {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .lw-open { justify-self: end; }
+
     .wf-filters {
       display: flex;
       align-items: center;
@@ -305,9 +454,16 @@ const SORTS = [
 })
 export class WorkflowsComponent implements OnInit {
   private api = inject(ApiService);
+  private route = inject(ActivatedRoute);
 
   readonly sources = SOURCES;
   readonly sorts = SORTS;
+  /** 视图由路由决定：/workflows 是我的工作流，/workflows/discover 是发现 */
+  tab: 'mine' | 'discover' = 'mine';
+  local: LocalWorkflow[] = [];
+  localDir = '';
+  localLoading = false;
+  localError = '';
   q = '';
   source = 'all';
   sort = 'downloads';
@@ -321,8 +477,53 @@ export class WorkflowsComponent implements OnInit {
   sourceErrors: { label: string; message: string }[] = [];
 
   ngOnInit(): void {
-    this.load(1);
+    // 两个路径共用同一个组件实例，切换时组件不会重建，所以视图由路由的 data 驱动
+    this.route.data.subscribe((data) => {
+      const next: 'mine' | 'discover' = data['tab'] === 'discover' ? 'discover' : 'mine';
+      this.tab = next;
+      if (next === 'discover') {
+        if (!this.items.length) this.load(1);
+      } else if (!this.local.length) {
+        this.loadLocal();
+      }
+    });
   }
+
+  loadLocal(): void {
+    this.localLoading = true;
+    this.localError = '';
+    this.api.localWorkflows().subscribe({
+      next: (res) => {
+        this.local = res.items;
+        this.localDir = res.dir;
+        this.localLoading = false;
+      },
+      error: (err) => {
+        this.localLoading = false;
+        this.localError = errMsg(err, '读取本地工作流失败');
+      },
+    });
+  }
+
+  reveal(item: LocalWorkflow): void {
+    this.api.openLocalWorkflow(item.path).subscribe({
+      error: (err) => (this.localError = errMsg(err, '打开文件位置失败')),
+    });
+  }
+
+  /** 列表里的时间读「多久以前」比读绝对时间有用：它回答的是「这条是不是刚动的」 */
+  ago(seconds: number): string {
+    const diff = Math.floor(Date.now() / 1000) - seconds;
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
+    if (diff < 86400 * 30) return `${Math.floor(diff / 86400)} 天前`;
+    const d = new Date(seconds * 1000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  fmtSize = fmtSize;
 
   search(): void {
     this.load(1);

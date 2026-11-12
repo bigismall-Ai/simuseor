@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
 from ..comfy.model_dirs import infer_folder
+from .. import nodes as node_service
 from .. import workflows as workflow_service
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
 from ..db import execute, new_id, now_iso, query
@@ -53,6 +54,14 @@ class WorkflowImportRequest(BaseModel):
     repo_id: str
     revision: str = ""
     instance: str
+
+
+class WorkflowLocalOpenRequest(BaseModel):
+    path: str
+
+
+class NodeInstallRequest(BaseModel):
+    id: str
 
 
 class LibraryPatch(BaseModel):
@@ -132,6 +141,20 @@ def resolve_workflow(body: WorkflowResolveRequest) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/workflows/local")
+def local_workflows() -> dict:
+    """共享工作流目录里的「我的工作流」。依赖解析在下一步，这里只给列表。"""
+    return workflow_service.local()
+
+
+@router.post("/workflows/local/open")
+def open_local_workflow(body: WorkflowLocalOpenRequest) -> dict:
+    try:
+        return workflow_service.open_local(body.path)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/workflows/instances")
 def workflow_instances() -> dict:
     return {"items": workflow_service.instances()}
@@ -143,6 +166,88 @@ def import_workflow(body: WorkflowImportRequest) -> dict:
         return workflow_service.import_to_instance(body.source, body.repo_id, body.instance, body.revision)
     except SourceError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+# ---------------- 节点发现 / 节点管理 ----------------
+@router.get("/nodes")
+def search_nodes(q: str = "", sort: str = "nodes", scope: str = "all", limit: int = 20, page: int = 1) -> dict:
+    try:
+        return node_service.search(q, sort, scope, limit, page)
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.get("/nodes/stats")
+def node_stats() -> dict:
+    try:
+        return node_service.stats()
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post("/nodes/refresh")
+def refresh_nodes() -> dict:
+    try:
+        return node_service.fetch_catalog(force=True)
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=503, detail=f"节点清单刷新失败: {exc}") from exc
+
+
+@router.get("/nodes/installed")
+def installed_nodes() -> dict:
+    try:
+        return {"items": node_service.installed()}
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post("/nodes/install")
+def install_node(body: NodeInstallRequest) -> dict:
+    try:
+        return node_service.install(body.id)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/nodes/job")
+def current_node_job() -> dict:
+    return {"job": node_service.current_job()}
+
+
+@router.get("/nodes/job/{job_id}")
+def node_job(job_id: str, since: int = 0) -> dict:
+    try:
+        return node_service.job(job_id, since)
+    except SourceError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post("/nodes/installed/{name}/toggle")
+def toggle_node(name: str) -> dict:
+    try:
+        return node_service.toggle(name)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"改名失败: {exc}") from exc
+
+
+@router.delete("/nodes/installed/{name}")
+def remove_node(name: str, stop: bool = False) -> dict:
+    try:
+        return node_service.remove(name, stop=stop)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/nodes/missing")
+def missing_nodes() -> dict:
+    try:
+        return node_service.missing()
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 # ---------------- 任务 ----------------

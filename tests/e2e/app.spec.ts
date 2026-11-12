@@ -33,7 +33,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByRole('heading', { name: 'Hugging Face' })).toBeVisible();
     await page.screenshot({ path: ART + '/03-settings.png', fullPage: true });
 
-    await page.getByRole('link', { name: '模型库' }).click();
+    await page.locator('.nav > a[href="/library"]').click();
     await expect(page.getByText('本地模型库')).toBeVisible();
     await page.screenshot({ path: ART + '/02-library.png', fullPage: true });
   });
@@ -68,7 +68,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 45_000 });
     await page.screenshot({ path: ART + '/06-task-completed.png', fullPage: true });
 
-    await page.getByRole('link', { name: '模型库' }).click();
+    await page.locator('.nav > a[href="/library"]').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
 
@@ -87,7 +87,7 @@ test.describe('Model Downloader Web UI', () => {
 
   test('模型发现：搜索、行内下载弹层创建任务', async ({ page }) => {
     await page.goto('/discover?demo=1');
-    await expect(page.getByRole('heading', { name: '模型发现' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '发现模型' })).toBeVisible();
     await page.getByRole('button', { name: 'Demo', exact: true }).click();
     await page.getByPlaceholder('搜索模型关键词，如 qwen / lora / flux').fill('text');
     await page.getByTestId('search-btn').click();
@@ -683,5 +683,145 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('.instance-row').getByRole('button', { name: '删除' }).click();
     await expect(page.getByText('删除失败：目录被占用')).toBeVisible();
     await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  // ---------------- 节点发现 / 节点管理 ----------------
+  // 节点清单要打外网拉 5MB 的 ComfyUI-Manager JSON，E2E 里固定返回，
+  // 真实抓取与归一化由 backend/tests/test_nodes.py 覆盖。
+  async function mockNodes(page: any) {
+    await page.route((url: URL) => url.pathname === '/api/nodes', (route: any) =>
+      route.fulfill({
+        json: {
+          total: 2,
+          done: true,
+          installed_count: 1,
+          items: [
+            {
+              id: 'city96/comfyui-gguf', name: 'ComfyUI-GGUF', author: 'city96',
+              repo: 'https://github.com/city96/ComfyUI-GGUF', source: 'manager',
+              description: '加载 GGUF 量化模型。', tags: [], nodes: ['UnetLoaderGGUF', 'CLIPLoaderGGUF'],
+              node_count: 6, install_type: 'git-clone', installable: true,
+              preemptions: [], needs: [], installed: true,
+            },
+            {
+              id: 'ltdrdata/comfyui-impact-pack', name: 'ComfyUI Impact Pack', author: 'Dr.Lt.Data',
+              repo: 'https://github.com/ltdrdata/ComfyUI-Impact-Pack', source: 'manager',
+              description: '检测、分割、细节增强。', tags: [], nodes: ['SAMLoader', 'DetailerForEach'],
+              node_count: 202, install_type: 'git-clone', installable: true,
+              preemptions: [], needs: ['segment-anything'], installed: false,
+            },
+          ],
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/nodes/stats', (route: any) =>
+      route.fulfill({
+        json: {
+          catalog: 6038, installed: 1, disabled: 1, node_classes: 45849,
+          core_nodes: 1081, dir: 'E:/mock/workspace/custom_nodes', runtime: '3.13.18',
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/nodes/installed', (route: any) =>
+      route.fulfill({
+        json: {
+          items: [
+            {
+              name: 'comfyui-gguf', dir: 'comfyui-gguf', path: 'E:/mock/custom_nodes/comfyui-gguf',
+              disabled: false, repo: 'https://github.com/city96/ComfyUI-GGUF', id: 'city96/comfyui-gguf',
+              title: 'ComfyUI-GGUF', description: '', node_count: 6, nodes: ['UnetLoaderGGUF'],
+              tracked: true, requirements: true, commit: '6ea2651', size: 1048576,
+            },
+            {
+              name: 'handmade', dir: 'handmade.disabled', path: 'E:/mock/custom_nodes/handmade.disabled',
+              disabled: true, repo: '', id: '', title: 'handmade', description: '', node_count: 0,
+              nodes: [], tracked: false, requirements: false, commit: '', size: 2048,
+            },
+          ],
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/nodes/missing', (route: any) =>
+      route.fulfill({
+        json: {
+          scanned: 5,
+          missing_files: 1,
+          core_nodes: 1081,
+          installed_nodes: 6,
+          providers: [
+            {
+              id: 'JPS-GER/comfyui_jps-nodes', name: 'JPS Custom Nodes for ComfyUI', author: 'JPS',
+              repo: 'https://github.com/JPS-GER/ComfyUI_JPS-Nodes', node_count: 72,
+              installable: true, covers: ['SDXL Resolutions (JPS)'], files: 2,
+            },
+          ],
+          workflows: [
+            {
+              name: 'flux_img2img_1_2', file: '🟢 F.1 img2img 1.3/flux_img2img_1_2.json',
+              path: 'E:/mock/workflows/a.json', used: 17, missing: 3,
+              providers: [
+                {
+                  id: 'JPS-GER/comfyui_jps-nodes', name: 'JPS Custom Nodes for ComfyUI', author: 'JPS',
+                  repo: 'https://github.com/JPS-GER/ComfyUI_JPS-Nodes', node_count: 72,
+                  installable: true, covers: ['SDXL Resolutions (JPS)'],
+                },
+              ],
+              unknown: ['HintImageEnchance'],
+            },
+          ],
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/nodes/job', (route: any) =>
+      route.fulfill({ json: { job: null } }));
+  }
+
+  test('节点发现：列表显示已装状态与节点规模', async ({ page }) => {
+    await mockNodes(page);
+    await page.goto('/nodes');
+
+    await expect(page.getByRole('heading', { name: '发现节点' })).toBeVisible();
+    await expect(page.locator('.nd-row')).toHaveCount(2);
+    // 已装的那一行给徽章，未装的给安装按钮
+    await expect(page.locator('.nd-row').first().getByText('已安装').first()).toBeVisible();
+    await expect(page.locator('.nd-row').nth(1).getByRole('button', { name: '安装' })).toBeVisible();
+    await expect(page.locator('.nd-tile strong').nth(1)).toHaveText('202');
+    await page.screenshot({ path: ART + '/19-nodes-discover.png', fullPage: true });
+  });
+
+  test('节点发现：点安装后显示进度条', async ({ page }) => {
+    await mockNodes(page);
+    await page.route((url: URL) => url.pathname === '/api/nodes/install', (route: any) =>
+      route.fulfill({ json: { id: 'job-1' } }));
+    await page.route((url: URL) => url.pathname === '/api/nodes/job/job-1', (route: any) =>
+      route.fulfill({
+        json: {
+          id: 'job-1', node: 'ltdrdata/comfyui-impact-pack', name: 'ComfyUI Impact Pack',
+          status: 'running', stage: '下载代码', percent: 45, dir: '', error: '',
+          logs: [{ at: 1, line: '克隆 https://github.com/ltdrdata/ComfyUI-Impact-Pack' }], next: 1,
+        },
+      }));
+
+    await page.goto('/nodes');
+    await page.locator('.nd-row').nth(1).getByRole('button', { name: '安装' }).click();
+    await expect(page.locator('.nd-progress').first()).toHaveText('45%');
+    await expect(page.locator('.nd-log')).toContainText('克隆');
+    await page.screenshot({ path: ART + '/20-nodes-installing.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('节点管理：已装列表、启停状态与缺节点检测', async ({ page }) => {
+    await mockNodes(page);
+    await page.goto('/nodes/installed');
+
+    await expect(page.getByRole('heading', { name: '节点管理' })).toBeVisible();
+    await expect(page.locator('tbody tr')).toHaveCount(2);
+    // 「已禁用」在统计条里也有一个，限定在表格内取徽章
+    await expect(page.getByRole('table').getByText('已禁用')).toBeVisible();
+    await expect(page.getByRole('table').getByText('清单未收录')).toBeVisible();
+
+    await page.getByRole('button', { name: '开始检测' }).click();
+    await expect(page.getByText('5 个工作流里有 1 个缺节点')).toBeVisible();
+    await expect(page.getByText('JPS Custom Nodes for ComfyUI').first()).toBeVisible();
+    // 明细默认折叠，展开后能看到「清单未收录」的节点名
+    await page.locator('.nl-details summary').click();
+    await expect(page.getByText('HintImageEnchance')).toBeVisible();
+    await page.screenshot({ path: ART + '/21-nodes-library.png', fullPage: true });
   });
 });

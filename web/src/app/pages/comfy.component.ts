@@ -76,100 +76,178 @@ function formatDuration(seconds: number): string {
   template: `
     <ui-page-header kicker="Runtime" title="环境管理" />
 
-    <!-- 基础环境放最上面、横跨整页：新用户进来第一件事就是把它装好，装完才有实例可建。
-         它不该压在设备卡下面，也不该和实例挤同一栏。 -->
-    <ui-panel class="env-band" kicker="Shared" title="基础环境">
-      <div panel-actions>
-        <ui-badge [tone]="runtime.ready ? 'green' : 'orange'">
-          {{ runtime.ready ? '已安装' : '未安装' }}
-        </ui-badge>
-        @if (installing && installKind === 'environment') {
-          <button class="btn-xs" (click)="showInstallDialog()" [disabled]="dialogOpen">
-            {{ dialogOpen ? '安装中…' : '查看进度' }}
-          </button>
-        } @else if (runtime.ready) {
-          <button class="btn-xs" (click)="runEnvCheck()" [disabled]="checking || loading || installing">
-            {{ checking ? '检测中…' : '环境检测' }}
-          </button>
-        } @else {
-          <button class="primary btn-xs" (click)="openInstall('environment')" [disabled]="busy">安装</button>
-        }
-      </div>
-
-      @if (error) {
-        <div class="notice err">
-          {{ error }}
-          <button (click)="reload(true)">重试</button>
-        </div>
-      } @else if (env) {
-        <!-- 三项并排：装好了只显示版本号，没装才补一句「待安装」。
-             每行再重复一个「已安装」徽章，四张卡上就有四个同样的词。 -->
-        <div class="env-list">
-          <div class="env-list-row">
-            <span class="env-name">Python</span>
-            <strong>{{ runtime.python_ready ? runtime.python_version : '—' }}</strong>
-            @if (!runtime.python_ready) {
-              <span class="env-state">待安装</span>
-            }
-          </div>
-          <div class="env-list-row">
-            <span class="env-name">PyTorch</span>
-            <strong>{{ runtime.torch_version || '—' }}</strong>
-            @if (!runtime.torch_ready) {
-              <span class="env-state">待安装</span>
-            }
-          </div>
-          <div class="env-list-row">
-            <span class="env-name">CUDA 运行时</span>
-            <strong>{{ cudaLabel }}</strong>
-            @if (cudaState === '待安装') {
-              <span class="env-state">待安装</span>
-            }
-          </div>
-        </div>
-
-        @if (checkResult) {
-          <div class="check-box" [class.ok]="checkResult.ok">
-            @if (checkResult.ok) {
-              <div>环境正常 · Python {{ checkResult.python }} · PyTorch {{ checkResult.torch }}</div>
-            } @else {
-              @for (issue of checkResult.issues; track issue.code) {
-                <div class="check-row">
-                  <div>
-                    <strong>{{ issue.title }}</strong>
-                    <div class="muted">{{ issue.detail }}</div>
-                  </div>
-                  @if (issue.fix === 'install') {
-                    <button (click)="repair()">修复</button>
-                  }
-                </div>
-              }
-            }
-          </div>
-        }
-      } @else {
-        <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
-      }
-    </ui-panel>
-
+    <!-- 右栏在 DOM 里放前面：基础环境是实例的前置条件，Tab / 读屏顺序也该先环境再实例；
+         视觉上用 grid 列位把它摆到右侧，实例独占主栏。 -->
     <div class="env-layout">
-      <div class="env-main">
-        <ui-panel kicker="Instances" title="ComfyUI 实例">
+      <aside class="env-side">
+        <ui-panel class="rt-panel" kicker="Shared" title="基础环境">
           <div panel-actions>
-            <button
-              class="primary btn-xs"
-              (click)="openInstall('instance')"
-              [disabled]="!canInstallInstance || busyInstance"
-              [title]="runtime.ready ? '创建新的 ComfyUI 实例' : '请先安装基础环境'"
-            >
-              安装实例
-            </button>
+            <ui-badge [tone]="runtime.ready ? 'green' : 'orange'">
+              {{ runtime.ready ? '已安装' : '未安装' }}
+            </ui-badge>
           </div>
 
-          @if (instanceError) {
-            <div class="notice err">{{ instanceError }}</div>
-          }
+          @if (error) {
+            <div class="notice err">
+              {{ error }}
+              <button (click)="reload(true)">重试</button>
+            </div>
+          } @else if (env) {
+            <!-- 三项一次装好的运行时：左边圆点给状态，右边只给版本号。
+                 以前每一项都套一个边框盒子，三个盒子加起来比内容还重。 -->
+            <ul class="env-list">
+              <li class="env-list-row" [class.ready]="runtime.python_ready">
+                <span class="env-mark"></span>
+                <span class="env-name">Python</span>
+                <span class="env-value">
+                  <strong>{{ runtime.python_ready ? runtime.python_version : '—' }}</strong>
+                  @if (!runtime.python_ready) {
+                    <span class="env-state">待安装</span>
+                  }
+                </span>
+              </li>
+              <li class="env-list-row" [class.ready]="runtime.torch_ready">
+                <span class="env-mark"></span>
+                <span class="env-name">PyTorch</span>
+                <span class="env-value">
+                  <strong>{{ runtime.torch_version || '—' }}</strong>
+                  @if (!runtime.torch_ready) {
+                    <span class="env-state">待安装</span>
+                  }
+                </span>
+              </li>
+              <li class="env-list-row" [class.ready]="cudaState === '已安装'">
+                <span class="env-mark"></span>
+                <span class="env-name">CUDA 运行时</span>
+                <span class="env-value">
+                  <strong>{{ cudaLabel }}</strong>
+                  @if (cudaState === '待安装') {
+                    <span class="env-state">待安装</span>
+                  }
+                </span>
+              </li>
+            </ul>
 
+            @if (checkResult) {
+              <div class="check-box" [class.ok]="checkResult.ok">
+                @if (checkResult.ok) {
+                  <div>环境正常 · Python {{ checkResult.python }} · PyTorch {{ checkResult.torch }}</div>
+                } @else {
+                  @for (issue of checkResult.issues; track issue.code) {
+                    <div class="check-row">
+                      <div>
+                        <strong>{{ issue.title }}</strong>
+                        <div class="muted">{{ issue.detail }}</div>
+                      </div>
+                      @if (issue.fix === 'install') {
+                        <button (click)="repair()">修复</button>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+
+            <!-- 这张卡只有一件事要做，按钮就占满一行，不用在标题旁挤一个窄按钮 -->
+            @if (installing && installKind === 'environment') {
+              <button class="env-cta" (click)="showInstallDialog()" [disabled]="dialogOpen">
+                {{ dialogOpen ? '安装中…' : '查看安装进度' }}
+              </button>
+            } @else if (runtime.ready) {
+              <button class="env-cta" (click)="runEnvCheck()" [disabled]="checking || loading || installing">
+                {{ checking ? '检测中…' : '环境检测' }}
+              </button>
+            } @else {
+              <button class="env-cta primary" (click)="openInstall('environment')" [disabled]="busy">安装</button>
+            }
+          } @else {
+            <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
+          }
+        </ui-panel>
+
+        <ui-panel class="dev-panel" kicker="Device" title="设备详情">
+          @if (env) {
+            <!-- 显卡单独做成铭牌：这一页所有性能结论都挂在它上面，它该是右栏最重的一块 -->
+            <div class="dev-plate">
+              <div class="dev-plate-head">
+                <span class="spec-label">显卡</span>
+                @if (gpuVendor) {
+                  <span class="dev-vendor">{{ gpuVendor }}</span>
+                }
+              </div>
+              <strong class="dev-gpu">{{ gpuName }}</strong>
+              @if (gpuDetail) {
+                <span class="dev-gpu-meta mono">{{ gpuDetail }}</span>
+              }
+            </div>
+
+            <div class="spec-grid">
+              <div class="spec">
+                <span class="spec-label">显存</span>
+                <strong class="spec-value">{{ vramLabel }}</strong>
+                @if (vramNote) {
+                  <span class="spec-sub">{{ vramNote }}</span>
+                }
+              </div>
+              <div class="spec">
+                <span class="spec-label">内存</span>
+                <strong class="spec-value">{{ memoryLabel }}</strong>
+                @if (memoryNote) {
+                  <span class="spec-sub">{{ memoryNote }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="spec spec-wide">
+              <span class="spec-label">磁盘</span>
+              <strong class="spec-value">{{ diskFreeLabel }}</strong>
+              <span class="spec-sub mono">{{ diskPathLabel }}</span>
+            </div>
+
+            @for (action of visibleActions; track action.title) {
+              <div class="device-note">
+                <strong>{{ action.title }}</strong>
+                @if (action.level === 'block' && action.detail) {
+                  <div>{{ action.detail }}</div>
+                }
+              </div>
+            }
+
+            <div class="spec-foot">
+              <span>{{ osLabel }} · {{ device.arch }}</span>
+              <span>检测时间 {{ probeAge }}</span>
+            </div>
+
+            <details class="spec-more">
+              <summary>更多信息</summary>
+              <p class="mono">上次检测 {{ device.probed_at }}</p>
+              @if (otherGpus) {
+                <p>其他显示适配器：{{ otherGpus }}</p>
+              }
+            </details>
+          } @else {
+            <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
+          }
+        </ui-panel>
+      </aside>
+
+      <ui-panel class="inst-panel" kicker="Instances" title="ComfyUI 实例">
+        <div panel-actions>
+          <button
+            class="primary btn-xs"
+            (click)="openInstall('instance')"
+            [disabled]="!canInstallInstance || busyInstance"
+            [title]="runtime.ready ? '创建新的 ComfyUI 实例' : '请先安装基础环境'"
+          >
+            安装实例
+          </button>
+        </div>
+
+        @if (instanceError) {
+          <div class="notice err">{{ instanceError }}</div>
+        }
+
+        <div class="inst-list">
           <!-- 安装转后台后仍然看得见：点这一行就能回到进度弹层，不用刷新页面 -->
           @if (installingInstance) {
             <div class="instance-row installing" (click)="showInstallDialog()">
@@ -187,137 +265,113 @@ function formatDuration(seconds: number): string {
             </div>
           }
 
-          @if (visibleInstances.length) {
-            @for (instance of visibleInstances; track instance.name) {
-              <div class="instance-row">
-                <span class="inst-dot" [class.on]="isRunning(instance.name)"></span>
-                <div class="instance-meta">
-                  <div class="inst-title">
-                    @if (renaming === instance.name) {
-                      <input
-                        class="inst-rename"
-                        #renameInput
-                        [(ngModel)]="renameDraft"
-                        maxlength="40"
-                        placeholder="给它起个名字"
-                        (keydown.enter)="commitRename()"
-                        (keydown.escape)="cancelRename()"
-                        (blur)="commitRename()"
-                      />
-                    } @else {
-                      <button
-                        class="inst-name"
-                        (click)="startRename(instance)"
-                        [title]="'点击改名 · 目录 ' + instance.name"
-                      >
-                        {{ displayName(instance) }}
-                      </button>
-                    }
-                    @if (instance.registered === false) {
-                      <ui-badge tone="orange">未登记</ui-badge>
-                    }
-                  </div>
-                  <div class="inst-sub">
-                    @if (instance.alias) {
-                      <span class="mono">{{ instance.name }}</span>
-                    }
-                    @if (instance.version) {
-                      <span>ComfyUI {{ instance.version }}</span>
-                    }
-                    <span>{{ stateText(instance) }}</span>
-                  </div>
-                </div>
-                <div class="instance-actions">
-                  @if (isRunning(instance.name)) {
-                    <span class="inst-port mono" [title]="'监听 127.0.0.1:' + runningPort">{{ runningPort }}</span>
-                    <button class="primary btn-xs" (click)="openInstance()">打开</button>
-                    <button class="btn-xs" (click)="stopInstance(instance)">停止</button>
+          @for (instance of visibleInstances; track instance.name) {
+            <div class="instance-row">
+              <span class="inst-dot" [class.on]="isRunning(instance.name)"></span>
+              <div class="instance-meta">
+                <div class="inst-title">
+                  @if (renaming === instance.name) {
+                    <input
+                      class="inst-rename"
+                      #renameInput
+                      [(ngModel)]="renameDraft"
+                      maxlength="40"
+                      placeholder="给它起个名字"
+                      (keydown.enter)="commitRename()"
+                      (keydown.escape)="cancelRename()"
+                      (blur)="commitRename()"
+                    />
                   } @else {
                     <button
-                      class="btn-xs"
-                      [disabled]="!runtime.ready || !!runningName || !!startingName || isDeleting(instance.name)"
-                      [title]="startHint(instance.name)"
-                      (click)="startInstance(instance)"
+                      class="inst-name"
+                      (click)="startRename(instance)"
+                      [title]="'点击改名 · 目录 ' + instance.name"
                     >
-                      {{ startingName === instance.name ? '启动中…' : '启动' }}
+                      {{ displayName(instance) }}
                     </button>
                   }
-                  <button class="danger" [disabled]="isDeleting(instance.name)" (click)="removeInstance(instance)">
-                    {{ isDeleting(instance.name) ? '删除中…' : '删除' }}
-                  </button>
+                  <ui-badge [tone]="stateTone(instance)">{{ stateText(instance) }}</ui-badge>
+                  @if (instance.registered === false) {
+                    <ui-badge tone="orange">未登记</ui-badge>
+                  }
+                </div>
+                <!-- 副行永远占位：没有版本可读的残留目录也要有第二行，卡片之间才对得齐 -->
+                <div class="inst-sub">
+                  @if (instance.alias) {
+                    <span class="mono">{{ instance.name }}</span>
+                  }
+                  @if (instance.version) {
+                    <span>ComfyUI {{ instance.version }}</span>
+                  }
+                  @if (instance.python) {
+                    <span>Python {{ instance.python }}</span>
+                  }
+                  @if (!instance.alias && !instance.version && !instance.python) {
+                    <span>未检测到版本</span>
+                  }
                 </div>
               </div>
-            }
-          } @else if (!installingInstance) {
-            <ui-empty
-              title="还没有实例"
-              [hint]="
-                runtime.ready
-                  ? '点击「安装实例」创建，依赖会复用基础环境。'
-                  : '先把上面的基础环境装好，再回来创建实例。'
-              "
-            />
+              <div class="instance-actions">
+                @if (isRunning(instance.name)) {
+                  <span class="inst-port mono" [title]="'监听 127.0.0.1:' + runningPort">{{ runningPort }}</span>
+                  <button class="primary btn-xs" (click)="openInstance()">打开</button>
+                  <button class="btn-xs" (click)="stopInstance(instance)">停止</button>
+                } @else {
+                  <button
+                    class="btn-xs"
+                    [disabled]="!runtime.ready || !!runningName || !!startingName || isDeleting(instance.name)"
+                    [title]="startHint(instance.name)"
+                    (click)="startInstance(instance)"
+                  >
+                    {{ startingName === instance.name ? '启动中…' : '启动' }}
+                  </button>
+                }
+                <button class="danger" [disabled]="isDeleting(instance.name)" (click)="removeInstance(instance)">
+                  {{ isDeleting(instance.name) ? '删除中…' : '删除' }}
+                </button>
+              </div>
+            </div>
           }
-        </ui-panel>
-      </div>
 
-      <aside class="env-side">
-        <ui-panel kicker="Device" title="设备详情">
-          @if (env) {
-            <div class="spec-grid">
-              <div class="spec">
-                <span class="spec-label">显卡</span>
-                <strong class="spec-value">{{ gpuName }}</strong>
-                @if (gpuDetail) {
-                  <span class="spec-sub mono">{{ gpuDetail }}</span>
-                }
-              </div>
-              <div class="spec">
-                <span class="spec-label">显存</span>
-                <strong class="spec-value">{{ vramLabel }}</strong>
-                @if (vramNote) {
-                  <span class="spec-sub">{{ vramNote }}</span>
-                }
-              </div>
-              <div class="spec">
-                <span class="spec-label">内存</span>
-                <strong class="spec-value">{{ memoryLabel }}</strong>
-                @if (memoryNote) {
-                  <span class="spec-sub">{{ memoryNote }}</span>
-                }
-              </div>
-              <div class="spec">
-                <span class="spec-label">磁盘</span>
-                <strong class="spec-value">{{ diskFreeLabel }}</strong>
-                <span class="spec-sub mono">{{ diskPathLabel }}</span>
-              </div>
+          @if (!installingInstance && !visibleInstances.length) {
+            <!-- 空状态就是「第一张卡的槽位」：虚线圈住的区域说明这里还会长东西，
+                 不用在面板底部堆一个孤零零的按钮 -->
+            <div class="inst-empty">
+              <ui-empty
+                title="还没有实例"
+                [hint]="
+                  runtime.ready
+                    ? '装一个就能跑工作流，运行时与右侧共用。'
+                    : '先把右侧的基础环境装好，再回来创建实例。'
+                "
+              >
+                <button
+                  class="primary btn-xs"
+                  (click)="openInstall('instance')"
+                  [disabled]="!canInstallInstance || busyInstance"
+                >
+                  安装第一个实例
+                </button>
+              </ui-empty>
             </div>
-
-            <div class="spec-foot">
-              <span>{{ osLabel }} · {{ device.arch }}</span>
-              <span>检测时间 {{ probeAge }}</span>
-            </div>
-
-            <details class="spec-more">
-              <summary>更多信息</summary>
-              <p class="mono">上次检测 {{ device.probed_at }}</p>
-              @if (otherGpus) {
-                <p>其他显示适配器：{{ otherGpus }}</p>
-              }
-            </details>
-            @for (action of visibleActions; track action.title) {
-              <div class="device-note muted">
-                <strong>{{ action.title }}</strong>
-                @if (action.level === 'block' && action.detail) {
-                  <div>{{ action.detail }}</div>
-                }
-              </div>
-            }
           } @else {
-            <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
+            <!-- 列表页脚：左边是添加入口，右边是计数 -->
+            <div class="inst-foot">
+              <button
+                class="inst-add"
+                (click)="openInstall('instance')"
+                [disabled]="!canInstallInstance || busyInstance"
+                [title]="runtime.ready ? '创建新的 ComfyUI 实例' : '请先安装基础环境'"
+              >
+                <span class="inst-add-plus">＋</span>安装新实例
+              </button>
+              @if (visibleInstances.length) {
+                <span class="inst-count">共 {{ visibleInstances.length }} 个实例</span>
+              }
+            </div>
           }
-        </ui-panel>
-      </aside>
+        </div>
+      </ui-panel>
     </div>
 
     @if (preview; as pv) {
@@ -351,7 +405,7 @@ function formatDuration(seconds: number): string {
                 <section class="install-left">
                   <div class="progress-hero">
                     <div class="ring-wrap">
-                      <svg class="ring" viewBox="0 0 120 120" [class.done]="jobFinished" [class.failed]="jobFailed">
+                      <svg class="prg-ring" viewBox="0 0 120 120" [class.done]="jobFinished" [class.failed]="jobFailed">
                         <circle class="ring-track" cx="60" cy="60" r="52" />
                         <circle
                           class="ring-value"
@@ -1079,12 +1133,20 @@ export class ComfyComponent implements OnInit, OnDestroy {
     return (instance.alias || '').trim() || instance.name;
   }
 
-  /** 行副标题里的状态：列表本身没有「已停止」这种文案时，读者会以为数据缺了一块 */
+  /** 行首状态徽章：列表本身没有「已停止」这种文案时，读者会以为数据缺了一块 */
   stateText(instance: ComfyInstance): string {
     if (this.isDeleting(instance.name)) return '删除中…';
     if (this.startingName === instance.name) return '正在启动';
     if (this.isRunning(instance.name)) return '运行中';
     return '已停止';
+  }
+
+  /** 徽章配色跟着状态走：只有运行中是彩色的，停着的实例不该抢注意力 */
+  stateTone(instance: ComfyInstance): BadgeTone {
+    if (this.isDeleting(instance.name)) return 'orange';
+    if (this.startingName === instance.name) return 'blue';
+    if (this.isRunning(instance.name)) return 'green';
+    return 'gray';
   }
 
   startRename(instance: ComfyInstance): void {
@@ -1273,6 +1335,19 @@ export class ComfyComponent implements OnInit, OnDestroy {
 
   get gpuName(): string {
     return this.device.primary_gpu?.name || '未检测到独立显卡';
+  }
+
+  /** 铭牌右上角的厂商标：显卡名字里已经含 NVIDIA，这里只做归类，不重复名字 */
+  get gpuVendor(): string {
+    const vendor = (this.device.primary_gpu?.vendor || '').toLowerCase();
+    const labels: Record<string, string> = {
+      nvidia: 'NVIDIA',
+      amd: 'AMD',
+      intel: 'Intel',
+      apple: 'Apple',
+      ascend: 'Ascend',
+    };
+    return labels[vendor] || (vendor ? vendor.toUpperCase() : '');
   }
 
   get gpuDetail(): string {
