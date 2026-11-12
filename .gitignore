@@ -37,6 +37,9 @@ tests/*.mjs
 web/public/**/_candidates/
 /wf.tmp.json
 
+# IDE 助手的工作记忆：与项目源码无关，只在本地保留
+.workbuddy/
+
 # 系统与编辑器
 .DS_Store
 Thumbs.db
