@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/api.service';
-import { LibraryModel, errMsg, fmtSize } from '../core/types';
+import { LibraryModel, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
+import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -17,13 +18,18 @@ import { PanelComponent } from '../ui/panel.component';
     CommonModule,
     FormsModule,
     BadgeComponent,
+    CoverPlateComponent,
     EmptyComponent,
     FieldComponent,
     PageHeaderComponent,
     PanelComponent,
   ],
   template: `
-    <ui-page-header title="本地模型库" hint="搜索、标签、收藏、评审状态；下载完成的模型自动入库。" />
+    <ui-page-header
+      kicker="Library"
+      title="本地模型库"
+      hint="问自己三个问题：这个模型还在用吗（收藏）、试过没有（评审）、属于什么（标签）。"
+    />
 
     <ui-panel>
       <div class="form-grid">
@@ -66,19 +72,32 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
 
-    <ui-panel title="模型列表">
-      @if (loading) {
-        <ui-empty title="加载中…" />
-      }
+    <!-- 三个数字回答「库有多大、占多少盘」。放在列表上方，翻页前先看一眼 -->
+    <div class="stat-strip">
+      <div class="stat">
+        <span>模型数</span>
+        <strong>{{ models.length }}</strong>
+      </div>
+      <div class="stat">
+        <span>占用空间</span>
+        <strong>{{ fmtSize(totalSize) }}</strong>
+      </div>
+      <div class="stat">
+        <span>收藏</span>
+        <strong>{{ favCount }}</strong>
+      </div>
+    </div>
+
+    <ui-panel title="模型列表" [hint]="loading ? '加载中…' : models.length + ' 个模型'">
       @if (!loading && models.length === 0) {
         <ui-empty
-          icon="📚"
-          title="暂无模型"
-          hint="下载完成后会自动出现在这里，或用上方的「扫描入库」导入已有目录。"
+          title="库里还没有模型"
+          hint="下载完成后会自动出现在这里，或用上面的「扫描入库」导入已有目录。"
         />
       }
-      @if (!loading && models.length > 0) {
-        <div class="table-wrap">
+
+      @if (models.length > 0) {
+        <div class="table-wrap lib-table">
           <table>
             <thead>
               <tr>
@@ -101,12 +120,17 @@ import { PanelComponent } from '../ui/panel.component';
                     </button>
                   </td>
                   <td>
-                    <div class="cell-name">{{ m.name }}</div>
-                    <div class="mono muted cell-path">{{ m.local_path }}</div>
+                    <div class="name-cell">
+                      <app-cover-plate class="thumb" size="mini" [model]="m" />
+                      <div class="name-text">
+                        <div class="cell-name">{{ m.name }}</div>
+                        <div class="mono muted cell-path">{{ m.local_path }}</div>
+                      </div>
+                    </div>
                   </td>
                   <td><ui-badge tone="blue">{{ m.source }}</ui-badge></td>
-                  <td>{{ fmtSize(m.size_bytes) }}</td>
-                  <td>{{ m.file_count }}</td>
+                  <td class="mono">{{ fmtSize(m.size_bytes) }}</td>
+                  <td class="mono muted">{{ m.file_count }}</td>
                   <td class="cell-tags">
                     <input [value]="tagsText(m)" (blur)="saveTags(m, $event)" placeholder="逗号分隔">
                   </td>
@@ -119,8 +143,8 @@ import { PanelComponent } from '../ui/panel.component';
                   </td>
                   <td>
                     <div class="toolbar">
-                      <button (click)="open(m)">打开目录</button>
-                      <button class="danger" (click)="remove(m)">删除</button>
+                      <button class="btn-xs" (click)="open(m)">打开目录</button>
+                      <button class="btn-xs danger" (click)="remove(m)">删除</button>
                     </div>
                   </td>
                 </tr>
@@ -131,6 +155,52 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
   `,
+  styles: [
+    `
+      .stat-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .stat {
+        flex: 1 1 150px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 13px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+      .stat span {
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+      .stat strong {
+        font: 620 15px/1.1 "Cascadia Mono", Consolas, monospace;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* 名字前放一枚 40×30 的家族指纹：一屏几十行时，颜色比读文字更快认出「这批都是 SDXL」 */
+      .name-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .thumb { flex: none; }
+      .name-text { min-width: 0; }
+
+      .lib-table th:first-child,
+      .lib-table td:first-child { padding-left: 4px; }
+      .lib-table td { padding-top: 8px; padding-bottom: 8px; }
+    `,
+  ],
 })
 export class LibraryComponent implements OnInit {
   models: LibraryModel[] = [];
@@ -166,6 +236,14 @@ export class LibraryComponent implements OnInit {
       ];
     });
     this.load();
+  }
+
+  get totalSize(): number {
+    return this.models.reduce((sum, m) => sum + (m.size_bytes || 0), 0);
+  }
+
+  get favCount(): number {
+    return this.models.filter((m) => this.isFav(m)).length;
   }
 
   load(): void {
@@ -247,4 +325,5 @@ export class LibraryComponent implements OnInit {
   }
 
   fmtSize = fmtSize;
+  fmtNum = fmtNum;
 }

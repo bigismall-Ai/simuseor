@@ -14,8 +14,8 @@ export interface LabModel {
   params: string;
   size: string;
   updated: string;
-  /** 是否真的有官方封面；没封面就走确定性色牌 */
-  hasCover: boolean;
+  /** 有封面时的图片地址。样例图取自 Civitai 的作者预览图，仅用于实验页 */
+  image?: string;
 }
 
 export interface LabFile {
@@ -59,7 +59,7 @@ export const LAB_MODELS: LabModel[] = [
     params: 'WAN 2.2',
     size: '1.3G',
     updated: '2026-11-03',
-    hasCover: true,
+    image: 'samples/shot-2.jpg',
   },
   {
     id: 'civitai/flux-kontext-megapack',
@@ -73,7 +73,7 @@ export const LAB_MODELS: LabModel[] = [
     params: 'FLUX.1-D',
     size: '2.4G',
     updated: '2026-10-28',
-    hasCover: true,
+    image: 'samples/shot-6.jpg',
   },
   {
     id: 'huggingface/Qwen3.5-4B-3D-Coder',
@@ -87,7 +87,6 @@ export const LAB_MODELS: LabModel[] = [
     params: '4B',
     size: '7.9G',
     updated: '2026-11-06',
-    hasCover: false,
   },
   {
     id: 'huggingface/Wan2.2-I2V-A14B',
@@ -101,7 +100,6 @@ export const LAB_MODELS: LabModel[] = [
     params: '14B',
     size: '8.3G',
     updated: '2026-11-05',
-    hasCover: false,
   },
   {
     id: 'modelscope/Qwen-Image-2.1-Turbo',
@@ -115,7 +113,6 @@ export const LAB_MODELS: LabModel[] = [
     params: 'Turbo',
     size: '12.4G',
     updated: '2026-11-03',
-    hasCover: false,
   },
   {
     id: 'civitai/wan-2-2-aio',
@@ -129,7 +126,7 @@ export const LAB_MODELS: LabModel[] = [
     params: 'WAN 2.2',
     size: '18.2G',
     updated: '2026-11-07',
-    hasCover: true,
+    image: 'samples/shot-4.jpg',
   },
   {
     id: 'huggingface/Flux-GGUF-Q4',
@@ -143,7 +140,6 @@ export const LAB_MODELS: LabModel[] = [
     params: '12B',
     size: '6.8G',
     updated: '2026-10-22',
-    hasCover: false,
   },
   {
     id: 'civitai/sdxl-realistic-xl',
@@ -157,7 +153,7 @@ export const LAB_MODELS: LabModel[] = [
     params: 'SDXL',
     size: '6.5G',
     updated: '2026-09-30',
-    hasCover: true,
+    image: 'samples/shot-5.jpg',
   },
 ];
 

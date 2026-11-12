@@ -12,17 +12,23 @@ import { PanelComponent } from '../ui/panel.component';
   standalone: true,
   imports: [CommonModule, FormsModule, FieldComponent, PageHeaderComponent, PanelComponent],
   template: `
-    <ui-page-header title="设置" hint="下载源凭据、代理与 aria2 内核参数。" />
+    <ui-page-header
+      kicker="Settings"
+      title="设置"
+      hint="左边是全局：存哪儿、怎么下、走不走代理。右边只配每个源自己的凭据。"
+    />
 
     @if (settings) {
       <div class="settings-cols">
         <div class="col">
-          <ui-panel title="模型下载目录" hint="下载产物保存位置，默认 models（相对项目目录）。">
-            <input class="mono" [value]="settings.download.save_dir" readonly placeholder="models">
-            <button class="mt" (click)="browseSaveDir()">选择文件夹</button>
+          <ui-panel kicker="Storage" title="模型下载目录" hint="下载产物落在这里，默认 models（相对项目目录）。">
+            <div class="path-row">
+              <input class="mono" [value]="settings.download.save_dir" readonly placeholder="models">
+              <button (click)="browseSaveDir()">选择…</button>
+            </div>
           </ui-panel>
 
-          <ui-panel title="aria2 配置 + 默认策略" hint="内核参数与默认下载策略对所有下载源生效。">
+          <ui-panel kicker="aria2" title="内核与默认策略" hint="这三个参数对所有下载源生效。">
             <div class="form-grid">
               <ui-field label="单文件连接数 (-x)">
                 <input type="number" [(ngModel)]="settings.aria2.connections">
@@ -46,7 +52,7 @@ import { PanelComponent } from '../ui/panel.component';
             </ui-field>
           </ui-panel>
 
-          <ui-panel title="代理配置" hint="启用代理的下载源经此代理下载。">
+          <ui-panel kicker="Proxy" title="代理配置" hint="只有打开了「启用代理」的下载源才会走这里。">
             <div class="form-grid">
               <ui-field label="IP 或 网址">
                 <input [(ngModel)]="settings.proxy.host" placeholder="127.0.0.1">
@@ -55,7 +61,10 @@ import { PanelComponent } from '../ui/panel.component';
                 <input type="number" [(ngModel)]="settings.proxy.port" placeholder="7890">
               </ui-field>
             </div>
-            <button class="mt" (click)="testProxy()">测试代理</button>
+            <div class="toolbar mt">
+              <button (click)="testProxy()">测试代理</button>
+              <span class="mono muted">{{ proxyUrl(settings.proxy) }}</span>
+            </div>
             @if (proxyResult) {
               <div class="notice" [ngClass]="proxyResult.ok ? 'ok' : 'err'">{{ proxyResult.text }}</div>
             }
@@ -64,7 +73,14 @@ import { PanelComponent } from '../ui/panel.component';
 
         <div class="col">
           @for (key of sourceKeys; track key) {
-            <ui-panel [title]="settings.sources[key].label || key" hint="token 与代理开关按源配置；保存路径、代理与默认策略在左侧统一设置。">
+            <ui-panel [title]="settings.sources[key].label || key" hint="凭据只属于这个源；其它设置都在左侧。">
+              <div panel-actions>
+                @if (settings.sources[key].proxy_enabled) {
+                  <span class="badge blue">经代理</span>
+                } @else {
+                  <span class="badge gray">直连</span>
+                }
+              </div>
               <div class="form-grid">
                 <ui-field label="Access Token">
                   <input type="password" [(ngModel)]="settings.sources[key].token" placeholder="私有仓库需要">
@@ -72,14 +88,14 @@ import { PanelComponent } from '../ui/panel.component';
                 <ui-field label="启用代理">
                   <div class="check-row">
                     <input type="checkbox" [(ngModel)]="settings.sources[key].proxy_enabled">
-                    <span>启用后该源下载经全局代理</span>
+                    <span>下载时经全局代理</span>
                   </div>
                 </ui-field>
                 @if (key === 'civitai') {
                   <ui-field label="完整目录（CivitAI Red）">
                     <div class="check-row">
                       <input type="checkbox" [(ngModel)]="settings.sources[key].full_catalog">
-                      <span>含成熟内容（nsfw 参数；18+，部分地区依法受限）</span>
+                      <span>含成熟内容（18+，部分地区依法受限）</span>
                     </div>
                   </ui-field>
                 }
@@ -103,11 +119,25 @@ import { PanelComponent } from '../ui/panel.component';
       <div class="save-bar">
         <button class="primary" (click)="save()" [disabled]="saving">{{ saving ? '保存中…' : '保存设置' }}</button>
         @if (message) {
-          <span class="notice inline" [ngClass]="messageOk ? 'ok' : 'err'">{{ message }}</span>
+          <span class="notice is-inline" [ngClass]="messageOk ? 'ok' : 'err'">{{ message }}</span>
+        } @else {
+          <span class="muted save-hint">改动不会自动保存，确认后再点一次。</span>
         }
       </div>
     }
   `,
+  styles: [
+    `
+      .path-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .path-row input { flex: 1; min-width: 0; }
+      .path-row button { flex: none; }
+      .save-hint { font-size: 11.5px; }
+    `,
+  ],
 })
 export class SettingsComponent implements OnInit {
   settings: AppSettings | null = null;
@@ -124,6 +154,8 @@ export class SettingsComponent implements OnInit {
   ];
 
   constructor(private api: ApiService) {}
+
+  readonly proxyUrl = proxyUrl;
 
   ngOnInit(): void {
     this.api.getSettings().subscribe((s) => {

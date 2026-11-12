@@ -5,8 +5,10 @@ import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { WorkflowInstance, WorkflowItem, errMsg, fmtNum } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
+import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
+import { PanelComponent } from '../ui/panel.component';
 
 const PAGE_SIZE = 12;
 
@@ -43,14 +45,15 @@ const SORTS = [
 @Component({
   selector: 'app-workflows',
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, EmptyComponent, PageHeaderComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
+      kicker="Workflows"
       title="工作流发现"
-      hint="以工作流为单位浏览：缩略图、依赖模型、文件清单。可下载到 models/workflows，或直接导入本地 ComfyUI 实例"
+      hint="以工作流为单位浏览：缩略图、依赖底模、文件清单。可以直接下到 models/workflows，也可以一键导进本地实例。"
     />
 
-    <div class="panel">
+    <ui-panel>
       <div class="toolbar">
         <input
           class="grow"
@@ -61,22 +64,26 @@ const SORTS = [
         />
         <button class="primary" (click)="search()" [disabled]="loading">搜索</button>
       </div>
-      <div class="chip-row">
-        @for (s of sources; track s.key) {
-          <button class="filter-chip" [class.active]="source === s.key" (click)="setSource(s.key)">
-            {{ s.label }}
-          </button>
-        }
-        <span class="wf-sep"></span>
-        @for (s of sorts; track s.key) {
-          <button class="filter-chip" [class.active]="sort === s.key" (click)="setSort(s.key)">
-            {{ s.label }}
-          </button>
-        }
+
+      <div class="wf-filters">
+        <div class="chip-row">
+          @for (s of sources; track s.key) {
+            <button class="filter-chip" [class.active]="source === s.key" (click)="setSource(s.key)">
+              {{ s.label }}
+            </button>
+          }
+        </div>
+        <div class="wf-sort">
+          @for (s of sorts; track s.key) {
+            <button class="filter-chip" [class.active]="sort === s.key" (click)="setSort(s.key)">
+              {{ s.label }}
+            </button>
+          }
+        </div>
       </div>
 
       @if (instances.length) {
-        <div class="toolbar wf-import-bar">
+        <div class="wf-import-bar">
           <span class="muted">导入目标实例</span>
           <select class="wf-instance" [(ngModel)]="instance" data-testid="wf-instance">
             @for (ins of instances; track ins.name) {
@@ -105,29 +112,16 @@ const SORTS = [
       @if (loading && !items.length) {
         <div class="notice info">正在检索各站工作流…</div>
       }
-    </div>
+    </ui-panel>
 
     @if (!loading && !items.length && !errorText) {
-      <ui-empty icon="🧩" title="没有找到工作流" hint="换个关键词，或切换来源再试" />
+      <ui-empty title="没有找到工作流" hint="换个关键词，或切换来源再试。" />
     }
 
     <div class="wf-list">
       @for (it of items; track it.source + '/' + it.id) {
         <article class="wf-row">
-          <div class="wf-thumb-box">
-            @if (it.thumbnail) {
-              <img
-                class="wf-thumb"
-                [src]="it.thumbnail"
-                alt=""
-                loading="lazy"
-                referrerpolicy="no-referrer"
-                (error)="it.thumbnail = ''"
-              />
-            } @else {
-              <div class="wf-thumb wf-thumb-empty">🧩</div>
-            }
-          </div>
+          <app-cover-plate class="wf-thumb" size="wide" [model]="plateOf(it)" />
 
           <div class="wf-body">
             <div class="wf-head">
@@ -135,13 +129,15 @@ const SORTS = [
               <ui-badge [tone]="toneOf(it.source)">{{ labelOf(it.source) }}</ui-badge>
               <a class="mc-link" [href]="it.url" target="_blank" rel="noreferrer">来源 ↗</a>
             </div>
-            <div class="muted wf-meta">
-              {{ it.author }}
-              @if (it.updated_at) {
-                <span> · ↻ {{ it.updated_at }}</span>
+            <div class="wf-meta">
+              @if (it.author) {
+                <span>{{ it.author }}</span>
               }
-              <span> · ⬇ {{ fmtNum(it.downloads) }}</span>
-              <span> · {{ it.file_count }} 个文件</span>
+              @if (it.updated_at) {
+                <span>↻ {{ it.updated_at }}</span>
+              }
+              <span>↓ {{ fmtNum(it.downloads) }}</span>
+              <span>{{ it.file_count }} 个文件</span>
             </div>
             @if (it.description) {
               <p class="wf-desc">{{ it.description }}</p>
@@ -151,7 +147,7 @@ const SORTS = [
                 @for (r of it.requires || []; track r) {
                   <span class="wf-req">{{ r }}</span>
                 }
-                @for (t of it.tags; track t) {
+                @for (t of it.tags.slice(0, 4); track t) {
                   <span class="wf-tag">{{ t }}</span>
                 }
               </div>
@@ -161,7 +157,7 @@ const SORTS = [
 
           <div class="wf-actions">
             <button
-              class="primary"
+              class="primary btn-xs"
               (click)="download(it)"
               [disabled]="busy === keyOf(it)"
               [attr.data-testid]="'wf-download-' + it.source"
@@ -169,13 +165,13 @@ const SORTS = [
               @if (busy === keyOf(it)) { 正在创建… } @else { 下载 }
             </button>
             <button
-              class="ghost"
+              class="btn-xs"
               (click)="importTo(it)"
               [disabled]="!instance || busy === 'import:' + keyOf(it)"
               [title]="instance ? '复制到实例的 user/default/workflows' : '本机没有可用 ComfyUI 实例'"
               [attr.data-testid]="'wf-import-' + it.source"
             >
-              @if (busy === 'import:' + keyOf(it)) { 导入中… } @else { 导入 ComfyUI }
+              @if (busy === 'import:' + keyOf(it)) { 导入中… } @else { 导入实例 }
             </button>
           </div>
         </article>
@@ -183,66 +179,68 @@ const SORTS = [
     </div>
 
     @if (items.length && !done) {
-      <div class="actions">
-        <button class="ghost" (click)="loadMore()" [disabled]="loading">加载更多</button>
+      <div class="mc-more">
+        <button (click)="loadMore()" [disabled]="loading">{{ loading ? '加载中…' : '加载更多' }}</button>
       </div>
     }
   `,
   styles: `
-    .wf-sep {
-      width: 1px;
-      height: 18px;
-      background: var(--border);
-      margin: 0 6px;
+    .wf-filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .wf-sort {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
     }
     .wf-import-bar {
+      display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 6px;
-      font-size: 12px;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 11.5px;
     }
     .wf-instance {
-      width: 260px;
+      width: 250px;
       max-width: 46vw;
     }
+
     .wf-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
+    /* 缩略图列宽度固定：一列图宽窄不一会让右边界跳，整列看起来是歪的 */
     .wf-row {
       display: grid;
       grid-template-columns: 132px minmax(0, 1fr) auto;
       gap: 14px;
-      padding: 12px;
+      padding: 12px 14px 12px 12px;
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
+      transition: border-color 0.14s ease, box-shadow 0.14s ease;
+    }
+    .wf-row:hover {
+      border-color: var(--border-strong);
       box-shadow: var(--shadow-sm);
     }
-    .wf-thumb-box {
-      display: flex;
-      align-items: center;
-    }
     .wf-thumb {
-      width: 132px;
-      height: 88px;
+      align-self: start;
       border-radius: 8px;
-      object-fit: cover;
-      background: var(--panel-2);
-      border: 1px solid var(--border-soft);
+      overflow: hidden;
     }
-    .wf-thumb-empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      color: var(--muted);
-    }
-    .wf-body {
-      min-width: 0;
-    }
+
+    .wf-body { min-width: 0; }
+
     .wf-head {
       display: flex;
       align-items: center;
@@ -251,72 +249,87 @@ const SORTS = [
     }
     .wf-title {
       margin: 0;
-      font-size: 15px;
+      font-size: 13.5px;
+      font-weight: 620;
+      letter-spacing: -0.01em;
       line-height: 1.35;
-      max-width: 72%;
+      max-width: 70%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .wf-meta {
-      margin-top: 4px;
-      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      margin-top: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
     }
+    .wf-meta span + span::before {
+      content: '·';
+      margin-right: 8px;
+      opacity: 0.45;
+    }
+
     .wf-desc {
-      margin: 6px 0 0;
-      font-size: 13px;
+      margin: 7px 0 0;
+      font-size: 12px;
+      line-height: 1.5;
       color: var(--muted);
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
     .wf-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 7px;
+      gap: 5px;
+      margin-top: 8px;
     }
     .wf-req {
-      font-size: 11px;
-      padding: 1px 6px;
-      border-radius: 6px;
+      max-width: 240px;
+      padding: 0 6px;
+      border-radius: var(--radius-xs);
       background: var(--warn-soft);
       color: var(--warn);
-      max-width: 260px;
+      font-size: 10.5px;
+      line-height: 17px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .wf-tag {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 18px;
+      font-size: 10.5px;
+      line-height: 17px;
+      color: var(--faint);
     }
+
     .wf-files {
-      margin: 7px 0 0;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      font-size: 11px;
-      color: var(--muted);
+      margin: 8px 0 0;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 10.5px;
+      color: var(--faint);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .wf-actions {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       justify-content: center;
-      min-width: 110px;
+      min-width: 96px;
     }
+
     @media (max-width: 760px) {
-      .wf-row {
-        grid-template-columns: 84px minmax(0, 1fr);
-      }
-      .wf-thumb {
-        width: 84px;
-        height: 84px;
-      }
+      .wf-row { grid-template-columns: 92px minmax(0, 1fr); }
+      .wf-thumb { width: 92px; height: 72px; }
       .wf-actions {
         grid-column: 1 / -1;
         flex-direction: row;
@@ -458,6 +471,14 @@ export class WorkflowsComponent implements OnInit {
 
   keyOf(item: WorkflowItem): string {
     return `${item.source}/${item.id}`;
+  }
+
+  /**
+   * 传给铭牌的最小字段集。有缩略图就铺图，没有就按名字生成构图——
+   * 旧版这里是一个 🧩 emoji，一屏十几个一样的方块，完全无法区分。
+   */
+  plateOf(item: WorkflowItem) {
+    return { name: item.name, tags: item.tags, image: item.thumbnail };
   }
 
   previewFiles(item: WorkflowItem): string {

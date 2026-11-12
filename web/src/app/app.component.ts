@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/theme.service';
 
+/**
+ * 应用外壳：左侧固定一列，内容区独立滚动。
+ *
+ * 侧栏只放「去哪」，不放任何状态或提示——状态属于页面本身。这样切换页面时
+ * 左边永远静止，用户的视线只需要在右边重新定位。
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -11,7 +17,10 @@ import { ThemeService } from './core/theme.service';
       <aside class="sidebar">
         <div class="brand">
           <span class="brand-mark">MD</span>
-          <span class="brand-text">Model Downloader</span>
+          <span class="brand-text">
+            Model Downloader
+            <small>Local Studio</small>
+          </span>
         </div>
 
         <nav class="nav">
@@ -29,6 +38,12 @@ import { ThemeService } from './core/theme.service';
             </svg>
             <span>模型发现</span>
           </a>
+          <a class="nav-item" routerLink="/library" routerLinkActive="active">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 3h10v10H3zM5 6h6M5 9h6" />
+            </svg>
+            <span>模型库</span>
+          </a>
           <a class="nav-item" routerLink="/workflows" routerLinkActive="active">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <rect x="1.5" y="2.5" width="4" height="3" rx="0.6" />
@@ -38,14 +53,8 @@ import { ThemeService } from './core/theme.service';
             </svg>
             <span>工作流发现</span>
           </a>
-          <a class="nav-item" routerLink="/library" routerLinkActive="active">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 3h10v10H3zM5 6h6M5 9h6" />
-            </svg>
-            <span>模型库</span>
-          </a>
 
-          <p class="nav-group">工具</p>
+          <p class="nav-group">运行环境</p>
           <a class="nav-item" routerLink="/comfy" routerLinkActive="active">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <circle cx="3.5" cy="8" r="1.6" />
@@ -92,6 +101,7 @@ import { ThemeService } from './core/theme.service';
               </svg>
               <span>深色模式</span>
             }
+            <kbd>T</kbd>
           </button>
         </div>
       </aside>
@@ -106,4 +116,18 @@ import { ThemeService } from './core/theme.service';
 })
 export class AppComponent {
   constructor(public theme: ThemeService) {}
+
+  /**
+   * T 键切换主题（侧栏上那个 kbd 提示就是它）。
+   * 焦点在输入控件里时不拦截——在搜索框里打 "t" 必须只是打一个 t。
+   */
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 't' && event.key !== 'T') return;
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const el = event.target as HTMLElement | null;
+    const tag = el?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el?.isContentEditable) return;
+    this.theme.toggle();
+  }
 }

@@ -23,12 +23,13 @@ import { PanelComponent } from '../ui/panel.component';
     PanelComponent,
   ],
   template: `
-    <ui-page-header title="下载任务" hint="解析仓库 → 勾选文件 → aria2 下载，进度实时刷新。" />
+    <ui-page-header
+      kicker="Downloads"
+      title="下载任务"
+      hint="解析仓库 → 勾选文件 → aria2 下载。进度每秒刷新，断点续传由 .aria2 文件维护。"
+    />
 
-    <ui-panel
-      title="新建下载"
-      hint="选择下载源并解析仓库，勾选文件后开始下载（Rodel 式文件勾选，aria2 内核）。"
-    >
+    <ui-panel kicker="New task" title="新建下载" hint="填模型 ID 即可解析文件清单，再挑要下的那几个。">
       <div class="form-grid">
         <ui-field label="下载源">
           <select [(ngModel)]="source" (ngModelChange)="onSourceChange()">
@@ -38,7 +39,7 @@ import { PanelComponent } from '../ui/panel.component';
           </select>
         </ui-field>
         <ui-field label="模型 ID">
-          <input [(ngModel)]="repoId" placeholder="如 microsoft/Phi-3-mini-4k-instruct">
+          <input class="repo-input" [(ngModel)]="repoId" placeholder="如 microsoft/Phi-3-mini-4k-instruct">
         </ui-field>
         <ui-field label="Revision（可选）">
           <input [(ngModel)]="revision" placeholder="main / master / tag">
@@ -62,7 +63,7 @@ import { PanelComponent } from '../ui/panel.component';
         <button class="primary" (click)="resolveRepo()" [disabled]="resolving || !repoId">
           {{ resolving ? '解析中…' : '解析文件' }}
         </button>
-        <span class="muted">{{ proxySummary() }}</span>
+        <span class="muted net-note">{{ proxySummary() }}</span>
       </div>
 
       @if (error) {
@@ -71,18 +72,20 @@ import { PanelComponent } from '../ui/panel.component';
 
       @if (repo) {
         <div class="mt">
-          <div class="toolbar">
-            <strong>{{ repo.display_name }}</strong>
-            <ui-badge tone="blue">{{ repo.source }}</ui-badge>
-            <span class="muted">{{ repo.files.length }} 个文件</span>
+          <div class="repo-bar">
+            <div class="repo-id">
+              <strong>{{ repo.display_name }}</strong>
+              <ui-badge tone="blue">{{ repo.source }}</ui-badge>
+              <span class="muted">{{ repo.files.length }} 个文件</span>
+            </div>
             <span class="grow"></span>
-            <span class="muted">已选 {{ selectedCount() }} 个 / {{ fmtSize(selectedSize()) }}</span>
+            <span class="muted picked">已选 {{ selectedCount() }} 个 · {{ fmtSize(selectedSize()) }}</span>
             <button class="primary" (click)="startDownload()" [disabled]="selectedCount() === 0 || starting">
               {{ starting ? '创建中…' : '开始下载' }}
             </button>
           </div>
 
-          <div class="table-wrap mt">
+          <div class="table-wrap mt file-table">
             <table>
               <thead>
                 <tr>
@@ -105,7 +108,7 @@ import { PanelComponent } from '../ui/panel.component';
                         @if (file.candidates.length > 2) { +{{ file.candidates.length - 2 }} }
                       </div>
                     </td>
-                    <td>{{ fmtSize(file.size) }}</td>
+                    <td class="muted">{{ fmtSize(file.size) }}</td>
                     <td class="muted">{{ file.candidates.length }} 个</td>
                   </tr>
                 }
@@ -116,7 +119,7 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
 
-    <ui-panel title="下载任务" hint="进度每秒自动刷新；断点续传由 aria2 维护（.aria2 文件）。">
+    <ui-panel title="下载任务" hint="断点续传由 aria2 维护；失败的行可以直接重试，不会从头下载。">
       <div panel-actions class="segmented">
         @for (t of taskTabs; track t.key) {
           <button [class.active]="taskFilter === t.key" (click)="taskFilter = t.key">{{ t.label }}</button>
@@ -124,7 +127,7 @@ import { PanelComponent } from '../ui/panel.component';
       </div>
 
       @if (filteredTasks.length === 0) {
-        <ui-empty icon="📥" [title]="'暂无' + activeTabLabel + '任务'" hint="上方解析并开始下载后，任务会出现在这里。" />
+        <ui-empty [title]="'暂无' + activeTabLabel + '任务'" hint="上方解析并开始下载后，任务会出现在这里。" />
       }
 
       @for (task of filteredTasks; track task.id) {
@@ -132,26 +135,31 @@ import { PanelComponent } from '../ui/panel.component';
           <div class="head">
             <span class="title">{{ task.repo_id }}</span>
             <ui-badge [tone]="statusTone(task.status)">{{ statusLabel(task.status) }}</ui-badge>
-            <ui-badge tone="gray">{{ task.strategy }}</ui-badge>
+            <span class="mono muted">{{ task.strategy }}</span>
             <span class="meta">{{ fmtSize(task.done_bytes) }} / {{ fmtSize(task.total_bytes) }}</span>
             <div class="actions">
               @if (task.status === 'downloading' || task.status === 'pending') {
-                <button (click)="pause(task)">暂停</button>
-                <button class="danger" (click)="cancel(task)">取消</button>
+                <button class="btn-xs" (click)="pause(task)">暂停</button>
+                <button class="btn-xs danger" (click)="cancel(task)">取消</button>
               }
               @if (task.status === 'paused') {
-                <button class="primary" (click)="resume(task)">继续</button>
-                <button class="danger" (click)="cancel(task)">取消</button>
+                <button class="btn-xs primary" (click)="resume(task)">继续</button>
+                <button class="btn-xs danger" (click)="cancel(task)">取消</button>
               }
               @if (task.status === 'completed' || task.status === 'failed' || task.status === 'canceled') {
-                <button class="danger" (click)="remove(task)">删除记录</button>
+                <button class="btn-xs danger" (click)="remove(task)">删除记录</button>
               }
             </div>
           </div>
-          <div class="progress" [ngClass]="task.status">
-            <div [style.width.%]="pct(task.done_bytes, task.total_bytes)"></div>
+
+          <div class="progress-row">
+            <div class="progress" [ngClass]="task.status">
+              <div [style.width.%]="pct(task.done_bytes, task.total_bytes)"></div>
+            </div>
+            <span class="task-pct">{{ pct(task.done_bytes, task.total_bytes) }}%</span>
           </div>
-          <div class="meta mt">{{ task.target_dir }}</div>
+
+          <div class="task-dir mono">{{ task.target_dir }}</div>
           <details class="files">
             <summary>文件明细（{{ task.files.length }}）</summary>
             <div class="table-wrap mt">
@@ -168,7 +176,7 @@ import { PanelComponent } from '../ui/panel.component';
                   @for (f of task.files; track f.id) {
                     <tr>
                       <td class="mono">{{ f.path }}</td>
-                      <td>{{ fmtSize(f.done_bytes) }} / {{ fmtSize(f.size) }}</td>
+                      <td class="mono muted">{{ fmtSize(f.done_bytes) }} / {{ fmtSize(f.size) }}</td>
                       <td><ui-badge [tone]="statusTone(f.status)">{{ statusLabel(f.status) }}</ui-badge></td>
                       <td class="mono muted" [title]="f.url || ''">{{ hostOf(f.url) }}</td>
                     </tr>
@@ -181,6 +189,73 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
   `,
+  styles: [
+    `
+      /* 模型 ID 是本页唯一需要手打的字段，用等宽字体，斜杠和大小写才看得准 */
+      .repo-input {
+        font-family: "Cascadia Mono", Consolas, monospace;
+        font-size: 12px;
+      }
+      .net-note { font-size: 11.5px; }
+
+      /* 保存目录要同时放路径和按钮，独占两格才不会把按钮挤成一小截 */
+      .form-grid ui-field:last-child { grid-column: span 2; }
+      @media (max-width: 720px) {
+        .form-grid ui-field:last-child { grid-column: auto; }
+      }
+
+      .repo-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 9px 12px;
+        background: var(--panel-2);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-sm);
+      }
+      .repo-id {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+      }
+      .repo-id strong { font-size: 12.5px; font-weight: 620; word-break: break-all; }
+      .picked { font-variant-numeric: tabular-nums; font-size: 11.5px; }
+
+      .file-table {
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-sm);
+        padding: 0 2px;
+      }
+      .file-table th:first-child,
+      .file-table td:first-child { padding-left: 12px; }
+
+      /* 进度条独占一行，右端跟一个百分比：只有条没有数字，长任务看不出是不是卡住了 */
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 11px;
+      }
+      .progress-row .progress { flex: 1; margin-top: 0; }
+      .task-pct {
+        flex: none;
+        width: 32px;
+        text-align: right;
+        font: 500 10.5px/1 "Cascadia Mono", Consolas, monospace;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .task-dir {
+        margin-top: 8px;
+        font-size: 10.5px;
+        color: var(--faint);
+        word-break: break-all;
+      }
+    `,
+  ],
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
   settings: AppSettings | null = null;
