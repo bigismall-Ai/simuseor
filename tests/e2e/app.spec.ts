@@ -64,7 +64,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(firstTask.locator('.head').getByText(/下载中|已完成/).first()).toBeVisible();
     await page.screenshot({ path: ART + '/05-downloading.png', fullPage: true });
 
-    await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 30_000 });
+    // demo 源下载约 16s，机器忙时会贴到 30s 上限，放宽到 45s 避免偶发超时
+    await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 45_000 });
     await page.screenshot({ path: ART + '/06-task-completed.png', fullPage: true });
 
     await page.getByRole('link', { name: '模型库' }).click();
