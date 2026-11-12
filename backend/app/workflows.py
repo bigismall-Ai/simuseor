@@ -22,6 +22,7 @@ import httpx
 from .config import ROOT, load_settings
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
+from .sources.civitai import pick_cover
 from .sources.github import tree_files
 
 HF_API = "https://huggingface.co/api"
@@ -117,7 +118,6 @@ def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> t
         if not files:
             continue
         stats = m.get("stats") or {}
-        images = version.get("images") or []
         base = version.get("baseModel") or ""
         items.append(
             _item(
@@ -132,7 +132,7 @@ def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> t
                 url=f"{web}/models/{m.get('id')}",
                 updated_at=(version.get("createdAt") or "")[:10],
                 files=files,
-                thumbnail=(images[0].get("url") or "") if images else "",
+                thumbnail=pick_cover(m.get("modelVersions") or [], bool(cfg.get("full_catalog"))),
                 requires=[f"底模:{base}"] if base else [],
             )
         )

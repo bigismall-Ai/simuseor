@@ -24,7 +24,9 @@ from app.comfy.installer import (
     InstallSpec,
     build_steps,
     clean_env,
+    list_versions,
     make_spec,
+    parse_tags,
     pick_python,
     runtime_url,
 )
@@ -443,6 +445,65 @@ def test_clone_includes_branch_when_tag_given(tmp_path) -> None:
     assert tagged.command is not None and "v0.3.40" in tagged.command
 
 
+# ---------------- 可安装版本 ----------------
+def test_parse_tags_sorts_versions_and_prefers_stable() -> None:
+    text = "\n".join(
+        [
+            "aaa\trefs/tags/v0.3.9",
+            "bbb\trefs/tags/v0.3.40",
+            "ccc\trefs/tags/v0.4.0-rc1",
+            "ddd\trefs/tags/nightly",
+            "eee\trefs/tags/v0.2.0",
+        ]
+    )
+    tags = [item["tag"] for item in parse_tags(text)]
+    # 语义排序（v0.3.40 在 v0.3.9 之前），稳定版在前，非版本号 tag 丢弃
+    assert tags == ["v0.3.40", "v0.3.9", "v0.2.0", "v0.4.0-rc1"]
+
+
+def test_parse_tags_respects_limit() -> None:
+    text = "\n".join(f"{index:040d}\trefs/tags/v0.3.{index}" for index in range(40))
+    assert len(parse_tags(text, limit=5)) == 5
+    assert parse_tags(text, limit=5)[0]["tag"] == "v0.3.39"
+
+
+def test_list_versions_hits_cache_on_second_call(monkeypatch) -> None:
+    from app.comfy import installer
+
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **_kwargs):
+        calls.append(cmd)
+        return SimpleNamespace(returncode=0, stdout="abc123\trefs/tags/v1.2.3\n", stderr="")
+
+    monkeypatch.setattr(installer.subprocess, "run", fake_run)
+    monkeypatch.setattr(installer, "_version_cache", {"at": 0.0, "payload": None})
+
+    first = list_versions()
+    assert [item["tag"] for item in first["tags"]] == ["v1.2.3"]
+    assert first["cached"] is False
+
+    second = list_versions()
+    assert second["cached"] is True
+    assert len(calls) == 1
+
+
+def test_list_versions_degrades_to_empty(monkeypatch) -> None:
+    """镜像和 GitHub 都失败时返回空列表，前端退回「最新版」，不能让安装点不动。"""
+    from app.comfy import installer
+
+    monkeypatch.setattr(
+        installer.subprocess, "run", lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="boom")
+    )
+    monkeypatch.setattr(installer, "_version_cache", {"at": 0.0, "payload": None})
+
+    result = list_versions()
+    assert result["tags"] == []
+    assert result["source"] == ""
+    # 失败不写缓存，下次还要再试
+    assert installer._version_cache["payload"] is None
+
+
 # ---------------- channel → 索引 ----------------
 @pytest.mark.parametrize(
     "channel,expected",
@@ -536,6 +597,38 @@ def test_make_spec_allows_missing_system_python() -> None:
     assert plan.python_available is False
     built = make_spec(report, plan)
     assert built.runtime_version
+
+
+def test_make_spec_names_instance_after_tag(monkeypatch, tmp_path) -> None:
+    """选定版本时目录就叫那个版本；同名已存在则加序号，绝不覆盖已有实例。"""
+    from app.comfy import installer
+
+    monkeypatch.setattr(installer, "COMFY_DIR", tmp_path)
+    report = nvidia_report()
+    plan = build_plan(report)
+
+    built = make_spec(report, plan, tag="v0.3.40")
+    assert built.name == "v0.3.40"
+    assert built.workspace == tmp_path / "v0.3.40"
+    assert built.tag == "v0.3.40"
+
+    built.workspace.mkdir()
+    again = make_spec(report, plan, tag="v0.3.40")
+    assert again.name == "v0.3.40-2"
+
+
+def test_make_spec_rejects_invalid_tag(monkeypatch, tmp_path) -> None:
+    """tag 会拼进 git 命令行，非法字符必须挡在 400 之前。"""
+    from app.comfy import installer
+
+    monkeypatch.setattr(installer, "COMFY_DIR", tmp_path)
+    report = nvidia_report()
+    plan = build_plan(report)
+    for bad in ("v1.0; rm -rf /", "../../etc", "v1 0", ""):
+        if bad == "":
+            continue
+        with pytest.raises(ValueError):
+            make_spec(report, plan, tag=bad)
 
 
 def test_pick_python_prefers_exact_version() -> None:

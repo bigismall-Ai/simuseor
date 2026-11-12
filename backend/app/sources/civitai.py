@@ -1,6 +1,7 @@
 """Civitai 源：按模型 ID 解析版本文件（单文件下载为主）。"""
 from __future__ import annotations
 
+import math
 import re
 from pathlib import Path
 from typing import Callable
@@ -10,6 +11,41 @@ import httpx
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 API = "https://civitai.com/api/v1"
+
+# 卡片是 4:3 横版，`object-fit: cover` 会从两端裁掉，所以按「离 4:3 多远」挑图。
+COVER_RATIO = 4 / 3
+# 非 PG 图（nsfwLevel > 1）的惩罚分：必须大于任何比例分，保证「有一张 PG 就用 PG」。
+MATURE_PENALTY = 2.0
+
+
+def pick_cover(versions: list[dict], allow_mature: bool = False) -> str:
+    """从 Civitai 的 modelVersions 里挑一张适合当卡片封面的图，没有可用图返回空串。
+
+    Civitai 是三家源里唯一「模型 = 图」的站，封面就挂在这里：
+    `modelVersions[].images[]`，每条自带 nsfwLevel（1=PG / 2=Soft / 4=Mature / 8=X）。
+
+    为什么不直接取 `images[0]`：实测 FLUX 的首图是 576×1024 竖版，铺进 266×202 的卡面
+    要裁掉 48% 的高度，主体经常被切掉。这里按宽高比挑，单页解析不花额外请求。
+    """
+    best, best_score = "", None
+    for version in versions[:3]:  # 只翻最新三个版本，老版本图基本是同一批风格的旧作
+        for image in (version.get("images") or [])[:12]:
+            url = image.get("url") or ""
+            if not url or (image.get("type") or "image") != "image":
+                continue  # 图集里混着视频，`<img>` 拿到会直接坏图
+            level = int(image.get("nsfwLevel") or 0)
+            if level > 1 and not allow_mature:
+                continue
+            width, height = int(image.get("width") or 0), int(image.get("height") or 0)
+            if width > 0 and height > 0:
+                score = abs(math.log((width / height) / COVER_RATIO))
+            else:
+                score = 1.5  # 没尺寸信息的排在有尺寸的后面，但别排除
+            if level > 1:
+                score += MATURE_PENALTY
+            if best_score is None or score < best_score:
+                best, best_score = url, score
+    return best
 
 
 class CivitaiAdapter(SourceAdapter):
@@ -66,6 +102,9 @@ class CivitaiAdapter(SourceAdapter):
                     "task": m.get("type") or "",
                     "url": f"{web_base}/models/{m.get('id')}",
                     "updated_at": (versions[0].get("createdAt") if versions else "") or "",
+                    # 只有 Civitai 给得出真封面；HF / ModelScope 的列表接口没有这个字段，
+                    # 前端拿不到 `image` 就退回家族铭牌。
+                    "image": pick_cover(versions, bool((cfg or {}).get("full_catalog"))),
                 }
             )
         if task:

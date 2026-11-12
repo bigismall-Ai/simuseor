@@ -5,12 +5,14 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from .. import cache, covers as cover_service
 from ..comfy.model_dirs import infer_folder
 from .. import workflows as workflow_service
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
@@ -95,7 +97,10 @@ def put_settings(body: dict) -> dict:
             current[key].update(value)
         else:
             current[key] = value
-    return save_settings(current)
+    saved = save_settings(current)
+    # token / 完整目录 / 代理都会改变搜索结果，不能留着旧缓存
+    cache.clear_search()
+    return saved
 
 
 # ---------------- 解析 ----------------
@@ -309,27 +314,111 @@ def open_library(model_id: str) -> dict:
 # ---------------- 模型搜索（发现列表） ----------------
 @router.get("/search")
 def search_models(q: str = "", source: str = "", sort: str = "downloads", limit: int = 20, page: int = 1, task: str = "") -> dict:
+    """跨源搜索。
+
+    两处性能约束（都是实测出来的）：
+    - **三源并行**：串行时 空关键词/limit=56 要 11.9 s，并行后压到最慢的那一源（约 3.5 s）。
+    - **结果缓存 5 分钟**：发现页每次进入都会重新搜一遍，缓存后二次进入是毫秒级。
+    """
+    key = f"{q.strip().lower()}|{source}|{sort}|{limit}|{page}|{task}"
+    cached = cache.get_search(key)
+    if cached is not None:
+        return cached
+
     settings = load_settings()
     if source and source != "all":
         names = [source]
     else:
         names = ["huggingface", "modelscope", "civitai"]
+
+    def run(name: str) -> tuple[str, dict | None, str]:
+        cfg = settings["sources"].get(name) or {}
+        try:
+            return name, get_adapter(name).search(q, limit, page, sort, cfg, task), ""
+        except SourceError as exc:
+            return name, None, str(exc)
+
     items: list[dict] = []
     total = 0
     errors: dict[str, str] = {}
-    for name in names:
-        cfg = settings["sources"].get(name) or {}
-        try:
-            result = get_adapter(name).search(q, limit, page, sort, cfg, task)
-            items.extend(result["items"])
-            total += result["total"]
-        except SourceError as exc:
-            errors[name] = str(exc)
+    if len(names) == 1:
+        results = [run(names[0])]
+    else:
+        with ThreadPoolExecutor(max_workers=len(names)) as pool:
+            results = list(pool.map(run, names))
+    for name, result, err in results:
+        if err:
+            errors[name] = err
+            continue
+        items.extend(result["items"])
+        total += result["total"]
+
     if sort == "downloads":
         items.sort(key=lambda x: x.get("downloads") or 0, reverse=True)
     elif sort == "likes":
         items.sort(key=lambda x: x.get("likes") or 0, reverse=True)
-    return {"items": items, "total": total, "errors": errors}
+    payload = {"items": items, "total": total, "errors": errors}
+    # 有源失败时不写缓存：一次网络抖动不该把空列表钉住 20 分钟
+    if not errors:
+        cache.put_search(key, payload)
+    return payload
+
+
+def warm_discover() -> None:
+    """预热发现页首屏的三条查询（后台线程调用，失败无所谓）。
+
+    进入发现页时前端会按来源各发一次 `q='' sort=trending limit=20 page=1`，
+    这三条恰好是全站最慢的冷启动（Civitai 单次要几秒）。后端起来先跑一遍，
+    用户点进来就是缓存命中，首屏不用再等一轮网络。
+
+    三源并行：串行预热时 Civitai 要排队等 HF 和 MS，预热窗口内进来的人照样要等它几秒。
+    """
+    def one(name: str) -> None:
+        try:
+            search_models("", name, "trending", 20, 1, "")
+        except Exception:  # noqa: BLE001 —— 预热失败只是少了优化，不能影响启动
+            pass
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        list(pool.map(one, ("huggingface", "modelscope", "civitai")))
+
+
+class CoverItem(BaseModel):
+    source: str
+    id: str
+    image: str = ""  # Civitai 会在搜索响应里直接给出
+
+
+class CoverGroup(BaseModel):
+    key: str
+    items: list[CoverItem]
+
+
+class CoversRequest(BaseModel):
+    groups: list[CoverGroup]
+
+
+@router.post("/covers")
+def resolve_covers(body: CoversRequest) -> dict:
+    """按「魔搭 → HF → Civitai」为卡片组取封面，取到即停。
+
+    单独一个接口而不是并进 /search：取图要额外地打详情接口（魔搭 0.3 s、HF 1.5 s），
+    并进去等于让搜索慢一倍。前端先用兜底铭牌渲染，拿到封面再替换。
+    """
+    settings = load_settings()
+    groups = body.groups[:60]  # 一屏塞不下更多；防止误传大数组打穿三家 API
+
+    def run(group: CoverGroup) -> tuple[str, str]:
+        items = [it.model_dump() for it in group.items]
+        return group.key, cover_service.resolve_group(items, settings)
+
+    if not groups:
+        return {"covers": {}}
+    # 每组最多打两次详情接口（魔搭 + HF），16 路并发能把一屏 56 组的冷启动
+    # 从 14 s 压到 6 s 左右；再高就开始被对端限速了
+    with ThreadPoolExecutor(max_workers=min(16, len(groups))) as pool:
+        pairs = list(pool.map(run, groups))
+    return {"covers": {k: v for k, v in pairs if v}}
 
 
 # ---------------- 代理测试 ----------------

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ..config import load_settings, resolve_save_dir
+from ..config import WORKSPACE_MODELS_DIR, load_settings, resolve_save_dir
 
 # ComfyUI 实际会扫描的目录；顺序即前端下拉的常用顺序
 COMMON_FOLDERS = [
@@ -137,12 +137,17 @@ def ensure_folders(base: Path | None = None) -> Path:
     return root
 
 
-def write_extra_model_paths(comfy_dir: Path) -> Path:
-    """在 ComfyUI 根目录写 extra_model_paths.yaml，挂载共享模型仓库。
+def write_extra_model_paths(comfy_dir: Path) -> Path | None:
+    """在 ComfyUI 根目录写 extra_model_paths.yaml，挂载额外的模型仓库。
 
-    使用相对子目录写法：base_path 只写一次，后续目录名随仓库结构调整。
+    实例以 `--base-directory workspace` 启动时，模型默认就在
+    `workspace/models`，再写一份 yaml 指向同一个目录等于把同一批文件
+    注册两遍，因此这种情况直接跳过（返回 None）；只有用户把保存目录改到
+    workspace 之外时，才需要 yaml 把它们补进来。
     """
     root = ensure_folders()
+    if root.resolve() == WORKSPACE_MODELS_DIR.resolve():
+        return None
     target = comfy_dir / "extra_model_paths.yaml"
     lines = [
         "# 由 model-downloader 自动生成：ComfyUI 直接读取项目共享模型目录",

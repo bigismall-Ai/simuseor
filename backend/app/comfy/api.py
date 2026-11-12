@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import os
-import re
 import shutil
 import stat
 import subprocess
@@ -28,9 +27,12 @@ from .installer import (
     JOB_KIND_INSTANCE,
     InstallSpec,
     build_steps,
+    list_versions,
     make_spec,
     run_install,
 )
+from . import runner
+from .names import validate_instance_name
 from .plan import build_plan
 from .probe import cached_mirrors, probe_device, probe_mirrors, probe_runtime, warm_mirrors
 
@@ -68,9 +70,7 @@ RUNNING: set[str] = set()
 _deleting: set[str] = set()
 _deleting_guard = threading.Lock()
 
-# 实例目录名由安装器生成（vYYYYMMDD-HHMMSS），也允许用户自定义。
-# 只允许单层名字，杜绝 "../" 之类的路径穿越。
-INSTANCE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*\Z")
+# 实例名校验统一放在 comfy/names.py：安装、启动、删除三条入口共用同一套规则
 
 
 def _rmtree_force(func, path, exc) -> None:
@@ -135,8 +135,10 @@ def _remove_tree(target: Path) -> None:
 @router.delete("/instances/{name}")
 def delete_instance(name: str) -> dict[str, Any]:
     """删除自有实例目录（含 ComfyUI 代码）；共享 .environment 与模型目录不动。"""
-    if ".." in name or not INSTANCE_NAME_RE.fullmatch(name):
-        raise HTTPException(status_code=400, detail="实例名不合法")
+    try:
+        name = validate_instance_name(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     root = COMFY_DIR.resolve()
     target = (root / name).resolve()
@@ -161,6 +163,12 @@ def delete_instance(name: str) -> dict[str, Any]:
     if busy:
         raise HTTPException(status_code=409, detail="该实例正在安装，请等待完成")
 
+    # 正在运行的实例会占住代码目录（Windows 上 rmdir 会失败），先停进程
+    try:
+        runner.stop(name)
+    except ValueError:
+        pass
+
     with _deleting_guard:
         if name in _deleting:
             raise HTTPException(status_code=409, detail="该实例正在删除，请等待完成")
@@ -179,13 +187,45 @@ def delete_instance(name: str) -> dict[str, Any]:
     return {"deleted": name}
 
 
+@router.post("/instances/{name}/start")
+def start_instance(name: str) -> dict[str, Any]:
+    """启动实例。返回 state=starting 表示进程已拉起来、还没响应 HTTP。"""
+    try:
+        return runner.start(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.post("/instances/{name}/stop")
+def stop_instance(name: str) -> dict[str, Any]:
+    try:
+        return runner.stop(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/instances/{name}/status")
+def instance_status(name: str) -> dict[str, Any]:
+    """实例运行状态：stopped / starting / running。"""
+    try:
+        return runner.status(name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/env")
 def get_comfy_env(refresh: bool = False) -> dict[str, Any]:
     """返回本机设备报告 + 据此推导出的安装方案。"""
     now = time.time()
     cached = _cache["payload"]
     if not refresh and cached is not None and now - float(_cache["at"]) < CACHE_SECONDS:
-        return {**cached, "deleting_instances": sorted(_deleting)}
+        return {
+            **cached,
+            "deleting_instances": sorted(_deleting),
+            "running_instance": runner.active(),
+        }
 
     report, plan = _device_snapshot(force=refresh)
     payload = {
@@ -196,7 +236,20 @@ def get_comfy_env(refresh: bool = False) -> dict[str, Any]:
     # deleting_instances 是瞬时状态，不写入缓存体，只在响应里补
     _cache["at"] = now
     _cache["payload"] = payload
-    return {**payload, "deleting_instances": sorted(_deleting)}
+    return {
+        **payload,
+        "deleting_instances": sorted(_deleting),
+        "running_instance": runner.active(),
+    }
+
+
+@router.get("/versions")
+def comfy_versions(limit: int = 30) -> dict[str, Any]:
+    """可安装的 ComfyUI 版本（tag），最新在前。
+
+    只读：走 `git ls-remote` 列 tag，镜像优先，结果缓存一小时。
+    """
+    return list_versions(max(1, min(limit, 100)))
 
 
 @router.post("/env/check")
@@ -226,6 +279,7 @@ def preview_install(
             "environment": str(spec.environment),
             "python": spec.runtime_version,
             "channel": spec.torch_channel,
+            "tag": spec.tag or "",
         },
         "steps": [
             {
@@ -270,6 +324,7 @@ def start_install(
                 "environment": str(spec.environment),
                 "python": spec.runtime_version,
                 "channel": spec.torch_channel,
+                "tag": spec.tag or "",
             },
             "steps": [
                 {

@@ -12,7 +12,20 @@ VAR_DIR = ROOT / "var"
 DATA_DIR = VAR_DIR / "data"
 LOG_DIR = VAR_DIR / "logs"
 TMP_DIR = VAR_DIR / "tmp"
-MODELS_DIR = ROOT / "models"
+
+# workspace/：用户资产。ComfyUI 以它为 --base-directory，所以模型、插件、输入、
+# 出图、工作流全在这里；删掉 comfy/ 下的实例不影响这些内容。
+WORKSPACE_DIR = ROOT / "workspace"
+WORKSPACE_MODELS_DIR = WORKSPACE_DIR / "models"
+WORKSPACE_CUSTOM_NODES_DIR = WORKSPACE_DIR / "custom_nodes"
+WORKSPACE_INPUT_DIR = WORKSPACE_DIR / "input"
+WORKSPACE_OUTPUT_DIR = WORKSPACE_DIR / "output"
+WORKSPACE_PREVIEWS_DIR = WORKSPACE_DIR / "previews"
+# ComfyUI 的用户目录：--user-directory 指向这里，内部固定是 <用户名>/workflows
+WORKSPACE_USERDATA_DIR = WORKSPACE_DIR / "userdata"
+WORKSPACE_WORKFLOWS_DIR = WORKSPACE_USERDATA_DIR / "default" / "workflows"
+
+MODELS_DIR = WORKSPACE_MODELS_DIR
 # comfy/ 直接放共享基础环境和各实例，不再包一层 instances/
 COMFY_DIR = ROOT / "comfy"
 # ComfyUI 代码来源：CNB 镜像优先（国内快），GitHub 兜底
@@ -55,7 +68,7 @@ DEFAULT_SETTINGS: dict = {
         "max_concurrent": 3,
     },
     "default_strategy": "direct",
-    "download": {"save_dir": "models", "strategy": "direct"},
+    "download": {"save_dir": "workspace/models", "strategy": "direct"},
     # ComfyUI 依赖轮子缓存上限（GB）。同一包只留最新版本，总量超出按最久未用淘汰；
     # 0 或负数表示不限制。缓存跟着共享环境 comfy/.environment/cache 走。
     "comfy": {"cache_limit_gb": 4},
@@ -204,6 +217,17 @@ def _migrate(data: dict) -> dict:
         parent = str(Path(old_dirs[0]).parent)
         if parent != str(MODELS_DIR):
             download["save_dir"] = parent
+    # 模型根从 <项目>/models 迁到 <项目>/workspace/models；旧配置里的相对值
+    # 永远是 "models"，绝对路径则单独比对一次，避免落到已废弃的根目录。
+    current_dir = str(download.get("save_dir") or "").strip()
+    if current_dir in ("", "models"):
+        download["save_dir"] = "workspace/models"
+    elif current_dir:
+        try:
+            if Path(current_dir).expanduser().resolve() == (ROOT / "models").resolve():
+                download["save_dir"] = "workspace/models"
+        except OSError:
+            pass
     proxy = data.setdefault("proxy", {})
     if old_url and not proxy.get("host") and not proxy.get("url"):
         proxy.update(split_proxy_url(old_url))
@@ -327,6 +351,31 @@ def migrate_legacy_comfy_layout() -> list[str]:
     except Exception:  # noqa: BLE001 - 宿主可能拦截删除 API；留个空目录也不影响功能
         pass
     return moved
+
+
+def ensure_workspace() -> Path:
+    """建好 workspace 骨架。
+
+    `--user-directory` 指向的目录必须已存在，否则 ComfyUI 在 argparse 阶段
+    直接报错退出（is_valid_directory），所以启动实例前这一步不能省。
+    """
+    for path in (
+        WORKSPACE_DIR,
+        WORKSPACE_MODELS_DIR,
+        WORKSPACE_CUSTOM_NODES_DIR,
+        WORKSPACE_INPUT_DIR,
+        WORKSPACE_OUTPUT_DIR,
+        WORKSPACE_PREVIEWS_DIR,
+        WORKSPACE_USERDATA_DIR,
+        WORKSPACE_WORKFLOWS_DIR,
+    ):
+        path.mkdir(parents=True, exist_ok=True)
+    return WORKSPACE_DIR
+
+
+def instance_tmp_dir(name: str) -> Path:
+    """实例临时目录（可随时清空）。ComfyUI 会在其下再建一层 temp/。"""
+    return TMP_DIR / name
 
 
 def get_web_dist() -> Path | None:

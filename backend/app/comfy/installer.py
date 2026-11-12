@@ -32,12 +32,12 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterator
+from typing import Any, Callable, Iterator
 from urllib.parse import unquote, urljoin, urlparse
 
 import httpx
 from packaging.requirements import Requirement
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 from ..config import (
     COMFY_DIR,
@@ -48,10 +48,15 @@ from ..config import (
     COMFY_PYTHON_SHA256,
     COMFY_PYTHON_URLS,
     LOG_DIR,
+    WORKSPACE_DIR,
+    WORKSPACE_USERDATA_DIR,
+    ensure_workspace,
+    instance_tmp_dir,
     load_settings,
 )
 from .model_dirs import write_extra_model_paths
 from .models import DeviceReport, ManagedInstance, PythonInfo
+from .names import validate_instance_name
 from .plan import InstallPlan
 
 # PyTorch 官方 wheel 索引。plan 输出的 channel 直接对应这里的 key，
@@ -390,6 +395,95 @@ def pick_python(report: DeviceReport, plan: InstallPlan) -> PythonInfo | None:
     return newer[0][1] if newer else None
 
 
+# ---------------- 可安装版本 ----------------
+
+#: 版本 tag 会拼进 git 命令行，只放行版本号常见字符。
+_TAG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+#: 列一次 tag 要走 `git ls-remote`（镜像约 1–3 秒），一小时内复用结果。
+VERSION_CACHE_SECONDS = 3600
+VERSION_LIMIT = 30
+_version_cache: dict[str, Any] = {"at": 0.0, "payload": None}
+
+
+def parse_tags(text: str, limit: int = VERSION_LIMIT) -> list[dict[str, Any]]:
+    """解析 `git ls-remote --tags --refs` 的输出，按版本号降序。
+
+    只认能解析成 PEP 440 的 tag（ComfyUI 是 v0.3.40 这种）；稳定版排在预览版
+    前面，别让 rc 挡住用户真正想装的版本。
+    """
+    found: dict[str, dict[str, Any]] = {}
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) < 2 or not parts[1].startswith("refs/tags/"):
+            continue
+        name = parts[1][len("refs/tags/"):].removesuffix("^{}")
+        if name in found or not _TAG_RE.match(name):
+            continue
+        try:
+            version = Version(name.lstrip("vV"))
+        except InvalidVersion:
+            continue
+        found[name] = {
+            "tag": name,
+            "sha": parts[0][:12],
+            "prerelease": version.is_prerelease,
+        }
+    ordered = sorted(
+        found.values(),
+        key=lambda item: Version(str(item["tag"]).lstrip("vV")),
+        reverse=True,
+    )
+    stable = [item for item in ordered if not item["prerelease"]]
+    preview = [item for item in ordered if item["prerelease"]]
+    return (stable + preview)[:limit]
+
+
+def list_versions(limit: int = VERSION_LIMIT) -> dict[str, Any]:
+    """列出可安装的 ComfyUI 版本。镜像优先、失败退 GitHub，都失败给空列表。
+
+    走 git 协议而不是 GitHub REST：镜像同样有 tag，且不受 60 次/小时的匿名限流。
+    """
+    cached = _version_cache.get("payload")
+    if cached and time.time() - float(_version_cache["at"]) < VERSION_CACHE_SECONDS:
+        return {**cached, "cached": True}
+
+    tags: list[dict[str, Any]] = []
+    source = ""
+    for url in (COMFY_MIRROR, COMFY_FALLBACK):
+        if not url:
+            continue
+        try:
+            proc = subprocess.run(
+                ["git", "ls-remote", "--tags", "--refs", url],
+                capture_output=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=15,
+                env=clean_env(),
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if proc.returncode == 0 and proc.stdout.strip():
+            tags = parse_tags(proc.stdout, limit)
+            source = "mirror" if url == COMFY_MIRROR else "github"
+            break
+    # 拿不到就下次再试，别让一次网络抖动把空列表锁一小时
+    if tags:
+        _version_cache.update(at=time.time(), payload={"tags": tags, "source": source})
+    return {"tags": tags, "source": source, "cached": False}
+
+
+def _unique_instance_name(name: str) -> str:
+    """同名实例已存在时加序号，避免装第二个版本时覆盖前一个。"""
+    if not (COMFY_DIR / name).exists():
+        return name
+    index = 2
+    while (COMFY_DIR / f"{name}-{index}").exists():
+        index += 1
+    return f"{name}-{index}"
+
+
 def make_spec(
     report: DeviceReport,
     plan: InstallPlan,
@@ -402,7 +496,21 @@ def make_spec(
     if plan.tier == "blocked":
         raise ValueError(plan.blocked_reason or "当前环境不满足安装条件")
 
-    instance_name = name or time.strftime("v%Y%m%d-%H%M%S")
+    tag = (tag or "").strip()
+    # tag 会拼进 git 命令行，必须白名单校验，别让奇怪字符进到参数里
+    if tag and not _TAG_RE.match(tag):
+        raise ValueError(f"版本号不合法: {tag}")
+
+    if name.strip():
+        instance_name = name.strip()
+    elif tag:
+        # 装了某个版本，目录就叫那个版本，一眼能看出跑的是什么；
+        # 同名已存在时加序号——绝不能落到已有实例目录上，_clone 会先 rmtree。
+        instance_name = _unique_instance_name(tag)
+    else:
+        instance_name = time.strftime("v%Y%m%d-%H%M%S")
+    # 名字会拼进 comfy/<name>/ 并参与写盘与删除，必须在唯一入口处挡住路径穿越
+    instance_name = validate_instance_name(instance_name)
     return InstallSpec(
         name=instance_name,
         workspace=COMFY_DIR / instance_name,
@@ -686,6 +794,11 @@ def run_install(
                 send({"type": "step_plan", "key": step.key, "title": step.title, "command": step.command})
             return InstallResult(ok=True, message="预演完成，未改动磁盘", log_path=str(log_path))
 
+        # 共享目录是实例运行的前提（--base-directory / --user-directory），
+        # 安装阶段就建好，避免首次启动才发现目录缺失
+        created = ensure_workspace()
+        log(f"# 共享目录 {created}")
+
         try:
             for index, step in enumerate(steps, start=1):
                 send(
@@ -768,6 +881,12 @@ def _write_instance_meta(
         "python": instance.python,
         "torch_channel": spec.torch_channel,
         "created_at": instance.created_at,
+        # 端口在首次启动时由 runner 写回；这里先占位，保证字段稳定
+        "port": instance.port,
+        # 把三个共享目录登记下来：界面要知道资产在哪，启动时也按这套参数拉起
+        "base_directory": str(WORKSPACE_DIR),
+        "user_directory": str(WORKSPACE_USERDATA_DIR),
+        "temp_directory": str(instance_tmp_dir(instance.name)),
     }
     meta_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     log(f"$ 写入 {meta_path}")
@@ -1715,6 +1834,10 @@ def _run_step(
             path = write_extra_model_paths(spec.comfy_dir)
         except (OSError, ValueError) as exc:
             return False, f"写入 extra_model_paths.yaml 失败: {exc}"
+        if path is None:
+            log("$ 模型目录由 --base-directory 直接提供，无需 extra_model_paths.yaml")
+            send({"type": "log", "line": "共享模型目录由 workspace 直接提供"})
+            return True, "已接入共享模型目录"
         log(f"$ 写入 {path}")
         send({"type": "log", "line": f"共享模型目录已接入: {path}"})
         return True, "已接入共享模型目录"
