@@ -101,6 +101,8 @@ export interface SearchItem {
   task: string;
   url: string;
   updated_at: string;
+  /** 可选缩略图。目前只有 Civitai 会给，HF / ModelScope 没有；缺省走生成封面 */
+  image?: string;
 }
 
 export interface WorkflowItem extends SearchItem {
@@ -192,6 +194,25 @@ export interface ComfyInstance {
   registered?: boolean;
 }
 
+/** 实例的运行状态（/api/comfy/instances/{name}/status） */
+export interface ComfyInstanceState {
+  name: string;
+  state: 'stopped' | 'starting' | 'running';
+  port: number | null;
+  url: string;
+  pid?: number;
+  /** 非 0 表示进程自己退出了，日志里能看到原因 */
+  exit_code?: number;
+  log?: string;
+}
+
+/** 当前正在运行的实例；同一时间最多一个 */
+export interface ComfyRunningInstance {
+  name: string;
+  port: number;
+  url: string;
+}
+
 export interface ComfyDevice {
   os: string;
   os_version: string;
@@ -256,6 +277,8 @@ export interface ComfyEnv {
   runtime: ComfyRuntime;
   /** 后端正在删除的实例名（删除是慢操作，刷新页面后状态从这里恢复） */
   deleting_instances?: string[];
+  /** 当前正在运行的实例；null / 缺省表示一个都没跑 */
+  running_instance?: ComfyRunningInstance | null;
 }
 
 export interface ComfyStep {
@@ -296,9 +319,25 @@ export interface ComfyPreview {
     environment: string;
     python: string;
     channel: string;
+    /** 选定的 ComfyUI 版本 tag，空表示最新 master */
+    tag?: string;
   };
   steps: ComfyStep[];
   total_gb: number;
+}
+
+/** 可安装的 ComfyUI 版本（对应上游 git tag）。 */
+export interface ComfyVersion {
+  tag: string;
+  sha: string;
+  prerelease: boolean;
+}
+
+export interface ComfyVersions {
+  tags: ComfyVersion[];
+  /** 从哪个端拿到的：mirror / github；空表示没拿到 */
+  source: string;
+  cached: boolean;
 }
 
 export type ComfyPhase = 'download' | 'unpack' | 'clone' | 'resolve' | 'install' | 'done' | 'idle';

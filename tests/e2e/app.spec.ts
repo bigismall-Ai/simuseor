@@ -5,6 +5,22 @@ import { resolve } from 'node:path';
 const ART = resolve(__dirname, '../artifacts');
 
 test.describe('Model Downloader Web UI', () => {
+  // 版本列表靠 `git ls-remote` 现取（1–3 秒，且依赖外网），E2E 里固定返回：
+  // 保证「安装实例」弹层每次都有可选项。真实抓取逻辑由后端单测覆盖。
+  test.beforeEach(async ({ page }) => {
+    await page.route((url) => url.pathname === '/api/comfy/versions', (route) =>
+      route.fulfill({
+        json: {
+          tags: [
+            { tag: 'v0.45.0', sha: '989d93d0d968', prerelease: false },
+            { tag: 'v0.44.2', sha: 'e6515b16ed36', prerelease: false },
+          ],
+          source: 'mirror',
+          cached: false,
+        },
+      }));
+  });
+
   test('三个页面渲染与导航', async ({ page }) => {
     await page.goto('/downloads');
     await expect(page.getByText('新建下载')).toBeVisible();
@@ -379,6 +395,52 @@ test.describe('Model Downloader Web UI', () => {
     // 限定在预演步骤里，避免基础环境列表的「待安装 PyTorch」被算进来
     await expect(page.locator('.preview-steps')).not.toContainText('准备运行环境');
     await expect(page.locator('.preview-steps')).not.toContainText('安装 PyTorch');
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('环境管理：安装实例可以选 ComfyUI 版本', async ({ page }) => {
+    let cachedEnv: any = null;
+    let previewUrl = '';
+    const spec = {
+      name: 'v0.44.2', workspace: 'E:/mock/v0.44.2', comfy_dir: '', environment: '',
+      python: '3.13.18', channel: 'cu130', tag: 'v0.44.2',
+    };
+    const steps = [
+      { key: 'prepare', title: '准备工作目录', detail: '', command: null, estimated_gb: 0 },
+      { key: 'clone', title: '获取 ComfyUI 代码', detail: '从镜像获取代码 · v0.44.2', command: null, estimated_gb: 0.1 },
+      { key: 'verify', title: '验证安装结果', detail: '', command: null, estimated_gb: 0 },
+    ];
+    await page.route((url) => url.pathname === '/api/comfy/env', async (route) => {
+      if (!cachedEnv) {
+        const response = await route.fetch();
+        cachedEnv = await response.json();
+      }
+      await route.fulfill({
+        json: { ...cachedEnv, runtime: { ...cachedEnv.runtime, ready: true } },
+      });
+    });
+    await page.route((url) => url.pathname === '/api/comfy/install/current', (route) =>
+      route.fulfill({ json: { job: null } }));
+    await page.route((url) => url.pathname === '/api/comfy/install/preview', (route) => {
+      previewUrl = route.request().url();
+      route.fulfill({ json: { kind: 'instance', spec, steps, total_gb: 0.1 } });
+    });
+
+    await page.goto('/comfy');
+    await expect(page.getByRole('button', { name: '安装实例' })).toBeEnabled({ timeout: 20_000 });
+    await page.getByRole('button', { name: '安装实例' }).click();
+
+    const picker = page.locator('#comfy-tag');
+    await expect(picker).toBeVisible();
+    // 默认跟最新版走，请求里不带 tag
+    await expect(picker).toHaveValue('');
+    expect(previewUrl).not.toContain('tag=');
+
+    // 选定版本后要重新预演：确认安装前看到的就是这个版本的步骤
+    await picker.selectOption('v0.44.2');
+    await expect.poll(() => previewUrl).toContain('tag=v0.44.2');
+    await expect(picker).toHaveValue('v0.44.2');
+    await page.screenshot({ path: ART + '/18-comfy-version-picker.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 

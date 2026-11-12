@@ -7,7 +7,9 @@ import {
   ComfyEnvCheck,
   ComfyInstallJob,
   ComfyInstallKind,
+  ComfyInstanceState,
   ComfyPreview,
+  ComfyVersions,
   LibraryModel,
   RepoInfo,
   SearchItem,
@@ -36,6 +38,16 @@ export class ApiService {
 
   resolve(source: string, repoId: string, revision: string, task = ''): Observable<RepoInfo> {
     return this.http.post<RepoInfo>(`${this.base}/resolve`, { source, repo_id: repoId, revision, task });
+  }
+
+  /**
+   * 取封面。按「魔搭 → HF → Civitai」的顺序在服务端逐级取，取到即停。
+   * 传 `image` 的条目（目前只有 Civitai）省一次详情请求。
+   */
+  covers(
+    groups: { key: string; items: { source: string; id: string; image?: string }[] }[]
+  ): Observable<{ covers: Record<string, string> }> {
+    return this.http.post<{ covers: Record<string, string> }>(`${this.base}/covers`, { groups });
   }
 
   search(params: {
@@ -174,6 +186,11 @@ export class ApiService {
     return this.http.post<ComfyEnvCheck>(`${this.base}/comfy/env/check`, null);
   }
 
+  /** 可安装的 ComfyUI 版本列表（镜像优先，后端缓存一小时）。 */
+  comfyVersions(): Observable<ComfyVersions> {
+    return this.http.get<ComfyVersions>(`${this.base}/comfy/versions`);
+  }
+
   /** 安装预演：只返回该类型任务的步骤，不写盘。 */
   comfyPreview(
     name = '', tag = '', kind: ComfyInstallKind = 'environment', repair = false,
@@ -209,5 +226,26 @@ export class ApiService {
   /** 删除自有实例目录；共享运行环境和已下载模型不受影响。 */
   comfyDeleteInstance(name: string): Observable<{ deleted: string }> {
     return this.http.delete<{ deleted: string }>(`${this.base}/comfy/instances/${encodeURIComponent(name)}`);
+  }
+
+  /** 启动实例；同一时间只允许一个实例运行，已有别的在跑时返回 409。 */
+  comfyStartInstance(name: string): Observable<ComfyInstanceState> {
+    return this.http.post<ComfyInstanceState>(
+      `${this.base}/comfy/instances/${encodeURIComponent(name)}/start`, null,
+    );
+  }
+
+  /** 停止实例。 */
+  comfyStopInstance(name: string): Observable<ComfyInstanceState> {
+    return this.http.post<ComfyInstanceState>(
+      `${this.base}/comfy/instances/${encodeURIComponent(name)}/stop`, null,
+    );
+  }
+
+  /** 实例运行状态：stopped / starting / running。 */
+  comfyInstanceState(name: string): Observable<ComfyInstanceState> {
+    return this.http.get<ComfyInstanceState>(
+      `${this.base}/comfy/instances/${encodeURIComponent(name)}/status`,
+    );
   }
 }

@@ -8,11 +8,13 @@ import {
   ComfyInstallJob,
   ComfyInstallKind,
   ComfyInstance,
+  ComfyInstanceState,
   ComfyPhase,
   ComfyPreview,
   ComfyProgress,
   ComfyRuntime,
   ComfyStep,
+  ComfyVersion,
   fmtSize,
 } from '../core/types';
 import { BadgeComponent, BadgeTone } from '../ui/badge.component';
@@ -65,11 +67,15 @@ function formatDuration(seconds: number): string {
   standalone: true,
   imports: [CommonModule, BadgeComponent, EmptyComponent, FieldComponent, PageHeaderComponent, PanelComponent],
   template: `
-    <ui-page-header title="环境管理" hint="ComfyUI 独立运行在你的电脑上，与本站环境互不影响。" />
+    <ui-page-header
+      kicker="Runtime"
+      title="环境管理"
+      hint="ComfyUI 独立运行在你的电脑上，与本站环境互不影响。基础环境一次装好，所有实例共用。"
+    />
 
     <div class="env-layout">
       <div class="env-main">
-        <ui-panel title="基础环境">
+        <ui-panel kicker="Shared" title="基础环境">
           <div panel-actions>
             <ui-badge [tone]="runtime.ready ? 'green' : 'orange'">
               {{ runtime.ready ? '已安装' : '未安装' }}
@@ -137,11 +143,11 @@ function formatDuration(seconds: number): string {
               }
             </div>
           } @else {
-            <div class="muted">正在检测本机环境…</div>
+            <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
           }
         </ui-panel>
 
-        <ui-panel title="ComfyUI 实例">
+        <ui-panel kicker="Instances" title="ComfyUI 实例">
           <div panel-actions>
             <button
               class="primary btn-xs"
@@ -182,14 +188,32 @@ function formatDuration(seconds: number): string {
                   @if (instance.registered === false) {
                     <ui-badge tone="orange">未登记</ui-badge>
                   }
+                  @if (isRunning(instance.name)) {
+                    <ui-badge tone="green">运行中 · {{ runningPort }}</ui-badge>
+                  }
                 </div>
-                <button
-                  class="danger"
-                  [disabled]="isDeleting(instance.name)"
-                  (click)="removeInstance(instance)"
-                >
-                  {{ isDeleting(instance.name) ? '删除中…' : '删除' }}
-                </button>
+                <div class="instance-actions">
+                  @if (isRunning(instance.name)) {
+                    <button class="primary btn-xs" (click)="openInstance()">打开</button>
+                    <button class="btn-xs" (click)="stopInstance(instance)">停止</button>
+                  } @else {
+                    <button
+                      class="btn-xs"
+                      [disabled]="!runtime.ready || !!runningName || !!startingName || isDeleting(instance.name)"
+                      [title]="startHint(instance.name)"
+                      (click)="startInstance(instance)"
+                    >
+                      {{ startingName === instance.name ? '启动中…' : '启动' }}
+                    </button>
+                  }
+                  <button
+                    class="danger"
+                    [disabled]="isDeleting(instance.name)"
+                    (click)="removeInstance(instance)"
+                  >
+                    {{ isDeleting(instance.name) ? '删除中…' : '删除' }}
+                  </button>
+                </div>
               </div>
             }
           } @else if (!installingInstance) {
@@ -199,7 +223,7 @@ function formatDuration(seconds: number): string {
       </div>
 
       <aside class="env-side">
-        <ui-panel title="设备详情" hint="只读检测，不会改动本机已有的环境">
+        <ui-panel kicker="Device" title="设备详情" hint="只读检测，不会改动本机已有的环境">
           @if (env) {
             <div class="form-grid">
               <ui-field label="显卡">
@@ -240,7 +264,7 @@ function formatDuration(seconds: number): string {
               </div>
             }
           } @else {
-            <div class="muted">正在检测本机环境…</div>
+            <div class="loading-line"><span class="dot-spin"></span>正在检测本机环境…</div>
           }
         </ui-panel>
       </aside>
@@ -354,6 +378,30 @@ function formatDuration(seconds: number): string {
                 </section>
               </div>
             } @else {
+              @if (installKind === 'instance') {
+                <div class="version-row">
+                  <label for="comfy-tag">版本</label>
+                  <select
+                    id="comfy-tag"
+                    (change)="onTagChange($event)"
+                    [disabled]="previewLoading"
+                  >
+                    <!-- 用 option 上的 selected：预演回来时整块会重建，
+                         只在 select 上绑 value 会因为 option 还没渲染而被丢掉 -->
+                    <option value="" [selected]="!installTag">最新版（master）</option>
+                    @for (v of versions; track v.tag) {
+                      <option [value]="v.tag" [selected]="v.tag === installTag">
+                        {{ v.tag }}{{ v.prerelease ? ' · 预览' : '' }}
+                      </option>
+                    }
+                  </select>
+                  @if (versionsLoading) {
+                    <span class="muted">正在读取可用版本…</span>
+                  } @else if (!versions.length) {
+                    <span class="muted">未取到版本列表</span>
+                  }
+                </div>
+              }
               <div class="preview-note">共 {{ pv.steps.length }} 个步骤 · 预计占用约 {{ pv.total_gb }} GB</div>
               <div class="preview-steps">
                 @for (step of pv.steps; track step.key; let i = $index) {
@@ -396,6 +444,11 @@ export class ComfyComponent implements OnInit, OnDestroy {
   error = '';
   deleting = '';
   instanceError = '';
+  /** 正在运行的实例名与端口；同一时间只允许一个 */
+  runningName = '';
+  runningPort = 0;
+  /** 进程已拉起、还没响应 HTTP 的实例名 */
+  startingName = '';
 
   preview: ComfyPreview | null = null;
   /** 弹层已打开、安装计划还在生成（探测硬件 / 挑下载源要几秒） */
@@ -405,6 +458,11 @@ export class ComfyComponent implements OnInit, OnDestroy {
   installing = false;
   installKind: ComfyInstallKind = 'environment';
   repairMode = false;
+  /** 选定的 ComfyUI 版本 tag；空 = 最新 master（开发版） */
+  installTag = '';
+  versions: ComfyVersion[] = [];
+  versionsLoading = false;
+  private versionsLoaded = false;
   checkResult: ComfyEnvCheck | null = null;
   checking = false;
   logs: string[] = [];
@@ -426,6 +484,8 @@ export class ComfyComponent implements OnInit, OnDestroy {
   private clock: ReturnType<typeof setInterval> | null = null;
   /** 后端还有实例在删时自动轮询刷新，删除完成后让那一行自己消失 */
   private deletePoll: ReturnType<typeof setTimeout> | null = null;
+  /** 启动中轮询实例状态，直到 running 或进程退出 */
+  private runPoll: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private api: ApiService) {}
 
@@ -441,6 +501,7 @@ export class ComfyComponent implements OnInit, OnDestroy {
     this.stopPolling();
     if (this.clock) clearInterval(this.clock);
     if (this.deletePoll) clearTimeout(this.deletePoll);
+    if (this.runPoll) clearTimeout(this.runPoll);
   }
 
   // ---------------- 弹层状态 ----------------
@@ -720,6 +781,9 @@ export class ComfyComponent implements OnInit, OnDestroy {
     }
     this.installKind = kind;
     this.repairMode = repair;
+    // 每次开新的安装流程都回到最新版：版本是这次任务的选择，不该粘到下次
+    this.installTag = '';
+    if (kind === 'instance') this.loadVersions();
     this.job = null;
     this.logs = [];
     this.progress = null;
@@ -737,11 +801,17 @@ export class ComfyComponent implements OnInit, OnDestroy {
       steps: [],
       total_gb: 0,
     };
-    this.previewLoading = true;
     this.dialogOpen = true;
+    this.loadPreview();
+  }
 
+  /** 拉一次安装预演。换版本时复用：后端只生成步骤，不写盘，几百毫秒。 */
+  private loadPreview(): void {
+    if (!this.preview) return;
+    this.previewLoading = true;
+    const kind = this.installKind;
     const seq = ++this.previewSeq;
-    this.api.comfyPreview('', '', kind, repair).subscribe({
+    this.api.comfyPreview('', this.installTag, kind, this.repairMode).subscribe({
       next: (preview) => {
         if (seq !== this.previewSeq) return;
         this.preview = preview;
@@ -760,6 +830,32 @@ export class ComfyComponent implements OnInit, OnDestroy {
         else this.error = message;
       },
     });
+  }
+
+  /** 只对「安装实例」有意义：基础环境是共享运行时，与 ComfyUI 版本无关。 */
+  private loadVersions(): void {
+    if (this.versionsLoaded || this.versionsLoading) return;
+    this.versionsLoading = true;
+    this.api.comfyVersions().subscribe({
+      next: (res) => {
+        this.versions = res.tags || [];
+        this.versionsLoading = false;
+        this.versionsLoaded = true;
+      },
+      error: () => {
+        // 列不出 tag 不该挡住安装：下拉里保留「最新版」，本次会话不再重试
+        this.versions = [];
+        this.versionsLoading = false;
+        this.versionsLoaded = true;
+      },
+    });
+  }
+
+  onTagChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === this.installTag) return;
+    this.installTag = value;
+    this.loadPreview();
   }
 
   closeDialog(): void {
@@ -795,7 +891,8 @@ export class ComfyComponent implements OnInit, OnDestroy {
     this.jobOverall = -1;
     this.logs = [];
     this.autoScroll = true;
-    this.api.comfyInstall(this.preview.spec.name, '', this.installKind, this.repairMode).subscribe({
+    // 名字交给后端生成（同一版本装两次会自动加序号）；这里只固定版本与类型
+    this.api.comfyInstall('', this.installTag, this.installKind, this.repairMode).subscribe({
       next: ({ id }) => this.poll(id, 0),
       error: (err) => {
         this.installing = false;
@@ -943,6 +1040,80 @@ export class ComfyComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ---------------- 实例运行 ----------------
+  isRunning(name: string): boolean {
+    return this.runningName === name;
+  }
+
+  /** 启动按钮的禁用原因写进 title，别让用户猜为什么点不动 */
+  startHint(name: string): string {
+    if (!this.runtime.ready) return '请先安装基础环境';
+    if (this.startingName === name) return '正在启动…';
+    if (this.runningName) return `实例「${this.runningName}」正在运行，需先停止`;
+    return '启动这个实例（同一时间只能运行一个）';
+  }
+
+  startInstance(instance: ComfyInstance): void {
+    if (this.runningName || this.startingName) return;
+    this.instanceError = '';
+    this.startingName = instance.name;
+    this.api.comfyStartInstance(instance.name).subscribe({
+      next: (res) => this.trackInstance(instance.name, res),
+      error: (err) => {
+        this.startingName = '';
+        this.reload(false);
+        this.instanceError = err?.error?.detail || '启动失败，请查看后端日志';
+      },
+    });
+  }
+
+  stopInstance(instance: ComfyInstance): void {
+    this.instanceError = '';
+    this.api.comfyStopInstance(instance.name).subscribe({
+      next: () => {
+        this.runningName = '';
+        this.runningPort = 0;
+        this.startingName = '';
+      },
+      error: (err) => {
+        this.instanceError = err?.error?.detail || '停止失败';
+      },
+    });
+  }
+
+  openInstance(): void {
+    if (!this.runningPort) return;
+    window.open(`http://127.0.0.1:${this.runningPort}/`, '_blank', 'noopener');
+  }
+
+  /** 轮询到 running 为止：从进程拉起到 HTTP 可用通常 3–15 秒 */
+  private trackInstance(name: string, res: ComfyInstanceState): void {
+    if (this.runPoll) clearTimeout(this.runPoll);
+    this.runPoll = null;
+    if (res.state === 'running') {
+      this.runningName = name;
+      this.runningPort = res.port || 0;
+      this.startingName = '';
+      return;
+    }
+    if (res.state === 'stopped') {
+      this.startingName = '';
+      if (res.exit_code) {
+        this.instanceError = `实例启动后退出（退出码 ${res.exit_code}），详情见 ${res.log || 'var/logs'}`;
+      }
+      return;
+    }
+    this.runPoll = setTimeout(() => {
+      this.api.comfyInstanceState(name).subscribe({
+        next: (next) => this.trackInstance(name, next),
+        error: () => {
+          this.startingName = '';
+          this.instanceError = '无法获取实例状态';
+        },
+      });
+    }, 1500);
+  }
+
   reload(refresh: boolean): void {
     if (this.loading) return;
     this.loading = true;
@@ -951,6 +1122,10 @@ export class ComfyComponent implements OnInit, OnDestroy {
       next: (env) => {
         this.env = env;
         this.loading = false;
+        // 刷新页面后从后端恢复「哪个实例在跑」
+        const run = env.running_instance;
+        this.runningName = run?.name || '';
+        this.runningPort = run?.port || 0;
         this.watchDeleting();
       },
       error: (err) => {
