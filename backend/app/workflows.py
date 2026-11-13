@@ -763,25 +763,22 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
 
     key = _rel_key(target)
     meta = load_meta()
-    entry = meta.get(key)
-    if not isinstance(entry, dict):
-        entry = {}
+    # 重建而不是就地改：旧条目里可能只剩 updated_at，
+    # 就地 pop 会把它留下来 → 清空后变成只有时间戳的空壳条目。
+    entry: dict = {}
     if title:
         entry["title"] = title
-    else:
-        entry.pop("title", None)
     if group:
         entry["group"] = group
-    else:
-        entry.pop("group", None)
-    entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
     if entry:
+        entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
         meta[key] = entry
     else:
         meta.pop(key, None)
     save_meta(meta)
 
     renamed = ""
+    new_key = key
     if rename_file and title:
         safe = re.sub(r'[\\/:*?"<>|]+', "_", title).strip() or target.stem
         new_path = target.with_name(f"{safe}.json")
@@ -791,12 +788,12 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
             # 文件改名了，侧车键也得跟着换，否则自定义名会丢
             new_key = _rel_key(new_path)
             if new_key != key:
-                meta_entry = meta.pop(key, None)
-                if meta_entry:
-                    meta[new_key] = meta_entry
+                entry = meta.pop(key, None)
+                if entry:
+                    meta[new_key] = entry
                 save_meta(meta)
 
-    return {"title": title, "group": group, "file": renamed, "key": key}
+    return {"title": title, "group": group, "file": renamed, "key": new_key}
 
 
 def local() -> dict:
