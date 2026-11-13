@@ -8,20 +8,40 @@ import { NodesComponent } from './pages/nodes.component';
 import { SettingsComponent } from './pages/settings.component';
 import { WorkflowsComponent } from './pages/workflows.component';
 
+/**
+ * 路由命名规则：`/{资源}` 是「我有的」，`/{资源}/discover` 是「去找」。
+ *
+ * 三类资产用同一套形状，侧栏点哪里、地址栏就是哪个资源——之前是
+ * /library + /discover（模型）、/nodes + /nodes/installed（节点，发现和管理还反着）、
+ * /comfy（环境管理），同一层的三个概念三套命名，看地址猜不出页面。
+ */
 export const routes: Routes = [
   // 首页落在工作流：它是这个产品的主资产，下载任务只是把资产运进来的管道
   { path: '', pathMatch: 'full', redirectTo: 'workflows' },
-  { path: 'downloads', component: DownloadsComponent },
-  { path: 'discover', component: DiscoverComponent },
+
+  // 工作流：资产页与发现页共用一个组件，靠路由 data 决定落哪一段
   { path: 'workflows', component: WorkflowsComponent, data: { tab: 'mine' } },
-  // 发现工作流与我的工作流共用一个组件，靠路由 data 决定落哪一段；
-  // 拆成两个路径是为了侧栏能各自高亮，也让「发现」有可分享的地址
   { path: 'workflows/discover', component: WorkflowsComponent, data: { tab: 'discover' } },
-  { path: 'library', component: LibraryComponent },
-  { path: 'nodes', component: NodesComponent },
-  { path: 'nodes/installed', component: NodeLibraryComponent },
-  { path: 'comfy', component: ComfyComponent },
+
+  // 模型：/models 是模型库（已落盘的），/models/discover 是发现
+  { path: 'models', component: LibraryComponent },
+  { path: 'models/discover', component: DiscoverComponent },
+
+  // 节点：/nodes 是节点管理（已装、启停、卸载），/nodes/discover 是发现
+  { path: 'nodes', component: NodeLibraryComponent },
+  { path: 'nodes/discover', component: NodesComponent },
+
+  // 基础设施
+  { path: 'downloads', component: DownloadsComponent },
+  { path: 'environments', component: ComfyComponent },
   { path: 'settings', component: SettingsComponent },
+
+  // 旧地址重定向：改名后书签、外部链接、已发出的通知仍然能落到对应页面
+  { path: 'library', redirectTo: 'models' },
+  { path: 'discover', redirectTo: 'models/discover' },
+  { path: 'nodes/installed', redirectTo: 'nodes' },
+  { path: 'comfy', redirectTo: 'environments' },
+
   // 设计对照实验：两套组件体系各做一页，仅用于评估，不属于产品导航
   { path: 'lab/primeng', loadComponent: () => import('./lab/lab-primeng.component').then((m) => m.LabPrimeNgComponent) },
   { path: 'lab/tailwind', loadComponent: () => import('./lab/lab-tailwind.component').then((m) => m.LabTailwindComponent) },

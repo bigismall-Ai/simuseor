@@ -26,8 +26,8 @@ import { PanelComponent } from '../ui/panel.component';
   ],
   template: `
     <ui-page-header
-      kicker="Library"
-      title="本地模型库"
+      kicker="Models"
+      title="模型库"
       hint="问自己三个问题：这个模型还在用吗（收藏）、试过没有（评审）、属于什么（标签）。"
     />
 

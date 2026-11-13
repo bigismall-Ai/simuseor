@@ -74,7 +74,7 @@ function formatDuration(seconds: number): string {
     PanelComponent,
   ],
   template: `
-    <ui-page-header kicker="Runtime" title="环境管理" />
+    <ui-page-header kicker="Environments" title="环境管理" />
 
     <!-- 右栏在 DOM 里放前面：基础环境是实例的前置条件，Tab / 读屏顺序也该先环境再实例；
          视觉上用 grid 列位把它摆到右侧，实例独占主栏。 -->

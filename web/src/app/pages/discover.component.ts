@@ -99,7 +99,7 @@ const PAGE_SIZE = 20;
   imports: [FormsModule, BadgeComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
-      kicker="Discover"
+      kicker="Models · Discover"
       title="发现模型"
       hint="跨源搜索合并为一个列表。同一模型在多个来源时，卡片上会并列标出来源，下载时再选走哪一边。"
     >

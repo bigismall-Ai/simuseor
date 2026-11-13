@@ -19,7 +19,7 @@ import { PanelComponent } from '../ui/panel.component';
       title="节点管理"
       hint="节点装在 workspace/custom_nodes，所有实例共享；禁用只改目录后缀，代码还在，随时能开回来。"
     >
-      <button routerLink="/nodes">浏览节点包</button>
+      <button routerLink="/nodes/discover">发现节点</button>
     </ui-page-header>
 
     <div class="nl-stats">

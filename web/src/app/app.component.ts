@@ -3,7 +3,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { ThemeService, type ThemePref } from './core/theme.service';
 
 /** 「发现」这一支下的页面。精确匹配——`/nodes/installed` 属于资产，不能被 `/nodes` 捡走 */
-const DISCOVER_PATHS = new Set(['/workflows/discover', '/discover', '/nodes', '/downloads']);
+const DISCOVER_PATHS = new Set(['/workflows/discover', '/models/discover', '/nodes/discover', '/downloads']);
 const OPEN_KEY = 'md-nav-discover';
 
 /**
@@ -41,17 +41,17 @@ const OPEN_KEY = 'md-nav-discover';
             </svg>
             <span>工作流</span>
           </a>
-          <a class="nav-item" routerLink="/library" routerLinkActive="active">
+          <a class="nav-item" routerLink="/models" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3h10v10H3zM5 6h6M5 9h6" />
             </svg>
-            <span>模型</span>
+            <span>模型库</span>
           </a>
-          <a class="nav-item" routerLink="/nodes/installed" routerLinkActive="active">
+          <a class="nav-item" routerLink="/nodes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M2 2h5v5H2zM9 9h5v5H9zM2 9h5v5H2zM9 2h5v5H9z" />
             </svg>
-            <span>节点</span>
+            <span>节点管理</span>
           </a>
 
           <!-- 一级项：只负责开合，本身不是目的地；子项才是入口 -->
@@ -77,14 +77,14 @@ const OPEN_KEY = 'md-nav-discover';
           @if (discoverOpen()) {
             <div class="nav-sub" id="nav-discover" role="group" aria-label="发现">
               <a class="nav-sub-item" routerLink="/workflows/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">工作流</a>
-              <a class="nav-sub-item" routerLink="/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">模型</a>
-              <a class="nav-sub-item" routerLink="/nodes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">节点</a>
+              <a class="nav-sub-item" routerLink="/models/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">模型</a>
+              <a class="nav-sub-item" routerLink="/nodes/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">节点</a>
               <a class="nav-sub-item" routerLink="/downloads" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">下载任务</a>
             </div>
           }
 
           <p class="nav-group">基础设置</p>
-          <a class="nav-item" routerLink="/comfy" routerLinkActive="active">
+          <a class="nav-item" routerLink="/environments" routerLinkActive="active">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <circle cx="3.5" cy="8" r="1.6" />
               <circle cx="12.5" cy="4" r="1.6" />

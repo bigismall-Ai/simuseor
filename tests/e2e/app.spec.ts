@@ -33,8 +33,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByRole('heading', { name: 'Hugging Face' })).toBeVisible();
     await page.screenshot({ path: ART + '/03-settings.png', fullPage: true });
 
-    await page.locator('.nav > a[href="/library"]').click();
-    await expect(page.getByText('本地模型库')).toBeVisible();
+    await page.locator('.nav > a[href="/models"]').click();
+    await expect(page.getByRole('heading', { name: '模型库' })).toBeVisible();
     await page.screenshot({ path: ART + '/02-library.png', fullPage: true });
   });
 
@@ -68,7 +68,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 45_000 });
     await page.screenshot({ path: ART + '/06-task-completed.png', fullPage: true });
 
-    await page.locator('.nav > a[href="/library"]').click();
+    await page.locator('.nav > a[href="/models"]').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
 
@@ -86,14 +86,14 @@ test.describe('Model Downloader Web UI', () => {
   });
 
   test('模型发现：搜索、行内下载弹层创建任务', async ({ page }) => {
-    await page.goto('/discover?demo=1');
+    await page.goto('/models/discover?demo=1');
     await expect(page.getByRole('heading', { name: '发现模型' })).toBeVisible();
     await page.getByRole('button', { name: 'Demo', exact: true }).click();
     await page.getByPlaceholder('搜索模型关键词，如 qwen / lora / flux').fill('text');
     await page.getByTestId('search-btn').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     // URL 同步了筛选状态
-    await expect(page).toHaveURL(/\/discover\?.*source=demo/);
+    await expect(page).toHaveURL(/\/models\/discover\?.*source=demo/);
     await page.screenshot({ path: ART + '/10-discover.png', fullPage: true });
 
     // 行内弹层：解析 → 创建任务
@@ -110,7 +110,7 @@ test.describe('Model Downloader Web UI', () => {
   });
 
   test('环境管理：显示本机设备与安装方案', async ({ page }) => {
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.getByRole('heading', { name: '环境管理' })).toBeVisible();
 
     // 探测要跑 nvidia-smi / CIM，给足时间；硬件结论只放右栏「设备详情」
@@ -193,7 +193,7 @@ test.describe('Model Downloader Web UI', () => {
       await route.fulfill({ response });
     });
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await page.getByRole('button', { name: '环境检测' }).click();
     await expect(page.getByText('PyTorch 不可用')).toBeVisible();
     await page.getByRole('button', { name: '修复' }).click();
@@ -223,7 +223,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.route((url) => url.pathname === '/api/comfy/install/current', (route) =>
       route.fulfill({ json: { job: null } }));
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.locator('ui-badge').first()).toContainText('未安装');
     // 未安装时三行都不显示版本号：计划值（3.13.18 / 13.0）不能当成已装值
     await expect(page.locator('.env-list')).not.toContainText('3.13.18');
@@ -267,7 +267,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.route((url) => url.pathname === '/api/comfy/install/current', (route) =>
       route.fulfill({ json: { job: null } }));
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.getByText('将以 CPU 运行，NPU 加速需另行配置')).toBeVisible();
     await expect(page.locator('.env-side').getByText('128 GB').first()).toBeVisible();
     await expect(page.getByText('显卡与 CPU 共用（统一内存）')).toBeVisible();
@@ -300,7 +300,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.route((url) => url.pathname === '/api/comfy/install/current', (route) =>
       route.fulfill({ json: { job: null } }));
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     const installButton = page.getByRole('button', { name: '安装', exact: true });
     await expect(installButton).toBeEnabled({ timeout: 20_000 });
     await installButton.click();
@@ -338,7 +338,7 @@ test.describe('Model Downloader Web UI', () => {
       await route.fulfill({ response });
     });
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     const installButton = page.getByRole('button', { name: '安装', exact: true });
     await expect(installButton).toBeEnabled({ timeout: 20_000 });
 
@@ -387,7 +387,7 @@ test.describe('Model Downloader Web UI', () => {
       route.fulfill({ json: { kind: 'instance', spec, steps, total_gb: 0.5 } });
     });
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.getByRole('button', { name: '安装实例' })).toBeEnabled({ timeout: 20_000 });
     await page.getByRole('button', { name: '安装实例' }).click();
     expect(previewUrl).toContain('kind=instance');
@@ -427,7 +427,7 @@ test.describe('Model Downloader Web UI', () => {
       route.fulfill({ json: { kind: 'instance', spec, steps, total_gb: 0.1 } });
     });
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.getByRole('button', { name: '安装实例' })).toBeEnabled({ timeout: 20_000 });
     await page.getByRole('button', { name: '安装实例' }).click();
 
@@ -511,7 +511,7 @@ test.describe('Model Downloader Web UI', () => {
       route.fulfill({ json: mockJob(calls < 6 ? 'running' : 'done') });
     });
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     const startButton = page.getByRole('button', { name: '安装', exact: true });
     await expect(startButton).toBeEnabled({ timeout: 20_000 });
 
@@ -590,7 +590,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.route((url) => url.pathname === '/api/comfy/install/bgjob', (route) =>
       route.fulfill({ json: job }));
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await page.getByRole('button', { name: '安装实例' }).click();
     await page.getByRole('button', { name: '确认安装' }).click();
     await expect(page.getByText('正在安装 ComfyUI 实例')).toBeVisible();
@@ -644,7 +644,7 @@ test.describe('Model Downloader Web UI', () => {
     });
     page.on('dialog', (dialog) => dialog.accept());
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.locator('.instance-row')).toHaveCount(2, { timeout: 20_000 });
     await expect(page.getByText('未登记')).toBeVisible();
     await page.screenshot({ path: ART + '/15-comfy-instance-delete.png', fullPage: true });
@@ -678,7 +678,7 @@ test.describe('Model Downloader Web UI', () => {
       }));
     page.on('dialog', (dialog) => dialog.accept());
 
-    await page.goto('/comfy');
+    await page.goto('/environments');
     await expect(page.locator('.instance-row')).toHaveCount(1, { timeout: 20_000 });
     await page.locator('.instance-row').getByRole('button', { name: '删除' }).click();
     await expect(page.getByText('删除失败：目录被占用')).toBeVisible();
@@ -774,7 +774,7 @@ test.describe('Model Downloader Web UI', () => {
 
   test('节点发现：列表显示已装状态与节点规模', async ({ page }) => {
     await mockNodes(page);
-    await page.goto('/nodes');
+    await page.goto('/nodes/discover');
 
     await expect(page.getByRole('heading', { name: '发现节点' })).toBeVisible();
     await expect(page.locator('.nd-row')).toHaveCount(2);
@@ -798,7 +798,7 @@ test.describe('Model Downloader Web UI', () => {
         },
       }));
 
-    await page.goto('/nodes');
+    await page.goto('/nodes/discover');
     await page.locator('.nd-row').nth(1).getByRole('button', { name: '安装' }).click();
     await expect(page.locator('.nd-progress').first()).toHaveText('45%');
     await expect(page.locator('.nd-log')).toContainText('克隆');
@@ -808,7 +808,7 @@ test.describe('Model Downloader Web UI', () => {
 
   test('节点管理：已装列表、启停状态与缺节点检测', async ({ page }) => {
     await mockNodes(page);
-    await page.goto('/nodes/installed');
+    await page.goto('/nodes');
 
     await expect(page.getByRole('heading', { name: '节点管理' })).toBeVisible();
     await expect(page.locator('tbody tr')).toHaveCount(2);
