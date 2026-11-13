@@ -60,6 +60,15 @@ class WorkflowLocalOpenRequest(BaseModel):
     path: str
 
 
+class WorkflowMetaRequest(BaseModel):
+    """自定义命名 / 分组。path 必须是共享工作流目录里的文件。"""
+
+    path: str
+    title: str = ""
+    group: str = ""
+    rename_file: bool = False
+
+
 class NodeInstallRequest(BaseModel):
     id: str
 
@@ -151,6 +160,17 @@ def local_workflows() -> dict:
 def open_local_workflow(body: WorkflowLocalOpenRequest) -> dict:
     try:
         return workflow_service.open_local(body.path)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/workflows/local/meta")
+def set_local_workflow_meta(body: WorkflowMetaRequest) -> dict:
+    """设置自定义名与分组。默认只改本机侧车元数据，不动工作流文件本身。"""
+    try:
+        return workflow_service.set_meta(
+            body.path, body.title, body.group, body.rename_file
+        )
     except SourceError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

@@ -25,7 +25,7 @@ from typing import Callable
 
 import httpx
 
-from .config import COMFY_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
+from .config import COMFY_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
@@ -38,6 +38,11 @@ GH_API = "https://api.github.com"
 TEMPLATES_INDEX = "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/index.json"
 TEMPLATE_WEB = "https://github.com/Comfy-Org/workflow_templates/blob/main/templates"
 UA = {"User-Agent": "model-downloader/0.1"}
+
+# 自定义命名 / 分组的侧车文件。
+# 不写回工作流 JSON —— 那些文件 ComfyUI 自己也要读，改坏了画布就打不开。
+# 键是相对共享工作流目录的路径，移动文件后元数据自然失效（不猜、不跟）。
+WORKFLOW_META_PATH = DATA_DIR / "workflow_meta.json"
 
 
 def is_workflow_file(path: str) -> bool:
@@ -691,13 +696,118 @@ def _shape(payload: object) -> tuple[int, str]:
     return 0, "unknown"
 
 
+# ---------------- 自定义命名 / 分组（侧车元数据） ----------------
+
+def load_meta() -> dict:
+    """读侧车元数据。文件坏了不该拖垮整个列表 —— 退回空表。"""
+    try:
+        raw = WORKFLOW_META_PATH.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {}
+    try:
+        data = json.loads(raw)
+    except ValueError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_meta(data: dict) -> None:
+    WORKFLOW_META_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp = WORKFLOW_META_PATH.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    tmp.replace(WORKFLOW_META_PATH)
+
+
+def _rel_key(path: Path) -> str:
+    """工作流文件相对共享目录的路径，作为侧车键。"""
+    try:
+        return path.resolve().relative_to(WORKSPACE_WORKFLOWS_DIR.resolve()).as_posix()
+    except ValueError:
+        return path.name
+
+
+def meta_groups(meta: dict) -> list[dict]:
+    """分组清单：名称 + 条数（按名称排序）。空分组不列。"""
+    counts: dict[str, int] = {}
+    for entry in meta.values():
+        if not isinstance(entry, dict):
+            continue
+        g = (entry.get("group") or "").strip()
+        if g:
+            counts[g] = counts.get(g, 0) + 1
+    return [{"name": g, "count": c} for g, c in sorted(counts.items())]
+
+
+def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = False) -> dict:
+    """设置某条工作流的自定义名与分组。
+
+    - title 为空 → 清除自定义名（回落文件名）
+    - group 为空 → 取消分组
+    - rename_file=True 时同时把真实文件改名（ComfyUI 里也会显示新名字）
+    """
+    root = WORKSPACE_WORKFLOWS_DIR.resolve()
+    target = Path(path).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise SourceError("只能整理共享工作流目录里的文件") from exc
+    if not target.is_file():
+        raise SourceError("文件不存在，可能已被移动或删除")
+
+    title = (title or "").strip()
+    group = (group or "").strip()
+    if len(title) > 80:
+        raise SourceError("名称太长了")
+    if len(group) > 24:
+        raise SourceError("分组名太长了")
+
+    key = _rel_key(target)
+    meta = load_meta()
+    entry = meta.get(key)
+    if not isinstance(entry, dict):
+        entry = {}
+    if title:
+        entry["title"] = title
+    else:
+        entry.pop("title", None)
+    if group:
+        entry["group"] = group
+    else:
+        entry.pop("group", None)
+    entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+    if entry:
+        meta[key] = entry
+    else:
+        meta.pop(key, None)
+    save_meta(meta)
+
+    renamed = ""
+    if rename_file and title:
+        safe = re.sub(r'[\\/:*?"<>|]+', "_", title).strip() or target.stem
+        new_path = target.with_name(f"{safe}.json")
+        if new_path != target and not new_path.exists():
+            target.rename(new_path)
+            renamed = new_path.name
+            # 文件改名了，侧车键也得跟着换，否则自定义名会丢
+            new_key = _rel_key(new_path)
+            if new_key != key:
+                meta_entry = meta.pop(key, None)
+                if meta_entry:
+                    meta[new_key] = meta_entry
+                save_meta(meta)
+
+    return {"title": title, "group": group, "file": renamed, "key": key}
+
+
 def local() -> dict:
     """共享工作流目录里的本地工作流。
 
     只数节点，不解析依赖——「这条工作流缺哪个模型/节点」是下一步的事。
     目录里可能混着 ComfyUI 自己的配置文件，认不出工作流形状的直接跳过。
+    解析失败的文件也要列出来（error + 行号），不能被 ValueError 静默吞掉。
     """
     root = WORKSPACE_WORKFLOWS_DIR
+    meta = load_meta()
     items: list[dict] = []
     if root.is_dir():
         for path in root.rglob("*.json"):
@@ -705,8 +815,32 @@ def local() -> dict:
                 stat = path.stat()
                 if stat.st_size > MAX_WORKFLOW_BYTES:
                     continue
-                payload = json.loads(path.read_text(encoding="utf-8", errors="replace"))
-            except (OSError, ValueError):
+                raw = path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            key = _rel_key(path)
+            entry = meta.get(key) if isinstance(meta.get(key), dict) else {}
+            title = (entry.get("title") or "").strip()
+            group = (entry.get("group") or "").strip()
+            try:
+                payload = json.loads(raw)
+            except ValueError as exc:
+                # 坏文件仍占位可见：错误信息直接进卡片封面图区，不另开错误区
+                items.append(
+                    {
+                        "name": path.stem,
+                        "title": title,
+                        "group": group,
+                        "path": str(path),
+                        "folder": "",
+                        "size": stat.st_size,
+                        "mtime": int(stat.st_mtime),
+                        "nodes": 0,
+                        "format": "broken",
+                        "error": str(exc),
+                        "error_line": _error_line(raw, exc),
+                    }
+                )
                 continue
             nodes, fmt = _shape(payload)
             if fmt == "unknown":
@@ -715,6 +849,8 @@ def local() -> dict:
             items.append(
                 {
                     "name": path.stem,
+                    "title": title,
+                    "group": group,
                     "path": str(path),
                     "folder": "" if parent == Path(".") else parent.as_posix(),
                     "size": stat.st_size,
@@ -724,7 +860,18 @@ def local() -> dict:
                 }
             )
     items.sort(key=lambda it: it["mtime"], reverse=True)
-    return {"dir": str(root), "total": len(items), "items": items}
+    return {
+        "dir": str(root),
+        "total": len(items),
+        "items": items,
+        "groups": meta_groups(meta),
+    }
+
+
+def _error_line(raw: str, exc: ValueError) -> int:
+    """从 JSONDecodeError 里取行号（1 起）；解析不出就返回 0。"""
+    line = getattr(exc, "lineno", 0)
+    return int(line) if isinstance(line, int) and line > 0 else 0
 
 
 def open_local(path: str) -> dict:
