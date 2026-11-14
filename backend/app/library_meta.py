@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from .weight_class import classify
-from .weight_meta import fmt_bytes, pick_weight_file, read_weight
+from .weight_meta import fmt_bytes, is_weight_file, pick_weight_file, read_weight
 
 # 各家族类别的显存系数：权重之外还要留激活、缓存与框架开销。
 # 这些是经验值，不是精确测量 —— 所以 UI 上只给档位（跑得动/勉强/装不下），
@@ -66,27 +66,38 @@ def _family_of(name: str) -> str:
 
 def _vram_verdict(need_gb: float, vram_mb: int | None, has_weights: bool,
                   reason: str, is_demo: bool) -> dict:
-    """显存结论。
+    """权重状态 + 显存结论。
 
-    给不出结论的原因分三种，别混成一句「未读到权重」：
-      - none       目录里没有权重文件
-      - unreadable 有权重文件但解析失败
-      - nogpu      读到了但本机没独显
-    demo 条目一律不给结论 —— 假头算出来的「需要 0 GB」毫无意义。
+    **先判权重有没有，再判显存够不够** —— 这是两件事，不能混成一句「未读到权重」。
+
+    权重侧四态：
+      - broken   权重文件在，但解析失败（占位文件 / 真损坏 / 格式不认）
+      - missing  目录里根本没有权重文件 → **下载不完整**，条目残缺
+      - nogpu    权重读到了，但本机没独显 → 权重是好的，只是本机没法跑
+      - demo     演示占位数据
+
+    显存侧三档（只在权重完整时才有）：
+      ok / warn / err —— 跑得动 / 勉强 / 装不下
+
+    **「没有权重」不是「无法判定」，是「这个条目是残的」。**
+    用户看到 gpt2 目录里只有 config.json + vocab.json，正确的解读是
+    「权重没下下来」而不是「这个模型不需要权重」。前者要补救（重新下载），
+    后者只是信息缺失 —— 混起来会让残缺的条目看起来像正常的。
     """
     if is_demo:
         return {"level": "demo", "text": "演示数据",
                 "hint": "离线演示占位文件，权重内容为假，不参与显存判定"}
-    if reason == "none":
-        return {"level": "none", "text": "无权重文件",
-                "hint": "目录里没有 .safetensors / .gguf 等权重"}
     if reason == "unreadable":
-        return {"level": "unknown", "text": "权重不可读",
-                "hint": "有权重文件但头部解析失败（占位文件 / 损坏 / 非 safetensors 格式）"}
+        return {"level": "broken", "text": "权重损坏",
+                "hint": "有权重文件但头部解析失败（占位文件 / 下载不完整 / 格式不认）"}
+    if reason == "none":
+        return {"level": "missing", "text": "缺少权重",
+                "hint": "目录里没有权重文件 —— 下载不完整，这个条目还不能用"}
     if not has_weights:
         return {"level": "unknown", "text": "未读到权重", "hint": ""}
     if not vram_mb:
-        return {"level": "unknown", "text": "无独显", "hint": "本机未检测到独立显卡"}
+        return {"level": "nogpu", "text": "无独显",
+                "hint": "本机未检测到独立显卡，无法判断能否运行"}
     vram_gb = vram_mb / 1024
     if need_gb <= vram_gb * 0.85:
         return {"level": "ok", "text": "跑得动", "hint": f"余量 {(vram_gb - need_gb):.1f} GB"}
@@ -110,10 +121,19 @@ def describe_model(local_path: str, name: str = "", tags: list[str] | None = Non
         w = pick_weight_file(directory)
         if w is not None:
             info = read_weight(w)
-            reason = "" if info is not None else "unreadable"
+            if info is not None:
+                reason = ""
+            elif is_weight_file(w):
+                # 有权重文件但读不出规格 —— 老格式（.ckpt/.bin）或头部损坏。
+                # 跟「目录里根本没权重」是两回事，不能合并。
+                reason = "unreadable"
+            else:
+                reason = "none"
+        else:
+            reason = "none"
     elif directory is not None and directory.is_file():
         info = read_weight(directory)
-        reason = "" if info is not None else "unreadable"
+        reason = "" if info is not None else ("unreadable" if is_weight_file(directory) else "none")
 
     is_demo = bool((info or {}).get("isDemo"))
     family = _family_of(name or "")

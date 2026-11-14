@@ -178,22 +178,61 @@ def test_describe_model_marks_demo(tmp_path):
 
 
 def test_describe_model_no_weights(tmp_path):
+    """目录里没有权重文件 = 下载不完整，条目残缺 —— 不是「无法判定」。"""
     from app.library_meta import describe_model
 
     r = describe_model(str(tmp_path), "empty-model", [])
     assert r["hasWeights"] is False
     assert r["noReason"] == "none"
-    assert r["vram"]["level"] == "none"
-    assert r["vram"]["text"] == "无权重文件"
+    # level 必须是 missing（残缺），不能是 unknown（真·无法判定）
+    assert r["vram"]["level"] == "missing"
+    assert r["vram"]["text"] == "缺少权重"
+    assert "不完整" in r["vram"]["hint"]
 
 
 def test_describe_model_unreadable(tmp_path):
+    """有权重文件但读不出规格 —— 权重损坏。"""
     from app.library_meta import describe_model
 
     (tmp_path / "bad.safetensors").write_bytes(b"0" * 1000)
     r = describe_model(str(tmp_path), "bad-model", [])
     assert r["noReason"] == "unreadable"
-    assert r["vram"]["text"] == "权重不可读"
+    assert r["vram"]["level"] == "broken"
+    assert r["vram"]["text"] == "权重损坏"
+
+
+def test_old_ckpt_format_is_not_missing_weights(tmp_path):
+    """老式 .ckpt / .bin 权重读不出 dtype，但文件实实在在存在。
+
+    这种情况绝不能报「缺少权重」—— 那会把一个完整的模型误判成残缺。
+    `pick_weight_file` 找得到它们，`read_weight` 解析不了，
+    两者必须分开判断。
+    """
+    from app.library_meta import describe_model
+
+    (tmp_path / "model.ckpt").write_bytes(b"\x80\x02\x8a\x00" + b"0" * 500)
+    r = describe_model(str(tmp_path), "legacy-model", [])
+    assert r["noReason"] == "unreadable"
+    assert r["vram"]["level"] == "broken"
+    assert r["vram"]["text"] != "缺少权重"
+
+
+def test_no_gpu_is_unknown_not_missing(tmp_path):
+    """权重是好的、只是本机没独显 → 真·无法判定，不是残缺。"""
+    from app.library_meta import describe_model
+    import app.library_meta as lm
+
+    _make_safetensors(tmp_path / "w.safetensors", {
+        "w": {"dtype": "F16", "shape": [10, 10], "data_offsets": [0, 200]},
+    })
+    orig = lm._gpu_vram_mb
+    lm._gpu_vram_mb = lambda: None
+    try:
+        r = describe_model(str(tmp_path), "good-model", [])
+    finally:
+        lm._gpu_vram_mb = orig
+    assert r["vram"]["level"] == "nogpu"
+    assert r["vram"]["text"] == "无独显"
 
 
 def test_describe_model_classifies():

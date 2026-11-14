@@ -144,13 +144,31 @@ def gguf_info(path: Path) -> dict | None:
 
 
 def read_weight(path: Path) -> dict | None:
-    """按扩展名分派。返回 None 表示「读不出来」。"""
+    """按扩展名分派。返回 None 表示「读不出来」。
+
+    注意：**读不出来 ≠ 文件不存在**。调用方要区分这两种情况 ——
+    `.ckpt` / `.bin` 是老式格式（PyTorch pickle），头部读不出 dtype，
+    但文件实实在在存在。此时如果返回 None 就被当成「没有权重」，
+    等于把一个完整的模型误报成残缺。
+    """
     suffix = path.suffix.lower()
     if suffix in (".safetensors", ".sft"):
         return safetensors_info(path)
     if suffix == ".gguf":
         return gguf_info(path)
     return None
+
+
+def is_weight_file(path: Path) -> bool:
+    """这是不是一个权重文件（不管能不能解析出规格）。
+
+    和 `read_weight` 分开是必须的：
+    - `pick_weight_file` 找得到 `.ckpt` / `.bin`
+    - `read_weight` 只认 safetensors / gguf
+
+    两者一合，格式老但完整的模型就会被误判成「目录里没有权重」。
+    """
+    return path.suffix.lower() in (".safetensors", ".sft", ".gguf", ".ckpt", ".bin", ".pt", ".pth")
 
 
 def fmt_params(n: int) -> str:
