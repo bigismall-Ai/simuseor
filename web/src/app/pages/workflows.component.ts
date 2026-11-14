@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { LocalWorkflow, WorkflowItem, errMsg, fmtNum, fmtSize } from '../core/types';
+import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { FamilyMarkComponent } from '../ui/family-mark.component';
+import { WorkflowCardComponent } from '../ui/workflow-card.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
@@ -46,7 +47,7 @@ const SORTS = [
 @Component({
   selector: 'app-workflows',
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
     <ui-page-header
       [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
@@ -73,46 +74,81 @@ const SORTS = [
           </ui-empty>
         </ui-panel>
       } @else {
-        <ui-panel>
-          <div class="lw-bar">
-            <span class="lw-count">{{ localLoading ? '读取中…' : local.length + ' 个工作流' }}</span>
-            @if (localDir) {
-              <span class="lw-dir mono" [title]="localDir">{{ localDir }}</span>
+        <div class="lw-bar">
+          <span class="lw-count">{{ localLoading ? '读取中…' : filtered.length + ' / ' + local.length + ' 个工作流' }}</span>
+          @if (localDir) {
+            <span class="lw-dir mono" [title]="localDir">{{ localDir }}</span>
+          }
+          <button class="btn-xs" (click)="loadLocal()" [disabled]="localLoading">刷新</button>
+        </div>
+
+        <!-- 工具栏：搜索 / 状态筛选 / 排序 / 视图切换。
+             四态互斥，筛选项就是卡片徽标能出现的四种情况。 -->
+        <div class="wf-tools">
+          <input
+            class="grow"
+            [(ngModel)]="localQ"
+            placeholder="搜索名称、原文件名或分组"
+            data-testid="lw-search"
+          />
+          <div class="wf-chips">
+            @for (s of statusFilters; track s.key) {
+              <button class="wf-chip" [class.on]="statusFilter === s.key" (click)="setStatus(s.key)">
+                {{ s.label }}<b>{{ countOf(s.key) }}</b>
+              </button>
             }
-            <button class="btn-xs" (click)="loadLocal()" [disabled]="localLoading">刷新</button>
           </div>
-
-          <div class="lw-head">
-            <span>名称</span>
-            <span class="lw-num">节点</span>
-            <span class="lw-num">大小</span>
-            <span class="lw-right">修改</span>
-            <span></span>
+          <button class="wf-chip" (click)="cycleSort()" data-testid="lw-sort">{{ sortLabel }}</button>
+          <div class="wf-chips">
+            <button class="wf-chip" [class.on]="view === 'card'" (click)="setView('card')">卡片</button>
+            <button class="wf-chip" [class.on]="view === 'list'" (click)="setView('list')">列表</button>
           </div>
+        </div>
 
-          <div class="lw-list">
-            @for (it of local; track it.path) {
-              <div class="lw-row">
-                <div class="lw-body">
-                  <p class="lw-name" [title]="it.path">
-                    <ui-family-mark class="lw-mark" [model]="it.main_model || ''" />
-                    {{ it.name }}
-                    @if (it.format === 'api') {
-                      <span class="lw-tag">API</span>
+        @if (!filtered.length) {
+          <ui-panel>
+            <ui-empty
+              title="没有符合条件的工作流"
+              hint="换个关键词或筛选条件试试；也可能是这个分组下还没有工作流。"
+            />
+          </ui-panel>
+        } @else if (view === 'card') {
+          <div class="wf-grid" data-testid="lw-grid">
+            @for (it of filtered; track it.path) {
+              <app-workflow-card
+                [it]="it"
+                (primary)="onPrimary($event)"
+                (more)="onMore($event)"
+              />
+            }
+          </div>
+        } @else {
+          <ui-panel>
+            <div class="lw-list">
+              @for (it of filtered; track it.path) {
+                <div class="lw-row">
+                  <div class="lw-body">
+                    <p class="lw-name" [title]="it.path">
+                      <ui-family-mark class="lw-mark" [model]="it.main_model || ''" />
+                      {{ it.title || it.name }}
+                      @if (it.format === 'api') {
+                        <span class="lw-tag">API</span>
+                      }
+                    </p>
+                    @if (it.group) {
+                      <p class="lw-sub">{{ it.group }}</p>
                     }
-                  </p>
-                  @if (it.folder && it.folder !== it.name) {
-                    <p class="lw-sub">{{ it.folder }}</p>
-                  }
+                  </div>
+                  <span class="lw-num">{{ it.nodes }}</span>
+                  <span class="lw-num">{{ depText(it) }}</span>
+                  <span class="lw-num">{{ fmtSize(it.size) }}</span>
+                  <time class="lw-time">{{ ago(it.mtime) }}</time>
+                  <button class="btn-xs lw-open" (click)="reveal(it)" title="在文件管理器中定位">定位</button>
                 </div>
-                <span class="lw-num">{{ it.nodes }}</span>
-                <span class="lw-num">{{ fmtSize(it.size) }}</span>
-                <time class="lw-time">{{ ago(it.mtime) }}</time>
-                <button class="btn-xs lw-open" (click)="reveal(it)" title="在文件管理器中定位">定位</button>
-              </div>
-            }
-          </div>
-        </ui-panel>
+              }
+            </div>
+          </ui-panel>
+        }
       }
     } @else {
 
@@ -228,9 +264,272 @@ const SORTS = [
       </div>
     }
     }
+
+    <!-- 补齐依赖抽屉：模型与节点包两段，输入图不在这里（它属于「使用工作流」的前置检查） -->
+    @if (drawerOf) {
+      <div class="dr-mask" (click)="closeDrawer()"></div>
+      <aside class="dr" role="dialog" aria-label="补齐依赖">
+        <header class="dr-head">
+          <div>
+            <p class="dr-kicker">补齐依赖</p>
+            <h2 class="dr-title">{{ drawerOf.title || drawerOf.name }}</h2>
+          </div>
+          <button class="btn-xs" (click)="closeDrawer()">关闭</button>
+        </header>
+        <div class="dr-body">
+          <section class="dr-sec">
+            <div class="dr-sec-head">
+              <h3>缺失模型</h3>
+              <span class="dr-sec-count">{{ drawerModels.length }} 项</span>
+            </div>
+            @if (!drawerModels.length) {
+              <p class="dr-empty">没有缺失的模型</p>
+            }
+            @for (m of drawerModels; track m.file) {
+              <div class="dr-row">
+                <span class="dr-icon warn">↓</span>
+                <div class="dr-main">
+                  <p class="dr-name" [title]="m.file">{{ m.file }}</p>
+                  <p class="dr-sub">{{ m.directory || '目录未知' }}<span> · </span>{{ m.node || '未知节点' }}</p>
+                </div>
+                <button class="btn-xs" (click)="revealModel(m)" title="在模型库里找同族文件">去找</button>
+              </div>
+            }
+          </section>
+
+          <section class="dr-sec">
+            <div class="dr-sec-head">
+              <h3>缺失节点包</h3>
+              <span class="dr-sec-count">{{ drawerPkgs.length }} 项</span>
+            </div>
+            @if (!drawerPkgs.length) {
+              <p class="dr-empty">节点包都已装好</p>
+            }
+            @for (pkg of drawerPkgs; track pkg.id) {
+              <div class="dr-row">
+                <span class="dr-icon warn">↓</span>
+                <div class="dr-main">
+                  <p class="dr-name" [title]="pkg.name">{{ pkg.name }}</p>
+                  <p class="dr-sub">{{ pkg.author || '未知作者' }} · 提供「{{ pkg.covers[0] }}」</p>
+                </div>
+                <button class="btn-xs" (click)="installPkg(pkg)" [disabled]="busy === pkg.id">
+                  {{ busy === pkg.id ? '安装中…' : '安装' }}
+                </button>
+              </div>
+            }
+            @if (drawerUnknown.length) {
+              <p class="dr-empty" [title]="drawerUnknown.join('、')">
+                另有 {{ drawerUnknown.length }} 个节点类型查不到归属，需人工确认：{{ drawerUnknown[0] }}
+              </p>
+            }
+          </section>
+        </div>
+        <footer class="dr-foot">
+          <span class="dr-note">模型走下载任务，节点包装到共享目录</span>
+          <div class="dr-ops">
+            <button class="btn-xs" (click)="closeDrawer()">稍后</button>
+            <button class="primary btn-xs" (click)="installAll(drawerOf)" [disabled]="!drawerPkgs.length">
+              补齐节点包
+            </button>
+          </div>
+        </footer>
+      </aside>
+    }
   `,
   styles: `
     /* 列表上方一条读数：共几条、目录在哪、刷新。目录用等宽字截断，路径长也不换行 */
+    /* ---- 卡片视图工具栏 ---- */
+    .wf-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+    .wf-tools input {
+      flex: 1;
+      min-width: 170px;
+      height: 32px;
+      padding: 0 11px;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-sm);
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .wf-tools input::placeholder { color: var(--muted); }
+    .wf-chips {
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      background: var(--panel-3);
+      border-radius: var(--radius-sm);
+    }
+    .wf-chip {
+      height: 24px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: var(--radius-xs);
+      background: none;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .wf-chip:hover { color: var(--text); }
+    .wf-chip.on {
+      background: var(--panel);
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px var(--accent-line);
+    }
+    .wf-chip b {
+      font-size: 10.5px;
+      font-weight: 500;
+      opacity: 0.62;
+      font-variant-numeric: tabular-nums;
+    }
+    /* 单独的那个 chip（排序）不在 .wf-chips 里，给它自己的边框 */
+    .wf-tools > .wf-chip {
+      height: 26px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--panel);
+      padding: 0 10px;
+    }
+    .wf-tools > .wf-chip:hover { border-color: var(--border-strong); color: var(--text); }
+
+    /* ---- 卡片栅格：4 列，窄屏自动降列 ---- */
+    .wf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+      gap: 13px;
+      align-items: start;
+    }
+
+    /* ---- 依赖抽屉 ---- */
+    .dr-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgb(0 0 0 / 0.34);
+    }
+    :host-context([data-theme='dark']) .dr-mask { background: rgb(0 0 0 / 0.58); }
+    .dr {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 452px;
+      max-width: 92vw;
+      z-index: 41;
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+    }
+    .dr-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px 13px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .dr-kicker {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .dr-title {
+      margin: 3px 0 0;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .dr-body { flex: 1; overflow-y: auto; padding: 4px 18px 18px; }
+    .dr-sec { padding: 14px 0 4px; border-bottom: 1px solid var(--border-soft); }
+    .dr-sec:last-child { border-bottom: 0; }
+    .dr-sec-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .dr-sec-head h3 { margin: 0; font-size: 12.5px; font-weight: 600; }
+    .dr-sec-count { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .dr-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border-soft);
+    }
+    .dr-row:first-of-type { border-top: 0; }
+    .dr-icon {
+      flex: none;
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-xs);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .dr-icon.warn { background: var(--warn); }
+    .dr-icon.mute { background: var(--muted); }
+    .dr-main { flex: 1; min-width: 0; }
+    .dr-name {
+      margin: 0;
+      font-size: 12.5px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .dr-sub {
+      margin: 2px 0 0;
+      font-size: 11px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .dr-empty { margin: 2px 0 0; padding: 4px 0; font-size: 11.5px; color: var(--muted); }
+    .dr-foot {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      border-top: 1px solid var(--border-soft);
+      background: var(--panel-2);
+    }
+    .dr-note {
+      flex: 1;
+      min-width: 0;
+      font-size: 11px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .dr-ops { display: flex; gap: 8px; flex: none; }
+
     .lw-bar {
       display: flex;
       align-items: center;
@@ -463,6 +762,21 @@ export class WorkflowsComponent implements OnInit {
   /** 视图由路由决定：/workflows 是我的工作流，/workflows/discover 是发现 */
   tab: 'mine' | 'discover' = 'mine';
   local: LocalWorkflow[] = [];
+
+  /* ---- 卡片视图的筛选与视图状态 ---- */
+  localQ = '';
+  statusFilter: 'all' | 'missing' | 'ready' | 'broken' = 'all';
+  view: 'card' | 'list' = 'card';
+  /** 排序循环：最近修改 → 节点数 → 名称 */
+  sortKey: 'mtime' | 'nodes' | 'name' = 'mtime';
+  readonly statusFilters = [
+    { key: 'all' as const, label: '全部' },
+    { key: 'missing' as const, label: '缺依赖' },
+    { key: 'ready' as const, label: '就绪' },
+    { key: 'broken' as const, label: '无法解析' },
+  ];
+  /** 依赖抽屉：当前展开的那条 */
+  drawerOf: LocalWorkflow | null = null;
   localDir = '';
   localLoading = false;
   localError = '';
@@ -490,6 +804,163 @@ export class WorkflowsComponent implements OnInit {
       }
     });
   }
+
+  /* ================= 卡片视图：筛选 / 排序 / 视图 ================= */
+
+  /** 一条工作流当前处于四态里的哪一个。与卡片组件的判定必须一致。 */
+  stateOf(it: LocalWorkflow): 'broken' | 'api' | 'missing' | 'ready' {
+    if (it.format === 'broken') return 'broken';
+    if (it.format === 'api') return 'api';
+    return this.missingOf(it) > 0 ? 'missing' : 'ready';
+  }
+
+  missingOf(it: LocalWorkflow): number {
+    return (it.deps?.missing?.length || 0) + (it.node_deps?.missing?.length || 0);
+  }
+
+  get filtered(): LocalWorkflow[] {
+    const q = this.localQ.trim().toLowerCase();
+    let rows = this.local;
+    if (q) {
+      rows = rows.filter((it) =>
+        `${it.title || ''} ${it.name} ${it.group || ''} ${it.main_model || ''}`.toLowerCase().includes(q),
+      );
+    }
+    if (this.statusFilter !== 'all') {
+      rows = rows.filter((it) => this.stateOf(it) === this.statusFilter);
+    }
+    const key = this.sortKey;
+    return rows.slice().sort((a, b) => {
+      if (key === 'nodes') return (b.nodes || 0) - (a.nodes || 0);
+      if (key === 'name') return (a.title || a.name).localeCompare(b.title || b.name, 'zh');
+      return (b.mtime || 0) - (a.mtime || 0);
+    });
+  }
+
+  countOf(key: 'all' | 'missing' | 'ready' | 'broken'): number {
+    if (key === 'all') return this.local.length;
+    return this.local.filter((it) => this.stateOf(it) === key).length;
+  }
+
+  setStatus(key: 'all' | 'missing' | 'ready' | 'broken'): void {
+    this.statusFilter = key;
+  }
+
+  setView(view: 'card' | 'list'): void {
+    this.view = view;
+  }
+
+  get sortLabel(): string {
+    return { mtime: '最近修改', nodes: '按节点数', name: '按名称' }[this.sortKey];
+  }
+
+  cycleSort(): void {
+    const order: Array<'mtime' | 'nodes' | 'name'> = ['mtime', 'nodes', 'name'];
+    const i = order.indexOf(this.sortKey);
+    this.sortKey = order[(i + 1) % order.length];
+  }
+
+  dpText(it: LocalWorkflow): string {
+    return this.depText(it);
+  }
+
+  depText(it: LocalWorkflow): string {
+    const miss = this.missingOf(it);
+    if (it.format === 'broken') return '无法解析';
+    return miss > 0 ? `缺 ${miss}` : '就绪';
+  }
+
+  /* ---- 卡片上的唯一下一步 ---- */
+
+  onPrimary(ev: { item: LocalWorkflow; act: 'fix' | 'use' | 'edit' }): void {
+    if (ev.act === 'fix') {
+      this.drawerOf = ev.item;
+      return;
+    }
+    if (ev.act === 'use') {
+      this.notice = `「${ev.item.title || ev.item.name}」已就绪，可在 ComfyUI 里打开（编辑器尚未接入）`;
+      return;
+    }
+    this.openEditor(ev.item);
+  }
+
+  onMore(it: LocalWorkflow): void {
+    // 溢出菜单只放低频动作：定位文件 / 复制路径 / 复制主模型名
+    this.reveal(it);
+  }
+
+  /** 缺的模型：原型阶段只能给去向（去模型库搜同族文件），不做假安装 */
+  revealModel(m: WorkflowModelDep): void {
+    this.notice = `在模型库里搜索「${m.file}」${m.directory ? '（目录 ' + m.directory + '）' : ''}`;
+  }
+
+  /** 装一个节点包：走后端已有的安装通道 */
+  installPkg(pkg: WorkflowNodeDep): void {
+    if (!pkg.installable) {
+      this.notice = `「${pkg.name}」不支持一键安装，需要手动处理`;
+      return;
+    }
+    this.busy = pkg.id;
+    this.api.installNode(pkg.id).subscribe({
+      next: () => {
+        this.busy = '';
+        this.notice = `「${pkg.name}」安装任务已开始，装完刷新即可`;
+      },
+      error: (err) => {
+        this.busy = '';
+        this.localError = err?.error?.detail || '节点包安装失败';
+      },
+    });
+  }
+
+  /** 一键补齐：只装节点包。模型要走下载任务，不在这里假装装好 */
+  installAll(it: LocalWorkflow): void {
+    const pkgs = this.drawerPkgs.filter((p) => p.installable);
+    if (!pkgs.length) {
+      this.notice = '没有可一键安装的节点包';
+      return;
+    }
+    this.busy = pkgs[0].id;
+    let done = 0;
+    pkgs.forEach((pkg) => {
+      this.api.installNode(pkg.id).subscribe({
+        next: () => {
+          done += 1;
+          if (done === pkgs.length) {
+            this.busy = '';
+            this.notice = `${pkgs.length} 个节点包已开始安装；模型仍需去模型库补齐`;
+          }
+        },
+        error: () => {
+          done += 1;
+          if (done === pkgs.length) this.busy = '';
+        },
+      });
+    });
+  }
+
+  openEditor(it: LocalWorkflow): void {
+    this.notice = `「${it.title || it.name}」：内置可视化编辑器尚未接入，先用「定位」在文件管理器里打开`;
+  }
+
+  closeDrawer(): void {
+    this.drawerOf = null;
+  }
+
+  /** 抽屉里的缺失模型 / 节点包，供模板遍历 */
+  get drawerModels(): WorkflowModelDep[] {
+    return this.drawerOf?.deps?.missing || [];
+  }
+
+  get drawerPkgs(): WorkflowNodeDep[] {
+    return this.drawerOf?.node_deps?.missing || [];
+  }
+
+  get drawerUnknown(): string[] {
+    return this.drawerOf?.node_deps?.unknown || [];
+  }
+
+  /* ================= 数据加载 ================= */
 
   loadLocal(): void {
     this.localLoading = true;

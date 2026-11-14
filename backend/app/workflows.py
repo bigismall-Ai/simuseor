@@ -29,6 +29,8 @@ from .config import COMFY_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
+from .nodes import extract_classes
+from .workflow_deps import analyze as analyze_deps, _model_index
 from .workflow_models import analyze as analyze_models
 from .sources.github import tree_files
 
@@ -810,6 +812,8 @@ def local() -> dict:
     root = WORKSPACE_WORKFLOWS_DIR
     meta = load_meta()
     items: list[dict] = []
+    # 模型索引整批只扫一遍：5 条工作流共用一份，别每条都 rglob 一次
+    model_index = _model_index()
     if root.is_dir():
         for path in root.rglob("*.json"):
             try:
@@ -830,6 +834,7 @@ def local() -> dict:
                 # 语法坏了照样能认主模型 —— 文本兜底扫文件名，
                 # 坏文件也得显示家族徽标，不能因为解析失败就变成一张没有身份的白卡
                 info = analyze_models(None, raw)
+                deps = analyze_deps(info["slots"], set(), model_index=model_index)
                 items.append(
                     {
                         "name": path.stem,
@@ -845,6 +850,8 @@ def local() -> dict:
                         "error_line": _error_line(raw, exc),
                         "main_model": info["main_file"],
                         "model_slots": info["slots"],
+                        "deps": deps["models"],
+                        "node_deps": deps["nodes"],
                     }
                 )
                 continue
@@ -854,6 +861,11 @@ def local() -> dict:
             parent = path.parent.relative_to(root)
             # 主模型：家族徽标与依赖清单都从它出发
             info = analyze_models(payload, raw)
+            # 节点包依赖：先取工作流用到的节点类型，再反查「哪个包提供它、装没装」。
+            # extract_classes 只认真节点容器（子图槽位里的 {"type":"CLIP"} 是数据类型
+            # 标注不是节点），所以不会一屏误报。
+            classes = extract_classes(payload)
+            deps = analyze_deps(info["slots"], classes, model_index=model_index)
             items.append(
                 {
                     "name": path.stem,
@@ -867,6 +879,8 @@ def local() -> dict:
                     "format": fmt,
                     "main_model": info["main_file"],
                     "model_slots": info["slots"],
+                    "deps": deps["models"],
+                    "node_deps": deps["nodes"],
                 }
             )
     items.sort(key=lambda it: it["mtime"], reverse=True)

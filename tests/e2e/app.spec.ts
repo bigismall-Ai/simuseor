@@ -867,4 +867,121 @@ test.describe('Model Downloader Web UI', () => {
     await page.screenshot({ path: ART + '/24-workflow-family-mark.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
+
+  test('我的工作流：卡片四态映射与唯一主按钮', async ({ page }) => {
+    // 四态各一条：解析失败 / API 格式 / 缺依赖 / 就绪。
+    // 后端的依赖比对由 test_workflow_deps.py 覆盖，这里固定响应验证呈现。
+    const base = {
+      folder: '', size: 20000, mtime: 1730000000, nodes: 10,
+      main_model: 'flux1-dev.sft', model_slots: [],
+    };
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({
+        json: {
+          dir: 'E:/mock/workflows', total: 4, groups: [],
+          items: [
+            {
+              ...base, name: 'a_broken', path: 'E:/mock/a.json', format: 'broken',
+              nodes: 0, error: 'JSON 语法错误 · 第 12 行',
+              deps: { have: [], missing: [] }, node_deps: { have: [], missing: [], unknown: [] },
+            },
+            {
+              ...base, name: 'b_api', path: 'E:/mock/b.json', format: 'api',
+              deps: { have: [{ file: 'flux1-dev.sft', directory: 'diffusion_models', node: 'UNETLoader', url: '' }], missing: [] },
+              node_deps: { have: [], missing: [], unknown: [] },
+            },
+            {
+              ...base, name: 'c_missing', path: 'E:/mock/c.json', format: 'ui',
+              deps: {
+                have: [],
+                missing: [
+                  { file: 'flux1-dev.sft', directory: 'diffusion_models', node: 'UNETLoader', url: '' },
+                  { file: 'ae.sft', directory: 'vae', node: 'VAELoader', url: '' },
+                ],
+              },
+              node_deps: {
+                have: [],
+                missing: [{ id: 'jps/x', name: 'JPS Nodes', author: 'JPS', repo: '', node_count: 9, installable: true, covers: ['SDXL Resolutions (JPS)'] }],
+                unknown: [],
+              },
+            },
+            {
+              ...base, name: 'd_ready', path: 'E:/mock/d.json', format: 'ui',
+              deps: { have: [{ file: 'flux1-dev.sft', directory: 'diffusion_models', node: 'UNETLoader', url: '' }], missing: [] },
+              node_deps: { have: [], missing: [], unknown: [] },
+            },
+          ],
+        },
+      }));
+
+    await page.goto('/workflows');
+    const cards = page.locator('app-workflow-card');
+    await expect(cards).toHaveCount(4);
+
+    // 每张卡只有一个主按钮 —— 三个生命周期操作是先后关系不是并列
+    for (let i = 0; i < 4; i++) {
+      await expect(cards.nth(i).locator('.wc-primary')).toHaveCount(1);
+    }
+
+    // 四态各自的「唯一主按钮」文案
+    await expect(cards.nth(0).locator('.wc-primary')).toContainText('用编辑器打开');
+    await expect(cards.nth(1).locator('.wc-primary')).toContainText('用编辑器打开');
+    await expect(cards.nth(2).locator('.wc-primary')).toContainText('补齐依赖');
+    await expect(cards.nth(3).locator('.wc-primary')).toContainText('使用工作流');
+
+    // 徽标：坏文件不戴缺失提示，API 用橙色提示，缺依赖用红色，就绪用中性计数
+    await expect(cards.nth(0).locator('.wc-broken-title')).toHaveText('无法解析');
+    await expect(cards.nth(1).locator('.wc-note')).toContainText('API 格式');
+    await expect(cards.nth(2).locator('.wc-dep')).toContainText('缺 2 模型');
+    await expect(cards.nth(2).locator('.wc-dep')).toContainText('1 节点包');
+    await expect(cards.nth(3).locator('.wc-count')).toContainText('依赖');
+
+    // 状态筛选：只留缺依赖那一张
+    await page.getByRole('button', { name: /^缺依赖/ }).click();
+    await expect(page.locator('app-workflow-card')).toHaveCount(1);
+    await page.screenshot({ path: ART + '/25-workflow-cards.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：补齐依赖抽屉按卡填充', async ({ page }) => {
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({
+        json: {
+          dir: 'E:/mock/workflows', total: 1, groups: [],
+          items: [{
+            name: 'flux_img2img_1_2', path: 'E:/mock/a.json', folder: '',
+            size: 15981, mtime: 1730000000, nodes: 17, format: 'ui',
+            main_model: 'flux1-dev.sft', model_slots: [],
+            deps: {
+              have: [],
+              missing: [{ file: 'ae.sft', directory: 'vae', node: 'VAELoader', url: '' }],
+            },
+            node_deps: {
+              have: [],
+              missing: [{ id: 'jps/x', name: 'JPS Custom Nodes', author: 'JPS', repo: '', node_count: 9, installable: true, covers: ['SDXL Resolutions (JPS)'] }],
+              unknown: ['Power Lora Loader (rgthree)'],
+            },
+          }],
+        },
+      }));
+
+    await page.goto('/workflows');
+    await page.getByRole('button', { name: '补齐依赖' }).click();
+
+    const drawer = page.locator('.dr');
+    await expect(drawer).toBeVisible();
+    await expect(drawer).toContainText('缺失模型');
+    await expect(drawer).toContainText('ae.sft');
+    await expect(drawer).toContainText('缺失节点包');
+    await expect(drawer).toContainText('JPS Custom Nodes');
+    // 查不到归属的节点如实标注，不猜成某个包
+    await expect(drawer).toContainText('Power Lora Loader (rgthree)');
+    // 主按钮只补节点包 —— 模型走下载任务
+    await expect(drawer.locator('.dr-ops .primary')).toHaveText('补齐节点包');
+
+    await page.screenshot({ path: ART + '/26-workflow-drawer.png', fullPage: false });
+    await page.locator('.dr-mask').click({ position: { x: 5, y: 5 } });
+    await expect(drawer).toBeHidden();
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
 });

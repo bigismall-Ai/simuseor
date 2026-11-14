@@ -130,6 +130,18 @@ export interface LocalWorkflow {
   main_model?: string;
   /** 全部模型槽位 */
   model_slots?: WorkflowModelSlot[];
+  /** 模型依赖比对结果 */
+  deps?: { have: WorkflowModelDep[]; missing: WorkflowModelDep[] };
+  /** 节点包依赖比对结果 */
+  node_deps?: { have: WorkflowNodeDep[]; missing: WorkflowNodeDep[]; unknown: string[] };
+  /** 解析失败时的错误文本（format === 'broken' 时才有） */
+  error?: string;
+  /** 显示名（用户自定义优先，回落文件名） */
+  title?: string;
+  /** 分组（用户自定义） */
+  group?: string;
+  /** 工作流级封面图的 URL —— 后端出图接口就绪后填 */
+  cover?: string;
 }
 
 export interface WorkflowModelSlot {
@@ -140,6 +152,23 @@ export interface WorkflowModelSlot {
   directory: string;
   /** 下载直链（有就说明这是官方登记过的模型） */
   url: string;
+}
+
+export interface WorkflowModelDep extends WorkflowModelSlot {
+  /** 命中时文件实际所在目录 */
+  found_dir?: string;
+}
+
+export interface WorkflowNodeDep {
+  /** 仓库归一键，如 ltdrdata/comfyui-impact-pack */
+  id: string;
+  name: string;
+  author: string;
+  repo: string;
+  node_count: number;
+  installable: boolean;
+  /** 这个包提供了工作流用到的哪几个节点类型 */
+  covers: string[];
 }
 
 export interface WorkflowInstance {
