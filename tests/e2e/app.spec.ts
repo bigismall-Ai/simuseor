@@ -1417,6 +1417,7 @@ test.describe('Model Downloader Web UI', () => {
     await dlg.getByTestId('gm-new-name').fill('电商');
     await dlg.getByTestId('gm-add').click();
     await expect(dlg.locator('.gm-row[data-group="电商"] .gm-name')).toContainText('0');
+    await page.screenshot({ path: ART + '/45-workflow-group-manager-open.png', fullPage: true });
 
     // 改名只在管理框里
     await dlg.getByTestId('gm-rename-电商').click();
