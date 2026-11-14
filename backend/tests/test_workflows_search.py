@@ -148,3 +148,81 @@ def test_search_single_source_keeps_its_order(monkeypatch):
     monkeypatch.setattr(workflows, "_SEARCHERS", {"templates": fake})
     result = workflows.search("", "templates", 12, 1, "downloads")
     assert [it["id"] for it in result["items"]] == ["a", "b"]
+
+
+# ---------------- Civitai 游标翻页 ----------------
+
+class _FakeResp:
+    def __init__(self, payload, status=200):
+        self._payload = payload
+        self.status_code = status
+
+    def json(self):
+        return self._payload
+
+
+def _civitai_model(mid: int, name: str) -> dict:
+    return {
+        "id": mid,
+        "name": name,
+        "creator": {"username": "someone"},
+        "modelVersions": [{"files": [{"name": "wf.json"}], "images": []}],
+        "stats": {},
+        "tags": [],
+    }
+
+
+def _civitai_fixture(monkeypatch):
+    """按 cursor 返回分页数据，并记录每次请求的参数。"""
+    pages = {
+        "": (_civitai_model(1, "第一页"), "c2", True),
+        "c2": (_civitai_model(2, "第二页"), "c3", True),
+        "c3": (_civitai_model(3, "第三页"), "", False),
+    }
+    calls: list[dict] = []
+
+    def fake_get(url, *, params, headers, timeout, follow_redirects):
+        calls.append(dict(params))
+        cursor = params.get("cursor") or ""
+        model, nxt, _ = pages[cursor]
+        metadata = {"nextCursor": nxt} if nxt else {}
+        return _FakeResp({"items": [model], "metadata": metadata})
+
+    monkeypatch.setattr(workflows.httpx, "get", fake_get)
+    monkeypatch.setattr(workflows, "_source_cfg", lambda name: {})
+    workflows._CIVITAI_CURSORS.clear()
+    return calls
+
+
+def test_civitai_pagination_follows_next_cursor(monkeypatch):
+    """旧实现 page>1 直接返回空：Civitai 工作流永远只有第一页。"""
+    calls = _civitai_fixture(monkeypatch)
+    first, more1 = workflows._search_civitai("flux", 12, 1)
+    second, more2 = workflows._search_civitai("flux", 12, 2)
+
+    assert [it["id"] for it in first] == ["1"]
+    assert [it["id"] for it in second] == ["2"]
+    assert more1 and more2
+    assert "page" not in calls[0]                 # page 参数已被证实无效，不能再用
+    assert calls[0].get("cursor") is None
+    assert calls[1].get("cursor") == "c2"
+    assert len(calls) == 2                       # 顺序翻页不重抓第一页
+
+
+def test_civitai_has_more_comes_from_cursor_not_item_count(monkeypatch):
+    """条目被 files 为空过滤掉时，len(items)>=limit 会把还有下一页误判成到底。"""
+    calls = _civitai_fixture(monkeypatch)
+    workflows._search_civitai("", 12, 1)
+    last, more = workflows._search_civitai("", 12, 3)
+    assert [it["id"] for it in last] == ["3"]
+    assert more is False
+    assert calls[2].get("cursor") == "c3"
+
+
+def test_civitai_page_jump_rebuilds_cursor_chain(monkeypatch):
+    """缓存冷启动直接要第 3 页时，顺着 nextCursor 补齐，不重复返回旧条目。"""
+    calls = _civitai_fixture(monkeypatch)
+    third, more = workflows._search_civitai("flux", 12, 3)
+    assert [it["id"] for it in third] == ["3"]
+    assert more is False
+    assert [c.get("cursor") for c in calls] == [None, "c2", "c3"]

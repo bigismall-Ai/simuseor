@@ -17,6 +17,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
@@ -195,35 +196,64 @@ def _item(
     }
 
 
-def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
-    cfg = _source_cfg("civitai")
-    # Civitai 的 page 参数对 Workflows 类型无效（实测翻页返回同一批），只取首页
-    if page > 1:
-        return [], False
-    params = {
-        "types": "Workflows",
-        "limit": max(1, min(int(limit), 50)),
-        "sort": "Newest" if sort == "latest" else "Most Downloaded",
-        "query": q or "",
-    }
-    # Civitai 不带 query 时才允许 page，其它情况下 page 会被忽略
-    if not q:
-        params["page"] = 1
-    if cfg.get("full_catalog"):
-        params["nsfw"] = "true"
-    headers = dict(UA)
-    if cfg.get("token"):
-        headers["Authorization"] = f"Bearer {cfg['token']}"
+# Civitai 的 Workflows 列表不吃 page：带 query 时 page=2 直接 400，
+# 不带 query 时返回同一批。只能用 metadata.nextCursor 往后翻，
+# 这里按「查询词 + 排序 + 每页条数」缓存游标链，让「加载更多」能接着上次走。
+_CIVITAI_CURSORS: dict[tuple, dict[int, str]] = {}
+_CIVITAI_LOCK = threading.Lock()
+
+
+def _civitai_get(params: dict, headers: dict) -> dict:
     try:
         resp = httpx.get(f"{CIVITAI_API}/models", params=params, headers=headers, timeout=30, follow_redirects=True)
     except httpx.HTTPError as exc:
         raise SourceError(f"Civitai 工作流搜索失败: {exc}") from exc
     if resp.status_code >= 400:
         raise SourceError(f"Civitai 工作流搜索错误 {resp.status_code}")
+    return resp.json()
+
+
+def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
+    cfg = _source_cfg("civitai")
+    base_params = {
+        "types": "Workflows",
+        "limit": max(1, min(int(limit), 50)),
+        "sort": "Newest" if sort == "latest" else "Most Downloaded",
+        "query": q or "",
+    }
+    if cfg.get("full_catalog"):
+        base_params["nsfw"] = "true"
+    headers = dict(UA)
+    if cfg.get("token"):
+        headers["Authorization"] = f"Bearer {cfg['token']}"
+
+    key = (q or "", sort, int(limit), bool(cfg.get("full_catalog")))
+    target = max(1, int(page))
+    with _CIVITAI_LOCK:
+        if len(_CIVITAI_CURSORS) > 64:
+            _CIVITAI_CURSORS.clear()
+        cursors = _CIVITAI_CURSORS.setdefault(key, {1: ""})
+        at = max(cursors)
+        payload: dict = {}
+        # 正常「加载更多」时目标页 cursor 已由上一页存好，只发一次请求；
+        # 跳页或进程重启才顺着 nextCursor 逐页补齐，不会从头重复抓。
+        while True:
+            params = dict(base_params)
+            if cursors.get(at):
+                params["cursor"] = cursors[at]
+            payload = _civitai_get(params, headers)
+            next_cursor = (payload.get("metadata") or {}).get("nextCursor") or ""
+            if next_cursor:
+                cursors[at + 1] = next_cursor
+            if at >= target:
+                break
+            if not next_cursor:
+                return [], False
+            at += 1
 
     web = "https://civitai.red" if cfg.get("full_catalog") else "https://civitai.com"
     items: list[dict] = []
-    for m in resp.json().get("items") or []:
+    for m in payload.get("items") or []:
         version = (m.get("modelVersions") or [{}])[0]
         files = [f.get("name") for f in (version.get("files") or []) if f.get("name")]
         if not files:
@@ -247,7 +277,9 @@ def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> t
                 requires=[f"底模:{base}"] if base else [],
             )
         )
-    return items, len(items) >= limit
+    # 有没有下一页由服务端游标说了算：按 len(items) 猜，遇到几个
+    # 「没有 files 被过滤掉」的条目就会提前把整源判成到底。
+    return items, bool((payload.get("metadata") or {}).get("nextCursor"))
 
 
 def _search_huggingface(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
