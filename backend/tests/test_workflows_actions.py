@@ -167,3 +167,113 @@ def test_open_local_rejects_outside_path(root, tmp_path):
     outside.write_text("{}", encoding="utf-8")
     with pytest.raises(SourceError):
         wf.open_local(str(outside), "edit")
+
+
+# ---------------- 分组落成目录 ----------------
+
+def test_organize_moves_grouped_files_into_folders(root):
+    """ComfyUI 侧栏按目录展示，分组只有变成目录它才看得见。"""
+    a = root / "a.json"
+    a.write_text("{}", encoding="utf-8")
+    b = root / "sub" / "b.json"
+    b.parent.mkdir()
+    b.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(a), title="", group="人像")
+    wf.set_meta(str(b), title="", group="电商")
+
+    out = wf.organize_groups()
+
+    assert out["moved"] == 2
+    assert (root / "人像" / "a.json").is_file()
+    assert (root / "电商" / "b.json").is_file()
+    # 侧车键必须跟着换，否则自定义名/分组会丢
+    assert set(wf.load_meta()) == {"人像/a.json", "电商/b.json"}
+
+
+def test_organize_skips_files_already_in_place(root):
+    target = root / "人像" / "a.json"
+    target.parent.mkdir()
+    target.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(target), title="名字", group="人像")
+
+    assert wf.organize_groups()["moved"] == 0
+    assert wf.load_meta()["人像/a.json"]["title"] == "名字"
+
+
+def test_organize_keeps_ungrouped_files_alone(root):
+    loose = root / "loose.json"
+    loose.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(loose), title="只有名字", group="")
+
+    assert wf.organize_groups()["moved"] == 0
+    assert loose.is_file()
+
+
+def test_organize_does_not_overwrite_on_name_clash(root):
+    existing = root / "人像" / "a.json"
+    existing.parent.mkdir()
+    existing.write_text('{"keep": 1}', encoding="utf-8")
+    src = root / "a.json"
+    src.write_text('{"new": 1}', encoding="utf-8")
+    wf.set_meta(str(src), title="", group="人像")
+
+    out = wf.organize_groups()
+
+    assert out["moved"] == 1
+    assert '{"keep": 1}' in existing.read_text(encoding="utf-8")
+    assert (root / "人像" / "a-2.json").is_file()
+
+
+# ---------------- 分组落成目录 ----------------
+
+def test_organize_moves_grouped_files_into_folders(root):
+    """ComfyUI 侧栏按目录展示，分组只有变成目录它才看得见。"""
+    a = root / "a.json"
+    a.write_text("{}", encoding="utf-8")
+    b = root / "sub" / "b.json"
+    b.parent.mkdir()
+    b.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(a), title="", group="人像")
+    wf.set_meta(str(b), title="", group="电商")
+
+    out = wf.organize_groups()
+
+    assert out["moved"] == 2
+    assert (root / "人像" / "a.json").is_file()
+    assert (root / "电商" / "b.json").is_file()
+    # 侧车键必须跟着换，否则自定义名/分组会丢
+    assert set(wf.load_meta()) == {"人像/a.json", "电商/b.json"}
+
+
+def test_organize_skips_files_already_in_place(root):
+    target = root / "人像" / "a.json"
+    target.parent.mkdir()
+    target.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(target), title="名字", group="人像")
+
+    assert wf.organize_groups()["moved"] == 0
+    assert wf.load_meta()["人像/a.json"]["title"] == "名字"
+
+
+def test_organize_keeps_ungrouped_files_alone(root):
+    loose = root / "loose.json"
+    loose.write_text("{}", encoding="utf-8")
+    wf.set_meta(str(loose), title="只有名字", group="")
+
+    assert wf.organize_groups()["moved"] == 0
+    assert loose.is_file()
+
+
+def test_organize_does_not_overwrite_on_name_clash(root):
+    existing = root / "人像" / "a.json"
+    existing.parent.mkdir()
+    existing.write_text('{"keep": 1}', encoding="utf-8")
+    src = root / "a.json"
+    src.write_text('{"new": 1}', encoding="utf-8")
+    wf.set_meta(str(src), title="", group="人像")
+
+    out = wf.organize_groups()
+
+    assert out["moved"] == 1
+    assert '{"keep": 1}' in existing.read_text(encoding="utf-8")
+    assert (root / "人像" / "a-2.json").is_file()

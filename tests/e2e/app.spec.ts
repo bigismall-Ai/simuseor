@@ -1044,9 +1044,11 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('app-workflow-card .wc-kebab').click();
     const menu = page.locator('.wf-menu');
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    // 5 个固定动作 + 有分组时多一个「按分组整理目录」
+    await expect(menu.getByRole('menuitem')).toHaveCount(6);
     await expect(menu).toContainText('复制文件路径');
     await expect(menu).toContainText('重命名');
+    await expect(menu).toContainText('按分组整理目录');
     await expect(menu).toContainText('删除');
 
     // 菜单是 fixed 定位且贴着按钮：不该跑到视口外
@@ -1165,7 +1167,7 @@ test.describe('Model Downloader Web UI', () => {
     // ⋯ 与卡片同一套菜单
     await row.locator('.lw-kebab').click();
     await expect(page.locator('.wf-menu')).toBeVisible();
-    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(5);
+    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(6);
     await page.keyboard.press('Escape');
     await expect(page.locator('.wf-menu')).toHaveCount(0);
 
@@ -1195,6 +1197,36 @@ test.describe('Model Downloader Web UI', () => {
     const bg = await mark.evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(bg).toBe('rgb(20, 20, 23)');
     await page.screenshot({ path: ART + '/31-workflow-dark-mark.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：按分组整理目录走确认并调用后端', async ({ page }) => {
+    let called = 0;
+    await mockLocalWorkflows(page);
+    await page.route((url: URL) => url.pathname === '/api/workflows/local/organize', (route: any) => {
+      called += 1;
+      return route.fulfill({ json: { moved: 1, items: [{ from: 'a.json', to: '人像/a.json', group: '人像' }] } });
+    });
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /按分组整理目录/ }).click();
+
+    const dialog = page.getByRole('alertdialog', { name: '按分组整理目录' });
+    await expect(dialog).toBeVisible();
+
+    // 取消不该动文件
+    await dialog.getByRole('button', { name: '取消' }).click();
+    await expect(dialog).toBeHidden();
+    expect(called).toBe(0);
+
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /按分组整理目录/ }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: '整理' }).click();
+
+    await expect.poll(() => called).toBe(1);
+    await expect(page.locator('.notice.ok')).toContainText('移进分组目录');
+    await page.screenshot({ path: ART + '/32-workflow-organize.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 });

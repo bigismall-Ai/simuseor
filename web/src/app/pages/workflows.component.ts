@@ -66,6 +66,10 @@ const SORTS = [
       @if (localError) {
         <div class="notice err">{{ localError }}</div>
       }
+      <!-- 重命名 / 删除 / 整理这些动作的结果得说一声，否则用户不知道点没点成 -->
+      @if (notice) {
+        <div class="notice ok">{{ notice }}</div>
+      }
 
       @if (!localLoading && !local.length) {
         <ui-panel>
@@ -353,7 +357,8 @@ const SORTS = [
             }
             @if (drawerUnknown.length) {
               <p class="dr-empty" [title]="drawerUnknown.join('、')">
-                另有 {{ drawerUnknown.length }} 个节点类型查不到归属，需人工确认：{{ drawerUnknown[0] }}
+                另有 {{ drawerUnknown.length }} 个节点类型在扩展开源清单里查不到（可能是私有节点或刚发布）：
+                {{ drawerUnknown[0] }}{{ drawerUnknown.length > 1 ? ' 等' : '' }}
               </p>
             }
           </section>
@@ -381,6 +386,9 @@ const SORTS = [
         <button role="menuitem" (click)="copyPath(menuOf)">复制文件路径</button>
         <span class="wf-menu-sep"></span>
         <button role="menuitem" (click)="openRename(menuOf)">重命名 / 分组…</button>
+        @if (hasGroups) {
+          <button role="menuitem" (click)="askOrganize()">按分组整理目录…</button>
+        }
         <button role="menuitem" class="danger" (click)="askDelete(menuOf)">删除…</button>
       </div>
     }
@@ -423,6 +431,23 @@ const SORTS = [
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="pendingDelete = null">取消</button>
           <button class="primary btn-xs" (click)="confirmDelete()">删除</button>
+        </div>
+      </div>
+    }
+
+    <!-- 整理目录：把虚拟分组落成真实文件夹，ComfyUI 侧栏才看得见 -->
+    @if (pendingOrganize) {
+      <div class="wf-modal-mask" (click)="pendingOrganize = false"></div>
+      <div class="wf-modal" role="alertdialog" aria-modal="true" aria-label="按分组整理目录">
+        <h2>按分组整理目录？</h2>
+        <p class="wf-modal-sub wrap">
+          会把这些工作流移动到以分组命名的文件夹（如「人像/」「电商/」）。ComfyUI 的工作流侧栏
+          是按目录展示的，只有这样它才能看到和你这边同一套分组。未分组的不动，
+          同名文件加序号而不是覆盖。
+        </p>
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="pendingOrganize = false">取消</button>
+          <button class="primary btn-xs" (click)="runOrganize()">整理</button>
         </div>
       </div>
     }
@@ -701,6 +726,7 @@ const SORTS = [
       white-space: nowrap;
     }
     .wf-modal-sub.mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px; }
+    .wf-modal-sub.wrap { white-space: normal; line-height: 1.7; }
     .wf-field {
       display: block;
       margin-bottom: 10px;
@@ -1055,6 +1081,8 @@ export class WorkflowsComponent implements OnInit {
   editing: { item: LocalWorkflow; title: string; group: string; rename: boolean } | null = null;
   /** 删除二次确认 */
   pendingDelete: LocalWorkflow | null = null;
+  /** 按分组整理目录的确认 */
+  pendingOrganize = false;
 
   /* 弹层焦点管理：打开时焦点进入弹层，Tab 在弹层内环绕，Esc 逐层退出 */
   @ViewChild('drawerBox') drawerBox?: ElementRef<HTMLElement>;
@@ -1360,6 +1388,39 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
+  /** 是否存在分组 —— 没有分组时「整理目录」无意义，菜单里不显示 */
+  get hasGroups(): boolean {
+    return this.local.some((it) => (it.group || '').trim().length > 0);
+  }
+
+  askOrganize(): void {
+    this.closeMenu();
+    this.pendingOrganize = true;
+  }
+
+  /**
+   * 把分组落成真实目录。
+   *
+   * ComfyUI 的工作流侧栏是**按目录**展示的，读不到我们的侧车分组标记
+   * （那份元数据在 var/data/workflow_meta.json，ComfyUI 根本不看）。
+   * 所以想让两边看到同一套分组，唯一可靠的做法是把分组变成目录。
+   */
+  runOrganize(): void {
+    this.api.organizeLocalWorkflows().subscribe({
+      next: (res) => {
+        this.pendingOrganize = false;
+        this.notice = res.moved
+          ? `已把 ${res.moved} 个工作流移进分组目录，ComfyUI 侧栏会按文件夹显示`
+          : '没有需要整理的工作流';
+        this.loadLocal();
+      },
+      error: (err) => {
+        this.pendingOrganize = false;
+        this.localError = errMsg(err, '整理失败');
+      },
+    });
+  }
+
   /** Esc 逐层退出：菜单 → 编辑 → 删除 → 抽屉 */
   onEsc(): void {
     if (this.menuOf) {
@@ -1372,6 +1433,10 @@ export class WorkflowsComponent implements OnInit {
     }
     if (this.pendingDelete) {
       this.pendingDelete = null;
+      return;
+    }
+    if (this.pendingOrganize) {
+      this.pendingOrganize = false;
       return;
     }
     if (this.drawerOf) this.closeDrawer();

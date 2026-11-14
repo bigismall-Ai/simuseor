@@ -126,6 +126,14 @@ export class ApiService {
     return this.http.post<{ covers: Record<string, string> }>(`${this.base}/workflows/covers`, { items });
   }
 
+  /** 把分组落成真实目录，让 ComfyUI 侧栏也能按分组看到工作流。 */
+  organizeLocalWorkflows(): Observable<{ moved: number; items: Array<{ from: string; to: string; group: string }> }> {
+    return this.http.post<{ moved: number; items: Array<{ from: string; to: string; group: string }> }>(
+      `${this.base}/workflows/local/organize`,
+      {},
+    );
+  }
+
   setLocalWorkflowMeta(body: {
     path: string;
     title: string;

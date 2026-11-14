@@ -198,6 +198,12 @@ def workflow_covers(body: WorkflowCoversRequest) -> dict:
     return {"covers": wf_covers.resolve_batch([item.model_dump() for item in body.items])}
 
 
+@router.post("/workflows/local/organize")
+def organize_local_workflows() -> dict:
+    """把分组落成真实目录 —— ComfyUI 侧栏是按目录展示的，读不到我们的侧车分组。"""
+    return workflow_service.organize_groups()
+
+
 @router.post("/workflows/local/use")
 def use_local_workflow(body: WorkflowLocalOpenRequest) -> dict:
     """使用工作流：确保实例在跑，返回画布地址。"""

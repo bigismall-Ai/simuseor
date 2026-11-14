@@ -801,6 +801,51 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
     return {"title": title, "group": group, "file": renamed, "key": new_key}
 
 
+def organize_groups() -> dict:
+    """把打了分组的工作流移动到以分组命名的子目录里。
+
+    ComfyUI 的工作流侧栏是**按目录**展示的，它读不到我们的侧车分组标记
+    （那份元数据在 `var/data/workflow_meta.json`，ComfyUI 根本不看）。
+    所以想让两边看到同一套分组，唯一可靠的做法是把分组变成真实目录。
+    """
+    root = WORKSPACE_WORKFLOWS_DIR.resolve()
+    meta = load_meta()
+    moved: list[dict] = []
+    for key, entry in list(meta.items()):
+        if not isinstance(entry, dict):
+            continue
+        group = (entry.get("group") or "").strip()
+        if not group:
+            continue
+        src = root / key
+        if not src.is_file():
+            continue
+        safe = re.sub(r'[\\/:*?"<>|]+', "_", group).strip() or "未分组"
+        if src.parent == root / safe:
+            continue  # 已经在目标目录里
+        target = root / safe / src.name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            # 同名不覆盖：加序号而不是问用户，这里没有交互的机会
+            stem, suffix = target.stem, target.suffix
+            index = 2
+            while target.exists():
+                target = target.with_name(f"{stem}-{index}{suffix}")
+                index += 1
+        try:
+            src.rename(target)
+        except OSError:
+            continue
+        new_key = _rel_key(target)
+        meta.pop(key, None)
+        entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        meta[new_key] = entry
+        moved.append({"from": key, "to": new_key, "group": group})
+    if moved:
+        save_meta(meta)
+    return {"moved": len(moved), "items": moved}
+
+
 def local() -> dict:
     """共享工作流目录里的本地工作流。
 
