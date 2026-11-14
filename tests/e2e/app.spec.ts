@@ -96,7 +96,7 @@ test.describe('Model Downloader Web UI', () => {
 
     // 模型库重构后收藏 / 评审已移除，改为确认入库条目有显存压力标志与目录操作
     await expect(page.getByTitle('收藏')).toHaveCount(0);
-    await expect(page.locator('.vram-flag').first()).toBeVisible();
+    await expect(page.locator('.vram-gauge').first()).toBeVisible();
     await expect(page.getByRole('button', { name: '打开目录' }).first()).toBeVisible();
   });
 
