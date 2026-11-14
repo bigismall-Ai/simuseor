@@ -31,7 +31,7 @@ from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
 from .nodes import extract_classes
-from .workflow_covers import local_cover
+from .workflow_covers import forget as forget_cover, local_cover, rename_key as rename_cover_key
 from .workflow_deps import analyze as analyze_deps, _model_index
 from .workflow_models import analyze as analyze_models
 from .sources.github import tree_files
@@ -797,6 +797,8 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
                 if entry:
                     meta[new_key] = entry
                 save_meta(meta)
+                # 封面按路径索引：不搬过去就等于「改个名字换了张封面」
+                rename_cover_key(key, new_key)
 
     return {"title": title, "group": group, "file": renamed, "key": new_key}
 
@@ -840,6 +842,8 @@ def organize_groups() -> dict:
         meta.pop(key, None)
         entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
         meta[new_key] = entry
+        # 搬目录也一样：封面缓存跟着键走
+        rename_cover_key(key, new_key)
         moved.append({"from": key, "to": new_key, "group": group})
     if moved:
         save_meta(meta)
@@ -1005,6 +1009,7 @@ def delete_local(path: str) -> dict:
     if key in meta:
         meta.pop(key, None)
         save_meta(meta)
+    forget_cover(key)
     return {"deleted": str(target), "key": key}
 
 

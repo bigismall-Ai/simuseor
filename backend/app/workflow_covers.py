@@ -40,6 +40,9 @@ MAX_ENTRIES = 2000
 IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp", ".gif")
 # 卡面 16:10，取图按这个比例打分为主（和模型封面同一口径）
 COVER_RATIO = 16 / 10
+# 横向超过这个比例的图基本是「三联转面图 / LoRA 对比图 / 画布截图拼接」，
+# 裁到卡面上只剩碎片，宁可不要 —— 它们恰恰最容易被比例打分排到前面。
+MAX_ASPECT = 2.2
 MATURE_PENALTY = 1.2
 
 # 工作流名字里的通用词：不参与匹配，也不该拿去当搜索词
@@ -113,6 +116,40 @@ def reset_cache() -> None:
     with _lock:
         _store = None
         _dirty = False
+
+
+def rename_key(old: str, new: str) -> bool:
+    """文件改名 / 移动后，把封面缓存搬到新键上。
+
+    缓存是按「相对目录的路径」索引的：改个名字键就变了，于是重新抽一张牌，
+    用户看到的是「我只改了个文件名，封面怎么换了」。键可以跟着文件走，
+    图上那张画为什么要换。
+    """
+    if not old or not new or old == new:
+        return False
+    global _dirty
+    with _lock:
+        seen = _load()["seen"]
+        entry = seen.pop(old, None)
+        if not isinstance(entry, dict):
+            return False
+        seen[new] = entry
+        _dirty = True
+    _flush()
+    return True
+
+
+def forget(key: str) -> bool:
+    """删掉工作流时顺手清掉它的封面缓存，别让死键占着配额。"""
+    if not key:
+        return False
+    global _dirty
+    with _lock:
+        if _load()["seen"].pop(key, None) is None:
+            return False
+        _dirty = True
+    _flush()
+    return True
 
 
 # ---------------------------------------------------------------- 本地封面
@@ -260,6 +297,8 @@ def _ranked_images(item: dict, allow_mature: bool, limit: int = 8, meta_only: bo
             if level > 1 and not allow_mature:
                 continue
             width, height = int(image.get("width") or 0), int(image.get("height") or 0)
+            if width and height and width / height > MAX_ASPECT:
+                continue  # 三联转面 / 左右对比：铺到卡面是一堆碎片
             score = abs(math.log((width / height) / COVER_RATIO)) if width and height else 1.5
             if level > 1:
                 score += MATURE_PENALTY
@@ -350,11 +389,18 @@ def _pool_cover(key: str, model: str, cfg: dict) -> str:
             _dirty = True
         _flush()
     taken = _used_urls(model)
-    for url in urls:
+    if not urls:
+        return ""
+    # 从「key 的稳定哈希」处开始找牌，而不是从第一张开始：
+    # 按请求顺序发牌会让同一批工作流在不同顺序下互换封面（缓存过期后整批洗牌）。
+    # 哈希起点保证池子不变时，同一条工作流永远拿同一张。
+    start = int(hashlib.sha1(key.encode("utf-8")).hexdigest()[:8], 16) % len(urls)
+    for offset in range(len(urls)):
+        url = urls[(start + offset) % len(urls)]
         if url not in taken:
             return url
     # 池子比需求小的时候，宁愿复用也不留空 —— 有图总比一块灰底好
-    return urls[0] if urls else ""
+    return urls[start]
 
 
 def resolve_one(entry: dict, cfg: dict) -> str:

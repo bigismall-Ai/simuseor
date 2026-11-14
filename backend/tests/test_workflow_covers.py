@@ -187,6 +187,44 @@ def test_ranked_images_prefers_landscape_and_skips_mature(monkeypatch):
     assert all("adult" not in url for url in got)
 
 
+def test_ranked_images_skips_wide_collages(monkeypatch):
+    """三联转面 / 左右对比图：比例越大越容易被「接近 16:10」排到前面，必须挡住。"""
+    item = {
+        "modelVersions": [
+            {
+                "images": [
+                    _img("https://x/triple.jpg", 1344, 448),  # 3.0 → 三联
+                    _img("https://x/single.jpg", 832, 1216),  # 0.68 → 单张竖图
+                ]
+            }
+        ]
+    }
+    got = wc._ranked_images(item, allow_mature=False)
+    assert got == ["https://x/single.jpg"]
+
+
+def test_rename_key_keeps_cover(monkeypatch):
+    """改文件名不该换封面：缓存键是相对路径，键要跟着文件搬。"""
+    wc._remember("folder/old.json", "https://x/keep.jpg", origin="m.sft")
+
+    assert wc.rename_key("folder/old.json", "folder/新名字.json") is True
+    assert wc._cached_url("folder/新名字.json") == "https://x/keep.jpg"
+    assert wc._cached_url("folder/old.json") is None
+
+
+def test_rename_key_ignores_unknown_key():
+    assert wc.rename_key("nope.json", "other.json") is False
+    assert wc.rename_key("same.json", "same.json") is False
+
+
+def test_forget_drops_entry():
+    wc._remember("a.json", "https://x/a.jpg", origin="m")
+
+    assert wc.forget("a.json") is True
+    assert wc._cached_url("a.json") is None
+    assert wc.forget("a.json") is False
+
+
 def test_pool_gives_different_images_to_same_model(monkeypatch):
     """同一底模的两条工作流不能拿到同一张图。"""
     pool = ["https://x/one.jpg", "https://x/two.jpg"]
@@ -196,8 +234,20 @@ def test_pool_gives_different_images_to_same_model(monkeypatch):
     wc._remember("a.json", first, origin="flux1-dev.sft")
     second = wc._pool_cover("b.json", "flux1-dev.sft", {})
 
-    assert first == "https://x/one.jpg"
-    assert second == "https://x/two.jpg"
+    assert {first, second} == set(pool)
+
+
+def test_pool_pick_is_stable_for_same_key(monkeypatch):
+    """重抽不能整批洗牌：同一条工作流、同一个池子，永远同一张。"""
+    urls = [f"https://x/{i}.jpg" for i in range(6)]
+
+    monkeypatch.setattr(wc, "_pool", lambda model, cfg: list(urls))
+    first = wc._pool_cover("K/人像.json", "m.sft", {})
+    wc.reset_cache()  # 进程重启 / 缓存重读之后
+    again = wc._pool_cover("K/人像.json", "m.sft", {})
+
+    assert first == again
+    assert first in urls
 
 
 def test_pool_reuses_images_when_exhausted(monkeypatch):

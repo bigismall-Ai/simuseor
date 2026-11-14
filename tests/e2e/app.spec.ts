@@ -19,6 +19,11 @@ test.describe('Model Downloader Web UI', () => {
           cached: false,
         },
       }));
+    // 默认挡住封面批量接口：E2E 用的是 E:/mock 假路径，
+    // 放它打到真后端会把测试键写进 var/data/workflow_covers.json 并占掉图池名额。
+    // 个别要用真封面响应的用例在后面注册自己的 route，后注册的优先。
+    await page.route((url) => url.pathname === '/api/workflows/covers', (route) =>
+      route.fulfill({ json: { covers: {} } }));
   });
 
   test('三个页面渲染与导航', async ({ page }) => {
@@ -1202,6 +1207,9 @@ test.describe('Model Downloader Web UI', () => {
     ];
     await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
       route.fulfill({ json: { dir: 'E:/mock/workflows', total: rows.length, groups: [], items: rows } }));
+    // 不 mock 这个接口就会拿假路径去打真后端，把测试键写进真实封面缓存
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers', (route: any) =>
+      route.fulfill({ json: { covers: {} } }));
     await page.goto('/workflows');
 
     const bar = page.locator('[data-testid="lw-groups"]');

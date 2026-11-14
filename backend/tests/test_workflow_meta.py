@@ -125,6 +125,27 @@ def test_rename_file_moves_meta_key(wf_dir):
     assert item["group"] == "组"
 
 
+def test_rename_file_moves_cover_cache(wf_dir, monkeypatch):
+    """改文件名不该换封面 —— 封面缓存按路径索引，键得跟着搬。"""
+    calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(workflows, "rename_cover_key", lambda old, new: calls.append((old, new)) or True)
+
+    target = _write(wf_dir / "old.json", {"nodes": []})
+    workflows.set_meta(str(target), "新名字", "", rename_file=True)
+
+    assert calls == [("old.json", "新名字.json")]
+
+
+def test_delete_local_forgets_cover(wf_dir, monkeypatch):
+    seen: list[str] = []
+    monkeypatch.setattr(workflows, "forget_cover", lambda key: seen.append(key) or True)
+
+    target = _write(wf_dir / "a.json", {"nodes": []})
+    workflows.delete_local(str(target))
+
+    assert seen == ["a.json"]
+
+
 def test_rename_file_does_not_overwrite(wf_dir):
     target = _write(wf_dir / "a.json", {"nodes": []})
     _write(wf_dir / "占用.json", {"nodes": []})
