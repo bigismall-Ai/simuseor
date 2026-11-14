@@ -927,7 +927,7 @@ test.describe('Model Downloader Web UI', () => {
       route.fulfill({
         json: {
           dir: 'E:/mock/workflows',
-          total: 3,
+          total: 4,
           groups: [],
           items: [
             {
@@ -945,6 +945,11 @@ test.describe('Model Downloader Web UI', () => {
               folder: '', size: 71924, mtime: 1730000000, nodes: 0, format: 'broken',
               main_model: 'minimax_h3_fl2va_pruned_int8_convrot.safetensors', model_slots: [],
             },
+            {
+              name: 'pony_portrait', path: 'E:/mock/workflows/pony_portrait.json',
+              folder: '', size: 42118, mtime: 1730000000, nodes: 6, format: 'ui',
+              main_model: 'ponyDiffusionV6XL.safetensors', model_slots: [],
+            },
           ],
         },
       }));
@@ -953,12 +958,13 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByRole('heading', { name: '工作流' })).toBeVisible();
 
     const marks = page.locator('ui-family-mark');
-    await expect(marks).toHaveCount(3);
-    // 有官方资产用 symbol
+    await expect(marks).toHaveCount(4);
+    // 有官方资产用 symbol（MiniMax 的官方 symbol 已接入，不再回落家族码）
     await expect(page.locator('ui-family-mark img.fm-logo[alt="flux"]')).toHaveCount(1);
     await expect(page.locator('ui-family-mark img.fm-logo[alt="qwen"]')).toHaveCount(1);
-    // 没有官方资产用家族码
-    await expect(page.locator('ui-family-mark .fm-code')).toHaveText('MMX');
+    await expect(page.locator('ui-family-mark img.fm-logo[alt="minimax"]')).toHaveCount(1);
+    // 真没有官方资产的家族才用家族码
+    await expect(page.locator('ui-family-mark .fm-code')).toHaveText('PONY');
     await page.screenshot({ path: ART + '/24-workflow-family-mark.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
