@@ -1629,8 +1629,23 @@ test.describe('Model Downloader Web UI', () => {
     await expect(sortMenu).toHaveCount(0);
     await expect(page.getByTestId('lw-sort')).toContainText('按名称');
 
-    // 卡片上的节点/依赖是标签，不是一行灰字
-    await expect(page.locator('app-workflow-card .wc-tag').first()).toContainText('节点');
+    // 卡片正文不再写「节点/依赖」，空出来的位置是分组标签；规格与分组的数字标签一致
+    const tag = page.locator('app-workflow-card .wc-tag').first();
+    await expect(tag).toHaveText('人像');
+    await expect(page.locator('app-workflow-card .wc-tag')).toHaveCount(1);
+    // 主按钮可能是「补齐依赖」，所以只在标签区断言计数已撤掉
+    await expect(page.locator('app-workflow-card .wc-meta')).not.toContainText('节点');
+    await expect(page.locator('app-workflow-card .wc-meta')).not.toContainText('依赖');
+    // 封面左下不再重复一次分组名
+    await expect(page.locator('app-workflow-card .wc-grp')).toHaveCount(0);
+    const chipSpec = (loc: typeof tag) =>
+      loc.evaluate((el) => {
+        const s = getComputedStyle(el);
+        return [s.height, s.borderRadius, s.fontVariantNumeric].join('|');
+      });
+    expect(await chipSpec(tag)).toBe(
+      await chipSpec(page.getByTestId('lw-groups').locator('.wf-chip b').first()),
+    );
     await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });

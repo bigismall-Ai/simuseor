@@ -84,18 +84,20 @@ interface StateView {
 
         <div class="wc-name">
           <h3 [title]="it.path">{{ it.title || it.name }}</h3>
-          <p>
-            @if (it.group) { <span class="wc-grp">{{ it.group }}</span> }
-            <span>{{ sizeText() }} · {{ agoText() }}</span>
-          </p>
+          <p>{{ sizeText() }} · {{ agoText() }}</p>
         </div>
       </div>
 
       <div class="wc-body">
         <div class="wc-split">
+          <!-- 节点/依赖的计数从卡片正文撤掉：状态徽标已经说过一次，
+               这个位置让给分组，分组是找工作流时真正要用的索引 -->
           <div class="wc-meta">
-            <span class="wc-tag">{{ it.nodes }} 节点</span>
-            @if (totalDeps() > 0) { <span class="wc-tag">{{ totalDeps() }} 依赖</span> }
+            @if (it.group) {
+              <span class="wc-tag wc-grp-tag" [title]="it.group">{{ it.group }}</span>
+            } @else {
+              <span class="wc-tag wc-grp-tag is-none">未分组</span>
+            }
           </div>
           <button class="wc-primary" [class.ghost]="view().act === 'edit'" (click)="primary.emit({ item: it, act: view().act })">
             @if (view().act === 'use') {
@@ -250,13 +252,19 @@ interface StateView {
       border-radius: 0;
       overflow: visible;
     }
+    /* 压在图上的计数与正文那枚是同一规格，只把底色换成深色半透明 */
     .wc-count > span {
-      padding: 2px 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 16px;
+      padding: 0 5px;
       border-radius: var(--radius-xs);
       background: rgb(0 0 0 / 0.42);
       color: #fff;
       font-size: 10px;
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
     .wc-note { background: rgb(217 119 6 / 0.86); font-weight: 600; }
@@ -335,19 +343,6 @@ interface StateView {
       text-overflow: ellipsis;
     }
     .wc.broken .wc-name p { color: var(--muted); text-shadow: none; }
-    .wc-grp {
-      flex: none;
-      max-width: 96px;
-      font-size: 10px;
-      font-weight: 600;
-      color: #fff;
-      background: rgb(0 0 0 / 0.42);
-      border-radius: var(--radius-xs);
-      padding: 1px 5px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
     .wc-body { padding: 8px 9px; }
     .wc-split {
       display: flex;
@@ -361,18 +356,33 @@ interface StateView {
       white-space: nowrap;
       overflow: hidden;
     }
+    /* 分组标签：与分组筛选栏的数字标签同规格（16px 小圆角片 + 强描边）。
+       底子留 --panel-3：卡片正文是 --panel，纯白片在白底上只剩一条边 */
     .wc-tag {
       flex: none;
       display: inline-flex;
       align-items: center;
-      height: 18px;
-      padding: 0 6px;
+      justify-content: center;
+      max-width: 100%;
+      height: 16px;
+      padding: 0 5px;
       border-radius: var(--radius-xs);
       background: var(--panel-3);
-      box-shadow: inset 0 0 0 1px var(--border);
-      color: var(--text-2);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text);
       font-size: 10px;
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* 没分组的卡也占住这个位置，但弱化成一行淡字，不做成醒目的标签 */
+    .wc-tag.is-none {
+      background: none;
+      box-shadow: none;
+      color: var(--muted);
+      padding-left: 0;
     }
     .wc-primary {
       margin-left: auto;
