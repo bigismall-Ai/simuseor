@@ -116,9 +116,11 @@ import { PanelComponent } from '../ui/panel.component';
                   </td>
                   <td class="cell-vram">
                     <span class="vram-flag" [class]="vramClass(m)" [title]="vramTip(m)">
-                      @for (k of [1, 2, 3]; track k) {
-                        <i [class.on]="k <= vramFilled(m)"></i>
-                      }
+                      <span class="vram-bars">
+                        @for (k of [1, 2, 3]; track k) {
+                          <i [class.on]="k <= vramFilled(m)"></i>
+                        }
+                      </span>
                       @if (vramPct(m) !== null) {
                         <em>{{ vramPct(m) }}%</em>
                       }
@@ -146,10 +148,22 @@ import { PanelComponent } from '../ui/panel.component';
          （VAE/Embedding 占 0%），要么占一大半」—— 五等分会把大批 0% 全挤在第一格。 */
       .col-vram { width: 92px; }
       .cell-vram { white-space: nowrap; }
+      /* 上下结构：格子在上、百分比在下，外面套一块**与压力同色**的底。
+         底衬不透明 —— 半透明底压在封面上会跟背景图混，颜色就不纯了。
+         纯红 #FF0000 只用在「满格」这个图形上（图形对比度门槛 3:1），
+         底衬用同色系浅红 —— 纯红铺满一屏几十张卡会变成警告墙。 */
       .vram-flag {
         display: inline-flex;
+        flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 2px;
+        padding: 4px 6px 3px;
+        border-radius: 5px;
+      }
+      .vram-bars {
+        display: inline-flex;
+        align-items: center;
+        gap: 1.5px;
       }
       /* 未填充的槽 = 透明 + 细描边（不是灰底）——
          灰底填充看起来像「满格」，就分不出 1 格和 3 格了。
@@ -161,7 +175,10 @@ import { PanelComponent } from '../ui/panel.component';
         border-radius: 1.5px;
         display: block;
         background: transparent;
-        box-shadow: inset 0 0 0 1px var(--border-strong);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+      }
+      :host-context([data-theme='dark']) .vram-flag i {
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
       }
       .vram-flag i.on {
         box-shadow: none;
@@ -169,10 +186,12 @@ import { PanelComponent } from '../ui/panel.component';
       }
       .vram-flag em {
         font-style: normal;
-        font-size: 10.5px;
+        font-size: 9.5px;
         font-weight: 600;
         font-variant-numeric: tabular-nums;
-        color: var(--text-2);
+        color: #18181b;
+        letter-spacing: -0.02em;
+        line-height: 1;
       }
       /* 溢出尾：>100% 时第三格后面多一个三角 */
       .v-err i.on:nth-child(3) { position: relative; }
@@ -187,9 +206,16 @@ import { PanelComponent } from '../ui/panel.component';
         border-top: 3.5px solid transparent;
         border-bottom: 3.5px solid transparent;
       }
-      .v-ok { color: var(--ok); }
-      .v-warn { color: var(--warn); }
-      .v-err { color: var(--err); }
+      /* 三档：格子颜色 + 同色系底衬。红色用纯 #FF0000。 */
+      .v-ok { color: #15803d; background: #dcfce7; }
+      .v-warn { color: #b45309; background: #fef3c7; }
+      .v-err { color: #ff0000; background: #fee2e2; }
+      /* 深色主题：浅色底衬在深色封面上整块发白 → 换成深底 + 亮字。
+         纯红 #FF0000 在深底上对比 4.0:1，够图形用。 */
+      :host-context([data-theme='dark']) .v-ok { color: #4ade80; background: #14351f; }
+      :host-context([data-theme='dark']) .v-warn { color: #fbbf24; background: #3a2e10; }
+      :host-context([data-theme='dark']) .v-err { color: #ff0000; background: #3d1414; }
+      :host-context([data-theme='dark']) .vram-flag em { color: #f4f4f5; }
       /* 无法判定：空心描边 —— 实心=有结论，空心=没结论 */
       .v-na i {
         background: transparent;
