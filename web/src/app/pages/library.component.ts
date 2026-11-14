@@ -159,16 +159,10 @@ import { PanelComponent } from '../ui/panel.component';
         align-items: center;
         gap: 1px;
       }
-      /* 背景色块只裹住「格子」那一层，百分比数字在下面裸露 ——
-         整块都上底的话，一个状态标志会比同行的主数据还重（实测：粉底方块
-         比 imported 徽标还抢眼），而且行高被撑高了。
-         底衬用浅色、格子用纯色 —— 「纯红」还在，浅底只是把格子托起来。 */
       .vram-bars {
         display: inline-flex;
         align-items: center;
         gap: 2px;
-        padding: 2px 4px;
-        border-radius: 3px;
       }
       /* 未填充的槽 = 透明 + 细描边（不是灰底）——
          灰底填充看起来像「满格」，就分不出 1 格和 3 格了。
@@ -189,6 +183,9 @@ import { PanelComponent } from '../ui/panel.component';
         box-shadow: none;
         background: currentColor;
       }
+      /* 百分比数字：**背景色在数字上**（不是格子上），且是半透明的 ——
+         半透明底压在封面上能透出底图，不会割裂画面。
+         文字用深色保证在浅底上可读。 */
       .vram-flag em {
         font-style: normal;
         font-size: 9.5px;
@@ -197,6 +194,8 @@ import { PanelComponent } from '../ui/panel.component';
         color: #18181b;
         letter-spacing: -0.02em;
         line-height: 1;
+        padding: 1px 3px;
+        border-radius: 3px;
       }
       /* 溢出尾：>100% 时第三格后面多一个三角 */
       .v-err i.on:nth-child(3) { position: relative; }
@@ -211,21 +210,21 @@ import { PanelComponent } from '../ui/panel.component';
         border-top: 3.5px solid transparent;
         border-bottom: 3.5px solid transparent;
       }
-      /* 三档：格子用纯色（红 = #FF0000），浅色底衬托在格子层。 */
+      /* 三档：格子用纯色（红 = #FF0000），数字底衬是同色的半透明。 */
       .v-ok { color: #15803d; }
       .v-warn { color: #b45309; }
       .v-err { color: #ff0000; }
-      .v-ok .vram-bars { background: #dcfce7; }
-      .v-warn .vram-bars { background: #fef3c7; }
-      .v-err .vram-bars { background: #fee2e2; }
-      /* 深色主题：浅色底衬在深色封面上整块发白 → 换成深底 + 亮字。
+      .v-ok em { background: rgb(21 128 61 / 0.16); }
+      .v-warn em { background: rgb(180 83 9 / 0.18); }
+      .v-err em { background: rgb(255 0 0 / 0.16); }
+      /* 深色主题：底衬提亮一档才看得见，文字换亮色。
          纯红 #FF0000 在深底上对比 4.0:1，够图形用。 */
       :host-context([data-theme='dark']) .v-ok { color: #4ade80; }
       :host-context([data-theme='dark']) .v-warn { color: #fbbf24; }
       :host-context([data-theme='dark']) .v-err { color: #ff0000; }
-      :host-context([data-theme='dark']) .v-ok .vram-bars { background: #14351f; }
-      :host-context([data-theme='dark']) .v-warn .vram-bars { background: #3a2e10; }
-      :host-context([data-theme='dark']) .v-err .vram-bars { background: #3d1414; }
+      :host-context([data-theme='dark']) .v-ok em { background: rgb(74 222 128 / 0.22); }
+      :host-context([data-theme='dark']) .v-warn em { background: rgb(251 191 36 / 0.22); }
+      :host-context([data-theme='dark']) .v-err em { background: rgb(255 0 0 / 0.26); }
       :host-context([data-theme='dark']) .vram-flag em { color: #f4f4f5; }
       /* 无法判定：空心描边 —— 实心=有结论，空心=没结论 */
       .v-na i {
