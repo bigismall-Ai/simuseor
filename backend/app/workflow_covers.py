@@ -79,6 +79,7 @@ def _load() -> dict:
         _store = {}
     _store.setdefault("seen", {})
     _store.setdefault("pools", {})
+    _store.setdefault("pinned", {})
     return _store
 
 
@@ -110,6 +111,38 @@ def _remember(key: str, url: str, origin: str = "") -> str:
     return url
 
 
+def pin(key: str, url: str) -> None:
+    """手动挑的封面钉在这个键上，优先级高于本地出图与自动抽牌。"""
+    if not key or not url:
+        return
+    global _dirty
+    with _lock:
+        _load()["pinned"][key] = {"url": url, "ts": time.time()}
+        _dirty = True
+    _flush()
+
+
+def unpin(key: str) -> bool:
+    global _dirty
+    with _lock:
+        if _load()["pinned"].pop(key, None) is None:
+            return False
+        _dirty = True
+    _flush()
+    return True
+
+
+def pinned(key: str) -> str:
+    with _lock:
+        entry = _load()["pinned"].get(key)
+    return str((entry or {}).get("url") or "") if isinstance(entry, dict) else ""
+
+
+def pinned_keys() -> list[str]:
+    with _lock:
+        return list(_load()["pinned"])
+
+
 def reset_cache() -> None:
     """测试用：丢掉内存缓存。"""
     global _store, _dirty
@@ -129,23 +162,30 @@ def rename_key(old: str, new: str) -> bool:
         return False
     global _dirty
     with _lock:
-        seen = _load()["seen"]
-        entry = seen.pop(old, None)
-        if not isinstance(entry, dict):
+        store = _load()
+        entry = store["seen"].pop(old, None)
+        pinned_entry = store["pinned"].pop(old, None)
+        if not isinstance(entry, dict) and pinned_entry is None:
             return False
-        seen[new] = entry
+        if isinstance(entry, dict):
+            store["seen"][new] = entry
+        if pinned_entry is not None:
+            store["pinned"][new] = pinned_entry
         _dirty = True
     _flush()
     return True
 
 
 def forget(key: str) -> bool:
-    """删掉工作流时顺手清掉它的封面缓存，别让死键占着配额。"""
+    """删掉工作流时顺手清掉它的封面缓存与手动钉图，别让死键占着配额。"""
     if not key:
         return False
     global _dirty
     with _lock:
-        if _load()["seen"].pop(key, None) is None:
+        store = _load()
+        hit = store["seen"].pop(key, None)
+        manual = store["pinned"].pop(key, None)
+        if hit is None and manual is None:
             return False
         _dirty = True
     _flush()
@@ -371,8 +411,11 @@ def _used_urls(model: str) -> set[str]:
     }
 
 
-def _pool_cover(key: str, model: str, cfg: dict) -> str:
-    """从池子里发一张还没被同底模的其它工作流拿走的图。"""
+def _pool_cover(key: str, model: str, cfg: dict, exclude: str = "") -> str:
+    """从池子里发一张还没被同底模的其它工作流拿走的图。
+
+    `exclude` 是用户刚换掉的那张：重抽时不能又发回同一张。
+    """
     if not model:
         return ""
     now = time.time()
@@ -389,6 +432,8 @@ def _pool_cover(key: str, model: str, cfg: dict) -> str:
             _dirty = True
         _flush()
     taken = _used_urls(model)
+    if exclude:
+        taken.add(exclude)
     if not urls:
         return ""
     # 从「key 的稳定哈希」处开始找牌，而不是从第一张开始：
@@ -400,7 +445,9 @@ def _pool_cover(key: str, model: str, cfg: dict) -> str:
         if url not in taken:
             return url
     # 池子比需求小的时候，宁愿复用也不留空 —— 有图总比一块灰底好
-    return urls[start]
+    if len(urls) == 1:
+        return urls[start]
+    return urls[start] if urls[start] != exclude else urls[(start + 1) % len(urls)]
 
 
 def resolve_one(entry: dict, cfg: dict) -> str:
@@ -412,6 +459,35 @@ def resolve_one(entry: dict, cfg: dict) -> str:
     if url:
         return _remember(key, url, origin=entry.get("model") or "")
     return _remember(key, "", origin="")
+
+
+def redeal(entry: dict, current: str = "") -> str:
+    """换一张封面：清掉这条的自动结果与旧钉图，避开当前那张重新抽。
+
+    结果同时写进 `seen` 与 `pinned`：钉住后才盖得过工作流自带的出图，
+    且下次进页面不会又被 7 天缓存换回旧图。
+    """
+    key = (entry.get("key") or "").strip()
+    if not key:
+        return ""
+    cfg = _cfg()
+    exclude = (current or "").strip()
+    forget(key)
+    unpin(key)
+
+    url = _workflow_cover(entry.get("name") or "", cfg)
+    if url == exclude:
+        url = ""
+    origin = "workflow" if url else (entry.get("model") or "")
+    if not url:
+        url = _pool_cover(key, entry.get("model") or "", cfg, exclude=exclude)
+        if url == exclude:
+            url = ""
+    if not url:
+        return ""
+    _remember(key, url, origin=origin)
+    pin(key, url)
+    return url
 
 
 def _cached_url(key: str) -> str | None:
@@ -434,6 +510,14 @@ def resolve_batch(entries: list[dict]) -> dict[str, str]:
     for entry in entries:
         key = (entry.get("key") or "").strip()
         if not key:
+            continue
+        # 手动挑过的封面最优先，连工作流自带的出图也盖得过
+        manual = pinned(key)
+        if manual:
+            out[key] = manual
+            continue
+        # 本地自带出图的条目没有钉图就别问社区，免得真实出图被替换掉
+        if entry.get("has_local"):
             continue
         hit = _cached_url(key)
         if hit is not None:

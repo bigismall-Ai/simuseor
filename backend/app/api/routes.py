@@ -70,6 +70,8 @@ class WorkflowCoverEntry(BaseModel):
     key: str
     name: str = ""
     model: str = ""
+    """这条工作流自带出图时就别去社区补图，除非用户手动钉过封面"""
+    has_local: bool = False
 
 
 class WorkflowCoversRequest(BaseModel):
@@ -83,6 +85,26 @@ class WorkflowMetaRequest(BaseModel):
     title: str = ""
     group: str = ""
     rename_file: bool = False
+
+
+class WorkflowGroupRequest(BaseModel):
+    """分组管理：name 是新建/改名的目标名，old 只用于改名。"""
+
+    name: str = ""
+    old: str = ""
+
+
+class WorkflowCoverRefreshRequest(BaseModel):
+    """换一张封面：current 是当前显示的图，重抽时要避开它。"""
+
+    key: str
+    name: str = ""
+    model: str = ""
+    current: str = ""
+
+
+class WorkflowCoverResetRequest(BaseModel):
+    key: str
 
 
 class NodeInstallRequest(BaseModel):
@@ -194,8 +216,11 @@ def local_workflow_cover(path: str) -> FileResponse:
 
 @router.post("/workflows/covers")
 def workflow_covers(body: WorkflowCoversRequest) -> dict:
-    """批量取远程封面。本地有图的条目前端不会传进来。"""
-    return {"covers": wf_covers.resolve_batch([item.model_dump() for item in body.items])}
+    """批量取远程封面。钉过的图优先，本地自带出图的条目会被跳过。"""
+    return {
+        "covers": wf_covers.resolve_batch([item.model_dump() for item in body.items]),
+        "pinned": wf_covers.pinned_keys(),
+    }
 
 
 @router.post("/workflows/local/organize")
@@ -230,6 +255,51 @@ def set_local_workflow_meta(body: WorkflowMetaRequest) -> dict:
         )
     except SourceError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/workflows/groups")
+def list_workflow_groups() -> dict:
+    return workflow_service.list_groups()
+
+
+@router.post("/workflows/groups")
+def create_workflow_group(body: WorkflowGroupRequest) -> dict:
+    try:
+        return workflow_service.create_group(body.name)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/workflows/groups")
+def rename_workflow_group(body: WorkflowGroupRequest) -> dict:
+    try:
+        return workflow_service.rename_group(body.old, body.name)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.delete("/workflows/groups")
+def delete_workflow_group(name: str = "") -> dict:
+    try:
+        return workflow_service.delete_group(name)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/workflows/covers/refresh")
+def refresh_workflow_cover(body: WorkflowCoverRefreshRequest) -> dict:
+    """换一张封面：避开当前图重新发牌，并把结果钉住（能压过工作流自带出图）。"""
+    url = wf_covers.redeal(
+        {"key": body.key, "name": body.name, "model": body.model}, body.current
+    )
+    return {"key": body.key, "cover": url, "pinned": bool(url)}
+
+
+@router.post("/workflows/covers/reset")
+def reset_workflow_cover(body: WorkflowCoverResetRequest) -> dict:
+    """恢复自动封面：取消钉图，下次列表刷新回到本地出图/常规抽牌。"""
+    wf_covers.unpin(body.key)
+    return {"key": body.key, "pinned": False}
 
 
 @router.get("/workflows/instances")

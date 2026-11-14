@@ -119,11 +119,57 @@ export class ApiService {
     );
   }
 
-  /** 批量取远程封面。本地有图的条目不用传。 */
+  /** 批量取远程封面。本地自带出图的条目也传（用 has_local 标出），后端只在钉过图时才覆盖。 */
   workflowCovers(
-    items: Array<{ key: string; name: string; model: string }>,
-  ): Observable<{ covers: Record<string, string> }> {
-    return this.http.post<{ covers: Record<string, string> }>(`${this.base}/workflows/covers`, { items });
+    items: Array<{ key: string; name: string; model: string; has_local?: boolean }>,
+  ): Observable<{ covers: Record<string, string>; pinned?: string[] }> {
+    return this.http.post<{ covers: Record<string, string>; pinned?: string[] }>(
+      `${this.base}/workflows/covers`,
+      { items },
+    );
+  }
+
+  /** 换一张封面：避开当前图重新抽，并把结果钉在这条工作流上。 */
+  refreshWorkflowCover(body: {
+    key: string;
+    name: string;
+    model: string;
+    current: string;
+  }): Observable<{ key: string; cover: string; pinned: boolean }> {
+    return this.http.post<{ key: string; cover: string; pinned: boolean }>(
+      `${this.base}/workflows/covers/refresh`,
+      body,
+    );
+  }
+
+  resetWorkflowCover(key: string): Observable<{ key: string; pinned: boolean }> {
+    return this.http.post<{ key: string; pinned: boolean }>(`${this.base}/workflows/covers/reset`, { key });
+  }
+
+  listWorkflowGroups(): Observable<{ groups: Array<{ name: string; count: number }>; defined: string[] }> {
+    return this.http.get<{ groups: Array<{ name: string; count: number }>; defined: string[] }>(
+      `${this.base}/workflows/groups`,
+    );
+  }
+
+  createWorkflowGroup(name: string): Observable<{ groups: Array<{ name: string; count: number }>; defined: string[] }> {
+    return this.http.post<{ groups: Array<{ name: string; count: number }>; defined: string[] }>(
+      `${this.base}/workflows/groups`,
+      { name },
+    );
+  }
+
+  renameWorkflowGroup(old: string, name: string): Observable<{ old: string; name: string; renamed: number; moved: number }> {
+    return this.http.patch<{ old: string; name: string; renamed: number; moved: number }>(
+      `${this.base}/workflows/groups`,
+      { old, name },
+    );
+  }
+
+  deleteWorkflowGroup(name: string): Observable<{ name: string; cleared: number }> {
+    return this.http.delete<{ name: string; cleared: number }>(`${this.base}/workflows/groups`, {
+      params: { name },
+    });
   }
 
   /** 把分组落成真实目录，让 ComfyUI 侧栏也能按分组看到工作流。 */

@@ -287,3 +287,61 @@ def test_resolve_batch_remembers_misses(monkeypatch):
     assert wc.resolve_batch(entries) == {}
     # 未命中也要记，否则每次进页面都重问一遍没有封面的那批
     assert len(calls) == 1
+
+
+# ---------------- 手动换一张 / 钉住 ----------------
+
+_ENTRY = {"key": "a.json", "name": "flux img2img", "model": "flux1-dev.sft"}
+
+
+def _four_images(monkeypatch):
+    urls = [f"https://x/p{i}.jpg" for i in range(4)]
+    monkeypatch.setattr(wc, "_workflow_cover", lambda name, cfg: "")
+    monkeypatch.setattr(wc, "_pool", lambda model, cfg: urls)
+    return urls
+
+
+def test_redeal_avoids_current_image_and_pins(monkeypatch):
+    _four_images(monkeypatch)
+
+    first = wc.redeal(_ENTRY)
+    assert first
+    assert wc.pinned("a.json") == first
+
+    second = wc.redeal(_ENTRY, current=first)
+    assert second and second != first
+    assert wc.pinned("a.json") == second
+    assert wc.pinned_keys() == ["a.json"]
+
+
+def test_pinned_cover_beats_local_preview(monkeypatch):
+    urls = _four_images(monkeypatch)
+    wc.pin("a.json", urls[0])
+
+    # has_local=True 本来该跳过，钉过的图仍要返回 —— 这是「换一张」能盖住自带出图的关键
+    assert wc.resolve_batch([{**_ENTRY, "has_local": True}]) == {"a.json": urls[0]}
+
+    wc.unpin("a.json")
+    assert wc.resolve_batch([{**_ENTRY, "has_local": True}]) == {}
+
+
+def test_local_preview_is_not_queried(monkeypatch):
+    def boom(*args, **kwargs):
+        raise AssertionError("本地自带出图的条目不该去社区问")
+
+    monkeypatch.setattr(wc, "_get", boom)
+    assert wc.resolve_batch([{**_ENTRY, "has_local": True}]) == {}
+
+
+def test_forget_clears_pin_too():
+    wc.pin("a.json", "https://x/one.jpg")
+    assert wc.forget("a.json") is True
+    assert wc.pinned("a.json") == ""
+    assert wc.pinned_keys() == []
+
+
+def test_rename_key_moves_pin():
+    wc.pin("old/a.json", "https://x/one.jpg")
+    assert wc.rename_key("old/a.json", "new/a.json") is True
+    assert wc.pinned("new/a.json") == "https://x/one.jpg"
+    assert wc.pinned("old/a.json") == ""

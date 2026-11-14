@@ -32,7 +32,10 @@ test.describe('Model Downloader Web UI', () => {
     // 放它打到真后端会把测试键写进 var/data/workflow_covers.json 并占掉图池名额。
     // 个别要用真封面响应的用例在后面注册自己的 route，后注册的优先。
     await page.route((url) => url.pathname === '/api/workflows/covers', (route) =>
-      route.fulfill({ json: { covers: {} } }));
+      route.fulfill({ json: { covers: {}, pinned: [] } }));
+    // 分组管理接口默认返回空：测试用假路径，不该读到本机真实分组/钉图
+    await page.route((url) => url.pathname === '/api/workflows/groups', (route) =>
+      route.fulfill({ json: { groups: [], defined: [] } }));
   });
 
   test('三个页面渲染与导航', async ({ page }) => {
@@ -1136,8 +1139,8 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('app-workflow-card .wc-kebab').click();
     const menu = page.locator('.wf-menu');
     await expect(menu).toBeVisible();
-    // 5 个固定动作 + 有分组时多一个「按分组整理目录」
-    await expect(menu.getByRole('menuitem')).toHaveCount(6);
+    // 6 个固定动作（含「换一张封面」）+ 有分组时多一个「按分组整理目录」
+    await expect(menu.getByRole('menuitem')).toHaveCount(7);
     await expect(menu).toContainText('复制文件路径');
     await expect(menu).toContainText('重命名');
     await expect(menu).toContainText('按分组整理目录');
@@ -1261,7 +1264,7 @@ test.describe('Model Downloader Web UI', () => {
     // ⋯ 与卡片同一套菜单
     await row.locator('.lw-kebab').click();
     await expect(page.locator('.wf-menu')).toBeVisible();
-    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(6);
+    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(7);
     await page.keyboard.press('Escape');
     await expect(page.locator('.wf-menu')).toHaveCount(0);
 
@@ -1379,6 +1382,101 @@ test.describe('Model Downloader Web UI', () => {
     await expect.poll(() => called).toBe(1);
     await expect(page.locator('.notice.ok')).toContainText('移进分组目录');
     await page.screenshot({ path: ART + '/32-workflow-organize.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：分组管理可新建、改名、删除；变更分组只给加新组', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    const defined: string[] = [];
+    const calls: string[] = [];
+    await page.route((url: URL) => url.pathname === '/api/workflows/groups', (route: any) => {
+      const req = route.request();
+      const body = req.method() === 'POST' || req.method() === 'PATCH' ? req.postDataJSON() : {};
+      calls.push(req.method());
+      if (req.method() === 'POST') {
+        if (!defined.includes(body.name)) defined.push(body.name);
+      } else if (req.method() === 'PATCH') {
+        const i = defined.indexOf(body.old);
+        if (i >= 0) defined[i] = body.name;
+        return route.fulfill({ json: { old: body.old, name: body.name, renamed: 1, moved: 0 } });
+      } else if (req.method() === 'DELETE') {
+        const name = new URL(req.url()).searchParams.get('name') || '';
+        const i = defined.indexOf(name);
+        if (i >= 0) defined.splice(i, 1);
+        return route.fulfill({ json: { name, cleared: 0 } });
+      }
+      return route.fulfill({ json: { groups: [], defined } });
+    });
+
+    await page.goto('/workflows');
+    await page.getByRole('button', { name: '分组管理' }).click();
+    const dlg = page.getByRole('dialog', { name: '分组管理' });
+    await expect(dlg).toBeVisible();
+
+    // 新建空组：条目里汇总不出来，也得出现在管理框和筛选条上
+    await dlg.getByTestId('gm-new-name').fill('电商');
+    await dlg.getByTestId('gm-add').click();
+    await expect(dlg.locator('.gm-row[data-group="电商"] .gm-name')).toContainText('0');
+
+    // 改名只在管理框里
+    await dlg.getByTestId('gm-rename-电商').click();
+    await dlg.getByTestId('gm-rename-input').fill('商品图');
+    await dlg.getByTestId('gm-rename-save').click();
+    await expect(dlg.locator('.gm-row[data-group="商品图"]')).toBeVisible();
+
+    // 删除要二次确认，确认后该行收起
+    await dlg.getByTestId('gm-delete-商品图').click();
+    await expect(dlg.getByTestId('gm-delete-save')).toBeVisible();
+    await dlg.getByTestId('gm-delete-save').click();
+    await expect(dlg.locator('.gm-row[data-group="商品图"]')).toHaveCount(0);
+    await dlg.getByTestId('gm-close').click();
+
+    // 变更分组的弹层里可以「+ 新分组」，但没有任何改名入口
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /重命名/ }).click();
+    const edit = page.getByRole('dialog', { name: '重命名与分组' });
+    await expect(edit).not.toContainText('改名');
+    await edit.getByTestId('lw-edit-group').fill('试拍');
+    await edit.getByTestId('lw-new-group').click();
+    await expect.poll(() => defined).toContain('试拍');
+    expect(calls).toEqual(expect.arrayContaining(['POST', 'PATCH', 'DELETE']));
+    await page.screenshot({ path: ART + '/43-workflow-group-manager.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：换一张封面会钉住，可恢复自动', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    const next = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="448" height="280"><rect width="448" height="280" fill="#244"/></svg>',
+    );
+    let refreshed = 0;
+    let reset = 0;
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers/refresh', (route: any) => {
+      refreshed += 1;
+      const body = route.request().postDataJSON();
+      expect(body.current).toBe(COVER_SVG);
+      expect(body.key).toBe(COVER_ITEM.key);
+      return route.fulfill({ json: { key: body.key, cover: next, pinned: true } });
+    });
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers/reset', (route: any) => {
+      reset += 1;
+      return route.fulfill({ json: { key: COVER_ITEM.key, pinned: false } });
+    });
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: '换一张封面' }).click();
+    await expect.poll(() => refreshed).toBe(1);
+    const img = page.locator('app-workflow-card img.wc-cover-img');
+    await expect(img).toHaveAttribute('src', next);
+
+    // 钉住后菜单多出「恢复自动封面」，点它回到原来的自动结果
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await expect(page.locator('.wf-menu')).toContainText('恢复自动封面');
+    await page.getByRole('menuitem', { name: '恢复自动封面' }).click();
+    await expect.poll(() => reset).toBe(1);
+    await expect(img).toHaveAttribute('src', COVER_SVG);
+    await page.screenshot({ path: ART + '/44-workflow-cover-refresh.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 });

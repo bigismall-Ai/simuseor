@@ -132,6 +132,7 @@ const SORTS = [
             }
           </div>
           <button class="wf-chip" (click)="cycleSort()" data-testid="lw-sort">{{ sortLabel }}</button>
+          <button class="wf-chip" (click)="openGroupManager()" data-testid="lw-groups-manage">分组管理</button>
           <div class="wf-chips">
             <button class="wf-chip" [class.on]="view === 'card'" (click)="setView('card')">卡片</button>
             <button class="wf-chip" [class.on]="view === 'list'" (click)="setView('list')">列表</button>
@@ -411,7 +412,14 @@ const SORTS = [
         <button role="menuitem" (click)="reveal(menuOf); closeMenu()">在文件夹中定位</button>
         <button role="menuitem" (click)="copyPath(menuOf)">复制文件路径</button>
         <span class="wf-menu-sep"></span>
-        <button role="menuitem" (click)="openRename(menuOf)">重命名 / 分组…</button>
+        <button role="menuitem" (click)="openRename(menuOf)">重命名 / 变更分组…</button>
+        <button role="menuitem" [disabled]="busyCover === (menuOf.key || menuOf.path)"
+                (click)="refreshCover(menuOf)">
+          {{ busyCover === (menuOf.key || menuOf.path) ? '换封面中…' : '换一张封面' }}
+        </button>
+        @if (isPinned(menuOf)) {
+          <button role="menuitem" (click)="resetCover(menuOf)">恢复自动封面</button>
+        }
         @if (hasGroups) {
           <button role="menuitem" (click)="askOrganize()">按分组整理目录…</button>
         }
@@ -432,7 +440,8 @@ const SORTS = [
         </label>
         <label class="wf-field">
           <span>分组</span>
-          <input [(ngModel)]="editing.group" maxlength="24" list="wf-group-names" placeholder="留空则取消分组" />
+          <input [(ngModel)]="editing.group" maxlength="24" list="wf-group-names"
+                 placeholder="留空则取消分组" data-testid="lw-edit-group" />
         </label>
         <!-- 已有分组名做候选：手打容易造出「人像」「人像 」这种看着一样的两组 -->
         <datalist id="wf-group-names">
@@ -440,6 +449,10 @@ const SORTS = [
             <option [value]="g.name">{{ g.name }}</option>
           }
         </datalist>
+        <!-- 这里只负责「加一个新分组」，改名统一去分组管理里做 -->
+        <button class="wf-inline-add" type="button" (click)="newGroupFromEditor()" data-testid="lw-new-group">
+          + 新分组
+        </button>
         <label class="wf-check">
           <input type="checkbox" [(ngModel)]="editing.rename" />
           <span>同时重命名文件（ComfyUI 里也会变成新名字）</span>
@@ -480,6 +493,54 @@ const SORTS = [
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="pendingOrganize = false">取消</button>
           <button class="primary btn-xs" (click)="runOrganize()">整理</button>
+        </div>
+      </div>
+    }
+
+    <!-- 分组管理：新建 / 改名 / 删除都在这里，变更分组的弹层不掺和改名 -->
+    @if (groupMgr) {
+      <div class="wf-modal-mask" (click)="closeGroupManager()"></div>
+      <div #groupBox class="wf-modal wide" role="dialog" aria-modal="true" aria-label="分组管理"
+           tabindex="-1" (keydown.tab)="trapTab($event, groupBox)" data-testid="lw-group-manager">
+        <h2>分组管理</h2>
+        <p class="wf-modal-sub wrap">
+          分组只是标签：删除不会删掉工作流，改名会连已整理出的文件夹一起改。
+        </p>
+
+        <div class="gm-add">
+          <input [(ngModel)]="groupMgr.draft" maxlength="24" placeholder="新分组名"
+                 data-testid="gm-new-name" (keydown.enter)="createGroupFromManager()" />
+          <button class="btn-xs" (click)="createGroupFromManager()" data-testid="gm-add">新建分组</button>
+        </div>
+
+        <div class="gm-list">
+          @for (g of groupNames; track g.name) {
+            <div class="gm-row" [attr.data-group]="g.name">
+              @if (groupMgr.renaming === g.name) {
+                <input class="gm-rename" [(ngModel)]="groupMgr.renameDraft" maxlength="24"
+                       data-testid="gm-rename-input" (keydown.enter)="confirmRenameGroup()" />
+                <button class="btn-xs" (click)="groupMgr.renaming = null">取消</button>
+                <button class="primary btn-xs" (click)="confirmRenameGroup()" data-testid="gm-rename-save">保存</button>
+              } @else if (groupMgr.pendingDelete === g.name) {
+                <span class="gm-name gm-warn">删除「{{ g.name }}」？这 {{ g.count }} 条会变成未分组</span>
+                <button class="btn-xs" (click)="groupMgr.pendingDelete = null">取消</button>
+                <button class="primary btn-xs" (click)="confirmDeleteGroup()" data-testid="gm-delete-save">确认删除</button>
+              } @else {
+                <span class="gm-name">{{ g.name }}<b>{{ g.count }}</b></span>
+                <button class="btn-xs" (click)="startRenameGroup(g.name)"
+                        [attr.data-testid]="'gm-rename-' + g.name">改名</button>
+                <button class="btn-xs danger" (click)="startDeleteGroup(g.name)"
+                        [attr.data-testid]="'gm-delete-' + g.name">删除</button>
+              }
+            </div>
+          } @empty {
+            <p class="gm-empty">还没有分组，先在上面新建一个。</p>
+          }
+        </div>
+
+        @if (groupMgr.error) { <p class="gm-error">{{ groupMgr.error }}</p> }
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="closeGroupManager()" data-testid="gm-close">关闭</button>
         </div>
       </div>
     }
@@ -735,6 +796,8 @@ const SORTS = [
       cursor: pointer;
     }
     .wf-menu button:hover { background: var(--panel-3); color: var(--text); }
+    .wf-menu button:disabled { opacity: 0.5; cursor: default; }
+    .wf-menu button:disabled:hover { background: none; color: var(--text-2); }
     .wf-menu button.danger { color: var(--err); }
     .wf-menu button.danger:hover { background: var(--err-soft); }
     .wf-menu-sep {
@@ -818,6 +881,63 @@ const SORTS = [
       justify-content: flex-end;
       gap: 8px;
     }
+
+    /* ---- 分组管理 / 变更分组里的轻量动作 ---- */
+    .wf-modal.wide { width: 480px; }
+    .wf-inline-add {
+      margin: -2px 0 12px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--primary);
+      font: inherit;
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+    .wf-inline-add:hover { text-decoration: underline; }
+    .gm-add { display: flex; gap: 8px; margin-bottom: 10px; }
+    .gm-add input,
+    .gm-rename {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .gm-list { max-height: 260px; overflow-y: auto; margin-bottom: 8px; }
+    .gm-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 2px;
+      border-bottom: 1px solid var(--border);
+    }
+    .gm-row:last-child { border-bottom: 0; }
+    .gm-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12.5px;
+      color: var(--text);
+    }
+    .gm-name b {
+      margin-left: 7px;
+      font-weight: 500;
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .gm-warn { color: var(--err); white-space: normal; }
+    .gm-row .btn-xs.danger { color: var(--err); }
+    .gm-empty, .gm-error { margin: 6px 0; font-size: 11.5px; color: var(--muted); }
+    .gm-error { color: var(--err); }
 
     .lw-bar {
       display: flex;
@@ -1142,11 +1262,25 @@ export class WorkflowsComponent implements OnInit {
   pendingDelete: LocalWorkflow | null = null;
   /** 按分组整理目录的确认 */
   pendingOrganize = false;
+  /** 分组管理弹层：新建 / 改名 / 删除都收在这里 */
+  groupMgr: {
+    draft: string;
+    renaming: string | null;
+    renameDraft: string;
+    pendingDelete: string | null;
+    error: string;
+  } | null = null;
+  /** 显式创建的分组（可能是空组，条目里汇总不出来） */
+  definedGroups: string[] = [];
+  /** 手动钉过封面的工作流键 —— 菜单里才显示「恢复自动封面」 */
+  pinnedKeys: string[] = [];
+  busyCover = '';
 
   /* 弹层焦点管理：打开时焦点进入弹层，Tab 在弹层内环绕，Esc 逐层退出 */
   @ViewChild('drawerBox') drawerBox?: ElementRef<HTMLElement>;
   @ViewChild('editBox') editBox?: ElementRef<HTMLElement>;
   @ViewChild('delBox') delBox?: ElementRef<HTMLElement>;
+  @ViewChild('groupBox') groupBox?: ElementRef<HTMLElement>;
   readonly trapTab = trapTab;
   localDir = '';
   localLoading = false;
@@ -1227,14 +1361,18 @@ export class WorkflowsComponent implements OnInit {
   /**
    * 分组清单。
    *
-   * 从条目自身的 group 汇总，不用后端那份 meta 汇总 —— 侧车里可能留着已经删掉的
-   * 文件的旧键，那会数出一个点进去是空的组。
+   * 主体仍从条目自身的 group 汇总，不用后端那份 meta 汇总 —— 侧车里可能留着已经
+   * 删掉的文件的旧键，那会数出一个点进去是空的组。唯一的例外是用户在「分组管理」
+   * 里显式建的空组：那是真实意图，也要列出来。
    */
   get groupNames(): { name: string; count: number }[] {
     const acc = new Map<string, number>();
     for (const it of this.local) {
       const g = this.groupOf(it);
       if (g) acc.set(g, (acc.get(g) || 0) + 1);
+    }
+    for (const name of this.definedGroups) {
+      if (!acc.has(name)) acc.set(name, 0);
     }
     return [...acc]
       .map(([name, count]) => ({ name, count }))
@@ -1549,7 +1687,170 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
-  /** Esc 逐层退出：菜单 → 编辑 → 删除 → 抽屉 */
+  /* ================= 分组管理 ================= */
+
+  /** 显式创建的分组在后端，条目里汇总不出来（可能是空组）。失败不打扰用户。 */
+  private loadGroups(): void {
+    this.api.listWorkflowGroups().subscribe({
+      next: (res) => (this.definedGroups = res.defined || []),
+      error: () => undefined,
+    });
+  }
+
+  openGroupManager(): void {
+    this.closeMenu();
+    this.groupMgr = { draft: '', renaming: null, renameDraft: '', pendingDelete: null, error: '' };
+    setTimeout(() => focusFirst(this.groupBox?.nativeElement));
+  }
+
+  closeGroupManager(): void {
+    this.groupMgr = null;
+  }
+
+  createGroupFromManager(): void {
+    const mgr = this.groupMgr;
+    if (!mgr) return;
+    const name = mgr.draft.trim();
+    if (!name) {
+      mgr.error = '先写个分组名';
+      return;
+    }
+    this.api.createWorkflowGroup(name).subscribe({
+      next: (res) => {
+        this.definedGroups = res.defined || [];
+        mgr.draft = '';
+        mgr.error = '';
+        this.notice = `已新建分组「${name}」`;
+      },
+      error: (err) => (mgr.error = errMsg(err, '新建分组失败')),
+    });
+  }
+
+  /** 变更分组的弹层里只能「加新组」，改名统一在分组管理里做。 */
+  newGroupFromEditor(): void {
+    const ed = this.editing;
+    if (!ed) return;
+    const name = ed.group.trim();
+    if (!name) {
+      this.notice = '先在分组框里写个名字，再点「+ 新分组」';
+      return;
+    }
+    this.api.createWorkflowGroup(name).subscribe({
+      next: (res) => {
+        this.definedGroups = res.defined || [];
+        this.notice = `已新建分组「${name}」`;
+      },
+      error: (err) => (this.localError = errMsg(err, '新建分组失败')),
+    });
+  }
+
+  startRenameGroup(name: string): void {
+    if (!this.groupMgr) return;
+    this.groupMgr.renaming = name;
+    this.groupMgr.renameDraft = name;
+    this.groupMgr.pendingDelete = null;
+    this.groupMgr.error = '';
+  }
+
+  confirmRenameGroup(): void {
+    const mgr = this.groupMgr;
+    if (!mgr || !mgr.renaming) return;
+    const old = mgr.renaming;
+    const name = mgr.renameDraft.trim();
+    if (!name || name === old) {
+      mgr.renaming = null;
+      return;
+    }
+    this.api.renameWorkflowGroup(old, name).subscribe({
+      next: () => {
+        mgr.renaming = null;
+        mgr.error = '';
+        this.definedGroups = this.definedGroups.map((n) => (n === old ? name : n));
+        if (this.groupFilter === old) this.groupFilter = name;
+        this.savePrefs();
+        this.notice = `分组「${old}」已改名为「${name}」`;
+        this.loadLocal();
+      },
+      error: (err) => (mgr.error = errMsg(err, '改名失败')),
+    });
+  }
+
+  startDeleteGroup(name: string): void {
+    if (!this.groupMgr) return;
+    this.groupMgr.pendingDelete = name;
+    this.groupMgr.renaming = null;
+    this.groupMgr.error = '';
+  }
+
+  confirmDeleteGroup(): void {
+    const mgr = this.groupMgr;
+    if (!mgr || !mgr.pendingDelete) return;
+    const name = mgr.pendingDelete;
+    this.api.deleteWorkflowGroup(name).subscribe({
+      next: () => {
+        mgr.pendingDelete = null;
+        mgr.error = '';
+        this.definedGroups = this.definedGroups.filter((n) => n !== name);
+        if (this.groupFilter === name) this.groupFilter = null;
+        this.savePrefs();
+        this.notice = `已删除分组「${name}」，工作流保留`;
+        this.loadLocal();
+      },
+      error: (err) => (mgr.error = errMsg(err, '删除分组失败')),
+    });
+  }
+
+  /* ================= 手动换封面 ================= */
+
+  isPinned(it: LocalWorkflow): boolean {
+    return this.pinnedKeys.includes(it.key || it.path);
+  }
+
+  refreshCover(it: LocalWorkflow): void {
+    this.closeMenu();
+    const key = it.key || it.path;
+    this.busyCover = key;
+    this.api
+      .refreshWorkflowCover({
+        key,
+        name: it.title || it.name,
+        model: it.main_model || '',
+        current: it.cover || '',
+      })
+      .subscribe({
+        next: (res) => {
+          this.busyCover = '';
+          if (!res.cover) {
+            this.notice = '没找到别的可用封面，先保留原图';
+            return;
+          }
+          if (!this.pinnedKeys.includes(key)) this.pinnedKeys = [...this.pinnedKeys, key];
+          this.local = this.local.map((x) =>
+            (x.key || x.path) === key ? { ...x, cover: res.cover } : x,
+          );
+          this.notice = '已换一张封面；这条会被钉住，可在 ⋯ 里恢复自动';
+        },
+        error: (err) => {
+          this.busyCover = '';
+          this.localError = errMsg(err, '换封面失败');
+        },
+      });
+  }
+
+  resetCover(it: LocalWorkflow): void {
+    this.closeMenu();
+    const key = it.key || it.path;
+    this.api.resetWorkflowCover(key).subscribe({
+      next: () => {
+        this.pinnedKeys = this.pinnedKeys.filter((k) => k !== key);
+        this.notice = '已恢复自动封面';
+        this.loadLocal();
+      },
+      error: (err) => (this.localError = errMsg(err, '恢复自动封面失败')),
+    });
+  }
+
+  /** Esc 逐层退出：菜单 → 编辑 → 分组管理 → 删除 → 整理 → 抽屉 */
   onEsc(): void {
     if (this.menuOf) {
       this.closeMenu();
@@ -1557,6 +1858,10 @@ export class WorkflowsComponent implements OnInit {
     }
     if (this.editing) {
       this.editing = null;
+      return;
+    }
+    if (this.groupMgr) {
+      this.groupMgr = null;
       return;
     }
     if (this.pendingDelete) {
@@ -1679,6 +1984,7 @@ export class WorkflowsComponent implements OnInit {
         this.localDir = res.dir;
         this.localLoading = false;
         this.reconcileGroup();
+        this.loadGroups();
         this.loadCovers();
       },
       error: (err) => {
@@ -1689,24 +1995,30 @@ export class WorkflowsComponent implements OnInit {
   }
 
   /**
-   * 本地没有自带出图的条目，再去社区补真实封面。
+   * 批量取封面：自带出图的条目也传（标 has_local），后端只在手动钉过时覆盖它。
    *
    * 单独一批请求、失败也不报错：封面是锦上添花，取不到就用家族铭牌兜底，
    * 不该因为它把整个列表变成错误态。后端按 key 缓存 7 天，第二次进页面是毫秒级。
    */
   private loadCovers(): void {
-    const need = this.local.filter((it) => !it.cover && it.format !== 'broken');
+    const need = this.local.filter((it) => it.format !== 'broken');
     if (!need.length) return;
     this.api
       .workflowCovers(
-        need.map((it) => ({ key: it.key || it.path, name: it.title || it.name, model: it.main_model || '' })),
+        need.map((it) => ({
+          key: it.key || it.path,
+          name: it.title || it.name,
+          model: it.main_model || '',
+          has_local: !!it.cover,
+        })),
       )
       .subscribe({
         next: (res) => {
+          this.pinnedKeys = res.pinned || [];
           if (!Object.keys(res.covers || {}).length) return;
           this.local = this.local.map((it) => {
             const url = res.covers[it.key || it.path];
-            return url ? { ...it, cover: url } : it;
+            return url && url !== it.cover ? { ...it, cover: url } : it;
           });
         },
         error: () => undefined,

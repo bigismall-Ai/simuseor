@@ -880,6 +880,130 @@ def meta_groups(meta: dict) -> list[dict]:
     return [{"name": g, "count": c} for g, c in sorted(counts.items())]
 
 
+# 显式创建的分组名（允许空组）存在侧车的特殊键里。它是 list，而所有遍历
+# entry 的地方都先做 isinstance(dict) 判断，天然会跳过它 —— 不用另开一份状态文件，
+# 也不会被当成一条工作流。
+GROUPS_KEY = "__groups__"
+
+
+def _valid_group(name: str) -> str:
+    name = (name or "").strip()
+    if not name:
+        raise SourceError("分组名不能为空")
+    if len(name) > 24:
+        raise SourceError("分组名太长了")
+    if name.startswith("__") or name in (".", ".."):
+        raise SourceError("分组名不可用")
+    return name
+
+
+def _defined_groups(meta: dict) -> list[str]:
+    raw = meta.get(GROUPS_KEY)
+    if not isinstance(raw, list):
+        return []
+    return [str(x).strip() for x in raw if str(x).strip()]
+
+
+def _safe_dir(name: str) -> str:
+    """分组落成目录时的名字，与 organize_groups() 同一口径。"""
+    return re.sub(r'[\\/:*?"<>|]+', "_", name).strip() or "未分组"
+
+
+def list_groups() -> dict:
+    """分组清单 = 条目里在用的组 ∪ 显式创建的组（含空组）。"""
+    meta = load_meta()
+    counts = {g["name"]: g["count"] for g in meta_groups(meta)}
+    names = set(counts) | set(_defined_groups(meta))
+    return {
+        "groups": [{"name": n, "count": counts.get(n, 0)} for n in sorted(names)],
+        "defined": _defined_groups(meta),
+    }
+
+
+def create_group(name: str) -> dict:
+    """新建一个分组。允许先建空组，再在「变更分组」里分配给工作流。"""
+    name = _valid_group(name)
+    meta = load_meta()
+    names = _defined_groups(meta)
+    if name not in names:
+        names.append(name)
+        meta[GROUPS_KEY] = names
+        save_meta(meta)
+    return list_groups()
+
+
+def rename_group(old: str, new: str) -> dict:
+    """分组改名：条目标记、显式清单、以及已落地的真实目录一起改。
+
+    只改侧车不改目录的话，ComfyUI 侧栏还挂着旧名字，两边会对不上。
+    封面缓存按相对路径索引，目录一改键就全变，必须逐条迁过去。
+    """
+    old = _valid_group(old)
+    new = _valid_group(new)
+    if old == new:
+        return {"old": old, "name": new, "renamed": 0, "moved": 0}
+    meta = load_meta()
+    known = {g["name"] for g in meta_groups(meta)} | set(_defined_groups(meta))
+    if new in known:
+        raise SourceError("已经有同名分组了")
+
+    changed = 0
+    for key, entry in list(meta.items()):
+        if not isinstance(entry, dict) or (entry.get("group") or "").strip() != old:
+            continue
+        entry["group"] = new
+        entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        changed += 1
+    defs = _defined_groups(meta)
+    if old in defs:
+        meta[GROUPS_KEY] = [new if n == old else n for n in defs]
+
+    root = WORKSPACE_WORKFLOWS_DIR.resolve()
+    old_dir, new_dir = root / _safe_dir(old), root / _safe_dir(new)
+    moved = 0
+    if old_dir.is_dir() and old_dir != new_dir and not new_dir.exists():
+        try:
+            old_dir.rename(new_dir)
+        except OSError:
+            pass
+        else:
+            prefix = old_dir.name + "/"
+            for key in list(meta):
+                if not isinstance(key, str) or not key.startswith(prefix):
+                    continue
+                new_key = new_dir.name + "/" + key[len(prefix):]
+                meta[new_key] = meta.pop(key)
+                rename_cover_key(key, new_key)
+                moved += 1
+    save_meta(meta)
+    return {"old": old, "name": new, "renamed": changed, "moved": moved}
+
+
+def delete_group(name: str) -> dict:
+    """删除分组：只清标记，工作流本身和已整理的目录都不动。
+
+    删文件是不可逆操作，分组只是个标签；目录留在原地，用户要挪走可以自己整理。
+    """
+    name = _valid_group(name)
+    meta = load_meta()
+    cleared = 0
+    for key, entry in list(meta.items()):
+        if not isinstance(entry, dict) or (entry.get("group") or "").strip() != name:
+            continue
+        entry.pop("group", None)
+        if not entry.get("title"):
+            meta.pop(key, None)  # 只剩时间戳的空壳条目
+        cleared += 1
+    defs = [n for n in _defined_groups(meta) if n != name]
+    if GROUPS_KEY in meta:
+        if defs:
+            meta[GROUPS_KEY] = defs
+        else:
+            meta.pop(GROUPS_KEY, None)
+    save_meta(meta)
+    return {"name": name, "cleared": cleared}
+
+
 def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = False) -> dict:
     """设置某条工作流的自定义名与分组。
 
