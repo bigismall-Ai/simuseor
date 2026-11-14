@@ -33,6 +33,15 @@ def _is_workflow_target(target: str | Path) -> bool:
     return True
 
 
+def _task_kind(target: str | Path) -> str:
+    """这条任务下的是什么：工作流包，还是模型权重。
+
+    两条链路共用 aria2 与同一张 tasks 表，只是落点不同；下载任务页得能标出来，
+    否则一屏任务长得一模一样，看不出「工作流其实也走了下载任务」。
+    """
+    return "workflow" if _is_workflow_target(target) else "model"
+
+
 class DownloadManager:
     def __init__(self) -> None:
         self._aria2: Aria2Client | None = None
@@ -377,6 +386,7 @@ class DownloadManager:
         for f in files:
             f["candidates"] = json.loads(f.get("candidates") or "[]")
         task["files"] = files
+        task["kind"] = _task_kind(task.get("target_dir") or "")
         return task
 
     def list_tasks(self) -> list[dict]:
@@ -386,6 +396,7 @@ class DownloadManager:
             for f in files:
                 f["candidates"] = json.loads(f.get("candidates") or "[]")
             task["files"] = files
+            task["kind"] = _task_kind(task.get("target_dir") or "")
             result.append(task)
         return result
 

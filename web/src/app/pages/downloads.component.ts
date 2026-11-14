@@ -119,7 +119,7 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
 
-    <ui-panel title="下载任务" hint="断点续传由 aria2 维护；失败的行可以直接重试，不会从头下载。">
+    <ui-panel title="下载任务" hint="模型与工作流都在这里排队（断点续传由 aria2 维护）；节点包是 git 仓库，安装进度在节点管理页看。">
       <div panel-actions class="segmented">
         @for (t of taskTabs; track t.key) {
           <button [class.active]="taskFilter === t.key" (click)="taskFilter = t.key">{{ t.label }}</button>
@@ -135,6 +135,9 @@ import { PanelComponent } from '../ui/panel.component';
           <div class="head">
             <span class="title">{{ task.repo_id }}</span>
             <ui-badge [tone]="statusTone(task.status)">{{ statusLabel(task.status) }}</ui-badge>
+            @if (task.kind === 'workflow') {
+              <ui-badge tone="blue">工作流</ui-badge>
+            }
             <span class="mono muted">{{ task.strategy }}</span>
             <span class="meta">{{ fmtSize(task.done_bytes) }} / {{ fmtSize(task.total_bytes) }}</span>
             <div class="actions">

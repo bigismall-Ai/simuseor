@@ -63,6 +63,8 @@ export interface Task {
   total_bytes: number;
   done_bytes: number;
   created_at: string;
+  /** 下载的是工作流包还是模型权重：两者共用 aria2 任务表，靠落点区分 */
+  kind?: 'workflow' | 'model' | string;
   files: TaskFile[];
   error?: string;
 }

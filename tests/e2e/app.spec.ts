@@ -81,6 +81,30 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText('★').first()).toBeVisible();
   });
 
+  test('下载任务：工作流与模型共用任务表，工作流标出类型', async ({ page }) => {
+    const row = (id: string, kind: string, dir: string) => ({
+      id, source: 'templates', repo_id: id, revision: 'main', strategy: 'direct',
+      status: 'completed', target_dir: dir, total_bytes: 1024, done_bytes: 1024,
+      created_at: '2026-11-14T00:00:00', kind,
+      files: [{ id: id + '-f', path: 'a.json', size: 1024, done_bytes: 1024, status: 'completed', candidates: [] }],
+    });
+    await page.route((url: URL) => url.pathname === '/api/tasks', (route: any) =>
+      route.fulfill({ json: [
+        row('comfy/portrait-flow', 'workflow', 'E:/mock/workspace/userdata/default/workflows/portrait'),
+        row('some/flux-checkpoint', 'model', 'E:/mock/workspace/models/checkpoints/flux'),
+      ] }));
+
+    await page.goto('/downloads');
+    const rows = page.locator('.task');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.nth(0).locator('.head')).toContainText('工作流');
+    await expect(rows.nth(1).locator('.head')).not.toContainText('工作流');
+    // 节点不走这张任务表：页面上得说清楚去哪里看它的进度
+    await expect(page.getByText(/节点包是 git 仓库/)).toBeVisible();
+    await page.screenshot({ path: ART + '/39-task-kind.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
   test('解析失败有错误提示', async ({ page }) => {
     await page.goto('/downloads?demo=1');
     await page.locator('select').first().selectOption('demo');

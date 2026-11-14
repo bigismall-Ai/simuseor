@@ -15,6 +15,17 @@ def test_workflow_target_detected(tmp_path: Path, monkeypatch) -> None:
     assert manager_module._is_workflow_target(shared) is True
 
 
+def test_task_kind_marks_workflow_vs_model(tmp_path: Path, monkeypatch) -> None:
+    shared = tmp_path / "workspace" / "userdata" / "default" / "workflows"
+    models = tmp_path / "workspace" / "models"
+    shared.mkdir(parents=True)
+    models.mkdir(parents=True)
+    monkeypatch.setattr(manager_module, "WORKSPACE_WORKFLOWS_DIR", shared)
+
+    assert manager_module._task_kind(shared / "some-repo") == "workflow"
+    assert manager_module._task_kind(models / "checkpoints" / "flux") == "model"
+
+
 def test_model_target_is_not_workflow(tmp_path: Path, monkeypatch) -> None:
     shared = tmp_path / "workspace" / "userdata" / "default" / "workflows"
     models = tmp_path / "workspace" / "models"
