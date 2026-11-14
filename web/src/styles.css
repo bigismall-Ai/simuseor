@@ -799,9 +799,8 @@ select:disabled { opacity: 0.6; }
    压在深色封面上时靠模糊把后面的图压下去，文字才读得出来。
    我们的卡片正文偶尔也压在封面上，所以同样给了 .pill-on-media 变体。 */
 .pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
+  vertical-align: middle;
   max-width: 100%;
   height: 20px;
   padding: 0 9px;
@@ -811,7 +810,7 @@ select:disabled { opacity: 0.6; }
   color: var(--pill-ink);
   font-size: 11px;
   font-weight: 500;
-  line-height: 1;
+  line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -843,6 +842,7 @@ select:disabled { opacity: 0.6; }
   height: 18px;
   padding: 0 7px;
   font-size: 10.5px;
+  line-height: 16px;
   font-variant-numeric: tabular-nums;
   color: var(--muted);
 }

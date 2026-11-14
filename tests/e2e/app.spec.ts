@@ -234,12 +234,30 @@ test.describe('Model Downloader Web UI', () => {
     expect(new Set(heights).size).toBe(1);
 
     // 标签内容是分类信息，不是来源的全大写字母。
-    // 注意别一刀切禁止大写 —— LoRA / VAE 是专有名词，本来就该大写。
+    // 注意别一刀切禁止大写 —— LoRA / VAE / HF / MS 是专有名词，本来就该大写。
     const texts = await tags.allTextContents();
-    expect(texts.some((t) => /Hugging Face|ModelScope|Civitai|Demo/.test(t))).toBe(true);
+    expect(texts.some((t) => /HF|MS|Civitai|Demo/.test(t))).toBe(true);
     expect(
-      texts.every((t) => t.trim() === t && !/^[A-Z][A-Z ]+$/.test(t)),
+      texts.every((t) => t.trim() === t && !/^[A-Z]{3,}\s/.test(t)),
     ).toBe(true);
+
+    // 卡片上的来源用短名：「Hugging Face」占 92px，两枚来源就把行塞满了，
+    // 后面的标签连同 +N 一起被挤出可视区。完整名在 title 里。
+    expect(texts.some((t) => /Hugging Face|ModelScope/.test(t))).toBe(false);
+    const srcTitle = await card
+      .locator('.card-tags .pill-link')
+      .first()
+      .getAttribute('title');
+    expect(srcTitle).toMatch(/在 .+ 上打开原始仓库/);
+
+    // 标签行不能有内容被裁掉 —— 裁掉就等于没折叠
+    const clipped = await page.evaluate(() =>
+      [...document.querySelectorAll('md-model-card .card-tags')].filter(
+        (r) => r.scrollWidth > r.clientWidth + 1,
+      ).length,
+    );
+    expect(clipped).toBe(0);
+
     await page.screenshot({ path: ART + '/60-model-card-pills.png', fullPage: false });
   });
 

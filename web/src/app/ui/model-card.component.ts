@@ -24,6 +24,20 @@ interface CardTag {
 }
 
 /**
+ * 卡片上的来源用短名。
+ *
+ * 「Hugging Face」占 92px，两枚来源再加类型就把 224px 的行塞满了，
+ * 后面的标签连同 +N 一起被挤出可视区。短名（Hugging Face → HF）
+ * 在卡片上足够辨识 —— 完整名在 title 里。
+ */
+const SHORT_SOURCE: Record<string, string> = {
+  huggingface: 'HF',
+  modelscope: 'MS',
+  civitai: 'Civitai',
+  demo: 'Demo',
+};
+
+/**
  * 模型卡：一张海报，不是「封面 + 正文」两段。
  *
  * 铭牌铺满整块当背景（生成构图，或在有缩略图时铺图），正文靠 `margin-top:auto` 贴底，
@@ -180,7 +194,10 @@ interface CardTag {
 
     /* 标签行：单行不换行，装不下的折叠成「+N」。
        换行会让同一网格里的卡片高度参差 —— 卡片是海报，
-       高度一乱，整墙的节奏就没了。折叠规则跟 comfy.org 一样。 */
+       高度一乱，整墙的节奏就没了。折叠规则跟 comfy.org 一样。
+
+       宽度约束：单枚上限 42%（约 94px），作者名再长也不会顶掉旁边的标签；
+       「+N」不限宽且排在最后 —— 它是「还有更多」的提示，被裁掉就等于没折叠。 */
     .card-tags {
       position: relative;
       z-index: 1;
@@ -188,8 +205,9 @@ interface CardTag {
       overflow: hidden;
     }
     .card-tags .pill {
-      flex: none;
-      max-width: 46%;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 42%;
     }
     .card-tags .pill.is-more {
       flex: none;
@@ -314,12 +332,13 @@ export class ModelCardComponent {
     const task = this.taskLabel;
     if (task) out.push({ key: 'task', text: task, title: `类型：${task}` });
     for (const it of this.items) {
-      const label = this.labelOf(it.source);
+      const full = this.labelOf(it.source);
+      const short = SHORT_SOURCE[it.source] || full;
       out.push({
         key: 'src-' + it.source,
-        text: label,
+        text: short,
         href: it.url,
-        title: `在 ${label} 上打开原始仓库`,
+        title: `在 ${full} 上打开原始仓库`,
       });
     }
     const author = this.authorText;
@@ -331,8 +350,9 @@ export class ModelCardComponent {
    * 最多露 3 枚，其余折成「+N」。
    *
    * 3 枚是量出来的：250px 的卡片减去内边距约 224px，
-   * 一枚「Hugging Face」占 92px，3 枚刚好一行放得下。作者名可能很长，
-   * 单枚上限 46%，超出就省略号 —— 宁可少露一枚，也不能让标签行换行。
+   * 用了短名后一枚「HF」只占 32px，3 枚稳稳放下。
+   * 作者名可能很长，单枚上限 46%，超出就省略号 ——
+   * 宁可少露一枚，也不能让标签行换行。
    */
   visibleTags(): CardTag[] {
     return this.allTags.slice(0, 3);
