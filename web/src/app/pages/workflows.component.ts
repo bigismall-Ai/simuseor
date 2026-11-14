@@ -6,6 +6,7 @@ import { ApiService } from '../core/api.service';
 import { LocalWorkflow, WorkflowItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
+import { FamilyMarkComponent } from '../ui/family-mark.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
@@ -45,7 +46,7 @@ const SORTS = [
 @Component({
   selector: 'app-workflows',
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
       [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
@@ -94,6 +95,7 @@ const SORTS = [
               <div class="lw-row">
                 <div class="lw-body">
                   <p class="lw-name" [title]="it.path">
+                    <ui-family-mark class="lw-mark" [model]="it.main_model || ''" />
                     {{ it.name }}
                     @if (it.format === 'api') {
                       <span class="lw-tag">API</span>
@@ -241,7 +243,7 @@ const SORTS = [
     .lw-dir {
       min-width: 0;
       flex: 1;
-      color: var(--faint);
+      color: var(--muted);
       font-size: 10.5px;
       white-space: nowrap;
       overflow: hidden;
@@ -260,7 +262,7 @@ const SORTS = [
     .lw-head {
       padding: 8px 2px 7px;
       font-size: 10.5px;
-      color: var(--faint);
+      color: var(--muted);
       letter-spacing: 0.02em;
     }
     .lw-row {
@@ -294,7 +296,7 @@ const SORTS = [
     .lw-sub {
       margin: 2px 0 0;
       font-size: 10.5px;
-      color: var(--faint);
+      color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -365,7 +367,7 @@ const SORTS = [
     .wf-title {
       margin: 0;
       font-size: 13.5px;
-      font-weight: 620;
+      font-weight: 600;
       letter-spacing: -0.01em;
       line-height: 1.35;
       max-width: 70%;
@@ -421,14 +423,14 @@ const SORTS = [
     .wf-tag {
       font-size: 10.5px;
       line-height: 17px;
-      color: var(--faint);
+      color: var(--muted);
     }
 
     .wf-files {
       margin: 8px 0 0;
       font-family: "Cascadia Mono", Consolas, monospace;
       font-size: 10.5px;
-      color: var(--faint);
+      color: var(--muted);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

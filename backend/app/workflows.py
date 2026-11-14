@@ -29,6 +29,7 @@ from .config import COMFY_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
+from .workflow_models import analyze as analyze_models
 from .sources.github import tree_files
 
 HF_API = "https://huggingface.co/api"
@@ -802,6 +803,9 @@ def local() -> dict:
     只数节点，不解析依赖——「这条工作流缺哪个模型/节点」是下一步的事。
     目录里可能混着 ComfyUI 自己的配置文件，认不出工作流形状的直接跳过。
     解析失败的文件也要列出来（error + 行号），不能被 ValueError 静默吞掉。
+
+    顺带解析主模型（main_model + model_slots）：家族徽标要靠它，
+    前端用现成的 FAMILIES 表判定，不需要后端再实现一遍正则。
     """
     root = WORKSPACE_WORKFLOWS_DIR
     meta = load_meta()
@@ -823,6 +827,9 @@ def local() -> dict:
                 payload = json.loads(raw)
             except ValueError as exc:
                 # 坏文件仍占位可见：错误信息直接进卡片封面图区，不另开错误区
+                # 语法坏了照样能认主模型 —— 文本兜底扫文件名，
+                # 坏文件也得显示家族徽标，不能因为解析失败就变成一张没有身份的白卡
+                info = analyze_models(None, raw)
                 items.append(
                     {
                         "name": path.stem,
@@ -836,6 +843,8 @@ def local() -> dict:
                         "format": "broken",
                         "error": str(exc),
                         "error_line": _error_line(raw, exc),
+                        "main_model": info["main_file"],
+                        "model_slots": info["slots"],
                     }
                 )
                 continue
@@ -843,6 +852,8 @@ def local() -> dict:
             if fmt == "unknown":
                 continue
             parent = path.parent.relative_to(root)
+            # 主模型：家族徽标与依赖清单都从它出发
+            info = analyze_models(payload, raw)
             items.append(
                 {
                     "name": path.stem,
@@ -854,6 +865,8 @@ def local() -> dict:
                     "mtime": int(stat.st_mtime),
                     "nodes": nodes,
                     "format": fmt,
+                    "main_model": info["main_file"],
+                    "model_slots": info["slots"],
                 }
             )
     items.sort(key=lambda it: it["mtime"], reverse=True)

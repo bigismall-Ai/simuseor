@@ -824,4 +824,47 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText('HintImageEnchance')).toBeVisible();
     await page.screenshot({ path: ART + '/21-nodes-library.png', fullPage: true });
   });
+
+  test('我的工作流：按主模型显示家族厂标', async ({ page }) => {
+    // 家族判定在前端做（core/cover.ts 的 FAMILIES 表），
+    // 后端只给主模型文件名 —— 这里 mock 一下接口，固定三个家族的输入。
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({
+        json: {
+          dir: 'E:/mock/workflows',
+          total: 3,
+          groups: [],
+          items: [
+            {
+              name: 'flux_img2img_1_2', path: 'E:/mock/workflows/flux_img2img_1_2.json',
+              folder: '', size: 15981, mtime: 1730000000, nodes: 17, format: 'ui',
+              main_model: 'flux1-dev.sft', model_slots: [],
+            },
+            {
+              name: 'qwen_edit', path: 'E:/mock/workflows/qwen_edit.json',
+              folder: '', size: 96740, mtime: 1730000000, nodes: 8, format: 'ui',
+              main_model: 'qwen_image_2.1_int8_convrot.safetensors', model_slots: [],
+            },
+            {
+              name: 'minimax_broken', path: 'E:/mock/workflows/minimax_broken.json',
+              folder: '', size: 71924, mtime: 1730000000, nodes: 0, format: 'broken',
+              main_model: 'minimax_h3_fl2va_pruned_int8_convrot.safetensors', model_slots: [],
+            },
+          ],
+        },
+      }));
+
+    await page.goto('/workflows');
+    await expect(page.getByRole('heading', { name: '工作流' })).toBeVisible();
+
+    const marks = page.locator('ui-family-mark');
+    await expect(marks).toHaveCount(3);
+    // 有官方资产用 symbol
+    await expect(page.locator('ui-family-mark img.fm-logo[alt="flux"]')).toHaveCount(1);
+    await expect(page.locator('ui-family-mark img.fm-logo[alt="qwen"]')).toHaveCount(1);
+    // 没有官方资产用家族码
+    await expect(page.locator('ui-family-mark .fm-code')).toHaveText('MMX');
+    await page.screenshot({ path: ART + '/24-workflow-family-mark.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
 });

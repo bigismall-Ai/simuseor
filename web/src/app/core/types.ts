@@ -126,6 +126,20 @@ export interface LocalWorkflow {
   mtime: number;
   nodes: number;
   format: 'ui' | 'api' | string;
+  /** 主模型文件名 —— 家族徽标靠它。语法坏掉的文件也可能有（文本兜底） */
+  main_model?: string;
+  /** 全部模型槽位 */
+  model_slots?: WorkflowModelSlot[];
+}
+
+export interface WorkflowModelSlot {
+  file: string;
+  /** 加载它的节点类型，如 UNETLoader / VAELoader */
+  node: string;
+  /** 目标目录，如 diffusion_models / vae */
+  directory: string;
+  /** 下载直链（有就说明这是官方登记过的模型） */
+  url: string;
 }
 
 export interface WorkflowInstance {

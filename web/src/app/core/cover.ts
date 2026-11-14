@@ -20,7 +20,7 @@
  * 两个字段，但从来没人消费——颜色早就搬进 CSS 了。留着只会让后来的人以为改它有用。
  */
 
-export type FamilyId = 'flux' | 'wan' | 'sdxl' | 'sd15' | 'qwen' | 'pony' | 'hunyuan' | 'ltx' | 'other';
+export type FamilyId = 'flux' | 'wan' | 'sdxl' | 'sd15' | 'qwen' | 'pony' | 'hunyuan' | 'ltx' | 'minimax' | 'other';
 
 export interface FamilySpec {
   id: FamilyId;
@@ -150,6 +150,19 @@ export const FAMILIES: FamilySpec[] = [
     mark: 'M4 9V4h16v5M4 15v5h16v-5',
     filled: false,
     test: /qwen/i,
+  },
+  {
+    id: 'minimax',
+    code: 'MMX',
+    /*
+     * MiniMax 没有官方 symbol 资产（社区只有字标），所以只给家族码。
+     * mark 是空的 —— 自绘几何冒充官方标是撒谎，不如留白。
+     *
+     * 工作流侧靠主模型文件名认出来：`minimax_h3_fl2va_pruned_int8_convrot.safetensors`。
+     */
+    mark: '',
+    filled: true,
+    test: /minimax|\bmmx\b/i,
   },
   {
     id: 'other',
