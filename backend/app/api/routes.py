@@ -15,7 +15,6 @@ from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
 from .. import image_proxy
-from .. import image_proxy
 from ..comfy.model_dirs import infer_folder
 from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
