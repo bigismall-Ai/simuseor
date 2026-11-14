@@ -100,6 +100,7 @@ def node_deps(classes: set[str], installed: dict[str, dict] | None = None) -> di
     owner: dict[str, str] = data.get("owner") or {}
     by_id: dict[str, dict] = data.get("by_id") or {}
     core: set[str] = data.get("core") or set()
+    patterns: dict[str, str] = data.get("patterns") or {}
 
     have_pkgs = installed if installed is not None else node_service.installed_index()
     installed_ids = {
@@ -112,7 +113,9 @@ def node_deps(classes: set[str], installed: dict[str, dict] | None = None) -> di
     for name in sorted(classes):
         if name in core:
             continue
-        repo = owner.get(name)
+        # 有些扩展在画布里存显示名（rgthree 的 `Power Lora Loader (rgthree)`），
+        # 清单只给类名，得靠 nodename_pattern 反查，否则只能标「查不到归属」
+        repo = owner.get(name) or node_service.owner_by_pattern(name, patterns)
         if not repo:
             unknown.append(name)
             continue

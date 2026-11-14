@@ -232,6 +232,17 @@ def _build() -> dict[str, Any]:
     for name in core:
         owner.pop(name, None)
 
+    # 有些扩展在画布上存的是**显示名**而不是类名（rgthree 就是典型：
+    # 类名 RgthreePowerLoraLoader，画布里叫 `Power Lora Loader (rgthree)`）。
+    # 清单里的 nodename_pattern 正是为这种情况准备的，覆盖不到的只能标 unknown。
+    patterns: dict[str, str] = {}
+    for slug, item in by_id.items():
+        payload = node_map.get(item["repo"]) if isinstance(node_map, dict) else None
+        if isinstance(payload, list) and len(payload) > 1 and isinstance(payload[1], dict):
+            pattern = payload[1].get("nodename_pattern")
+            if isinstance(pattern, str) and pattern:
+                patterns[slug] = pattern
+
     return {
         "at": time.time(),
         "items": items,
@@ -240,6 +251,7 @@ def _build() -> dict[str, Any]:
         "core": core,
         "classes": classes,
         "repo_classes": repo_classes,
+        "patterns": patterns,
     }
 
 
@@ -776,15 +788,41 @@ def workflow_files(directory: Path | None = None) -> list[Path]:
     return sorted(root.rglob("*.json"))
 
 
+_pat_cache: dict[str, "re.Pattern[str] | None"] = {}
+
+
+def _compile(pattern: str) -> "re.Pattern[str] | None":
+    if pattern not in _pat_cache:
+        try:
+            _pat_cache[pattern] = re.compile(pattern)
+        except re.error:
+            _pat_cache[pattern] = None
+    return _pat_cache[pattern]
+
+
+def owner_by_pattern(name: str, patterns: dict[str, str]) -> str:
+    """显示名 → 仓库。清单里 42 个扩展给了 nodename_pattern（如 ` \\(rgthree\\)$`）。"""
+    for slug, pattern in patterns.items():
+        rx = _compile(pattern)
+        if rx is not None and rx.search(name):
+            return slug
+    return ""
+
+
 def missing(directory: Path | None = None, limit: int = 60) -> dict:
     """工作流用到的节点 − (核心 + 已装)，并反查每个缺口能装哪个扩展。"""
     data = catalog()
     core: set[str] = set(data["core"])
     repo_classes: dict[str, list[str]] = data.get("repo_classes") or {}
+    patterns: dict[str, str] = data.get("patterns") or {}
+    installed_items = installed()
     available: set[str] = set(core)
-    for item in installed():
+    installed_ids: set[str] = set()
+    for item in installed_items:
         if item["disabled"]:
             continue
+        if item["id"]:
+            installed_ids.add(item["id"])
         # 清单给的类名 + 本地静态扫出来的类名/显示名都要算「可用」：
         # rgthree 这类节点在 workflow 里存的是显示名，只比类名会误报缺失
         full = repo_classes.get(item["id"]) if item["id"] else None
@@ -812,15 +850,22 @@ def missing(directory: Path | None = None, limit: int = 60) -> dict:
             continue
         providers: dict[str, dict] = {}
         unknown: list[str] = []
+        still_missing = 0
         for name in sorted(gaps):
-            node_id = owner.get(name)
+            node_id = owner.get(name) or owner_by_pattern(name, patterns)
             if not node_id:
                 unknown.append(name)
+                still_missing += 1
+                continue
+            if node_id in installed_ids:
+                # 已装但本地静态扫没认出这个显示名（映射藏在子目录里）——不该算缺
                 continue
             item = by_id.get(node_id)
             if not item:
                 unknown.append(name)
+                still_missing += 1
                 continue
+            still_missing += 1
             entry = providers.setdefault(
                 node_id,
                 {
@@ -834,6 +879,10 @@ def missing(directory: Path | None = None, limit: int = 60) -> dict:
                 },
             )
             entry["covers"].append(name)
+        if not still_missing:
+            # 缺口全都能解释成「已装但没扫到显示名」，这条工作流其实不缺东西，
+            # 不该留在报告里制造焦虑
+            continue
         try:
             label = path.relative_to(directory or WORKSPACE_WORKFLOWS_DIR).as_posix()
         except ValueError:
@@ -844,7 +893,7 @@ def missing(directory: Path | None = None, limit: int = 60) -> dict:
                 "file": label,
                 "path": str(path),
                 "used": len(used),
-                "missing": len(gaps),
+                "missing": still_missing,
                 "providers": sorted(providers.values(), key=lambda p: -p["node_count"]),
                 "unknown": unknown[:20],
             }

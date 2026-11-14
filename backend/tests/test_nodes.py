@@ -297,6 +297,53 @@ def test_missing_recognizes_display_names_from_installed_nodes(catalog, tmp_path
     assert nodes.missing()["missing_files"] == 0
 
 
+def test_missing_resolves_display_names_via_nodename_pattern(catalog, tmp_path, monkeypatch):
+    """未安装的扩展要靠清单里的 nodename_pattern 把显示名反查回仓库。
+
+    真实案例：rgthree 在画布里存的是 `Power Lora Loader (rgthree)`，
+    而 extension-node-map 里只有类名 `RgthreePowerLoraLoader`。
+    没有这一步，这类节点只能标「查不到归属」，用户不知道装哪个包。
+    """
+    catalog(
+        [entry("rgthree's ComfyUI Nodes", "https://github.com/rgthree/rgthree-comfy")],
+        {
+            "https://github.com/rgthree/rgthree-comfy": [
+                ["RgthreePowerLoraLoader", "RgthreePowerPrompt"],
+                {"nodename_pattern": " \\(rgthree\\)$"},
+            ]
+        },
+    )
+    flows = tmp_path / "workflows"
+    flows.mkdir()
+    (flows / "a.json").write_text(
+        json.dumps(ui_workflow(["RgthreePowerPrompt", "Power Lora Loader (rgthree)"])),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(nodes, "WORKSPACE_WORKFLOWS_DIR", flows)
+
+    report = nodes.missing()["workflows"][0]
+    assert report["unknown"] == []
+    assert [p["id"] for p in report["providers"]] == ["rgthree/rgthree-comfy"]
+    # 类名走 owner 索引、显示名走 pattern，两条都要归到这个包
+    assert sorted(report["providers"][0]["covers"]) == ["Power Lora Loader (rgthree)", "RgthreePowerPrompt"]
+
+
+def test_missing_ignores_already_installed_pattern_match(catalog, tmp_path, monkeypatch):
+    """pattern 命中的仓库已经装了，就不该再报缺（本地静态扫可能漏掉藏在子目录里的映射）。"""
+    catalog(
+        [entry("rgthree", "https://github.com/rgthree/rgthree-comfy")],
+        {"https://github.com/rgthree/rgthree-comfy": [["RgthreePowerLoraLoader"], {"nodename_pattern": " \\(rgthree\\)$"}]},
+    )
+    root = tmp_path / "custom_nodes"
+    write_node(root, "rgthree", remote="https://github.com/rgthree/rgthree-comfy.git", files={"__init__.py": "x = 1\n"})
+    flows = tmp_path / "workflows"
+    flows.mkdir()
+    (flows / "a.json").write_text(json.dumps(ui_workflow(["Power Lora Loader (rgthree)"])), encoding="utf-8")
+    monkeypatch.setattr(nodes, "WORKSPACE_WORKFLOWS_DIR", flows)
+
+    assert nodes.missing()["missing_files"] == 0
+
+
 # ---------------- 管理动作 ----------------
 def test_toggle_renames_dir(catalog, tmp_path, monkeypatch):
     catalog([], {})

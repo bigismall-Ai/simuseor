@@ -102,10 +102,10 @@ def test_empty_slots():
 
 # ---------------- 节点包依赖 ----------------
 
-def _fake_catalog(monkeypatch, *, owner, by_id, core):
+def _fake_catalog(monkeypatch, *, owner, by_id, core, patterns=None):
     monkeypatch.setattr(wd.node_service, "catalog", lambda: {
         "items": [], "by_id": by_id, "owner": owner, "core": core,
-        "classes": {}, "at": 0,
+        "classes": {}, "patterns": patterns or {}, "at": 0,
     })
 
 
@@ -150,6 +150,42 @@ def test_node_deps_collects_unknown_classes(monkeypatch):
     deps = wd.node_deps({"Power Lora Loader (rgthree)", "KSampler"}, installed={})
     assert deps["missing"] == []
     assert deps["unknown"] == ["Power Lora Loader (rgthree)"]
+
+
+def test_node_deps_resolves_display_name_by_pattern(monkeypatch):
+    """画布里存显示名的扩展（rgthree）要靠 nodename_pattern 归到正确的包。
+
+    真实数据里 extension-node-map 只有类名 `RgthreePowerLoraLoader`，
+    工作流里写的是 `Power Lora Loader (rgthree)`；没有这一步，
+    用户只能看到「查不到归属」，不知道该装哪个包。
+    """
+    _fake_catalog(
+        monkeypatch,
+        owner={"RgthreePowerLoraLoader": "rgthree/rgthree-comfy"},
+        by_id={"rgthree/rgthree-comfy": {"id": "rgthree/rgthree-comfy", "name": "rgthree's ComfyUI Nodes",
+                                         "node_count": 24, "installable": True}},
+        core=set(),
+        patterns={"rgthree/rgthree-comfy": r" \(rgthree\)$"},
+    )
+    deps = wd.node_deps({"Power Lora Loader (rgthree)"}, installed={})
+    assert deps["unknown"] == []
+    assert [p["id"] for p in deps["missing"]] == ["rgthree/rgthree-comfy"]
+    assert deps["missing"][0]["covers"] == ["Power Lora Loader (rgthree)"]
+
+
+def test_node_deps_pattern_match_counts_as_installed(monkeypatch):
+    """pattern 命中的包已经装了，就不该再报缺。"""
+    _fake_catalog(
+        monkeypatch,
+        owner={},
+        by_id={"rgthree/rgthree-comfy": {"id": "rgthree/rgthree-comfy", "name": "rgthree", "node_count": 24,
+                                         "installable": True}},
+        core=set(),
+        patterns={"rgthree/rgthree-comfy": r" \(rgthree\)$"},
+    )
+    deps = wd.node_deps({"Power Lora Loader (rgthree)"}, installed={"x": {"id": "rgthree/rgthree-comfy"}})
+    assert deps["missing"] == []
+    assert len(deps["have"]) == 1
 
 
 def test_node_deps_empty_classes(monkeypatch):
