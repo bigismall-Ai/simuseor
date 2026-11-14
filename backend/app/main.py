@@ -1,6 +1,7 @@
 """FastAPI 入口：/api 路由 + Angular 静态托管（SPA 回退）。"""
 from __future__ import annotations
 
+import re
 import sys
 import threading
 from contextlib import asynccontextmanager
@@ -63,6 +64,16 @@ async def source_error_handler(_request, exc: SourceError):
 
 DIST = get_web_dist()
 
+# 静态资源缓存策略：
+# - index.html（以及任何 SPA 回退）**一律不缓存**。它是入口，缓存了就等于把
+#   整个旧版本钉在用户浏览器里 —— 后端明明已经发了新产物，页面却还是旧的。
+#   之前没设 Cache-Control，浏览器会自己猜着缓存，刷新多少次都不生效。
+# - 带 hash 的构建产物（main-XXXX.js / styles-XXXX.css）可以长期缓存：
+#   文件名变了就是新内容，旧的可以放心留着。
+#   注意 Angular 的命名是「名字-HASH.ext」（横杠），不是 Vite 的「名字.HASH.ext」（点），
+#   两种都要认 —— 早先只写了点号那版，结果构建产物也走成 no-cache。
+_IMMUTABLE = re.compile(r"([-.])([0-9A-Za-z_-]{8,})\.(js|css|woff2?|png|jpg|jpeg|svg|webp|ico)$")
+
 
 @app.get("/{full_path:path}")
 def spa(full_path: str):
@@ -75,5 +86,11 @@ def spa(full_path: str):
     if full_path:
         candidate = (DIST / full_path).resolve()
         if candidate.is_file() and base in candidate.parents:
-            return FileResponse(candidate)
-    return FileResponse(DIST / "index.html")
+            headers = (
+                {"Cache-Control": "public, max-age=31536000, immutable"}
+                if _IMMUTABLE.search(candidate.name)
+                else {"Cache-Control": "no-cache"}
+            )
+            return FileResponse(candidate, headers=headers)
+    # SPA 回退：每次都回 index.html，绝不能缓存
+    return FileResponse(DIST / "index.html", headers={"Cache-Control": "no-cache"})
