@@ -1,6 +1,8 @@
 """封面图代理：白名单、重定向校验、按源代理、磁盘缓存。"""
 from __future__ import annotations
 
+import json
+
 import httpx
 import pytest
 
@@ -58,6 +60,10 @@ def isolate(monkeypatch, tmp_path):
     FakeClient.calls = []
     monkeypatch.setattr(image_proxy, "CACHE_DIR", tmp_path / "covers")
     monkeypatch.setattr(image_proxy.httpx, "Client", FakeClient)
+    # 索引是模块级内存副本，测试之间必须重置
+    monkeypatch.setattr(image_proxy, "_index", None)
+    monkeypatch.setattr(image_proxy, "_pending", 0)
+    monkeypatch.setattr(image_proxy, "_last_flush", 0.0)
     monkeypatch.setattr(config, "load_settings", lambda: {
         "proxy": {"host": "127.0.0.1", "port": 7890},
         "sources": {"civitai": {"proxy_enabled": True}},
@@ -112,3 +118,36 @@ def test_rejects_oversized(monkeypatch):
     FakeClient.next_response = _resp(CIVITAI, 200, {"content-type": "image/png"}, b"x" * 64)
     with pytest.raises(image_proxy.CoverError):
         image_proxy.get(CIVITAI)
+
+
+def test_index_records_url_and_stats():
+    FakeClient.next_response = _resp(CIVITAI, 200, {"content-type": "image/jpeg"}, b"1234567890")
+
+    image_proxy.get(CIVITAI)
+    idx = json.loads((image_proxy.CACHE_DIR / "index.json").read_text("utf-8"))
+    entry = next(iter(idx["entries"].values()))
+
+    assert entry["url"] == CIVITAI
+    assert entry["media"] == "image/jpeg"
+    assert entry["bytes"] == 10
+
+    st = image_proxy.stats()
+    assert st["count"] == 1
+    assert st["bytes"] == 10
+    assert st["dir"].endswith("covers")
+
+
+def test_second_hit_counts_and_clear_empties():
+    FakeClient.next_response = _resp(CIVITAI, 200, {"content-type": "image/jpeg"}, b"abc")
+    image_proxy.get(CIVITAI)
+    image_proxy.get(CIVITAI)
+
+    image_proxy._flush(force=True)
+    idx = json.loads((image_proxy.CACHE_DIR / "index.json").read_text("utf-8"))
+    entry = next(iter(idx["entries"].values()))
+    assert entry["hits"] == 1  # 第一次是取图，第二次才算命中
+
+    result = image_proxy.clear()
+    assert result["removed"] >= 1
+    assert result["bytes"] >= 3
+    assert image_proxy.stats()["count"] == 0
