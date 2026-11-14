@@ -14,6 +14,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
+from .. import image_proxy
 from ..comfy.model_dirs import infer_folder
 from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
@@ -797,6 +798,23 @@ def resolve_covers(body: CoversRequest) -> dict:
     with ThreadPoolExecutor(max_workers=min(16, len(groups))) as pool:
         pairs = list(pool.map(run, groups))
     return {"covers": {k: v for k, v in pairs if v}}
+
+
+# ---------------- 封面图代理 ----------------
+@router.get("/cover")
+def cover_image(u: str) -> FileResponse:
+    """把外部封面取到本地再发给浏览器。
+
+    浏览器不挂代理/TUN 时，`image.civitai.com` 之类的图床直连拿不到；由后端按
+    该源自己的代理开关去取，并落到 var/data/cover-cache 长期缓存。
+    """
+    try:
+        path, media = image_proxy.get(u)
+    except image_proxy.CoverError as exc:
+        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+    return FileResponse(
+        path, media_type=media, headers={"Cache-Control": "public, max-age=604800, immutable"}
+    )
 
 
 # ---------------- 代理测试 ----------------

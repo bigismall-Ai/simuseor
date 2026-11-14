@@ -296,7 +296,29 @@ function inferFormat(name: string): string {
  */
 export function thumb(url?: string): string {
   if (!url) return '';
-  return url.replace('/original=true/', '/width=448/');
+  return proxied(url.replace('/original=true/', '/width=448/'));
+}
+
+/**
+ * 交给后端取图（`/api/cover`）。
+ *
+ * 图片是浏览器自己发请求的，后端「元数据走代理」管不到它：浏览器不挂代理/TUN 时，
+ * `image.civitai.com` 直连直接超时，卡片就退回铭牌，看着像「封面是空的」。
+ *
+ * 只代理已知图床，其它地址原样返回 —— 不把任意 URL 塞给后端，也不让站外图片
+ * 借我们的域名做转发。
+ */
+const PROXY_SUFFIX = ['civitai.com', 'civitai.red', 'modelscope.cn', 'huggingface.co', 'hf.co'];
+
+export function proxied(url: string): string {
+  if (!url) return '';
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (!PROXY_SUFFIX.some((s) => host === s || host.endsWith('.' + s))) return url;
+    return `/api/cover?u=${encodeURIComponent(url)}`;
+  } catch {
+    return url;
+  }
 }
 
 /**
