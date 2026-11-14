@@ -94,8 +94,10 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
 
-    await page.getByTitle('收藏').first().click();
-    await expect(page.getByText('★').first()).toBeVisible();
+    // 模型库重构后收藏 / 评审已移除，改为确认入库条目有显存压力标志与目录操作
+    await expect(page.getByTitle('收藏')).toHaveCount(0);
+    await expect(page.locator('.vram-flag').first()).toBeVisible();
+    await expect(page.getByRole('button', { name: '打开目录' }).first()).toBeVisible();
   });
 
   test('下载任务：工作流与模型共用任务表，工作流标出类型', async ({ page }) => {
