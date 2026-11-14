@@ -18,6 +18,20 @@ from .nodes import warm_catalog
 from .sources.base import SourceError
 
 
+def sync_workflow_layout() -> None:
+    """启动时把旧版本留下的「打了分组却还在根目录」收敛成真实目录。
+
+    organize_groups() 是幂等的，全部就位时零写入；目录不可写或侧车损坏也
+    不该挡住服务启动，所以整段吞掉异常。
+    """
+    try:
+        from . import workflows
+
+        workflows.organize_groups()
+    except Exception:
+        pass
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
@@ -27,6 +41,7 @@ async def lifespan(_app: FastAPI):
     # 预热发现页首屏的三条查询。必须放后台线程：它要打三家的网络，慢起来好几秒，
     # 在 lifespan 里同步跑等于让端口晚好几秒才开始监听。
     if "pytest" not in sys.modules:
+        threading.Thread(target=sync_workflow_layout, name="sync-wf-layout", daemon=True).start()
         threading.Thread(target=warm_discover, name="warm-discover", daemon=True).start()
         # 节点清单 5.6MB，第一次进节点页要等十几秒，同样丢后台先拉
         warm_catalog()

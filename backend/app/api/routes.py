@@ -237,7 +237,7 @@ def workflow_covers(body: WorkflowCoversRequest) -> dict:
 
 @router.post("/workflows/local/organize")
 def organize_local_workflows() -> dict:
-    """把分组落成真实目录 —— ComfyUI 侧栏是按目录展示的，读不到我们的侧车分组。"""
+    """幂等兜底：重新同步分组与真实目录。前端已不再需要手动调用。"""
     return workflow_service.organize_groups()
 
 
@@ -260,7 +260,7 @@ def delete_local_workflow(path: str) -> dict:
 
 @router.patch("/workflows/local/meta")
 def set_local_workflow_meta(body: WorkflowMetaRequest) -> dict:
-    """设置自定义名与分组。默认只改本机侧车元数据，不动工作流文件本身。"""
+    """设置自定义名与分组，并自动同步真实目录（分组 = 文件夹）。"""
     try:
         return workflow_service.set_meta(
             body.path, body.title, body.group, body.rename_file
@@ -485,8 +485,7 @@ def list_library(
       created 最新入库
       folder  类别（存放类型）
       size    大小
-    分类筛选与分类排序都依赖现算的分类结果 —— 数据库里没这两列，
-    所以只能在内存里过。
+    类别排序依赖现算的分类结果，所以那一档在 Python 侧排 —— 数据库里没这一列。
     """
     import json as _json
 
@@ -511,6 +510,7 @@ def list_library(
         m["files"] = query("SELECT id, path, size FROM library_files WHERE model_id=? ORDER BY path", (m["id"],))
         m.update(describe_model(m["local_path"], m["name"], m["tags"], m.get("size_bytes") or 0))
 
+    # 分类筛选（存放类型 / 任务类型）是现算的，只能在内存里过
     if folder:
         models = [m for m in models if m["folder"] == folder]
     if task:

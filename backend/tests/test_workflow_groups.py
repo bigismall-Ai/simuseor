@@ -75,20 +75,23 @@ def test_list_groups_merges_defined_and_in_use(env):
 def test_rename_group_moves_dir_and_cover_keys(env):
     a = _wf(env, "人像/a.json", "人像", "甲")
     b = _wf(env, "b.json", "人像")
+    # 设分组即自动落目录，b 不该还留在根目录等手动整理
+    assert (env / "人像" / "b.json").is_file()
     wc.pin("人像/a.json", "https://img/old.png")
 
     got = workflows.rename_group("人像", "肖像")
 
     assert got["renamed"] == 2
-    assert got["moved"] == 1
+    assert got["moved"] == 2
     assert (env / "肖像" / "a.json").is_file()
+    assert (env / "肖像" / "b.json").is_file()
     assert not (env / "人像").exists()
-    assert a.exists() is False and b.is_file()
+    assert a.exists() is False and b.exists() is False
 
     raw = _raw()
     assert raw["肖像/a.json"]["group"] == "肖像"
     assert raw["肖像/a.json"]["title"] == "甲"
-    assert raw["b.json"]["group"] == "肖像"
+    assert raw["肖像/b.json"]["group"] == "肖像"
     assert "人像/a.json" not in raw
 
     # 封面按相对路径索引：目录一改，钉图也要跟着搬
@@ -133,6 +136,9 @@ def test_delete_group_clears_markers_but_keeps_files(env):
     got = workflows.delete_group("人像")
 
     assert got["cleared"] == 2
+    # 删组后文件自动回到根目录，空的分组文件夹也要消失
+    assert got["restored"] == 2
+    assert not (env / "人像").exists()
     assert a.is_file()
     raw = _raw()
     assert set(raw["a.json"]) == {"title", "updated_at"}

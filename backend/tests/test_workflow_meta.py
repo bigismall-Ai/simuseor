@@ -34,21 +34,23 @@ def test_meta_key_is_relative_path_not_filename(wf_dir):
     a = _write(wf_dir / "pack1" / "shot.json", {"nodes": []})
     b = _write(wf_dir / "pack2" / "shot.json", {"nodes": []})
 
-    workflows.set_meta(str(a), "甲", "组一")
-    workflows.set_meta(str(b), "乙", "组二")
+    got_a = workflows.set_meta(str(a), "甲", "组一")
+    got_b = workflows.set_meta(str(b), "乙", "组二")
 
-    # 两个同名文件按路径区分，不能互相覆盖
+    # 设了分组就自动落成目录；两个同名文件各在各的组目录，不会撞
+    assert got_a["key"] == "组一/shot.json"
+    assert got_b["key"] == "组二/shot.json"
     raw = json.loads(workflows.WORKFLOW_META_PATH.read_text(encoding="utf-8"))
-    assert set(raw) == {"pack1/shot.json", "pack2/shot.json"}
-    assert raw["pack1/shot.json"]["title"] == "甲"
-    assert raw["pack2/shot.json"]["title"] == "乙"
+    assert set(raw) == {"组一/shot.json", "组二/shot.json"}
+    assert raw["组一/shot.json"]["title"] == "甲"
+    assert raw["组二/shot.json"]["title"] == "乙"
 
     # 列表里两条都带着各自的元数据
     by_path = {it["path"]: it for it in workflows.local()["items"]}
-    assert by_path[str(a)]["title"] == "甲"
-    assert by_path[str(a)]["group"] == "组一"
-    assert by_path[str(b)]["title"] == "乙"
-    assert by_path[str(b)]["group"] == "组二"
+    one = by_path[str(wf_dir / "组一" / "shot.json")]
+    two = by_path[str(wf_dir / "组二" / "shot.json")]
+    assert (one["title"], one["group"]) == ("甲", "组一")
+    assert (two["title"], two["group"]) == ("乙", "组二")
 
 
 def test_title_and_group_roundtrip(wf_dir):
@@ -67,8 +69,14 @@ def test_empty_title_and_group_clears_entry(wf_dir):
 
     workflows.set_meta(str(target), "临时", "组")
     assert workflows.WORKFLOW_META_PATH.exists()
+    grouped = wf_dir / "组" / "a.json"
+    assert grouped.is_file()
 
-    workflows.set_meta(str(target), "", "")
+    # 取消分组会自动把文件送回根目录，不需要手动整理
+    cleared = workflows.set_meta(str(grouped), "", "")
+    assert cleared["moved"] and cleared["key"] == "a.json"
+    assert (wf_dir / "a.json").is_file()
+    assert not (wf_dir / "组").exists()
 
     raw = json.loads(workflows.WORKFLOW_META_PATH.read_text(encoding="utf-8"))
     assert raw == {}, f"清空后应不留空壳条目，实际：{raw}"
@@ -95,29 +103,33 @@ def test_ungrouped_is_not_listed(wf_dir):
 
 
 def test_meta_does_not_touch_workflow_file(wf_dir):
-    """改名分组不能动工作流文件本身。"""
+    """改名分组只移动文件，绝不改写画布内容 —— ComfyUI 还要读它。"""
     target = _write(wf_dir / "a.json", {"nodes": [{"id": 1}]})
     before = target.read_text(encoding="utf-8")
     mtime_before = target.stat().st_mtime
 
-    workflows.set_meta(str(target), "新名字", "新组")
+    got = workflows.set_meta(str(target), "新名字", "新组")
 
-    assert target.read_text(encoding="utf-8") == before
-    assert target.stat().st_mtime == mtime_before
-    assert target.exists()
+    moved = wf_dir / "新组" / "a.json"
+    assert not target.exists() and moved.is_file()
+    assert moved.read_text(encoding="utf-8") == before
+    assert moved.stat().st_mtime == mtime_before
+    assert got["folder"] == "新组"
 
 
 def test_rename_file_moves_meta_key(wf_dir):
     """勾选「同时重命名文件」时，侧车键要跟着换，否则自定义名会丢。"""
     target = _write(wf_dir / "old.json", {"nodes": []})
-    workflows.set_meta(str(target), "旧名字", "组")
+    first = workflows.set_meta(str(target), "旧名字", "组")
+    grouped = wf_dir / "组" / "old.json"
+    assert first["key"] == "组/old.json"
 
-    result = workflows.set_meta(str(target), "新名字", "组", rename_file=True)
+    result = workflows.set_meta(str(grouped), "新名字", "组", rename_file=True)
 
     assert result["file"] == "新名字.json"
-    assert (wf_dir / "新名字.json").exists()
-    assert not (wf_dir / "old.json").exists()
-    assert result["key"] == "新名字.json"
+    assert (wf_dir / "组" / "新名字.json").is_file()
+    assert not grouped.exists()
+    assert result["key"] == "组/新名字.json"
 
     item = workflows.local()["items"][0]
     assert item["name"] == "新名字"
@@ -148,12 +160,15 @@ def test_delete_local_forgets_cover(wf_dir, monkeypatch):
 
 def test_rename_file_does_not_overwrite(wf_dir):
     target = _write(wf_dir / "a.json", {"nodes": []})
-    _write(wf_dir / "占用.json", {"nodes": []})
+    _write(wf_dir / "组" / "占用.json", {"nodes": []})
 
-    workflows.set_meta(str(target), "占用", "组", rename_file=True)
+    result = workflows.set_meta(str(target), "占用", "组", rename_file=True)
 
-    assert (wf_dir / "a.json").exists()  # 原文件还在，没被覆盖
-    assert (wf_dir / "占用.json").exists()
+    # 组目录里已有同名：不覆盖，改成加序号落进去
+    assert result["file"] == "占用.json"
+    assert (wf_dir / "组" / "占用.json").read_text(encoding="utf-8") == '{"nodes": []}'
+    assert (wf_dir / "组" / "占用-2.json").is_file()
+    assert not (wf_dir / "占用.json").exists()
 
 
 def test_rename_file_sanitises_illegal_chars(wf_dir):

@@ -184,24 +184,19 @@ export class ApiService {
     });
   }
 
-  /** 把分组落成真实目录，让 ComfyUI 侧栏也能按分组看到工作流。 */
-  organizeLocalWorkflows(): Observable<{ moved: number; items: Array<{ from: string; to: string; group: string }> }> {
-    return this.http.post<{ moved: number; items: Array<{ from: string; to: string; group: string }> }>(
-      `${this.base}/workflows/local/organize`,
-      {},
-    );
-  }
-
   setLocalWorkflowMeta(body: {
     path: string;
     title: string;
     group: string;
     rename_file: boolean;
-  }): Observable<{ title: string; group: string; file: string; key: string }> {
-    return this.http.patch<{ title: string; group: string; file: string; key: string }>(
-      `${this.base}/workflows/local/meta`,
-      body,
-    );
+  }): Observable<{
+    title: string; group: string; file: string; key: string;
+    moved?: boolean; folder?: string;
+  }> {
+    return this.http.patch<{
+      title: string; group: string; file: string; key: string;
+      moved?: boolean; folder?: string;
+    }>(`${this.base}/workflows/local/meta`, body);
   }
 
   deleteLocalWorkflow(path: string): Observable<{ deleted: string; key: string }> {

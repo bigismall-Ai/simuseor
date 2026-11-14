@@ -1356,35 +1356,44 @@ test.describe('Model Downloader Web UI', () => {
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
-  test('我的工作流：按分组整理目录走确认并调用后端', async ({ page }) => {
-    let called = 0;
+  test('我的工作流：变更分组自动同步文件夹，无需手动整理', async ({ page }) => {
     await mockLocalWorkflows(page);
+    let organizeCalls = 0;
+    let patchBody: any = null;
     await page.route((url: URL) => url.pathname === '/api/workflows/local/organize', (route: any) => {
-      called += 1;
-      return route.fulfill({ json: { moved: 1, items: [{ from: 'a.json', to: '人像/a.json', group: '人像' }] } });
+      organizeCalls += 1;
+      return route.fulfill({ json: { moved: 0, items: [] } });
+    });
+    await page.route((url: URL) => url.pathname === '/api/workflows/local/meta', (route: any) => {
+      patchBody = route.request().postDataJSON();
+      return route.fulfill({
+        json: {
+          title: patchBody.title, group: patchBody.group, file: '',
+          key: '人像/a.json', moved: true, folder: '人像',
+        },
+      });
     });
 
     await page.goto('/workflows');
-    // 整理目录已从 ⋯ 菜单移到分组管理框底部
-    await page.getByRole('button', { name: '分组管理' }).click();
-    await page.getByTestId('gm-organize').click();
+    // 手动整理入口已经整个移除，管理与确认弹层都不该出现
+    await page.getByTestId('lw-groups-manage').click();
+    const manager = page.getByRole('dialog', { name: '分组管理' });
+    await expect(manager.getByTestId('gm-organize')).toHaveCount(0);
+    await expect(manager).not.toContainText('按分组整理');
+    await expect(page.getByRole('alertdialog', { name: '按分组整理目录' })).toHaveCount(0);
+    await manager.getByTestId('gm-close').click();
 
-    const dialog = page.getByRole('alertdialog', { name: '按分组整理目录' });
-    await expect(dialog).toBeVisible();
+    // 改完分组保存，目录同步由后端在保存时做掉，前端不再补一次请求
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /重命名/ }).click();
+    const dialog = page.getByRole('dialog', { name: '重命名与分组' });
+    await dialog.getByTestId('lw-edit-group').selectOption('人像');
+    await dialog.getByRole('button', { name: '保存' }).click();
 
-    // 取消不该动文件
-    await dialog.getByRole('button', { name: '取消' }).click();
-    await expect(dialog).toBeHidden();
-    expect(called).toBe(0);
-
-    await page.getByRole('button', { name: '分组管理' }).click();
-    await page.getByTestId('gm-organize').click();
-    await page.getByRole('alertdialog').getByRole('button', { name: '整理' }).click();
-
-    await expect.poll(() => called).toBe(1);
-    // 动作结果是右下角悬浮 toast，不是插在列表上方的一段文字
+    await expect.poll(() => patchBody?.group).toBe('人像');
+    expect(organizeCalls).toBe(0);
     const toast = page.getByTestId('wf-toast');
-    await expect(toast).toContainText('移进分组目录');
+    await expect(toast).toContainText('人像');
     expect(await toast.evaluate((el) => getComputedStyle(el).position)).toBe('fixed');
     await page.screenshot({ path: ART + '/32-workflow-organize.png', fullPage: true });
     await toast.getByTestId('wf-toast-close').click();

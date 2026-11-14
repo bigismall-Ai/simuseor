@@ -521,19 +521,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       </div>
     }
 
-    <!-- 整理目录：把虚拟分组落成真实文件夹，ComfyUI 侧栏才看得见 -->
-    @if (pendingOrganize) {
-      <div class="wf-modal-mask" (click)="pendingOrganize = false"></div>
-      <div class="wf-modal" role="alertdialog" aria-modal="true" aria-label="按分组整理目录">
-        <h2>按分组整理目录？</h2>
-        <p class="wf-modal-sub wrap">把分组变成真实文件夹，ComfyUI 侧栏才会按分组显示。</p>
-        <div class="wf-modal-ops">
-          <button class="btn-xs" (click)="pendingOrganize = false">取消</button>
-          <button class="primary btn-xs" (click)="runOrganize()">整理</button>
-        </div>
-      </div>
-    }
-
     <!-- 分组管理：新建 / 改名 / 删除都在这里，变更分组的弹层不掺和改名 -->
     @if (groupMgr) {
       <div class="wf-modal-mask stack" (click)="closeGroupManager()"></div>
@@ -572,13 +559,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
         </div>
 
         @if (groupMgr.error) { <p class="gm-error">{{ groupMgr.error }}</p> }
-        <div class="wf-modal-ops between">
-          @if (hasGroups) {
-            <button class="btn-xs" (click)="askOrganize()" data-testid="gm-organize"
-                    title="把分组落成真实文件夹，ComfyUI 侧栏才能按分组显示">
-              按分组整理到文件夹…
-            </button>
-          }
+        <div class="wf-modal-ops">
           <button class="btn-xs" (click)="closeGroupManager()" data-testid="gm-close">关闭</button>
         </div>
       </div>
@@ -1033,7 +1014,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       justify-content: flex-end;
       gap: 8px;
     }
-    .wf-modal-ops.between { justify-content: space-between; }
 
     /* ---- 分组管理 / 变更分组里的轻量动作 ---- */
     .wf-modal.wide { width: 480px; }
@@ -1534,8 +1514,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   editing: { item: LocalWorkflow; title: string; group: string; rename: boolean } | null = null;
   /** 删除二次确认 */
   pendingDelete: LocalWorkflow | null = null;
-  /** 按分组整理目录的确认 */
-  pendingOrganize = false;
   /** 分组管理弹层：新建 / 改名 / 删除都收在这里 */
   groupMgr: {
     draft: string;
@@ -1911,7 +1889,9 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.editing = null;
-          this.notice = res.file ? `已重命名为「${res.file}」` : '已保存';
+          // 分组已在后端自动落成真实目录，顺带说一句结果，不用再让用户点整理
+          const where = res.folder ? ` · 已归入「${res.folder}」` : '';
+          this.notice = `${res.file ? `已重命名为「${res.file}」` : '已保存'}${where}`;
           this.loadLocal();
         },
         error: (err) => (this.localError = errMsg(err, '保存失败')),
@@ -1942,43 +1922,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.pendingDelete = null;
         this.localError = errMsg(err, '删除失败');
-      },
-    });
-  }
-
-  /** 是否存在分组 —— 没有分组时「整理目录」无意义，菜单里不显示 */
-  get hasGroups(): boolean {
-    return this.local.some((it) => (it.group || '').trim().length > 0);
-  }
-
-  askOrganize(): void {
-    this.closeMenu();
-    // 整理是全局动作：从分组管理框进入时把上层弹层一起收掉，
-    // 免得编辑框还挂在被移动前的旧路径上。
-    this.editing = null;
-    this.groupMgr = null;
-    this.pendingOrganize = true;
-  }
-
-  /**
-   * 把分组落成真实目录。
-   *
-   * ComfyUI 的工作流侧栏是**按目录**展示的，读不到我们的侧车分组标记
-   * （那份元数据在 var/data/workflow_meta.json，ComfyUI 根本不看）。
-   * 所以想让两边看到同一套分组，唯一可靠的做法是把分组变成目录。
-   */
-  runOrganize(): void {
-    this.api.organizeLocalWorkflows().subscribe({
-      next: (res) => {
-        this.pendingOrganize = false;
-        this.notice = res.moved
-          ? `已把 ${res.moved} 个工作流移进分组目录，ComfyUI 侧栏会按文件夹显示`
-          : '没有需要整理的工作流';
-        this.loadLocal();
-      },
-      error: (err) => {
-        this.pendingOrganize = false;
-        this.localError = errMsg(err, '整理失败');
       },
     });
   }
@@ -2086,7 +2029,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
           }
         }
         this.savePrefs();
-        this.notice = `分组「${old}」已改名为「${name}」`;
+        this.notice = `分组「${old}」已改名为「${name}」，目录已同步`;
         this.loadLocal();
       },
       error: (err) => (mgr.error = errMsg(err, '改名失败')),
@@ -2113,7 +2056,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
         if (this.groupFilter === name) this.groupFilter = null;
         if (this.editing && this.editing.group === name) this.editing.group = '';
         this.savePrefs();
-        this.notice = `已删除分组「${name}」，工作流保留`;
+        this.notice = `已删除分组「${name}」，文件已回到根目录`;
         this.loadLocal();
       },
       error: (err) => (mgr.error = errMsg(err, '删除分组失败')),
@@ -2296,10 +2239,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     }
     if (this.pendingDelete) {
       this.pendingDelete = null;
-      return;
-    }
-    if (this.pendingOrganize) {
-      this.pendingOrganize = false;
       return;
     }
     if (this.drawerOf) this.closeDrawer();

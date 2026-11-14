@@ -21,6 +21,7 @@ import sys
 import threading
 import time
 import zipfile
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Callable
@@ -976,13 +977,16 @@ def rename_group(old: str, new: str) -> dict:
                 rename_cover_key(key, new_key)
                 moved += 1
     save_meta(meta)
-    return {"old": old, "name": new, "renamed": changed, "moved": moved}
+    # 目录改名只覆盖已经整理过的条目；还留在根目录的同组工作流也要一起归位
+    synced = organize_groups(extra_dirs={_safe_dir(old)})["moved"]
+    return {"old": old, "name": new, "renamed": changed, "moved": moved, "synced": synced}
 
 
 def delete_group(name: str) -> dict:
-    """删除分组：只清标记，工作流本身和已整理的目录都不动。
+    """删除分组：清标记，并把已整理进该组目录的工作流移回根目录。
 
-    删文件是不可逆操作，分组只是个标签；目录留在原地，用户要挪走可以自己整理。
+    文件本身不删。先同步目录再清「只剩时间戳」的空壳条目，否则 organize_groups()
+    找不到它们的键，这些文件就会留在那个已经不存在的分组文件夹里。
     """
     name = _valid_group(name)
     meta = load_meta()
@@ -991,8 +995,6 @@ def delete_group(name: str) -> dict:
         if not isinstance(entry, dict) or (entry.get("group") or "").strip() != name:
             continue
         entry.pop("group", None)
-        if not entry.get("title"):
-            meta.pop(key, None)  # 只剩时间戳的空壳条目
         cleared += 1
     defs = [n for n in _defined_groups(meta) if n != name]
     if GROUPS_KEY in meta:
@@ -1001,7 +1003,14 @@ def delete_group(name: str) -> dict:
         else:
             meta.pop(GROUPS_KEY, None)
     save_meta(meta)
-    return {"name": name, "cleared": cleared}
+
+    restored = organize_groups(extra_dirs={_safe_dir(name)})["moved"]
+    meta = load_meta()
+    for key, entry in list(meta.items()):
+        if isinstance(entry, dict) and not entry.get("title") and not entry.get("group"):
+            meta.pop(key, None)  # 只剩时间戳的空壳条目
+    save_meta(meta)
+    return {"name": name, "cleared": cleared, "restored": restored}
 
 
 def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = False) -> dict:
@@ -1010,6 +1019,7 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
     - title 为空 → 清除自定义名（回落文件名）
     - group 为空 → 取消分组
     - rename_file=True 时同时把真实文件改名（ComfyUI 里也会显示新名字）
+    - 保存后自动同步真实目录，不需要用户再点一次「按分组整理」
     """
     root = WORKSPACE_WORKFLOWS_DIR.resolve()
     target = Path(path).resolve()
@@ -1029,6 +1039,8 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
 
     key = _rel_key(target)
     meta = load_meta()
+    previous = meta.get(key)
+    old_group = (previous.get("group") or "").strip() if isinstance(previous, dict) else ""
     # 重建而不是就地改：旧条目里可能只剩 updated_at，
     # 就地 pop 会把它留下来 → 清空后变成只有时间戳的空壳条目。
     entry: dict = {}
@@ -1061,33 +1073,77 @@ def set_meta(path: str, title: str = "", group: str = "", rename_file: bool = Fa
                 # 封面按路径索引：不搬过去就等于「改个名字换了张封面」
                 rename_cover_key(key, new_key)
 
-    return {"title": title, "group": group, "file": renamed, "key": new_key}
+    # 分组就是目录：保存后立刻把这一条（以及任何历史错位）落到对应文件夹。
+    # 旧组要作为额外托管目录传进去 —— 换组/取消分组时，旧目录里的文件得回到根目录。
+    # 清空标题+分组会删掉侧车条目，这时得把文件当「孤儿键」传进去，否则它会滞留在旧目录。
+    orphan = () if new_key in meta else (new_key,)
+    sync = organize_groups(
+        extra_dirs={_safe_dir(old_group)} if old_group and old_group != group else (),
+        orphan_keys=orphan,
+    )
+    final_key = new_key
+    for item in sync["items"]:
+        if item["from"] == new_key:
+            final_key = item["to"]
+            break
+    folder = final_key.rsplit("/", 1)[0] if "/" in final_key else ""
+    return {
+        "title": title,
+        "group": group,
+        "file": renamed,
+        "key": final_key,
+        "moved": final_key != new_key,
+        "folder": folder,
+    }
 
 
-def organize_groups() -> dict:
-    """把打了分组的工作流移动到以分组命名的子目录里。
+def _managed_dirs(meta: dict, extra: Iterable[str] = ()) -> set[str]:
+    """由「分组」产生的目录名。只有这些目录里的文件会被引擎搬回根目录。"""
+    names = {_safe_dir(g["name"]) for g in meta_groups(meta)}
+    names.update(_safe_dir(g) for g in _defined_groups(meta))
+    names.update(d for d in extra if d)
+    return names
 
-    ComfyUI 的工作流侧栏是**按目录**展示的，它读不到我们的侧车分组标记
-    （那份元数据在 `var/data/workflow_meta.json`，ComfyUI 根本不看）。
-    所以想让两边看到同一套分组，唯一可靠的做法是把分组变成真实目录。
+
+def organize_groups(
+    extra_dirs: Iterable[str] = (), orphan_keys: Iterable[str] = ()
+) -> dict:
+    """把「分组」与真实目录同步（幂等），让 ComfyUI 侧栏看到同一套分组。
+
+    ComfyUI 的工作流侧栏只按目录展示，读不到侧车里的分组标记。因此
+    「分组 = 目录」是一条持续成立的不变量：设置 / 更换 / 取消分组、分组改名
+    与删除之后都会自动调用本函数；服务启动时也跑一次，收敛旧版本留下的
+    「打了分组却还在根目录」的历史数据。全部就位时这里零写入。
+
+    额外目录（刚被删掉的分组）由 extra_dirs 传入：这时组名已不在清单里，
+    但里面的文件仍要回到根目录，否则侧栏会挂着一个不存在的分组文件夹。
+    orphan_keys 是「刚被清掉侧车条目、但文件还没归位」的键，同样只同步目录、
+    不写回侧车 —— 清空标题和分组时元数据会被整个删掉，光靠遍历 meta 会漏掉它。
     """
     root = WORKSPACE_WORKFLOWS_DIR.resolve()
     meta = load_meta()
+    managed = _managed_dirs(meta, extra_dirs)
+    keys = list(meta) + [k for k in orphan_keys if k and k not in meta]
     moved: list[dict] = []
-    for key, entry in list(meta.items()):
-        if not isinstance(entry, dict):
-            continue
-        group = (entry.get("group") or "").strip()
-        if not group:
-            continue
+    emptied: set[Path] = set()
+    for key in keys:
+        stored = meta.get(key)
+        tracked = isinstance(stored, dict)
+        entry: dict = stored if tracked else {}
         src = root / key
         if not src.is_file():
             continue
-        safe = re.sub(r'[\\/:*?"<>|]+', "_", group).strip() or "未分组"
-        if src.parent == root / safe:
-            continue  # 已经在目标目录里
-        target = root / safe / src.name
-        target.parent.mkdir(parents=True, exist_ok=True)
+        group = (entry.get("group") or "").strip()
+        if group:
+            dest_dir = root / _safe_dir(group)
+        elif src.parent != root and src.parent.name in managed:
+            dest_dir = root  # 取消 / 删除分组后从分组目录回到根
+        else:
+            continue  # 用户自己在 ComfyUI 里建的文件夹，别乱搬
+        if src.parent == dest_dir:
+            continue
+        target = dest_dir / src.name
+        dest_dir.mkdir(parents=True, exist_ok=True)
         if target.exists():
             # 同名不覆盖：加序号而不是问用户，这里没有交互的机会
             stem, suffix = target.stem, target.suffix
@@ -1100,14 +1156,24 @@ def organize_groups() -> dict:
         except OSError:
             continue
         new_key = _rel_key(target)
-        meta.pop(key, None)
-        entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
-        meta[new_key] = entry
-        # 搬目录也一样：封面缓存跟着键走
+        if tracked:
+            meta.pop(key, None)
+            entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+            meta[new_key] = entry
+        # 封面缓存按相对路径索引，搬目录必须一起迁
         rename_cover_key(key, new_key)
         moved.append({"from": key, "to": new_key, "group": group})
+        emptied.add(src.parent)
     if moved:
         save_meta(meta)
+    # 只清刚刚搬空的目录，别碰用户自己建的空文件夹
+    for folder in emptied:
+        if folder == root or not folder.is_dir():
+            continue
+        try:
+            folder.rmdir()
+        except OSError:
+            pass
     return {"moved": len(moved), "items": moved}
 
 
