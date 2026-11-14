@@ -115,11 +115,10 @@ import { PanelComponent } from '../ui/panel.component';
                     <input [value]="tagsText(m)" (blur)="saveTags(m, $event)" placeholder="逗号分隔">
                   </td>
                   <td class="cell-vram">
-                    <span class="vram-flag" [class]="vramClass(m)" [title]="vramTip(m)">
-                      @if (vramPct(m) !== null) {
-                        <span class="vram-gauge" [style.--fill]="vramFill(m) + '%'"></span>
-                      }
-                    </span>
+                    @if (vramPct(m) !== null) {
+                      <span class="vram-gauge" [style.--fill]="vramFill(m) + '%'"
+                            [title]="vramTip(m)"></span>
+                    }
                   </td>
                   <td>
                     <div class="toolbar">
@@ -148,33 +147,33 @@ import { PanelComponent } from '../ui/panel.component';
          底衬不透明 —— 半透明底压在封面上会跟背景图混，颜色就不纯了。
          纯红 #FF0000 只用在「满格」这个图形上（图形对比度门槛 3:1），
          底衬用同色系浅红 —— 纯红铺满一屏几十张卡会变成警告墙。 */
-      .vram-flag {
-        display: block;
-      }
       /* 填充式渐变条：灰底 + 按 --fill 裁切的绿→黄→红渐变。
          渐变铺满整条再用 clip-path 裁出左侧填充段 ——
          用 background-size 压缩会把整条渐变塞进那一小段（错）。
          **不给数字** —— needGb = weightGb × factor 是经验系数，
          实际占用因 offload / attention 实现 / 量化方式而差很多。 */
+      /* 填充式渐变条 + 斜纹质感（跟权重缺失的斜纹是同一套语言）。
+         纯色填充太「平」，斜纹才跟卡片整体质感一致。 */
       .vram-gauge {
         position: relative;
         display: block;
         width: 62px;
-        height: 6px;
+        height: 9px;
         background: var(--border-strong);
       }
       .vram-gauge::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(to right,
-          #15803d 0%, #15803d 26%,
-          #b45309 56%, #b45309 74%,
-          #ff0000 100%);
+        background:
+          repeating-linear-gradient(-45deg,
+            rgb(255 255 255 / 0.22) 0 3px, transparent 3px 7px),
+          linear-gradient(to right,
+            #15803d 0%, #15803d 26%,
+            #b45309 56%, #b45309 74%,
+            #ff0000 100%);
         clip-path: inset(0 calc(100% - var(--fill)) 0 0);
       }
-      /* 无法判定（无独显）：整条中性灰，无填充 */
-      .v-na .vram-gauge::before { display: none; }
 
       .stat-strip {
         display: flex;
@@ -325,11 +324,6 @@ export class LibraryComponent implements OnInit {
     const pct = this.vramPct(m);
     if (pct === null) return 0;
     return Math.max(0, Math.min(pct, 100));
-  }
-
-  /** 无法判定（无独显）：整条中性灰。 */
-  vramClass(m: LibraryModel): string {
-    return this.vramPct(m) === null ? 'v-na' : 'v-ok';
   }
 
   vramTip(m: LibraryModel): string {
