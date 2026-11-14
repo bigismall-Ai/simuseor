@@ -129,24 +129,54 @@ const SORTS = [
           <ui-panel>
             <div class="lw-list">
               @for (it of filtered; track it.path) {
-                <div class="lw-row">
-                  <div class="lw-body">
-                    <p class="lw-name" [title]="it.path">
-                      <ui-family-mark class="lw-mark" [model]="it.main_model || ''" />
-                      {{ it.title || it.name }}
-                      @if (it.format === 'api') {
-                        <span class="lw-tag">API</span>
-                      }
-                    </p>
-                    @if (it.group) {
-                      <p class="lw-sub">{{ it.group }}</p>
+                <div class="lw-row" [class.broken]="stateOf(it) === 'broken'">
+                  <!-- 缩略图：卡片有封面，列表也得有，否则同一份资产在两个视图里认不出是同一件 -->
+                  <span class="lw-thumb">
+                    @if (it.cover && stateOf(it) !== 'broken') {
+                      <img [src]="it.cover" alt="" referrerpolicy="no-referrer" loading="lazy" />
+                    } @else if (stateOf(it) === 'broken') {
+                      <span class="lw-thumb-err">!</span>
+                    } @else {
+                      <ui-family-mark [model]="it.main_model || ''" />
                     }
+                  </span>
+
+                  <div class="lw-body">
+                    <p class="lw-name" [title]="it.path">{{ it.title || it.name }}</p>
+                    <p class="lw-sub">
+                      @if (it.group) {
+                        <span class="lw-grp">{{ it.group }}</span>
+                      }
+                      <span>{{ it.nodes }} 节点 · {{ fmtSize(it.size) }} · {{ ago(it.mtime) }}</span>
+                    </p>
                   </div>
-                  <span class="lw-num">{{ it.nodes }}</span>
-                  <span class="lw-num">{{ depText(it) }}</span>
-                  <span class="lw-num">{{ fmtSize(it.size) }}</span>
-                  <time class="lw-time">{{ ago(it.mtime) }}</time>
-                  <button class="btn-xs lw-open" (click)="reveal(it)" title="在文件管理器中定位">定位</button>
+
+                  <!-- 徽标与主按钮：和卡片同一套四态映射，不另立一套 -->
+                  <span class="lw-badge" [attr.data-tone]="badgeOf(it).tone" [title]="badgeOf(it).tip">
+                    {{ badgeOf(it).text }}
+                  </span>
+                  @if (it.format === 'ui' || it.format === 'api') {
+                    <span class="lw-fmt" [class.api]="it.format === 'api'">
+                      {{ it.format === 'api' ? 'API' : 'UI' }}
+                    </span>
+                  }
+                  <button
+                    class="lw-primary"
+                    [class.ghost]="actOf(it) === 'edit'"
+                    (click)="onPrimary({ item: it, act: actOf(it) })"
+                  >
+                    {{ actLabel(it) }}
+                  </button>
+                  <button
+                    class="lw-kebab"
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-label="更多操作"
+                    title="更多操作"
+                    (click)="openMoreFromList(it, $event)"
+                  >
+                    ⋯
+                  </button>
                 </div>
               }
             </div>
@@ -712,7 +742,7 @@ const SORTS = [
       align-items: center;
       gap: 10px;
       padding-bottom: 9px;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border);
       font-size: 11.5px;
     }
     .lw-count { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -727,71 +757,134 @@ const SORTS = [
     }
     .lw-bar button { margin-left: auto; }
 
-    /* 列头与行共用同一套列宽：数字右对齐成一列，扫读时才不用一行行找 */
-    .lw-head,
+    /* 列表行：与卡片同构 —— 缩略图 → 名称/规格 → 徽标 → 格式 → 唯一主按钮 → ⋯。
+       用 flex 而不是 grid：文本列给固定宽度会在标题长短不一时刻意留白，
+       这里只有操作区对齐（固定在右端），其余按内容自然排。 */
     .lw-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 52px 78px 76px 52px;
+      display: flex;
       align-items: center;
-      gap: 12px;
-    }
-    .lw-head {
-      padding: 8px 2px 7px;
-      font-size: 10.5px;
-      color: var(--muted);
-      letter-spacing: 0.02em;
-    }
-    .lw-row {
+      gap: 11px;
       padding: 9px 2px;
-      border-top: 1px solid var(--border-soft);
+      border-top: 1px solid var(--border);
     }
-    .lw-row:hover { background: var(--panel-2); }
-    .lw-body { min-width: 0; }
+    .lw-row:first-child { border-top: 0; }
+    .lw-row:hover { background: var(--hover); }
+
+    .lw-thumb {
+      flex: none;
+      width: 44px;
+      height: 30px;
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: var(--panel-3);
+    }
+    .lw-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lw-thumb-err { color: var(--err); font-size: 13px; font-weight: 700; }
+
+    .lw-body { flex: 1; min-width: 0; }
     .lw-name {
+      margin: 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lw-sub {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.4;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .lw-tag {
-      flex: none;
-      padding: 0 4px;
-      border-radius: var(--radius-xs);
-      background: var(--chip);
-      color: var(--muted);
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-    .lw-sub {
       margin: 2px 0 0;
-      font-size: 10.5px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .lw-num {
-      font-size: 11.5px;
-      color: var(--text-2);
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-    .lw-right { text-align: right; }
-    .lw-time {
       font-size: 11px;
       color: var(--muted);
-      text-align: right;
-      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lw-grp {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      height: 16px;
+      padding: 0 5px;
+      border-radius: var(--radius-xs);
+      background: var(--panel-3);
+      color: var(--text-2);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* 徽标用语义色浅底：列表是平铺的，不需要卡片那种压图用的深底 */
+    .lw-badge {
+      flex: none;
+      padding: 2px 8px;
+      border-radius: var(--radius-xs);
+      font-size: 11px;
+      font-weight: 600;
       white-space: nowrap;
     }
-    .lw-open { justify-self: end; }
+    .lw-badge[data-tone='warn'] { color: var(--warn); background: var(--warn-soft); }
+    .lw-badge[data-tone='note'] { color: var(--warn); background: var(--warn-soft); }
+    .lw-badge[data-tone='err'] { color: var(--err); background: var(--err-soft); }
+    .lw-badge[data-tone='muted'] { color: var(--text-2); background: var(--panel-3); }
+
+    .lw-fmt {
+      flex: none;
+      padding: 2px 5px;
+      border-radius: var(--radius-xs);
+      background: var(--panel-3);
+      color: var(--muted);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .lw-fmt.api { color: var(--warn); }
+
+    .lw-primary {
+      flex: none;
+      height: 26px;
+      padding: 0 10px;
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: var(--on-primary);
+      font: inherit;
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .lw-primary.ghost {
+      background: var(--panel);
+      border-color: var(--border);
+      color: var(--text-2);
+    }
+    .lw-primary.ghost:hover { border-color: var(--border-strong); color: var(--text); }
+
+    .lw-kebab {
+      flex: none;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--panel);
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .lw-kebab:hover { border-color: var(--border-strong); color: var(--text); }
+
+    /* 窄屏先让徽标让位：动作按钮比状态文字更不可省 */
+    @media (max-width: 820px) {
+      .lw-badge { display: none; }
+    }
 
     .wf-filters {
       display: flex;
@@ -1055,14 +1148,58 @@ export class WorkflowsComponent implements OnInit {
     this.savePrefs();
   }
 
-  dpText(it: LocalWorkflow): string {
-    return this.depText(it);
+  /** 一条工作流有多少依赖（模型槽位 + 节点包），与卡片上的计数同口径 */
+  depsTotalOf(it: LocalWorkflow): number {
+    const models = it.model_slots?.length || 0;
+    const pkgs = (it.node_deps?.have?.length || 0) + (it.node_deps?.missing?.length || 0);
+    return models + pkgs;
   }
 
-  depText(it: LocalWorkflow): string {
-    const miss = this.missingOf(it);
-    if (it.format === 'broken') return '无法解析';
-    return miss > 0 ? `缺 ${miss}` : '就绪';
+  /**
+   * 列表徽标：与卡片封面上的徽标一一对应。
+   *
+   * 卡片用红底/中性底压在图上，列表是平铺的，所以改用语义色浅底 ——
+   * 但**说什么**必须完全一致，否则同一件资产在两个视图里给出两种结论。
+   */
+  badgeOf(it: LocalWorkflow): { text: string; tone: 'err' | 'warn' | 'muted' | 'note'; tip: string } {
+    const state = this.stateOf(it);
+    if (state === 'broken') {
+      return { text: '无法解析', tone: 'err', tip: it.error || '文件解析失败' };
+    }
+    if (state === 'api') {
+      return { text: 'API 格式', tone: 'note', tip: '只有节点与连线，没有坐标，载不进画布' };
+    }
+    if (state === 'ready') {
+      return { text: `${it.nodes} 节点 · ${this.depsTotalOf(it)} 依赖`, tone: 'muted', tip: '依赖齐全' };
+    }
+    const parts: string[] = [];
+    const m = it.deps?.missing?.length || 0;
+    const p = it.node_deps?.missing?.length || 0;
+    const un = it.node_deps?.unknown?.length || 0;
+    if (m) parts.push(`缺 ${m} 模型`);
+    if (p) parts.push(`${p} 节点包`);
+    if (un) parts.push(`${un} 待确认`);
+    return { text: parts.join(' · '), tone: 'warn', tip: '点「补齐依赖」处理' };
+  }
+
+  /** 四态 → 唯一动作，与卡片的映射表同源 */
+  actOf(it: LocalWorkflow): 'fix' | 'use' | 'edit' {
+    const state = this.stateOf(it);
+    if (state === 'broken' || state === 'api') return 'edit';
+    return state === 'missing' ? 'fix' : 'use';
+  }
+
+  actLabel(it: LocalWorkflow): string {
+    const act = this.actOf(it);
+    if (act === 'edit') return '用编辑器打开';
+    return act === 'fix' ? '补齐依赖' : '使用工作流';
+  }
+
+  /** 列表里的 ⋯ 也要贴着按钮弹菜单，所以同样要点击坐标 */
+  openMoreFromList(it: LocalWorkflow, event: MouseEvent): void {
+    event.stopPropagation();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.onMore({ item: it, x: rect.right, y: rect.bottom });
   }
 
   /* ---- 卡片上的唯一下一步 ---- */

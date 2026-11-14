@@ -52,7 +52,7 @@ interface StateView {
         }
 
         <div class="wc-top">
-          <ui-family-mark [model]="it.main_model || ''" />
+          <ui-family-mark [model]="it.main_model || ''" [plate]="true" />
           @if (view().badge === 'dep') {
             <span class="wc-dep" [title]="missingTip()">
               <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor"

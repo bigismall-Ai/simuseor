@@ -1146,4 +1146,55 @@ test.describe('Model Downloader Web UI', () => {
     expect(result.length).toBeGreaterThan(3);
     expect(result.every((pair) => pair.ok)).toBe(true);
   });
+
+  test('我的工作流：列表视图与卡片功能对齐', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+    await page.getByRole('button', { name: '列表' }).click();
+
+    const row = page.locator('.lw-row').first();
+    await expect(row).toBeVisible();
+    // 缩略图：卡片有封面，列表也得有，否则认不出是同一件资产
+    await expect(row.locator('.lw-thumb img')).toHaveCount(1);
+    // 徽标与卡片同一套四态：缺 1 模型 + 1 节点包
+    await expect(row.locator('.lw-badge')).toHaveText('缺 1 模型 · 1 节点包');
+    // 唯一主按钮：缺依赖 → 补齐依赖
+    await expect(row.locator('.lw-primary')).toHaveText('补齐依赖');
+    await expect(row.locator('.lw-fmt')).toHaveText('UI');
+
+    // ⋯ 与卡片同一套菜单
+    await row.locator('.lw-kebab').click();
+    await expect(page.locator('.wf-menu')).toBeVisible();
+    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(5);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.wf-menu')).toHaveCount(0);
+
+    // 点主按钮也走同一套处理：缺依赖开抽屉
+    await row.locator('.lw-primary').click();
+    await expect(page.locator('.dr')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.dr')).toHaveCount(0);
+
+    await page.screenshot({ path: ART + '/30-workflow-list.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：深色主题下厂标有底衬且换成反白资产', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('md-theme', 'dark'));
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+
+    const mark = page.locator('app-workflow-card ui-family-mark .fm');
+    await expect(mark).toHaveClass(/plate/);
+    // 深色主题必须换 -dark 资产：黑标压在深色底衬上是隐形的
+    await expect(page.locator('app-workflow-card ui-family-mark img.fm-logo')).toHaveAttribute(
+      'src',
+      /flux-dark\.svg$/,
+    );
+    // 底衬跟着主题走：深色主题是深底 + 白标
+    const bg = await mark.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg).toBe('rgb(20, 20, 23)');
+    await page.screenshot({ path: ART + '/31-workflow-dark-mark.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
 });
