@@ -18,6 +18,7 @@ const PAGE_SIZE = 12;
 const SOURCES = [
   { key: 'all', label: '全部来源' },
   { key: 'templates', label: 'ComfyUI 官方模板' },
+  { key: 'comfyhub', label: 'ComfyHub' },
   { key: 'huggingface', label: 'Hugging Face' },
   { key: 'modelscope', label: 'ModelScope' },
   { key: 'civitai', label: 'Civitai' },
@@ -26,6 +27,7 @@ const SOURCES = [
 
 const SOURCE_LABELS: Record<string, string> = {
   templates: 'ComfyUI 官方模板',
+  comfyhub: 'ComfyHub',
   huggingface: 'Hugging Face',
   modelscope: 'ModelScope',
   civitai: 'Civitai',
@@ -34,6 +36,7 @@ const SOURCE_LABELS: Record<string, string> = {
 
 const SOURCE_TONES: Record<string, 'blue' | 'green' | 'orange' | 'gray'> = {
   templates: 'green',
+  comfyhub: 'blue',
   huggingface: 'blue',
   modelscope: 'green',
   civitai: 'orange',
@@ -57,7 +60,7 @@ const SORTS = [
       [title]="tab === 'discover' ? '发现工作流' : '工作流'"
       [hint]="
         tab === 'discover'
-          ? '从 ComfyUI 官方模板、Hugging Face、ModelScope、Civitai、GitHub 抓取，下载到工作流库，所有实例共用。'
+          ? '从官方模板、ComfyHub 社区库、Hugging Face、ModelScope、Civitai、GitHub 抓取，下载到工作流库，所有实例共用。'
           : '本机工作流库，所有 ComfyUI 实例共用。'
       "
     />
@@ -1159,6 +1162,8 @@ export class WorkflowsComponent implements OnInit {
   notice = '';
   errorText = '';
   sourceErrors: { label: string; message: string }[] = [];
+  /** 检索请求序号：切源/搜索/翻页时旧请求可能后到，不能让它覆盖当前结果 */
+  private reqSeq = 0;
 
   ngOnInit(): void {
     this.restorePrefs();
@@ -1747,6 +1752,9 @@ export class WorkflowsComponent implements OnInit {
   }
 
   private load(page: number): void {
+    // 「全部来源」要并发等 6 个源，比只查一个源慢得多；刚点完 ComfyHub 再收到
+    // 旧的 all 响应，会把 46 条混合结果盖回「ComfyHub」这个选中的 chip 上。
+    const seq = ++this.reqSeq;
     this.loading = true;
     this.errorText = '';
     this.notice = '';
@@ -1754,6 +1762,7 @@ export class WorkflowsComponent implements OnInit {
       .searchWorkflows({ q: this.q.trim(), source: this.source, sort: this.sort, limit: PAGE_SIZE, page })
       .subscribe({
         next: (res) => {
+          if (seq !== this.reqSeq) return;
           const existing = new Set(this.items.map((i) => `${i.source}/${i.id}`));
           const incoming =
             page === 1 ? res.items : res.items.filter((i) => !existing.has(`${i.source}/${i.id}`));
@@ -1767,6 +1776,7 @@ export class WorkflowsComponent implements OnInit {
           this.loading = false;
         },
         error: (err) => {
+          if (seq !== this.reqSeq) return;
           this.loading = false;
           this.errorText = errMsg(err, '工作流检索失败，请检查网络');
         },

@@ -110,6 +110,14 @@ DEFAULT_SETTINGS: dict = {
             "mirror": "",
             "use_mirror": False,
         },
+        # ComfyHub 免鉴权，这里只为让 create_task 能拿到源配置（设置页不展示）
+        "comfyhub": {
+            "label": "ComfyHub",
+            "token": "",
+            "proxy_enabled": False,
+            "mirror": "",
+            "use_mirror": False,
+        },
         "demo": {
             "label": "Demo (离线演示)",
             "token": "",

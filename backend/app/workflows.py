@@ -1,6 +1,7 @@
 """工作流发现：聚合各站点的 ComfyUI 工作流。
 
 - ComfyUI 官方模板：Comfy-Org/workflow_templates 的 index.json（约 750 个），raw 直链
+- ComfyHub：comfy.org/hub/workflows 的社区工作流，Hub 已审核索引（约 800 条），公开 JSON 直链
 - Civitai：官方 API 的 `types=Workflows`，结果本身就是工作流包（.zip / .json）
 - Hugging Face：`filter=comfyui` 的仓库，用 `expand=siblings` 直接看到文件，按文件名筛出工作流
 - ModelScope：关键词搜索后逐个仓库列文件（并发），只保留含工作流文件的仓库
@@ -43,6 +44,11 @@ CIVITAI_API = "https://civitai.com/api/v1"
 GH_API = "https://api.github.com"
 TEMPLATES_INDEX = "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/index.json"
 TEMPLATE_WEB = "https://github.com/Comfy-Org/workflow_templates/blob/main/templates"
+# ComfyHub：站点构建用的已审核索引（免鉴权，约 3.7MB / 800+ 条）。
+# 另有新版 catalog/items?type=workflow（搜索页 SSR 用，699 条精选），
+# 但那套要顺着 cursor 翻 16 页才能拿全；索引一次给全量，且条数更多。
+HUB_INDEX = "https://cloud.comfy.org/api/hub/workflows/index?status=approved"
+HUB_WEB = "https://comfy.org/workflows"
 UA = {"User-Agent": "model-downloader/0.1"}
 
 # 自定义命名 / 分组的侧车文件。
@@ -544,8 +550,107 @@ def _search_github(q: str, limit: int, page: int, sort: str = "downloads") -> tu
     return items[:limit], len(repos) >= max(1, int(limit))
 
 
+_HUB_CACHE: dict = {"at": 0.0, "items": []}
+_HUB_TTL = 1200
+_HUB_LOCK = threading.Lock()
+
+
+_HUB_ASSETS = "https://comfy-hub-assets.comfy.org/"
+_HUB_IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp")
+
+
+def _hub_thumb(url: str) -> str:
+    """把 Hub 原图（约 1MB）换成图床的 448px 缩图（实测 10–22KB）。
+
+    两件事都得做：
+    - 图分 /uploads/ 与 /templates/ 两处，只认一处会丢掉一半封面；
+    - thumbnailUrl 里混着 mp4/mp3（视频/音频模板的封面），缩图服务对它们
+      返回 415。挂上这种 URL 浏览器既不 load 也不 error，卡片要等 8 秒超时
+      才换铭牌，一屏看着像半页空白 —— 直接判定成「没有图」更干净。
+    非自家图床的域名一律回落铭牌，不把来路不明的图塞进卡片。
+    """
+    if not url.startswith(_HUB_ASSETS):
+        return ""
+    path = url[len(_HUB_ASSETS):]
+    if not path.lower().split("?", 1)[0].endswith(_HUB_IMAGE_EXT):
+        return ""
+    return f"{_HUB_ASSETS}cdn-cgi/image/width=448,format=webp/{path}"
+
+
+def _hub_index() -> list[dict]:
+    """ComfyHub 已审核工作流索引（进程内缓存 20 分钟）。
+
+    一次拿全量再在本地做检索/排序/分页：索引本身是列表不是搜索接口，
+    服务端 q 只在新版 catalog 上才有，而 catalog 要翻 16 页才能凑齐。
+    """
+    now = time.time()
+    with _HUB_LOCK:
+        if _HUB_CACHE["items"] and now - _HUB_CACHE["at"] < _HUB_TTL:
+            return _HUB_CACHE["items"]
+    try:
+        resp = httpx.get(HUB_INDEX, headers=UA, timeout=60, follow_redirects=True)
+    except httpx.HTTPError as exc:
+        raise SourceError(f"ComfyHub 索引拉取失败: {exc}") from exc
+    if resp.status_code >= 400:
+        raise SourceError(f"ComfyHub 索引错误 {resp.status_code}")
+    raw = resp.json()
+    if not isinstance(raw, list):
+        raise SourceError("ComfyHub 索引格式异常（不是列表）")
+
+    items: list[dict] = []
+    for e in raw:
+        if not isinstance(e, dict) or (e.get("status") or "approved") != "approved":
+            continue
+        sid = str(e.get("shareId") or e.get("name") or "").strip()
+        if not sid:
+            continue
+        profile = e.get("profile") or {}
+        models = [str(m) for m in (e.get("models") or []) if m][:4]
+        entry = _item(
+            rid=sid,
+            name=str(e.get("title") or sid),
+            author=str(profile.get("display_name") or profile.get("username") or "ComfyHub"),
+            source="comfyhub",
+            description=str(e.get("description") or e.get("metaDescription") or "")[:200],
+            downloads=int(e.get("usage") or 0),
+            likes=0,
+            tags=[str(t) for t in (e.get("tags") or []) if t],
+            url=f"{HUB_WEB}/{sid}",
+            updated_at=str(e.get("date") or "")[:10],
+            files=[f"{sid}.json"],
+            thumbnail=_hub_thumb(str(e.get("thumbnailUrl") or "")),
+            requires=[f"模型:{m}" for m in models],
+        )
+        # 只用于检索，不上界面；索引里长篇的 suggestedUseCases 不塞进来
+        entry["categories"] = [str(t) for t in (e.get("tags") or []) if t]
+        items.append(entry)
+    with _HUB_LOCK:
+        _HUB_CACHE.update(at=now, items=items)
+    return items
+
+
+def _search_comfyhub(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
+    tokens = _query_tokens(q)
+    items = _hub_index()
+    if tokens:
+        scored = [(score, it) for it in items if (score := _relevance(it, tokens)) >= 0]
+        if sort == "latest":
+            scored.sort(key=lambda pair: pair[1].get("updated_at") or "", reverse=True)
+        else:
+            scored.sort(key=lambda pair: (pair[0], _hot_score(pair[1])), reverse=True)
+        items = [it for _, it in scored]
+    elif sort == "latest":
+        items = sorted(items, key=lambda x: x.get("updated_at") or "", reverse=True)
+    else:
+        items = sorted(items, key=lambda x: (_hot_score(x), x.get("updated_at") or ""), reverse=True)
+    start = (max(1, int(page)) - 1) * max(1, int(limit))
+    end = start + max(1, int(limit))
+    return items[start:end], end < len(items)
+
+
 _SEARCHERS: dict[str, Callable[..., tuple[list[dict], bool]]] = {
     "templates": _search_templates,
+    "comfyhub": _search_comfyhub,
     "huggingface": _search_huggingface,
     "modelscope": _search_modelscope,
     "civitai": _search_civitai,
@@ -584,8 +689,8 @@ def resolve(source: str, repo_id: str, revision: str = "") -> dict:
     if not cfg:
         raise SourceError(f"未配置的下载源: {source}")
     repo: RepoInfo = get_adapter(source).resolve(repo_id, revision, cfg)
-    # Civitai / 官方模板的结果本身就是工作流，不再按文件名过滤
-    if source in ("civitai", "templates"):
+    # Civitai / 官方模板 / ComfyHub 的结果本身就是工作流，不再按文件名过滤
+    if source in ("civitai", "templates", "comfyhub"):
         files = repo.files
     else:
         files = [f for f in repo.files if is_workflow_file(f.path)]

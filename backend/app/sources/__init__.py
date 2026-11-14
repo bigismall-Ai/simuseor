@@ -5,6 +5,7 @@ from .civitai import CivitaiAdapter
 from .demo import DemoAdapter
 from .github import GithubAdapter
 from .comfytemplates import ComfyTemplatesAdapter
+from .comfyhub import ComfyHubAdapter
 
 ADAPTERS: dict[str, SourceAdapter] = {
     "huggingface": HuggingFaceAdapter(),
@@ -12,6 +13,7 @@ ADAPTERS: dict[str, SourceAdapter] = {
     "civitai": CivitaiAdapter(),
     "github": GithubAdapter(),
     "templates": ComfyTemplatesAdapter(),
+    "comfyhub": ComfyHubAdapter(),
     "demo": DemoAdapter(),
 }
 

@@ -4,6 +4,15 @@ import { resolve } from 'node:path';
 // 截图固定落在 tests/artifacts/，与执行目录无关
 const ART = resolve(__dirname, '../artifacts');
 
+const HUB_ITEM = {
+  id: 'e6f74ca84e32', name: 'FLUX 3 Video: Text to Video', author: 'ComfyUI',
+  source: 'comfyhub', description: 'Generate a short video from a text prompt.',
+  downloads: 70000, likes: 0, tags: ['Text to Video'], task: 'Workflows',
+  url: 'https://comfy.org/workflows/e6f74ca84e32', updated_at: '2026-10-28',
+  files: ['e6f74ca84e32.json'], file_count: 1, target_folder: 'workflows',
+  thumbnail: '', requires: ['模型:Flux'],
+};
+
 test.describe('Model Downloader Web UI', () => {
   // 版本列表靠 `git ls-remote` 现取（1–3 秒，且依赖外网），E2E 里固定返回：
   // 保证「安装实例」弹层每次都有可选项。真实抓取逻辑由后端单测覆盖。
@@ -103,6 +112,60 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText(/节点包是 git 仓库/)).toBeVisible();
     await page.screenshot({ path: ART + '/39-task-kind.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('发现工作流：ComfyHub 源可筛选并创建下载任务', async ({ page }) => {
+    const item = HUB_ITEM;
+    // 发现页这条用例全 mock：ComfyHub 索引 3.7MB，E2E 不该依赖外网
+    await page.route((url) => url.pathname === '/api/workflows', (route) =>
+      route.fulfill({ json: { items: [item], errors: {}, done: true } }));
+    await page.route((url) => url.pathname === '/api/workflows/resolve', (route) =>
+      route.fulfill({ json: {
+        repo_id: 'e6f74ca84e32', display_name: 'ComfyHub', revision: '', source: 'comfyhub',
+        files: [{ path: 'e6f74ca84e32.json', size: 6064,
+          candidates: ['https://comfy.org/workflows/download/e6f74ca84e32.json'] }],
+        target_folder: 'workflows',
+      } }));
+    let taskBody: Record<string, unknown> | null = null;
+    await page.route((url) => url.pathname === '/api/tasks', (route) => {
+      if (route.request().method() !== 'POST') return route.continue();
+      taskBody = route.request().postDataJSON();
+      return route.fulfill({ json: { id: 't-hub', status: 'pending' } });
+    });
+
+    await page.goto('/workflows/discover');
+    await expect(page.getByRole('button', { name: 'ComfyHub' })).toBeVisible();
+    await page.getByRole('button', { name: 'ComfyHub' }).click();
+    await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
+    await expect(page.getByText('模型:Flux')).toBeVisible();
+
+    await page.locator('[data-testid="wf-download-comfyhub"]').click();
+    await expect(page.getByText(/已创建下载任务/)).toBeVisible();
+    expect(taskBody).toMatchObject({
+      source: 'comfyhub', target_folder: 'workflows', task: 'Workflows',
+      files: ['e6f74ca84e32.json'],
+    });
+    await page.screenshot({ path: ART + '/40-comfyhub.png', fullPage: true });
+  });
+
+  test('发现工作流：切换来源时旧的慢响应不会盖掉当前结果', async ({ page }) => {
+    const stale = { ...HUB_ITEM, id: 'stale-all', source: 'civitai', name: '旧响应不该出现' };
+    await page.route((url) => url.pathname === '/api/workflows', async (route) => {
+      const source = new URL(route.request().url()).searchParams.get('source');
+      if (source === 'all') {
+        // 六源并发明显慢于单源：旧响应必须被丢弃，否则 chip 选 ComfyHub 却显示 5 个源
+        await new Promise((r) => setTimeout(r, 1200));
+        return route.fulfill({ json: { items: [stale], errors: {}, done: true } });
+      }
+      return route.fulfill({ json: { items: [HUB_ITEM], errors: {}, done: true } });
+    });
+
+    await page.goto('/workflows/discover');
+    await page.getByRole('button', { name: 'ComfyHub' }).click();
+    await page.waitForTimeout(2000);
+    await expect(page.locator('.wf-row')).toHaveCount(1);
+    await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
+    await expect(page.getByText('旧响应不该出现')).toHaveCount(0);
   });
 
   test('解析失败有错误提示', async ({ page }) => {

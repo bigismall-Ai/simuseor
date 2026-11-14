@@ -160,7 +160,10 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.api.getSettings().subscribe((s) => {
       this.settings = s;
-      this.sourceKeys = Object.keys(s.sources || {}).filter((k) => k !== 'demo' && k !== 'templates');
+      // demo / templates / comfyhub 都是免鉴权固定源，没有可配置项，别列进设置页
+      this.sourceKeys = Object.keys(s.sources || {}).filter(
+        (k) => k !== 'demo' && k !== 'templates' && k !== 'comfyhub',
+      );
     });
   }
 
