@@ -31,7 +31,7 @@ const SORTS = [
     <ui-page-header
       kicker="Nodes · Discover"
       title="发现节点"
-      hint="自定义节点就是 ComfyUI 的扩展能力：装到 workspace/custom_nodes，所有实例共用，删实例不会丢。"
+      hint="清单来自 ComfyUI-Manager，代码按清单里的仓库地址从 GitHub 克隆到 workspace/custom_nodes，所有实例共用，删实例不会丢。"
     >
       <button routerLink="/nodes">节点管理</button>
     </ui-page-header>

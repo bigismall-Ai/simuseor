@@ -57,7 +57,7 @@ const SORTS = [
       [title]="tab === 'discover' ? '发现工作流' : '工作流'"
       [hint]="
         tab === 'discover'
-          ? '从 ComfyUI 官方模板、Hugging Face、Civitai 抓取，下载到工作流库，所有实例共用。'
+          ? '从 ComfyUI 官方模板、Hugging Face、ModelScope、Civitai、GitHub 抓取，下载到工作流库，所有实例共用。'
           : '本机工作流库，所有 ComfyUI 实例共用。'
       "
     />
