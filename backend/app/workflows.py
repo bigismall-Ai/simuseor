@@ -25,11 +25,13 @@ from typing import Callable
 
 import httpx
 
-from .config import COMFY_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
+from .config import COMFY_DIR, COMFY_ENV_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
+from .comfy.runner import active as active_instance, start as start_instance, status as instance_status
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
 from .sources.civitai import pick_cover
 from .nodes import extract_classes
+from .workflow_covers import local_cover
 from .workflow_deps import analyze as analyze_deps, _model_index
 from .workflow_models import analyze as analyze_models
 from .sources.github import tree_files
@@ -838,6 +840,7 @@ def local() -> dict:
                 items.append(
                     {
                         "name": path.stem,
+                        "key": key,
                         "title": title,
                         "group": group,
                         "path": str(path),
@@ -852,6 +855,7 @@ def local() -> dict:
                         "model_slots": info["slots"],
                         "deps": deps["models"],
                         "node_deps": deps["nodes"],
+                        "cover": local_cover(str(path)),
                     }
                 )
                 continue
@@ -869,6 +873,7 @@ def local() -> dict:
             items.append(
                 {
                     "name": path.stem,
+                    "key": key,
                     "title": title,
                     "group": group,
                     "path": str(path),
@@ -881,6 +886,7 @@ def local() -> dict:
                     "model_slots": info["slots"],
                     "deps": deps["models"],
                     "node_deps": deps["nodes"],
+                    "cover": local_cover(str(path), payload),
                 }
             )
     items.sort(key=lambda it: it["mtime"], reverse=True)
@@ -898,20 +904,139 @@ def _error_line(raw: str, exc: ValueError) -> int:
     return int(line) if isinstance(line, int) and line > 0 else 0
 
 
-def open_local(path: str) -> dict:
-    """在系统文件管理器里定位这个工作流文件。路径必须落在共享工作流目录内。"""
+def _inside_workflows(path: str) -> Path:
+    """路径必须落在共享工作流目录内，且确实是个文件。"""
     root = WORKSPACE_WORKFLOWS_DIR.resolve()
     target = Path(path).resolve()
     try:
         target.relative_to(root)
     except ValueError as exc:
-        raise SourceError("只能打开共享工作流目录里的文件") from exc
+        raise SourceError("只能操作共享工作流目录里的文件") from exc
     if not target.is_file():
         raise SourceError("文件不存在，可能已被移动或删除")
+    return target
+
+
+def _open_command(target: Path, mode: str) -> list[str] | None:
+    """要执行的命令。返回 None 表示走 Windows 的 `os.startfile`（另起进程的方式不同）。"""
+    if mode == "edit":
+        if os.name == "nt":
+            return None
+        return ["open", str(target)] if sys.platform == "darwin" else ["xdg-open", str(target)]
     if os.name == "nt":
-        subprocess.Popen(["explorer", "/select,", str(target)])  # noqa: S603
-    elif sys.platform == "darwin":
-        subprocess.Popen(["open", "-R", str(target)])  # noqa: S603
+        return ["explorer", "/select,", str(target)]
+    if sys.platform == "darwin":
+        return ["open", "-R", str(target)]
+    return ["xdg-open", str(target.parent)]
+
+
+def open_local(path: str, mode: str = "reveal") -> dict:
+    """在文件管理器里定位，或用系统默认程序打开这个工作流。
+
+    `mode="edit"` 走默认关联程序：Windows 上是 os.startfile，Linux/macOS 是
+    `xdg-open` / `open`。语法坏掉的 JSON 只有这条路能改 —— 画布打不开它。
+    """
+    target = _inside_workflows(path)
+    cmd = _open_command(target, mode)
+    if cmd is None:
+        os.startfile(str(target))  # noqa: S606  # 用户明确点了「用编辑器打开」
     else:
-        subprocess.Popen(["xdg-open", str(target.parent)])  # noqa: S603
-    return {"opened": str(target)}
+        subprocess.Popen(cmd)  # noqa: S603
+    return {"opened": str(target), "mode": mode}
+
+
+def delete_local(path: str) -> dict:
+    """删除一条本地工作流，同时清掉它的侧车命名/分组。
+
+    侧车键是「相对路径」，删文件后必须一起清，否则以后放回同名文件会继承旧名字。
+    """
+    target = _inside_workflows(path)
+    key = _rel_key(target)
+    try:
+        target.unlink()
+    except OSError as exc:
+        raise SourceError(f"删除失败：{exc.strerror or exc}") from exc
+    meta = load_meta()
+    if key in meta:
+        meta.pop(key, None)
+        save_meta(meta)
+    return {"deleted": str(target), "key": key}
+
+
+def _latest_instance() -> str:
+    """最近安装的可用实例。没有就返回空串。"""
+    best, best_at = "", 0.0
+    if not COMFY_DIR.is_dir():
+        return ""
+    for child in COMFY_DIR.iterdir():
+        if not child.is_dir() or child.name.startswith("."):
+            continue
+        if not (child / "ComfyUI" / "main.py").is_file():
+            continue
+        at = (child / "ComfyUI" / "main.py").stat().st_mtime
+        if at > best_at:
+            best, best_at = child.name, at
+    return best
+
+
+def _ui_ready(name: str) -> bool:
+    """实例能不能真的打开画布。
+
+    前端包（comfyui-frontend-package）不在 requirements 的常规依赖里，
+    依赖装到一半中断时最容易缺它 —— 这时后端能跑、端口能通，但打开是一片白，
+    比报错更让人困惑。所以先把话说清楚。
+    """
+    if (COMFY_ENV_DIR / "site-packages" / "comfyui_frontend_package" / "static").is_dir():
+        return True
+    return (COMFY_DIR / name / "ComfyUI" / "web" / "index.html").is_file()
+
+
+def _log_tail(path: str, lines: int = 3) -> str:
+    """实例日志的最后几行 —— 启动失败时，真正的原因在这儿而不在 HTTP 层。"""
+    if not path:
+        return ""
+    try:
+        text = Path(path).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    keep = [row.strip() for row in text.splitlines() if row.strip() and not row.startswith("#")]
+    return " / ".join(keep[-lines:])
+
+
+def use_local(path: str) -> dict:
+    """使用工作流：确保有实例在跑，返回画布地址。
+
+    ComfyUI 0.45 的前端没有「按名字打开某条工作流」的深链（路由只有画布根），
+    所以这里负责把环境准备好并把画布地址给出去；工作流本身已经在
+    `--user-directory` 指向的共享目录里，画布左侧「工作流」即可看到。
+    """
+    target = _inside_workflows(path)
+    running = active_instance()
+    if running is None:
+        name = _latest_instance()
+        if not name:
+            raise SourceError("还没有可用的 ComfyUI 实例，请先到「环境管理」安装一个")
+        try:
+            start_instance(name)
+        except (RuntimeError, ValueError) as exc:
+            raise SourceError(str(exc)) from exc
+        # 首次启动要 import torch 并扫模型目录，给它 20 秒；起不来就把日志尾巴带出来，
+        # 依赖缺件（比如 comfy_aimdo）是这一步最常见的原因
+        info = instance_status(name, wait=20)
+        if info.get("state") != "running":
+            if info.get("state") == "stopped":
+                tail = _log_tail(info.get("log") or "")
+                raise SourceError("实例启动失败：" + (tail or "进程已退出，详情见环境管理页的日志"))
+            raise SourceError("实例还在启动中，等十几秒再点一次通常就好了")
+        running = {"name": info["name"], "url": info["url"], "port": info.get("port")}
+    url = running.get("url") or ""
+    if not url:
+        raise SourceError("实例正在启动，请稍后重试")
+    if not _ui_ready(running.get("name") or ""):
+        raise SourceError("实例缺少 ComfyUI 前端包，画布打不开 —— 请到「环境管理」补齐依赖")
+    return {
+        "url": url,
+        "instance": running.get("name") or "",
+        "name": target.stem,
+        "folder": _rel_key(target).rsplit("/", 1)[0] if "/" in _rel_key(target) else "",
+    }

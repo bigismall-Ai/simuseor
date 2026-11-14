@@ -10,11 +10,13 @@ from pathlib import Path
 
 import httpx
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
 from ..comfy.model_dirs import infer_folder
 from .. import nodes as node_service
+from .. import workflow_covers as wf_covers
 from .. import workflows as workflow_service
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
 from ..db import execute, new_id, now_iso, query
@@ -58,6 +60,20 @@ class WorkflowImportRequest(BaseModel):
 
 class WorkflowLocalOpenRequest(BaseModel):
     path: str
+    """reveal = 文件管理器定位；edit = 系统默认程序打开（坏 JSON 只能这么改）"""
+    mode: str = "reveal"
+
+
+class WorkflowCoverEntry(BaseModel):
+    """一条待取封面的工作流：key 是相对路径（与侧车元数据同一个键）。"""
+
+    key: str
+    name: str = ""
+    model: str = ""
+
+
+class WorkflowCoversRequest(BaseModel):
+    items: list[WorkflowCoverEntry] = Field(default_factory=list)
 
 
 class WorkflowMetaRequest(BaseModel):
@@ -159,7 +175,42 @@ def local_workflows() -> dict:
 @router.post("/workflows/local/open")
 def open_local_workflow(body: WorkflowLocalOpenRequest) -> dict:
     try:
-        return workflow_service.open_local(body.path)
+        return workflow_service.open_local(body.path, body.mode)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/workflows/local/cover")
+def local_workflow_cover(path: str) -> FileResponse:
+    """工作流自带的出图。工作流目录不在 web 根下，只能由后端吐。"""
+    try:
+        file = wf_covers.serve_file(path)
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail="只能读取工作流目录里的图片") from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="图片不存在") from exc
+    return FileResponse(file, headers={"Cache-Control": "public, max-age=86400"})
+
+
+@router.post("/workflows/covers")
+def workflow_covers(body: WorkflowCoversRequest) -> dict:
+    """批量取远程封面。本地有图的条目前端不会传进来。"""
+    return {"covers": wf_covers.resolve_batch([item.model_dump() for item in body.items])}
+
+
+@router.post("/workflows/local/use")
+def use_local_workflow(body: WorkflowLocalOpenRequest) -> dict:
+    """使用工作流：确保实例在跑，返回画布地址。"""
+    try:
+        return workflow_service.use_local(body.path)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.delete("/workflows/local")
+def delete_local_workflow(path: str) -> dict:
+    try:
+        return workflow_service.delete_local(path)
     except SourceError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
