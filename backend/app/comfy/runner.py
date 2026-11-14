@@ -107,7 +107,9 @@ def _pick_port(name: str) -> int:
 
 def _http_ok(port: int) -> bool:
     try:
-        resp = httpx.get(f"http://127.0.0.1:{port}/system_stats", timeout=2)
+        # trust_env=False：本机探测不能走 HTTP_PROXY。代理环境变量下这个请求会被
+        # 代理接走，实例明明起来了也一律判成 starting。
+        resp = httpx.get(f"http://127.0.0.1:{port}/system_stats", timeout=2, trust_env=False)
     except httpx.HTTPError:
         return False
     return resp.status_code == 200

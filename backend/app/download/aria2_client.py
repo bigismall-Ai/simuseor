@@ -33,10 +33,16 @@ class Aria2Client:
         rpc_params.extend(params or [])
         payload = {"jsonrpc": "2.0", "id": "model-downloader", "method": method, "params": rpc_params}
         try:
-            resp = httpx.post(self.endpoint, json=payload, timeout=timeout)
+            # trust_env=False：本机 RPC 绝不能走 HTTP_PROXY。开发机的代理环境变量
+            # 会让请求被代理接走，拿到空响应的 JSONDecodeError，然后所有任务卡在
+            # 「下载中 0%」而 aria2 其实压根没收到活儿。
+            resp = httpx.post(self.endpoint, json=payload, timeout=timeout, trust_env=False)
         except httpx.HTTPError as exc:
             raise Aria2Error(f"aria2 RPC 调用失败: {exc}") from exc
-        data = resp.json()
+        try:
+            data = resp.json()
+        except ValueError as exc:
+            raise Aria2Error(f"aria2 RPC 返回了非 JSON 响应（端口 {self.port} 被别的服务占用？）") from exc
         if "error" in data:
             raise Aria2Error(f"aria2 错误: {data['error']}")
         return data.get("result")
