@@ -70,15 +70,8 @@ interface StateView {
             <span class="wc-note">{{ view().badgeText }}</span>
           }
           <div class="wc-acts">
-            @if (it.format === 'ui' || it.format === 'api') {
-              <span class="wc-fmt" [title]="it.format === 'api' ? '只有节点与连线，没有坐标，载不进画布' : '含节点坐标与连线，可直接载入画布'">
-                <span class="wc-fmt-o" [class.on]="it.format === 'ui'">UI</span>
-                <span class="wc-fmt-s"></span>
-                <span class="wc-fmt-o" [class.on]="it.format === 'api'">API</span>
-              </span>
-            }
-                <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
-                        title="更多操作" (click)="openMore($event)">⋯</button>
+            <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
+                    title="更多操作" (click)="openMore($event)">⋯</button>
           </div>
         </div>
 
@@ -97,6 +90,14 @@ interface StateView {
               <span class="wc-tag wc-grp-tag" [title]="it.group">{{ it.group }}</span>
             } @else {
               <span class="wc-tag wc-grp-tag is-none">未分组</span>
+            }
+            @if (it.format === 'ui' || it.format === 'api') {
+              <span class="wc-fmt" [class.api]="it.format === 'api'"
+                    [title]="it.format === 'api' ? '只有节点与连线，没有坐标，载不进画布' : '含节点坐标与连线，可直接载入画布'">
+                <span class="wc-fmt-o" [class.on]="it.format === 'ui'">UI</span>
+                <span class="wc-fmt-s"></span>
+                <span class="wc-fmt-o" [class.on]="it.format === 'api'">API</span>
+              </span>
             }
           </div>
           <button class="wc-primary" [class.ghost]="view().act === 'edit'" (click)="primary.emit({ item: it, act: view().act })">
@@ -276,25 +277,6 @@ interface StateView {
       gap: 5px;
       flex: none;
     }
-    .wc-fmt {
-      display: inline-flex;
-      align-items: stretch;
-      border-radius: var(--radius-xs);
-      overflow: hidden;
-      background: rgb(0 0 0 / 0.42);
-    }
-    .wc-fmt-o {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 6px;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: rgb(255 255 255 / 0.58);
-    }
-    .wc-fmt-o.on { color: #18181b; background: rgb(255 255 255 / 0.92); }
-    .wc-fmt-s { width: 1px; align-self: stretch; background: rgb(255 255 255 / 0.22); }
-
     .wc-kebab {
       width: 27px;
       height: 23px;
@@ -377,13 +359,37 @@ interface StateView {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    /* 没分组的卡也占住这个位置，但弱化成一行淡字，不做成醒目的标签 */
+    /* 未分组也占一枚标签：灰底 / 弱描边 / 灰字，是「无值」的禁用态，不是一行淡字 */
     .wc-tag.is-none {
-      background: none;
-      box-shadow: none;
+      background: var(--panel-2);
+      box-shadow: inset 0 0 0 1px var(--border);
       color: var(--muted);
-      padding-left: 0;
+      font-weight: 500;
     }
+    /* UI | API 双段从封面右上挪到分组标签之后：保留双段形态，
+       但换成浅底深字的正文档次（原来那套白底高亮是压图用的） */
+    .wc-fmt {
+      flex: none;
+      display: inline-flex;
+      align-items: stretch;
+      height: 16px;
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      background: var(--panel-2);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+    }
+    .wc-fmt-o {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 5px;
+      color: var(--faint);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+    .wc-fmt-o.on { color: var(--text); background: var(--panel); }
+    .wc-fmt.api .wc-fmt-o.on { color: var(--warn); }
+    .wc-fmt-s { width: 1px; align-self: stretch; background: var(--border-strong); }
     .wc-primary {
       margin-left: auto;
       flex: none;

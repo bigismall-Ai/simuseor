@@ -114,6 +114,23 @@ class WorkflowCoverCustomRequest(BaseModel):
     data: str = ""
 
 
+class WorkflowCoverCandidatesRequest(BaseModel):
+    """封面管理画廊：一次发一批候选，offset 用来换一批（不重复搜社区）。"""
+
+    key: str
+    name: str = ""
+    model: str = ""
+    current: str = ""
+    offset: int = 0
+
+
+class WorkflowCoverChooseRequest(BaseModel):
+    """从画廊里选中一张：只认本次发过的候选 URL。"""
+
+    key: str
+    url: str
+
+
 class WorkflowCoverResetRequest(BaseModel):
     key: str
 
@@ -302,6 +319,27 @@ def refresh_workflow_cover(body: WorkflowCoverRefreshRequest) -> dict:
         {"key": body.key, "name": body.name, "model": body.model}, body.current
     )
     return {"key": body.key, "cover": url, "pinned": bool(url), "source": "manual" if url else ""}
+
+
+@router.post("/workflows/covers/candidates")
+def workflow_cover_candidates(body: WorkflowCoverCandidatesRequest) -> dict:
+    """封面管理画廊的候选图：只返回 URL，不改动当前封面。"""
+    covers = wf_covers.candidates(
+        {"key": body.key, "name": body.name, "model": body.model},
+        current=body.current,
+        offset=max(0, min(body.offset, 12)),
+    )
+    return {"key": body.key, "covers": covers}
+
+
+@router.post("/workflows/covers/choose")
+def choose_workflow_cover(body: WorkflowCoverChooseRequest) -> dict:
+    """画廊点选：钉住选中的那张（会盖过工作流自带出图）。"""
+    try:
+        url = wf_covers.choose(body.key, body.url)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"key": body.key, "cover": url, "pinned": True, "source": "manual"}
 
 
 @router.post("/workflows/covers/custom")

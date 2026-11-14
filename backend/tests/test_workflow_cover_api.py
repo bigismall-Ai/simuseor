@@ -17,8 +17,10 @@ def _clean_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(wc, "COVERS_PATH", tmp_path / "covers.json")
     monkeypatch.setattr(wc, "BLOB_DIR", tmp_path / "blobs")
     wc.reset_cache()
+    wc._CANDIDATES.clear()
     yield
     wc.reset_cache()
+    wc._CANDIDATES.clear()
 
 
 def test_batch_returns_pinned_and_custom_lists():
@@ -69,3 +71,55 @@ def test_refresh_endpoint_returns_source(monkeypatch):
         "key": "a.json", "cover": "https://x/new.jpg",
         "pinned": True, "source": "manual",
     }
+
+
+def test_candidates_endpoint_returns_batch_without_pin(monkeypatch):
+    urls = ["https://x/1.jpg", "https://x/2.jpg", "https://x/3.jpg"]
+    monkeypatch.setattr(wc, "candidates", lambda entry, current, offset: urls)
+    out = routes.workflow_cover_candidates(
+        routes.WorkflowCoverCandidatesRequest(key="a.json", current=urls[0], offset=1)
+    )
+    assert out == {"key": "a.json", "covers": urls}
+    assert wc.pinned("a.json") == ""
+
+
+def test_candidates_and_choose_only_accept_offered_urls(monkeypatch):
+    urls = ["https://x/1.jpg", "https://x/2.jpg", "https://x/3.jpg", "https://x/4.jpg"]
+    monkeypatch.setattr(wc, "_workflow_cover", lambda name, cfg: "")
+    monkeypatch.setattr(wc, "_cached_pool", lambda model, cfg: urls)
+
+    offered = wc.candidates({"key": "a.json", "model": "flux"}, current="https://x/current.jpg")
+    assert offered == urls
+    # 发候选不能偷偷改掉当前封面
+    assert wc.pinned("a.json") == ""
+
+    out = routes.choose_workflow_cover(
+        routes.WorkflowCoverChooseRequest(key="a.json", url=urls[1])
+    )
+    assert out == {
+        "key": "a.json", "cover": urls[1], "pinned": True, "source": "manual",
+    }
+    assert wc.pinned("a.json") == urls[1]
+
+    # 当前图也在允许列表里（画廊会把它摆在第一格）
+    cur = routes.choose_workflow_cover(
+        routes.WorkflowCoverChooseRequest(key="a.json", url="https://x/current.jpg")
+    )
+    assert cur["cover"] == "https://x/current.jpg"
+
+    with pytest.raises(HTTPException) as bad:
+        routes.choose_workflow_cover(
+            routes.WorkflowCoverChooseRequest(key="a.json", url="https://evil.example/x.jpg")
+        )
+    assert bad.value.status_code == 400
+
+
+def test_candidates_offset_rotates_without_new_request(monkeypatch):
+    urls = ["https://x/1.jpg", "https://x/2.jpg", "https://x/3.jpg", "https://x/4.jpg"]
+    monkeypatch.setattr(wc, "_workflow_cover", lambda name, cfg: "")
+    monkeypatch.setattr(wc, "_cached_pool", lambda model, cfg: urls)
+    first = wc.candidates({"key": "a.json", "model": "flux"})
+    second = wc.candidates({"key": "a.json", "model": "flux"}, offset=4)
+    assert first == second  # 一圈转回来，且没有重新搜社区
+    third = wc.candidates({"key": "a.json", "model": "flux"}, offset=1)
+    assert third[0] != first[0]

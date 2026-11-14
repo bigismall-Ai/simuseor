@@ -21,9 +21,14 @@ type CoverManager = {
   key: string;
   url: string;
   customUrl: string;
-  failed: boolean;
   busy: boolean;
   error: string;
+  /** 画廊：当前图排第一，其余是本次候选；点一张即钉住 */
+  gallery: string[];
+  candidates: string[];
+  galleryLoading: boolean;
+  offset: number;
+  customOpen: boolean;
 };
 
 const SOURCES = [
@@ -229,6 +234,8 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
                     <p class="lw-sub">
                       @if (it.group) {
                         <span class="lw-grp">{{ it.group }}</span>
+                      } @else {
+                        <span class="lw-grp is-none">未分组</span>
                       }
                       <span>{{ it.nodes }} 节点 · {{ fmtSize(it.size) }} · {{ ago(it.mtime) }}</span>
                     </p>
@@ -454,7 +461,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       <div class="wf-menu" role="menu" [style.left.px]="menuAt.x" [style.top.px]="menuAt.y">
         <button role="menuitem" (click)="openCoverManager(menuOf)">变更封面</button>
         <button role="menuitem" (click)="openRename(menuOf)">重命名</button>
-        <button role="menuitem" (click)="openGroupManager()">分组管理</button>
+        <button role="menuitem" (click)="openGroupSwitch(menuOf)">更换分组</button>
         <span class="wf-menu-sep"></span>
         <button role="menuitem" (click)="openEditor(menuOf)"
                 [title]="menuOf.format === 'ui' ? '在 ComfyUI 画布中打开' : 'API / 损坏文件无法载入画布，将用默认程序打开'">
@@ -501,6 +508,37 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="closeEditor()">取消</button>
           <button class="primary btn-xs" (click)="saveMeta()">保存</button>
+        </div>
+      </div>
+    }
+
+    <!-- 更换分组：只切这一条工作流的组，组的增删改在工具栏的「分组管理」 -->
+    @if (groupSwitch) {
+      <div class="wf-modal-mask" (click)="closeGroupSwitch()"></div>
+      <div #switchBox class="wf-modal" role="dialog" aria-modal="true" aria-label="更换分组"
+           tabindex="-1" (keydown.tab)="trapTab($event, switchBox)" data-testid="lw-group-switch">
+        <h2>更换分组</h2>
+        <p class="wf-modal-sub" [title]="groupSwitch.item.path">{{ groupSwitch.item.title || groupSwitch.item.name }}</p>
+        <div class="gs-list" role="radiogroup" aria-label="选择分组">
+          <button type="button" class="gs-item" role="radio" [class.on]="groupSwitch.group === ''"
+                  [attr.aria-checked]="groupSwitch.group === ''" (click)="groupSwitch.group = ''"
+                  data-testid="gs-none">
+            <span>未分组</span>
+            <span class="gs-check" aria-hidden="true"></span>
+          </button>
+          @for (g of groupNames; track g.name) {
+            <button type="button" class="gs-item" role="radio" [class.on]="groupSwitch.group === g.name"
+                    [attr.aria-checked]="groupSwitch.group === g.name"
+                    (click)="groupSwitch.group = g.name" [attr.data-group]="g.name">
+              <span>{{ g.name }}</span><b>{{ g.count }}</b>
+              <span class="gs-check" aria-hidden="true"></span>
+            </button>
+          }
+        </div>
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="closeGroupSwitch()">取消</button>
+          <button class="primary btn-xs" (click)="saveGroupSwitch()" [disabled]="groupSwitch.busy"
+                  data-testid="gs-save">{{ groupSwitch.busy ? '保存中…' : '保存' }}</button>
         </div>
       </div>
     }
@@ -565,52 +603,74 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       </div>
     }
 
-    <!-- 封面管理：抽一张 / 自定义 / 恢复自动都在一个地方，⋯ 菜单只留一个入口 -->
+    <!-- 封面管理：候选画廊点选即钉住，自定义封面折在下面，⋯ 菜单只留一个入口 -->
     @if (coverMgr) {
       <div class="wf-modal-mask stack" (click)="closeCoverManager()"></div>
       <div #coverBox class="wf-modal wide stack cm" role="dialog" aria-modal="true" aria-label="封面管理"
            tabindex="-1" (keydown.tab)="trapTab($event, coverBox)" data-testid="lw-cover-manager">
-        <h2>封面管理</h2>
-        <p class="wf-modal-sub mono" [title]="coverMgr.item.path">{{ coverMgr.item.title || coverMgr.item.name }}</p>
+        <div class="cm-head">
+          <div class="cm-head-text">
+            <h2>封面管理</h2>
+            <p class="wf-modal-sub mono" [title]="coverMgr.item.path">{{ coverMgr.item.title || coverMgr.item.name }}</p>
+          </div>
+          <span class="cm-source">{{ isPinnedKey(coverMgr.key) ? '已固定' : '自动封面' }}</span>
+          <button class="cm-x" type="button" aria-label="关闭" title="关闭"
+                  (click)="closeCoverManager()">×</button>
+        </div>
 
-        <div class="cm-preview" data-testid="cm-preview">
-          @if (coverMgr.url && !coverMgr.failed) {
-            <img [src]="coverMgr.url" alt="当前封面预览" referrerpolicy="no-referrer"
-                 (error)="coverMgr.failed = true" />
-          } @else {
-            <div class="cm-preview-empty">
-              <ui-family-mark [model]="coverMgr.item.main_model || ''" />
-              <span>{{ coverMgr.failed ? '图片加载失败' : '暂无封面' }}</span>
-            </div>
+        <div class="cm-gallery-head">
+          <span class="cm-label">候选封面</span>
+          <button class="btn-xs" type="button" (click)="reloadCandidates()"
+                  [disabled]="coverMgr.galleryLoading || coverMgr.busy" data-testid="cm-reload">
+            {{ coverMgr.galleryLoading ? '正在找…' : '换一批' }}
+          </button>
+        </div>
+        <div class="cm-gallery" data-testid="cm-gallery">
+          @for (u of coverMgr.gallery; track u) {
+            <button type="button" class="cm-cell" [class.on]="u === coverMgr.url"
+                    [attr.data-url]="u" [disabled]="coverMgr.busy"
+                    [attr.aria-label]="u === coverMgr.url ? '当前封面' : '使用这张封面'"
+                    (click)="chooseCandidate(u)">
+              <img [src]="u" alt="" referrerpolicy="no-referrer" loading="lazy"
+                   (error)="onGalleryImgError($event)" />
+              @if (u === coverMgr.url) { <span class="cm-cell-tag">当前</span> }
+            </button>
+          } @empty {
+            <p class="cm-empty">
+              {{ coverMgr.galleryLoading ? '正在找封面…' : '暂时没有可用候选，可以展开自定义封面自己传一张' }}
+            </p>
           }
         </div>
-        <div class="cm-actions">
-          <button class="primary btn-xs" (click)="redealFromManager()" [disabled]="coverMgr.busy"
-                  data-testid="cm-redeal">{{ coverMgr.busy ? '正在换…' : '换一张' }}</button>
-          @if (isPinnedKey(coverMgr.key)) {
-            <button class="btn-xs" (click)="resetFromManager()" [disabled]="coverMgr.busy"
-                    data-testid="cm-reset">恢复自动封面</button>
-          }
-        </div>
+        <p class="cm-hint">点一张即设为封面，并固定下来不再自动更换</p>
 
         <div class="cm-custom">
-          <p class="cm-label">自定义封面</p>
-          <div class="cm-url-row">
-            <input [(ngModel)]="coverMgr.customUrl" placeholder="粘贴图片地址 https://…"
-                   data-testid="cm-url" (keydown.enter)="applyCustomUrl()" />
-            <button class="btn-xs" (click)="applyCustomUrl()" [disabled]="coverMgr.busy"
-                    data-testid="cm-url-apply">使用</button>
-          </div>
-          <label class="cm-file">
-            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
-                   (change)="onCoverFile($event)" data-testid="cm-file" />
-            <span>或上传本地图片</span>
-          </label>
+          <button type="button" class="cm-fold" (click)="coverMgr.customOpen = !coverMgr.customOpen"
+                  [attr.aria-expanded]="coverMgr.customOpen" data-testid="cm-fold">
+            <span class="cm-caret" [class.open]="coverMgr.customOpen"></span>自定义封面
+          </button>
+          @if (coverMgr.customOpen) {
+            <div class="cm-url-row">
+              <input [(ngModel)]="coverMgr.customUrl" placeholder="粘贴图片地址 https://…"
+                     data-testid="cm-url" (keydown.enter)="applyCustomUrl()" />
+              <button class="btn-xs" (click)="applyCustomUrl()" [disabled]="coverMgr.busy"
+                      data-testid="cm-url-apply">使用</button>
+            </div>
+            <label class="cm-drop" (dragover)="onCoverDragOver($event)" (drop)="onCoverDrop($event)">
+              <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+                     (change)="onCoverFile($event)" data-testid="cm-file" />
+              <span>拖入图片，或点击选择文件</span>
+              <small>PNG / JPG / WebP / GIF · ≤ 8 MB</small>
+            </label>
+          }
         </div>
 
         @if (coverMgr.error) { <p class="cm-error">{{ coverMgr.error }}</p> }
         <div class="wf-modal-ops">
-          <button class="btn-xs" (click)="closeCoverManager()" data-testid="cm-close">关闭</button>
+          @if (isPinnedKey(coverMgr.key)) {
+            <button class="btn-xs cm-reset" (click)="resetFromManager()" [disabled]="coverMgr.busy"
+                    data-testid="cm-reset">恢复自动封面</button>
+          }
+          <button class="btn-xs" (click)="closeCoverManager()" data-testid="cm-close">完成</button>
         </div>
       </div>
     }
@@ -1049,17 +1109,80 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       font-size: 12.5px;
       color: var(--text);
     }
+    /* 工作流数量与筛选栏 / 卡片上的数字标签同一规格 */
     .gm-name b {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 16px;
       margin-left: 7px;
-      font-weight: 500;
-      font-size: 11px;
-      color: var(--muted);
+      padding: 0 4px;
+      border-radius: var(--radius-xs);
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 600;
       font-variant-numeric: tabular-nums;
+      vertical-align: middle;
     }
     .gm-warn { color: var(--err); white-space: normal; }
     .gm-row .btn-xs.danger { color: var(--err); }
     .gm-empty, .gm-error { margin: 6px 0; font-size: 11.5px; color: var(--muted); }
     .gm-error { color: var(--err); }
+
+    /* ---- 更换分组：一组单选行，数字沿用分组标签规格 ---- */
+    .gs-list { max-height: 264px; overflow-y: auto; margin: 4px 0 14px; }
+    .gs-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: none;
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .gs-item:hover { background: var(--hover); }
+    .gs-item > span:first-child {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .gs-item.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .gs-item b {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: var(--radius-xs);
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .gs-check {
+      flex: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+    }
+    .gs-item.on .gs-check { box-shadow: inset 0 0 0 3px var(--accent); }
 
     /* 从「变更分组」里叠开分组管理时，两层弹层都在：上面那层要完整盖住下面 */
     .wf-modal-mask.stack { z-index: 48; }
@@ -1081,41 +1204,117 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     }
     .wf-group-row .btn-xs { flex: none; }
 
-    /* ---- 封面管理 ---- */
-    .wf-modal.cm { width: 520px; }
-    .cm-preview {
+    /* ---- 封面管理：候选画廊 ---- */
+    .wf-modal.cm { width: 560px; max-height: calc(100vh - 40px); overflow-y: auto; }
+    .cm-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+    .cm-head-text { flex: 1; min-width: 0; }
+    .cm-head h2 { margin-bottom: 2px; }
+    .cm-head .wf-modal-sub { margin: 0; }
+    .cm-source {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 7px;
+      border-radius: var(--radius-xs);
+      background: var(--panel-3);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text-2);
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .cm-x {
+      flex: none;
+      width: 20px;
+      height: 20px;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .cm-x:hover { color: var(--text); }
+    .cm-gallery-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cm-label { font-size: 11.5px; color: var(--muted); }
+    .cm-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .cm-cell {
       position: relative;
+      display: block;
       width: 100%;
-      aspect-ratio: 16 / 10;
-      max-height: 260px;
+      /* button 上 aspect-ratio 不可靠：用 padding 撑出 16:10，图片再绝对定位铺满 */
+      padding: 0 0 62.5%;
       overflow: hidden;
+      border: 0;
       border-radius: var(--radius-sm);
       background: var(--panel-2);
+      cursor: pointer;
     }
-    .cm-preview::after {
+    .cm-cell::after {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      box-shadow: inset 0 0 0 1px var(--border);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
       pointer-events: none;
     }
-    .cm-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .cm-preview-empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .cm-cell.on::after { box-shadow: inset 0 0 0 2px var(--accent); }
+    .cm-cell:hover::after { box-shadow: inset 0 0 0 2px var(--accent-line); }
+    .cm-cell img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
       height: 100%;
+      object-fit: cover;
+    }
+    .cm-cell-tag {
+      position: absolute;
+      left: 6px;
+      bottom: 6px;
+      padding: 1px 5px;
+      border-radius: var(--radius-xs);
+      background: var(--accent);
+      color: var(--on-primary);
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .cm-hint { margin: 8px 0 14px; font-size: 11px; color: var(--muted); }
+    .cm-empty {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 28px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
       color: var(--muted);
       font-size: 11.5px;
+      text-align: center;
     }
-    .cm-actions { display: flex; gap: 8px; margin-bottom: 14px; }
-    .cm-actions .btn-xs { flex: none; }
-    .cm-custom { padding-top: 12px; border-top: 1px solid var(--border); }
-    .cm-label { margin: 0 0 8px; font-size: 11.5px; color: var(--muted); }
-    .cm-url-row { display: flex; gap: 8px; }
+    .cm-custom { padding-top: 10px; border-top: 1px solid var(--border); }
+    .cm-fold {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      padding: 4px 0;
+      border: 0;
+      background: none;
+      color: var(--text-2);
+      font: inherit;
+      font-size: 11.5px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .cm-caret {
+      width: 0;
+      height: 0;
+      border-left: 4px solid var(--muted);
+      border-top: 3.5px solid transparent;
+      border-bottom: 3.5px solid transparent;
+      transition: transform 0.15s;
+    }
+    .cm-caret.open { transform: rotate(90deg); }
+    .cm-url-row { display: flex; gap: 8px; margin: 8px 0; }
     .cm-url-row input {
       flex: 1;
       min-width: 0;
@@ -1129,17 +1328,25 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       font-size: 12.5px;
     }
     .cm-url-row .btn-xs { flex: none; }
-    .cm-file {
+    .cm-drop {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      margin-top: 9px;
+      justify-content: center;
+      gap: 2px;
+      padding: 12px 8px;
+      border: 1px dashed var(--border-control);
+      border-radius: var(--radius-sm);
+      color: var(--text-2);
       font-size: 11.5px;
-      color: var(--muted);
+      text-align: center;
       cursor: pointer;
     }
-    .cm-file input { width: auto; max-width: 190px; font-size: 11px; }
+    .cm-drop:hover { border-color: var(--accent-line); background: var(--accent-soft); }
+    .cm-drop input { display: none; }
+    .cm-drop small { color: var(--muted); font-size: 10.5px; }
     .cm-error { margin: 8px 0 0; font-size: 11.5px; color: var(--err); }
+    .cm-reset { margin-right: auto; }
 
     /* ---- 悬浮提示：不占文档流，点 × 或等几秒自己走 ---- */
     .wf-toast {
@@ -1267,9 +1474,17 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       padding: 0 5px;
       border-radius: var(--radius-xs);
       background: var(--panel-3);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
       color: var(--text-2);
       font-size: 10px;
       font-weight: 600;
+    }
+    /* 与卡片一致：没分组也是一枚灰度禁用标签 */
+    .lw-grp.is-none {
+      background: var(--panel-2);
+      box-shadow: inset 0 0 0 1px var(--border);
+      color: var(--muted);
+      font-weight: 500;
     }
 
     /* 徽标用语义色浅底：列表是平铺的，不需要卡片那种压图用的深底 */
@@ -1512,6 +1727,8 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   menuAt = { x: 0, y: 0 };
   /** 重命名与分组对话框 */
   editing: { item: LocalWorkflow; title: string; group: string; rename: boolean } | null = null;
+  /** 更换分组：只切这一条工作流的组，组的增删改在工具栏的「分组管理」 */
+  groupSwitch: { item: LocalWorkflow; group: string; busy: boolean } | null = null;
   /** 删除二次确认 */
   pendingDelete: LocalWorkflow | null = null;
   /** 分组管理弹层：新建 / 改名 / 删除都收在这里 */
@@ -1535,6 +1752,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   /* 弹层焦点管理：打开时焦点进入弹层，Tab 在弹层内环绕，Esc 逐层退出 */
   @ViewChild('drawerBox') drawerBox?: ElementRef<HTMLElement>;
   @ViewChild('editBox') editBox?: ElementRef<HTMLElement>;
+  @ViewChild('switchBox') switchBox?: ElementRef<HTMLElement>;
   @ViewChild('delBox') delBox?: ElementRef<HTMLElement>;
   @ViewChild('groupBox') groupBox?: ElementRef<HTMLElement>;
   @ViewChild('coverBox') coverBox?: ElementRef<HTMLElement>;
@@ -1870,6 +2088,42 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/models/discover'], { queryParams: { q: m.file } });
   }
 
+  /** ⋯ 菜单里的「更换分组」：只切这一条，不改名文件、不碰组的增删改 */
+  openGroupSwitch(it: LocalWorkflow): void {
+    this.closeMenu();
+    this.groupSwitch = { item: it, group: it.group || '', busy: false };
+    setTimeout(() => focusFirst(this.switchBox?.nativeElement));
+  }
+
+  closeGroupSwitch(): void {
+    this.groupSwitch = null;
+  }
+
+  saveGroupSwitch(): void {
+    const sw = this.groupSwitch;
+    if (!sw || sw.busy) return;
+    sw.busy = true;
+    this.api
+      .setLocalWorkflowMeta({
+        path: sw.item.path,
+        title: sw.item.title || '',
+        group: sw.group.trim(),
+        rename_file: false,
+      })
+      .subscribe({
+        next: (res) => {
+          this.groupSwitch = null;
+          this.notice = res.folder ? `已归入「${res.folder}」` : '已移回根目录';
+          this.loadLocal();
+        },
+        error: (err) => {
+          if (this.groupSwitch !== sw) return;
+          sw.busy = false;
+          this.localError = errMsg(err, '更换分组失败');
+        },
+      });
+  }
+
   openRename(it: LocalWorkflow): void {
     this.closeMenu();
     this.editing = { item: it, title: it.title || '', group: it.group || '', rename: false };
@@ -2069,7 +2323,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     return this.pinnedKeys.includes(key);
   }
 
-  /** 封面管理框里说明「这张图是哪来的」，别让用户猜为什么改不动 */
+  /** 打开封面管理：先发一批候选，当前图排在画廊第一格 */
   openCoverManager(it: LocalWorkflow): void {
     this.closeMenu();
     this.coverMgr = {
@@ -2077,10 +2331,15 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
       key: it.key || it.path,
       url: it.cover || '',
       customUrl: '',
-      failed: false,
       busy: false,
       error: '',
+      gallery: [],
+      candidates: [],
+      galleryLoading: false,
+      offset: 0,
+      customOpen: false,
     };
+    this.loadCandidates();
     setTimeout(() => focusFirst(this.coverBox?.nativeElement));
   }
 
@@ -2088,7 +2347,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.coverMgr = null;
   }
 
-  /** 抽到 / 自定义成功之后，列表、卡片、弹层预览三处一起换，别只改一处 */
+  /** 选中 / 自定义成功之后，列表、卡片、画廊三处一起换，别只改一处 */
   private applyCover(key: string, url: string): void {
     if (!this.pinnedKeys.includes(key)) this.pinnedKeys = [...this.pinnedKeys, key];
     this.local = this.local.map((x) =>
@@ -2097,42 +2356,78 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     const mgr = this.coverMgr;
     if (mgr) {
       mgr.url = url;
-      mgr.failed = false;
       mgr.busy = false;
       mgr.error = '';
       mgr.item = { ...mgr.item, cover: url };
+      this.rebuildGallery(mgr);
     }
   }
 
-  redealFromManager(): void {
+  /** 画廊顺序固定为「当前图 + 本次候选」，自定义图也会成为第一格 */
+  private rebuildGallery(mgr: CoverManager): void {
+    const urls = [mgr.url, ...mgr.candidates.filter((u) => u && u !== mgr.url)];
+    mgr.gallery = urls.filter((u, i) => u && urls.indexOf(u) === i).slice(0, 5);
+  }
+
+  private loadCandidates(next = false): void {
     const mgr = this.coverMgr;
-    if (!mgr || mgr.busy) return;
-    mgr.busy = true;
+    if (!mgr || mgr.galleryLoading) return;
+    if (next) mgr.offset += 4;
+    mgr.galleryLoading = true;
     mgr.error = '';
     this.api
-      .refreshWorkflowCover({
+      .workflowCoverCandidates({
         key: mgr.key,
         name: mgr.item.title || mgr.item.name,
         model: mgr.item.main_model || '',
         current: mgr.url,
+        offset: mgr.offset,
       })
       .subscribe({
         next: (res) => {
           if (this.coverMgr !== mgr) return;
-          mgr.busy = false;
-          if (!res.cover) {
-            mgr.error = '没找到别的可用封面，先保留原图';
-            return;
-          }
-          this.applyCover(mgr.key, res.cover);
-          this.notice = '已换一张封面，这条会被钉住';
+          mgr.galleryLoading = false;
+          mgr.candidates = res.covers || [];
+          this.rebuildGallery(mgr);
         },
         error: (err) => {
           if (this.coverMgr !== mgr) return;
-          mgr.busy = false;
-          mgr.error = errMsg(err, '换封面失败');
+          mgr.galleryLoading = false;
+          mgr.error = errMsg(err, '找候选封面失败');
         },
       });
+  }
+
+  reloadCandidates(): void {
+    this.loadCandidates(true);
+  }
+
+  chooseCandidate(url: string): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy || url === mgr.url) return;
+    mgr.busy = true;
+    mgr.error = '';
+    this.api.chooseWorkflowCover({ key: mgr.key, url }).subscribe({
+      next: (res) => {
+        if (this.coverMgr !== mgr) return;
+        mgr.busy = false;
+        if (!res.cover) {
+          mgr.error = '这张图没能设上，请重试';
+          return;
+        }
+        this.applyCover(mgr.key, res.cover);
+        this.notice = '已设为封面并固定';
+      },
+      error: (err) => {
+        if (this.coverMgr !== mgr) return;
+        mgr.busy = false;
+        mgr.error = errMsg(err, '设置封面失败');
+      },
+    });
+  }
+
+  onGalleryImgError(event: Event): void {
+    (event.target as HTMLImageElement).style.visibility = 'hidden';
   }
 
   applyCustomUrl(): void {
@@ -2151,14 +2446,25 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   onCoverFile(event: Event): void {
-    const mgr = this.coverMgr;
-    if (!mgr || mgr.busy) return;
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+    this.handleCoverFile(input.files?.[0]);
+    input.value = '';
+  }
+
+  onCoverDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onCoverDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.handleCoverFile(event.dataTransfer?.files?.[0]);
+  }
+
+  private handleCoverFile(file: File | undefined): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy || !file) return;
     if (file.size > 8 * 1024 * 1024) {
       mgr.error = '图片超过 8MB，请压缩后再传';
-      input.value = '';
       return;
     }
     const reader = new FileReader();
@@ -2171,7 +2477,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
       mgr.error = '读文件失败，请换一张试试';
     };
     reader.readAsDataURL(file);
-    input.value = '';
   }
 
   private saveCustomCover(
@@ -2215,7 +2520,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Esc 逐层退出：菜单 → 封面管理 / 分组管理 → 编辑 → 删除 → 整理 → 抽屉 */
+  /** Esc 逐层退出：菜单 → 封面管理 / 分组管理 / 更换分组 → 编辑 → 删除 → 整理 → 抽屉 */
   onEsc(): void {
     if (this.sortMenu) {
       this.sortMenu = false;
@@ -2231,6 +2536,10 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     }
     if (this.groupMgr) {
       this.closeGroupManager();
+      return;
+    }
+    if (this.groupSwitch) {
+      this.closeGroupSwitch();
       return;
     }
     if (this.editing) {

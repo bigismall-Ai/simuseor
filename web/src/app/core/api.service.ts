@@ -142,6 +142,31 @@ export class ApiService {
     );
   }
 
+  /** 封面管理画廊：一次给一批候选，只发图不改当前封面；offset 用来换一批。 */
+  workflowCoverCandidates(body: {
+    key: string;
+    name: string;
+    model: string;
+    current: string;
+    offset: number;
+  }): Observable<{ key: string; covers: string[] }> {
+    return this.http.post<{ key: string; covers: string[] }>(
+      `${this.base}/workflows/covers/candidates`,
+      body,
+    );
+  }
+
+  /** 画廊里点选一张：钉住选中的 URL，后端只认本次发过的候选。 */
+  chooseWorkflowCover(body: {
+    key: string;
+    url: string;
+  }): Observable<{ key: string; cover: string; pinned: boolean; source: string }> {
+    return this.http.post<{ key: string; cover: string; pinned: boolean; source: string }>(
+      `${this.base}/workflows/covers/choose`,
+      body,
+    );
+  }
+
   /** 自定义封面：外链 URL 或浏览器读出的 base64 data URI，二选一。 */
   customWorkflowCover(body: {
     key: string;

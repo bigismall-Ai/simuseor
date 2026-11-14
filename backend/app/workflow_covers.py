@@ -79,6 +79,10 @@ _TOKEN = re.compile(r"[a-z0-9]+")
 _lock = threading.Lock()
 _store: dict | None = None
 _dirty = False
+# 封面管理画廊最近一次发给前端的候选，choose() 只认这里面的 URL，
+# 避免把任意外链写进 pinned。进程内即可：重开弹层会重新发一批。
+_cand_lock = threading.Lock()
+_CANDIDATES: dict[str, list[str]] = {}
 
 
 # ---------------------------------------------------------------- 缓存
@@ -505,6 +509,24 @@ def _used_urls(model: str) -> set[str]:
     }
 
 
+def _cached_pool(model: str, cfg: dict) -> list[str]:
+    """底模样图池的 7 天缓存，发牌与候选画廊共用同一份，别各搜各的。"""
+    now = time.time()
+    with _lock:
+        cached = _load()["pools"].get(model)
+    if cached and now - float(cached.get("ts") or 0) <= TTL_HIT:
+        urls = list(cached.get("urls") or [])
+        if urls:
+            return urls
+    urls = _pool(model, cfg)
+    global _dirty
+    with _lock:
+        _load()["pools"][model] = {"urls": urls, "ts": now}
+        _dirty = True
+    _flush()
+    return urls
+
+
 def _pool_cover(key: str, model: str, cfg: dict, exclude: str = "") -> str:
     """从池子里发一张还没被同底模的其它工作流拿走的图。
 
@@ -512,19 +534,7 @@ def _pool_cover(key: str, model: str, cfg: dict, exclude: str = "") -> str:
     """
     if not model:
         return ""
-    now = time.time()
-    with _lock:
-        cached = _load()["pools"].get(model)
-    if cached and now - float(cached.get("ts") or 0) > TTL_HIT:
-        cached = None
-    urls = list((cached or {}).get("urls") or [])
-    if not urls:
-        urls = _pool(model, cfg)
-        global _dirty
-        with _lock:
-            _load()["pools"][model] = {"urls": urls, "ts": now}
-            _dirty = True
-        _flush()
+    urls = _cached_pool(model, cfg)
     taken = _used_urls(model)
     if exclude:
         taken.add(exclude)
@@ -580,6 +590,55 @@ def redeal(entry: dict, current: str = "") -> str:
     if not url:
         return ""
     _remember(key, url, origin=origin)
+    pin(key, url)
+    return url
+
+
+def candidates(entry: dict, current: str = "", offset: int = 0, limit: int = 4) -> list[str]:
+    """封面管理画廊的候选：只发图，不写 seen / pinned，选中后由 choose() 钉住。
+
+    顺序按 key 的稳定哈希起点旋转，保证同一条工作流每次打开看到的批次一样；
+    offset 用来「换一批」，起点往后推即可，不需要重新搜社区。
+    """
+    key = (entry.get("key") or "").strip()
+    if not key:
+        return []
+    cfg = _cfg()
+    urls: list[str] = []
+    own = _workflow_cover(entry.get("name") or "", cfg)
+    if own:
+        urls.append(own)
+    model = entry.get("model") or ""
+    if model:
+        pool = _cached_pool(model, cfg)
+        if pool:
+            start = int(hashlib.sha1(key.encode("utf-8")).hexdigest()[:8], 16) % len(pool)
+            for url in pool[start:] + pool[:start]:
+                if url not in urls:
+                    urls.append(url)
+    if offset and urls:
+        step = offset % len(urls)
+        urls = urls[step:] + urls[:step]
+    out = urls[:limit]
+    allowed = list(out)
+    if current and current not in allowed:
+        allowed.append(current)
+    with _cand_lock:
+        _CANDIDATES[key] = allowed
+    return out
+
+
+def choose(key: str, url: str) -> str:
+    """用户从画廊点了一张：钉住它，盖过本地自带出图与自动抽牌。"""
+    key = (key or "").strip()
+    url = (url or "").strip()
+    if not key or not url:
+        raise ValueError("缺少工作流或封面地址")
+    with _cand_lock:
+        allowed = list(_CANDIDATES.get(key) or [])
+    if url not in allowed:
+        raise ValueError("这张图不在本次候选里，请重新打开封面管理")
+    _remember(key, url, origin="manual")
     pin(key, url)
     return url
 
