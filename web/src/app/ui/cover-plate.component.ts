@@ -540,6 +540,14 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         --plate-strong: #633806;
         --plate-mark: #d3a862;
       }
+      /* MiniMax：底色取官方渐变（#E21680 品红 → #FF633A 橙）的低饱和底，
+         家族标识本身就是那个渐变，底色不能再抢。 */
+      .f-minimax {
+        --plate-bg: #fdeef3;
+        --plate-ink: #9c3f68;
+        --plate-strong: #6d2645;
+        --plate-mark: #e88ab0;
+      }
       .f-other {
         --plate-bg: #f2f1ed;
         --plate-ink: #6b6a63;
@@ -594,6 +602,12 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         --plate-ink: #eec48a;
         --plate-strong: #ffdfae;
         --plate-mark: #d3a862;
+      }
+      :host-context([data-theme='dark']) .f-minimax {
+        --plate-bg: #2a1620;
+        --plate-ink: #f0a3c1;
+        --plate-strong: #ffc8dc;
+        --plate-mark: #e88ab0;
       }
       :host-context([data-theme='dark']) .f-other {
         --plate-bg: #232321;

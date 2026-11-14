@@ -155,11 +155,17 @@ export const FAMILIES: FamilySpec[] = [
     id: 'minimax',
     code: 'MMX',
     /*
-     * MiniMax 没有官方 symbol 资产（社区只有字标），所以只给家族码。
-     * mark 是空的 —— 自绘几何冒充官方标是撒谎，不如留白。
+     * MiniMax 官方标识：波浪形 symbol，官方渐变 #E21680 → #FF633A（品红→橙）。
      *
-     * 工作流侧靠主模型文件名认出来：`minimax_h3_fl2va_pruned_int8_convrot.safetensors`。
+     * 资产来源：platform.minimaxi.com 首屏字标 svg 的第一个 path（viewBox 0 0 201 48 里
+     * x 0~57.1358 那段就是 symbol，字标本身是黑色纯文字）。这里只取 symbol，
+     * viewBox 裁到 `0 0 57.14 48`，渐变原样保留官方色。
+     *
+     * 社区之前只有字标，所以这里一度是空的 —— 现在官方 symbol 可用，就该用官方的。
+     * 渐变是官方品牌的一部分，**不另做深色版**：深浅背景下这个饱和度都读得出来，
+     * 反白版反而丢掉了识别特征。
      */
+    logo: 'families/minimax.svg',
     mark: '',
     filled: true,
     test: /minimax|\bmmx\b/i,
