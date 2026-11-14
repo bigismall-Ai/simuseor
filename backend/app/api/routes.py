@@ -469,7 +469,25 @@ def delete_task(task_id: str) -> dict:
 
 # ---------------- 本地模型库 ----------------
 @router.get("/library")
-def list_library(q: str = "", source: str = "", review: str = "", favorite: bool = False) -> list[dict]:
+def list_library(
+    q: str = "",
+    source: str = "",
+    review: str = "",
+    favorite: bool = False,
+    sort: str = "created",
+    folder: str = "",
+    task: str = "",
+) -> list[dict]:
+    """本地模型库。
+
+    sort 四选一，与界面上的排序下拉一致：
+      name    名称
+      created 最新入库
+      folder  类别（存放类型）
+      size    大小
+    分类筛选与分类排序都依赖现算的分类结果 —— 数据库里没这两列，
+    所以只能在内存里过。
+    """
     import json as _json
 
     sql = "SELECT * FROM library_models WHERE 1=1"
@@ -492,6 +510,20 @@ def list_library(q: str = "", source: str = "", review: str = "", favorite: bool
         m["tags"] = _json.loads(m.get("tags") or "[]")
         m["files"] = query("SELECT id, path, size FROM library_files WHERE model_id=? ORDER BY path", (m["id"],))
         m.update(describe_model(m["local_path"], m["name"], m["tags"], m.get("size_bytes") or 0))
+
+    if folder:
+        models = [m for m in models if m["folder"] == folder]
+    if task:
+        models = [m for m in models if m["task"] == task]
+
+    if sort == "name":
+        models.sort(key=lambda m: (m["name"] or "").lower())
+    elif sort == "size":
+        models.sort(key=lambda m: m.get("size_bytes") or 0, reverse=True)
+    elif sort == "folder":
+        models.sort(key=lambda m: (m["folderLabel"], m["name"] or ""))
+    else:  # created（默认，最新入库）
+        models.sort(key=lambda m: m.get("created_at") or "", reverse=True)
     return models
 
 
