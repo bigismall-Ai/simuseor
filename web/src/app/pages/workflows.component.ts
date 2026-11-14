@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
+import { proxied } from '../core/cover';
 import { focusFirst, trapTab } from '../core/a11y';
 import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
@@ -221,7 +222,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
                   <!-- 缩略图：卡片有封面，列表也得有，否则同一份资产在两个视图里认不出是同一件 -->
                   <span class="lw-thumb">
                     @if (it.cover && stateOf(it) !== 'broken') {
-                      <img [src]="it.cover" alt="" referrerpolicy="no-referrer" loading="lazy" />
+                      <img [src]="coverSrc(it.cover)" alt="" referrerpolicy="no-referrer" loading="lazy" />
                     } @else if (stateOf(it) === 'broken') {
                       <span class="lw-thumb-err">!</span>
                     } @else {
@@ -2830,6 +2831,11 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   toneOf(source: string): 'blue' | 'green' | 'orange' | 'gray' {
     return SOURCE_TONES[source] || 'gray';
+  }
+
+  /** 封面与卡片同一套取图规则：外链走 /api/cover，本地/相对地址原样返回。 */
+  coverSrc(url?: string): string {
+    return proxied(url || '');
   }
 
   fmtNum = fmtNum;

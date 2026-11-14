@@ -28,7 +28,7 @@ from typing import Callable
 
 import httpx
 
-from .config import COMFY_DIR, COMFY_ENV_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
+from .config import COMFY_DIR, COMFY_ENV_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings, source_proxy
 from .comfy.runner import active as active_instance, start as start_instance, status as instance_status
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
@@ -210,9 +210,16 @@ _CIVITAI_CURSORS: dict[tuple, dict[int, str]] = {}
 _CIVITAI_LOCK = threading.Lock()
 
 
-def _civitai_get(params: dict, headers: dict) -> dict:
+def _civitai_get(params: dict, headers: dict, proxy: str | None = None) -> dict:
     try:
-        resp = httpx.get(f"{CIVITAI_API}/models", params=params, headers=headers, timeout=30, follow_redirects=True)
+        resp = httpx.get(
+            f"{CIVITAI_API}/models",
+            params=params,
+            headers=headers,
+            timeout=30,
+            follow_redirects=True,
+            proxy=proxy,
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"Civitai 工作流搜索失败: {exc}") from exc
     if resp.status_code >= 400:
@@ -248,7 +255,7 @@ def _search_civitai(q: str, limit: int, page: int, sort: str = "downloads") -> t
             params = dict(base_params)
             if cursors.get(at):
                 params["cursor"] = cursors[at]
-            payload = _civitai_get(params, headers)
+            payload = _civitai_get(params, headers, source_proxy(cfg))
             next_cursor = (payload.get("metadata") or {}).get("nextCursor") or ""
             if next_cursor:
                 cursors[at + 1] = next_cursor
@@ -302,8 +309,21 @@ def _search_huggingface(q: str, limit: int, page: int, sort: str = "downloads") 
         "direction": "-1",
         "search": q or "workflow",
     }
+    # 与模型源同一套规则：开镜像就直连镜像（绕代理会被判成海外 IP 并 308 回官方），
+    # 只有打官方站时才套该源代理。
+    cfg = _source_cfg("huggingface")
+    mirror = (cfg.get("mirror") or "").rstrip("/")
+    api_base = f"{mirror}/api" if cfg.get("use_mirror") and mirror else HF_API
+    proxy = None if api_base != HF_API else source_proxy(cfg)
     try:
-        resp = httpx.get(f"{HF_API}/models", params=params, headers=UA, timeout=30)
+        resp = httpx.get(
+            f"{api_base}/models",
+            params=params,
+            headers=UA,
+            timeout=30,
+            follow_redirects=True,
+            proxy=proxy,
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"Hugging Face 工作流搜索失败: {exc}") from exc
     if resp.status_code >= 400:
@@ -350,6 +370,7 @@ def _ms_files(repo_id: str, cfg: dict) -> list[str]:
             headers=headers,
             timeout=20,
             follow_redirects=True,
+            proxy=source_proxy(cfg),
         )
     except httpx.HTTPError:
         return []
@@ -384,7 +405,13 @@ def _search_modelscope(q: str, limit: int, page: int, sort: str = "downloads") -
     if cfg.get("token"):
         headers["Authorization"] = f"Bearer {cfg['token']}"
     try:
-        resp = httpx.get(f"{MS_API}/openapi/v1/models", params=params, headers=headers, timeout=30)
+        resp = httpx.get(
+            f"{MS_API}/openapi/v1/models",
+            params=params,
+            headers=headers,
+            timeout=30,
+            proxy=source_proxy(cfg),
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"ModelScope 工作流搜索失败: {exc}") from exc
     if resp.status_code >= 400:
@@ -804,7 +831,13 @@ def import_to_instance(source: str, repo_id: str, instance: str = "", revision: 
         if not url:
             continue
         try:
-            resp = httpx.get(url, headers=headers, timeout=60, follow_redirects=True)
+            resp = httpx.get(
+                url,
+                headers=headers,
+                timeout=60,
+                follow_redirects=True,
+                proxy=source_proxy(_source_cfg(source)),
+            )
         except httpx.HTTPError as exc:
             raise SourceError(f"下载失败: {exc}") from exc
         if resp.status_code >= 400:

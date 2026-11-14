@@ -181,7 +181,7 @@ def _civitai_fixture(monkeypatch):
     }
     calls: list[dict] = []
 
-    def fake_get(url, *, params, headers, timeout, follow_redirects):
+    def fake_get(url, *, params, headers, timeout, follow_redirects, proxy=None):
         calls.append(dict(params))
         cursor = params.get("cursor") or ""
         model, nxt, _ = pages[cursor]

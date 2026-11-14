@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FamilyMarkComponent } from './family-mark.component';
+import { proxied } from '../core/cover';
 import { LocalWorkflow } from '../core/types';
 
 export type WorkflowState = 'broken' | 'api' | 'missing' | 'ready';
@@ -34,7 +35,7 @@ interface StateView {
         @if (state() !== 'broken' && it.cover && !coverFailed) {
           <!-- 用 img 而不是 background-image：Civitai 按 referrer 拦图，
                只有 img 能带 referrerpolicy，背景图带不了 -->
-          <img class="wc-cover-img" [src]="it.cover" alt="" referrerpolicy="no-referrer"
+          <img class="wc-cover-img" [src]="coverSrc" alt="" referrerpolicy="no-referrer"
                loading="lazy" (error)="coverFailed = true" />
         }
         @if (state() === 'broken') {
@@ -426,6 +427,11 @@ export class WorkflowCardComponent {
 
   /** 远程图挂掉（防盗链 / 404）就退回空封面，别留一块碎图 */
   coverFailed = false;
+
+  /** 外部封面统一经后端取（浏览器不挂代理时直连图床会超时）。 */
+  get coverSrc(): string {
+    return proxied(this.it.cover || '');
+  }
 
   openMore(event: MouseEvent): void {
     event.stopPropagation();

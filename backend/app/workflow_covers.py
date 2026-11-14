@@ -29,7 +29,7 @@ from urllib.parse import urlparse
 
 import httpx
 
-from .config import DATA_DIR, WORKSPACE_PREVIEWS_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
+from .config import DATA_DIR, source_proxy, WORKSPACE_PREVIEWS_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings
 
 COVERS_PATH = DATA_DIR / "workflow_covers.json"
 BLOB_DIR = DATA_DIR / "wf-covers"
@@ -407,7 +407,9 @@ def _get(params: dict, cfg: dict, timeout: float = 9.0) -> list[dict]:
     token = (cfg or {}).get("token") or ""
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    with httpx.Client(timeout=timeout, follow_redirects=True, headers=headers) as client:
+    with httpx.Client(
+        timeout=timeout, follow_redirects=True, headers=headers, proxy=source_proxy(cfg)
+    ) as client:
         resp = client.get(CIVITAI_API, params=params)
         if resp.status_code >= 400:
             return []
