@@ -77,6 +77,13 @@ const SOURCE_LABELS: Record<string, string> = {
 const HOT_KEYWORDS = ['qwen', 'flux', 'lora', 'sdxl', 'whisper', 'embedding'];
 const PAGE_SIZE = 20;
 
+/** 追加下一页时按 (source,id) 去重，保持先到先得。 */
+function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
+  const seen = new Set(prev.map((i) => `${i.source}:${i.id}`));
+  const extra = next.filter((i) => !seen.has(`${i.source}:${i.id}`));
+  return extra.length ? [...prev, ...extra] : prev;
+}
+
 @Component({
   selector: 'app-discover',
   standalone: true,
@@ -608,8 +615,11 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         next: (res) => {
           if (token !== this.fetchToken) return;
           const prev = this.perSource.get(key);
+          // 翻页追加时按 (source,id) 去重：上游分页异常（例如 Civitai 曾忽略 page
+          // 参数，三页返回同一批）会让同一张卡重复出现，合并这一步兜住它。
+          const merged = page === 1 || !prev ? res.items : mergeUnique(prev.items, res.items);
           this.perSource.set(key, {
-            items: page === 1 || !prev ? res.items : [...prev.items, ...res.items],
+            items: merged,
             full: res.items.length >= PAGE_SIZE,
             error: '',
           });

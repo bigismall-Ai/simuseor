@@ -79,11 +79,9 @@ class CivitaiAdapter(SourceAdapter):
             headers["Authorization"] = f"Bearer {token}"
         page = max(1, int(page))
         proxy = source_proxy(cfg)
-        if q:
-            # Civitai 关键词搜索不支持 page 参数，走游标分页（缓存各页游标避免重复翻页）
-            data = self._fetch_query_page(params, headers, page, proxy)
-        else:
-            data = self._fetch({**params, "page": page}, headers, proxy)
+        # Civitai 的 /models **不再支持 page 参数**：page=1/2/3 返回同一批结果，
+        # 翻页只能跟随 metadata.nextPage 里的 cursor。关键词搜索与普通列表都要走游标。
+        data = self._fetch_query_page(params, headers, page, proxy)
         items = []
         for m in data.get("items") or []:
             if m.get("type") == "Workflows":
@@ -130,7 +128,11 @@ class CivitaiAdapter(SourceAdapter):
         return resp.json()
 
     def _fetch_query_page(self, params: dict, headers: dict, page: int, proxy: str | None = None) -> dict:
-        """关键词搜索游标翻页：cursors[i] 为获取第 i+1 页的游标，末页之后再记 None。"""
+        """游标翻页：cursors[i] 为获取第 i+1 页的游标，末页之后再记 None。
+
+        2026-11 实测：`page` 参数对 /models 已失效（三页返回同一批），
+        只能顺着 `metadata.nextPage` 的 cursor 走。关键词搜索与分类浏览共用这条链路。
+        """
         key = (params.get("query"), params.get("sort"), params.get("nsfw"), params.get("limit"))
         cursors = self._cursors.get(key) or [None]
         data: dict | None = None
