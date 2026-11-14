@@ -1139,12 +1139,11 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('app-workflow-card .wc-kebab').click();
     const menu = page.locator('.wf-menu');
     await expect(menu).toBeVisible();
-    // 6 个固定动作（含「管理封面」）+ 有分组时多一个「按分组整理目录」
-    await expect(menu.getByRole('menuitem')).toHaveCount(7);
-    await expect(menu).toContainText('复制文件路径');
-    await expect(menu).toContainText('重命名');
-    await expect(menu).toContainText('按分组整理目录');
-    await expect(menu).toContainText('删除');
+    // 指定的 6 项顺序：变更封面 / 重命名 / 分组管理 / 在画布中打开 / 打开文件夹 / 删除
+    await expect(menu.getByRole('menuitem')).toHaveText([
+      /变更封面/, /^重命名$/, /^分组管理$/, /在画布中打开/, /打开文件夹/, /^删除$/,
+    ]);
+    await expect(menu.getByRole('menuitem')).toHaveCount(6);
 
     // 菜单是 fixed 定位且贴着按钮：不该跑到视口外
     const box = await menu.boundingBox();
@@ -1266,7 +1265,7 @@ test.describe('Model Downloader Web UI', () => {
     // ⋯ 与卡片同一套菜单
     await row.locator('.lw-kebab').click();
     await expect(page.locator('.wf-menu')).toBeVisible();
-    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(7);
+    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(6);
     await page.keyboard.press('Escape');
     await expect(page.locator('.wf-menu')).toHaveCount(0);
 
@@ -1366,8 +1365,9 @@ test.describe('Model Downloader Web UI', () => {
     });
 
     await page.goto('/workflows');
-    await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: /按分组整理目录/ }).click();
+    // 整理目录已从 ⋯ 菜单移到分组管理框底部
+    await page.getByRole('button', { name: '分组管理' }).click();
+    await page.getByTestId('gm-organize').click();
 
     const dialog = page.getByRole('alertdialog', { name: '按分组整理目录' });
     await expect(dialog).toBeVisible();
@@ -1377,8 +1377,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(dialog).toBeHidden();
     expect(called).toBe(0);
 
-    await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: /按分组整理目录/ }).click();
+    await page.getByRole('button', { name: '分组管理' }).click();
+    await page.getByTestId('gm-organize').click();
     await page.getByRole('alertdialog').getByRole('button', { name: '整理' }).click();
 
     await expect.poll(() => called).toBe(1);
@@ -1500,21 +1500,18 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/workflows');
     await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    await page.getByRole('menuitem', { name: '变更封面' }).click();
     const dlg = page.getByRole('dialog', { name: '封面管理' });
     await expect(dlg).toBeVisible();
     await expect(dlg.getByTestId('cm-preview')).toBeVisible();
-    await expect(dlg).toContainText('自动匹配');
-
-    // 规则说明就在框里，不用去别处翻
-    await dlg.getByText('封面的选取规则').click();
-    await expect(dlg).toContainText('同名社区图');
+    // 来源说明与规则长文已精简掉，框里只留预览与动作
+    await expect(dlg).not.toContainText('封面的选取规则');
 
     await dlg.getByTestId('cm-redeal').click();
     await expect.poll(() => refreshed).toBe(1);
     const img = page.locator('app-workflow-card img.wc-cover-img');
     await expect(img).toHaveAttribute('src', next);
-    await expect(dlg).toContainText('手动换的图');
+    await expect(dlg.getByTestId('cm-preview').locator('img')).toHaveAttribute('src', next);
     await page.screenshot({ path: ART + '/44-workflow-cover-manager.png', fullPage: true });
 
     // 「恢复自动封面」收进管理框，菜单里不再多一条
@@ -1540,7 +1537,7 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/workflows');
     await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    await page.getByRole('menuitem', { name: '变更封面' }).click();
     const dlg = page.getByRole('dialog', { name: '封面管理' });
 
     // 非 http(s) 地址在前端就拦下，不发给后端
@@ -1555,7 +1552,7 @@ test.describe('Model Downloader Web UI', () => {
     expect(bodies[0].url).toBe('https://img.example/my.png');
     const img = page.locator('app-workflow-card img.wc-cover-img');
     await expect(img).toHaveAttribute('src', custom);
-    await expect(dlg).toContainText('自定义图片');
+    await expect(dlg.getByTestId('cm-preview').locator('img')).toHaveAttribute('src', custom);
     await expect(page.getByTestId('wf-toast')).toContainText('已设为自定义封面');
 
     // 上传走 FileReader → data URI，后端把图内容寻址落到本机
@@ -1583,7 +1580,7 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/workflows');
     await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    await page.getByRole('menuitem', { name: '变更封面' }).click();
     const dlg = page.getByRole('dialog', { name: '封面管理' });
     await expect(dlg).toBeVisible();
     expect(await dlg.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(20, 20, 23)');
@@ -1593,6 +1590,33 @@ test.describe('Model Downloader Web UI', () => {
     await expect(toast).toBeVisible();
     expect(await toast.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(20, 20, 23)');
     await page.screenshot({ path: ART + '/47-workflow-cover-dark.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：工具栏视图切换前置、排序可选择、数量与规格是标签', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+
+    const tools = page.locator('.wf-tools');
+    // 视图切换在搜索框之前
+    await expect(tools.locator('> :first-child')).toHaveAttribute('aria-label', '视图切换');
+
+    // 分组数量是小标签，不是跟在名字后的裸数字
+    const badge = page.getByTestId('lw-groups').locator('.wf-chip b').first();
+    expect(await badge.evaluate((el) => getComputedStyle(el).borderRadius)).not.toBe('0px');
+
+    // 点排序弹选择，选完收起、按钮显示当前项
+    await page.getByTestId('lw-sort').click();
+    const sortMenu = page.getByTestId('lw-sort-menu');
+    await expect(sortMenu.getByRole('menuitem')).toHaveCount(3);
+    await page.screenshot({ path: ART + '/49-workflow-sort-menu.png', fullPage: true });
+    await sortMenu.getByRole('menuitem', { name: '按名称' }).click();
+    await expect(sortMenu).toHaveCount(0);
+    await expect(page.getByTestId('lw-sort')).toContainText('按名称');
+
+    // 卡片上的节点/依赖是标签，不是一行灰字
+    await expect(page.locator('app-workflow-card .wc-tag').first()).toContainText('节点');
+    await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 });

@@ -63,7 +63,9 @@ interface StateView {
               <span>{{ view().badgeText }}</span>
             </span>
           } @else if (view().badge === 'count') {
-            <span class="wc-count">{{ view().badgeText }}</span>
+            <span class="wc-count">
+              <span>{{ it.nodes }} 节点</span><span>{{ totalDeps() }} 依赖</span>
+            </span>
           } @else if (view().badge === 'note') {
             <span class="wc-note">{{ view().badgeText }}</span>
           }
@@ -92,8 +94,8 @@ interface StateView {
       <div class="wc-body">
         <div class="wc-split">
           <div class="wc-meta">
-            <span>{{ it.nodes }} 节点</span>
-            @if (totalDeps() > 0) { <span>{{ totalDeps() }} 依赖</span> }
+            <span class="wc-tag">{{ it.nodes }} 节点</span>
+            @if (totalDeps() > 0) { <span class="wc-tag">{{ totalDeps() }} 依赖</span> }
           </div>
           <button class="wc-primary" [class.ghost]="view().act === 'edit'" (click)="primary.emit({ item: it, act: view().act })">
             @if (view().act === 'use') {
@@ -238,7 +240,25 @@ interface StateView {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .wc-count { background: rgb(0 0 0 / 0.42); }
+    /* 计数拆成两枚与分组同款的小标签，不再是一整条压在图上的文字 */
+    .wc-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+      background: none;
+      border-radius: 0;
+      overflow: visible;
+    }
+    .wc-count > span {
+      padding: 2px 5px;
+      border-radius: var(--radius-xs);
+      background: rgb(0 0 0 / 0.42);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
     .wc-note { background: rgb(217 119 6 / 0.86); font-weight: 600; }
 
     .wc-acts {
@@ -336,12 +356,23 @@ interface StateView {
     }
     .wc-meta {
       display: flex;
-      gap: 8px;
+      gap: 5px;
       min-width: 0;
-      font-size: 11px;
-      color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
+    }
+    .wc-tag {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 6px;
+      border-radius: var(--radius-xs);
+      background: var(--panel-3);
+      box-shadow: inset 0 0 0 1px var(--border);
+      color: var(--text-2);
+      font-size: 10px;
+      font-weight: 600;
     }
     .wc-primary {
       margin-left: auto;

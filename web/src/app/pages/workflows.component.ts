@@ -59,21 +59,27 @@ const SORTS = [
   { key: 'latest', label: '最新' },
 ];
 
+/** 我的工作流的排序选项：点按钮弹出来选，不再点一下换一个。 */
+const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
+  { key: 'mtime', label: '最近修改' },
+  { key: 'nodes', label: '按节点数' },
+  { key: 'name', label: '按名称' },
+];
+
 @Component({
   selector: 'app-workflows',
   // Esc 逐层退出（菜单 → 编辑 → 删除 → 抽屉）：键盘用户不该被弹层困住
-  host: { '(document:keydown.escape)': 'onEsc()' },
+  host: {
+    '(document:keydown.escape)': 'onEsc()',
+    '(document:click)': 'closeSortMenu()',
+  },
   standalone: true,
   imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
     <ui-page-header
       [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
       [title]="tab === 'discover' ? '发现工作流' : '工作流'"
-      [hint]="
-        tab === 'discover'
-          ? '从官方模板、ComfyHub 社区库、Hugging Face、ModelScope、Civitai、GitHub 抓取，下载到工作流库，所有实例共用。'
-          : '本机工作流库，所有 ComfyUI 实例共用。'
-      "
+      [hint]="tab === 'discover' ? '官方模板 / ComfyHub / HF / ModelScope / Civitai / GitHub' : ''"
     />
 
     @if (tab === 'mine') {
@@ -89,11 +95,26 @@ const SORTS = [
         </ui-panel>
       } @else {
         <div class="lw-bar">
-          <span class="lw-count">{{ localLoading ? '读取中…' : filtered.length + ' / ' + local.length + ' 个工作流' }}</span>
-          @if (localDir) {
-            <span class="lw-dir mono" [title]="localDir">{{ localDir }}</span>
-          }
-          <button class="btn-xs" (click)="loadLocal()" [disabled]="localLoading">刷新</button>
+          <span class="lw-count" [title]="localDir">
+            {{ localLoading ? '读取中…' : filtered.length + ' / ' + local.length + ' 个工作流' }}
+          </span>
+          <div class="lw-actions">
+            <button class="btn-xs lw-act" (click)="openGroupManager()" title="分组管理"
+                    data-testid="lw-groups-manage">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 5.1a1.4 1.4 0 0 1 1.4-1.4h2.7l1.3 1.5h5.2A1.4 1.4 0 0 1 14 6.6v5.7a1.4 1.4 0 0 1-1.4 1.4H3.4A1.4 1.4 0 0 1 2 12.3z" />
+              </svg>
+              分组管理
+            </button>
+            <button class="btn-xs lw-act" (click)="loadLocal()" [disabled]="localLoading" title="刷新">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6" /><path d="M13.3 3.6v3.9H9.4" />
+              </svg>
+              刷新
+            </button>
+          </div>
         </div>
 
         <!-- 分组筛选：独立一行。分组名来自侧车里设的名称，一条都没分组时整行不出现
@@ -119,9 +140,12 @@ const SORTS = [
           </div>
         }
 
-        <!-- 工具栏：搜索 / 状态筛选 / 排序 / 视图切换。
-             四态互斥，筛选项就是卡片徽标能出现的四种情况。 -->
+        <!-- 工具栏：视图切换 → 搜索 → 状态筛选 → 排序。视图放最前，切的是整个列表的呈现。 -->
         <div class="wf-tools">
+          <div class="wf-chips" role="group" aria-label="视图切换">
+            <button class="wf-chip" [class.on]="view === 'card'" (click)="setView('card')">卡片</button>
+            <button class="wf-chip" [class.on]="view === 'list'" (click)="setView('list')">列表</button>
+          </div>
           <input
             class="grow"
             [(ngModel)]="localQ"
@@ -135,11 +159,35 @@ const SORTS = [
               </button>
             }
           </div>
-          <button class="wf-chip" (click)="cycleSort()" data-testid="lw-sort">{{ sortLabel }}</button>
-          <button class="wf-chip" (click)="openGroupManager()" data-testid="lw-groups-manage">分组管理</button>
-          <div class="wf-chips">
-            <button class="wf-chip" [class.on]="view === 'card'" (click)="setView('card')">卡片</button>
-            <button class="wf-chip" [class.on]="view === 'list'" (click)="setView('list')">列表</button>
+          <!-- 排序不再点一下换一个：展开一个选择，当前项有对勾 -->
+          <div class="wf-sort-wrap">
+            <button class="wf-chip" [class.on]="sortMenu" (click)="toggleSortMenu($event)"
+                    data-testid="lw-sort" aria-haspopup="menu" [attr.aria-expanded]="sortMenu" title="排序方式">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+              </svg>
+              {{ sortLabel }}
+              <svg class="caret" viewBox="0 0 16 16" width="10" height="10" fill="none"
+                   stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                <path d="m4.4 6.4 3.6 3.4 3.6-3.4" />
+              </svg>
+            </button>
+            @if (sortMenu) {
+              <div class="wf-sort-menu" role="menu" data-testid="lw-sort-menu">
+                @for (s of localSorts; track s.key) {
+                  <button role="menuitem" [class.on]="sortKey === s.key" (click)="setSortKey(s.key)">
+                    <span>{{ s.label }}</span>
+                    @if (sortKey === s.key) {
+                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor"
+                           stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <path d="M3.2 8.4 6.4 11.6 12.8 5.2" />
+                      </svg>
+                    }
+                  </button>
+                }
+              </div>
+            }
           </div>
         </div>
 
@@ -404,18 +452,16 @@ const SORTS = [
     @if (menuOf) {
       <div class="wf-menu-mask" (click)="closeMenu()"></div>
       <div class="wf-menu" role="menu" [style.left.px]="menuAt.x" [style.top.px]="menuAt.y">
-        <button role="menuitem" (click)="openEditor(menuOf)">
-          {{ menuOf.format === 'ui' ? '在画布中编辑' : '用默认程序打开' }}
-        </button>
-        <button role="menuitem" (click)="reveal(menuOf); closeMenu()">在文件夹中定位</button>
-        <button role="menuitem" (click)="copyPath(menuOf)">复制文件路径</button>
+        <button role="menuitem" (click)="openCoverManager(menuOf)">变更封面</button>
+        <button role="menuitem" (click)="openRename(menuOf)">重命名</button>
+        <button role="menuitem" (click)="openGroupManager()">分组管理</button>
         <span class="wf-menu-sep"></span>
-        <button role="menuitem" (click)="openRename(menuOf)">重命名 / 变更分组…</button>
-        <button role="menuitem" (click)="openCoverManager(menuOf)">管理封面…</button>
-        @if (hasGroups) {
-          <button role="menuitem" (click)="askOrganize()">按分组整理目录…</button>
-        }
-        <button role="menuitem" class="danger" (click)="askDelete(menuOf)">删除…</button>
+        <button role="menuitem" (click)="openEditor(menuOf)"
+                [title]="menuOf.format === 'ui' ? '在 ComfyUI 画布中打开' : 'API / 损坏文件无法载入画布，将用默认程序打开'">
+          在画布中打开
+        </button>
+        <button role="menuitem" (click)="reveal(menuOf); closeMenu()">打开文件夹</button>
+        <button role="menuitem" class="danger" (click)="askDelete(menuOf)">删除</button>
       </div>
     }
 
@@ -425,7 +471,7 @@ const SORTS = [
       <div #editBox class="wf-modal" role="dialog" aria-modal="true" aria-label="重命名与分组"
            tabindex="-1" (keydown.tab)="trapTab($event, editBox)">
         <h2>重命名 / 分组</h2>
-        <p class="wf-modal-sub mono" [title]="editing.item.path">{{ editing.item.path }}</p>
+        <p class="wf-modal-sub" [title]="editing.item.path">{{ editing.item.title || editing.item.name }}</p>
         <label class="wf-field">
           <span>显示名称</span>
           <input [(ngModel)]="editing.title" maxlength="80" placeholder="留空则回落文件名" />
@@ -450,7 +496,7 @@ const SORTS = [
         </label>
         <label class="wf-check">
           <input type="checkbox" [(ngModel)]="editing.rename" />
-          <span>同时重命名文件（ComfyUI 里也会变成新名字）</span>
+          <span>同时重命名文件</span>
         </label>
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="closeEditor()">取消</button>
@@ -466,7 +512,7 @@ const SORTS = [
            tabindex="-1" (keydown.tab)="trapTab($event, delBox)">
         <h2>删除这条工作流？</h2>
         <p class="wf-modal-sub">
-          「{{ pendingDelete.title || pendingDelete.name }}」会从共享目录里删掉，所有实例都看不到它。
+          「{{ pendingDelete.title || pendingDelete.name }}」将从共享目录删除。
         </p>
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="pendingDelete = null">取消</button>
@@ -480,11 +526,7 @@ const SORTS = [
       <div class="wf-modal-mask" (click)="pendingOrganize = false"></div>
       <div class="wf-modal" role="alertdialog" aria-modal="true" aria-label="按分组整理目录">
         <h2>按分组整理目录？</h2>
-        <p class="wf-modal-sub wrap">
-          会把这些工作流移动到以分组命名的文件夹（如「人像/」「电商/」）。ComfyUI 的工作流侧栏
-          是按目录展示的，只有这样它才能看到和你这边同一套分组。未分组的不动，
-          同名文件加序号而不是覆盖。
-        </p>
+        <p class="wf-modal-sub wrap">把分组变成真实文件夹，ComfyUI 侧栏才会按分组显示。</p>
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="pendingOrganize = false">取消</button>
           <button class="primary btn-xs" (click)="runOrganize()">整理</button>
@@ -498,10 +540,6 @@ const SORTS = [
       <div #groupBox class="wf-modal wide stack" role="dialog" aria-modal="true" aria-label="分组管理"
            tabindex="-1" (keydown.tab)="trapTab($event, groupBox)" data-testid="lw-group-manager">
         <h2>分组管理</h2>
-        <p class="wf-modal-sub wrap">
-          分组只是标签：删除不会删掉工作流，改名会连已整理出的文件夹一起改。
-        </p>
-
         <div class="gm-add">
           <input [(ngModel)]="groupMgr.draft" maxlength="24" placeholder="新分组名"
                  data-testid="gm-new-name" (keydown.enter)="createGroupFromManager()" />
@@ -534,7 +572,13 @@ const SORTS = [
         </div>
 
         @if (groupMgr.error) { <p class="gm-error">{{ groupMgr.error }}</p> }
-        <div class="wf-modal-ops">
+        <div class="wf-modal-ops between">
+          @if (hasGroups) {
+            <button class="btn-xs" (click)="askOrganize()" data-testid="gm-organize"
+                    title="把分组落成真实文件夹，ComfyUI 侧栏才能按分组显示">
+              按分组整理到文件夹…
+            </button>
+          }
           <button class="btn-xs" (click)="closeGroupManager()" data-testid="gm-close">关闭</button>
         </div>
       </div>
@@ -555,12 +599,10 @@ const SORTS = [
           } @else {
             <div class="cm-preview-empty">
               <ui-family-mark [model]="coverMgr.item.main_model || ''" />
-              <span>{{ coverMgr.failed ? '这张图加载不出来，换一张或自己指定' : '暂无封面，显示家族铭牌' }}</span>
+              <span>{{ coverMgr.failed ? '图片加载失败' : '暂无封面' }}</span>
             </div>
           }
         </div>
-        <p class="cm-source">当前：<b>{{ coverSource(coverMgr.key) }}</b></p>
-
         <div class="cm-actions">
           <button class="primary btn-xs" (click)="redealFromManager()" [disabled]="coverMgr.busy"
                   data-testid="cm-redeal">{{ coverMgr.busy ? '正在换…' : '换一张' }}</button>
@@ -581,20 +623,9 @@ const SORTS = [
           <label class="cm-file">
             <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
                    (change)="onCoverFile($event)" data-testid="cm-file" />
-            <span>或上传本地图片（png / jpg / webp / gif，≤ 8MB）</span>
+            <span>或上传本地图片</span>
           </label>
         </div>
-
-        <details class="cm-rules">
-          <summary>封面的选取规则</summary>
-          <ul>
-            <li>优先级：自定义 / 手动换的图 → 工作流自带出图 → 同名社区工作流样图 → 底模样图池 → 家族铭牌。</li>
-            <li>「换一张」清掉这条的自动结果与旧钉图、避开当前这张重新抽；结果钉住，7 天内不再自动变。</li>
-            <li>同名社区图要和工作流名有至少两个词重合才采用，宁可没封面也不贴错图；同底模的多条工作流会分到不同样图。</li>
-            <li>自定义可填 http(s) 地址或上传本地文件（内容寻址存到本机 wf-covers/），同样钉住；改名 / 整理目录会跟着迁移。</li>
-            <li>「恢复自动封面」取消钉图并清掉手动结果，下一次刷新回到自带出图 / 自动匹配。</li>
-          </ul>
-        </details>
 
         @if (coverMgr.error) { <p class="cm-error">{{ coverMgr.error }}</p> }
         <div class="wf-modal-ops">
@@ -669,21 +700,71 @@ const SORTS = [
       font-weight: 600;
       box-shadow: inset 0 0 0 1px var(--accent-line);
     }
+    /* 数字用小标签，别再像一个跟在名字后面的裸数字 */
     .wf-chip b {
-      font-size: 10.5px;
-      font-weight: 500;
-      opacity: 0.62;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: var(--radius-xs);
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 600;
       font-variant-numeric: tabular-nums;
     }
-    /* 单独的那个 chip（排序）不在 .wf-chips 里，给它自己的边框 */
-    .wf-tools > .wf-chip {
-      height: 26px;
+    .wf-chip.on b {
+      background: var(--accent-line);
+      color: var(--accent);
+      box-shadow: none;
+    }
+    /* 排序按钮独立于 chip 组，给它自己的边框与下拉层 */
+    .wf-sort-wrap { position: relative; z-index: 45; flex: none; }
+    .wf-sort-wrap > .wf-chip {
+      height: 29px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       background: var(--panel);
-      padding: 0 10px;
+      padding: 0 9px;
+      color: var(--text-2);
     }
-    .wf-tools > .wf-chip:hover { border-color: var(--border-strong); color: var(--text); }
+    .wf-sort-wrap > .wf-chip:hover,
+    .wf-sort-wrap > .wf-chip.on { border-color: var(--border-strong); color: var(--text); }
+    .wf-sort-wrap > .wf-chip.on { box-shadow: inset 0 0 0 1px var(--accent-line); }
+    .wf-sort-wrap > .wf-chip svg.caret { opacity: 0.6; }
+    .wf-sort-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      min-width: 148px;
+      padding: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 16px 34px -22px rgb(0 0 0 / 0.55);
+    }
+    .wf-sort-menu button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 7px 9px;
+      border: 0;
+      border-radius: var(--radius-xs);
+      background: none;
+      color: var(--text-2);
+      font: inherit;
+      font-size: 12.5px;
+      text-align: left;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .wf-sort-menu button:hover { background: var(--panel-3); color: var(--text); }
+    .wf-sort-menu button.on { color: var(--accent); font-weight: 600; }
 
     /* ---- 分组筛选：独立一行，分组多了横向滚，不换行把工具栏顶下去 ---- */
     .wf-groups {
@@ -952,6 +1033,7 @@ const SORTS = [
       justify-content: flex-end;
       gap: 8px;
     }
+    .wf-modal-ops.between { justify-content: space-between; }
 
     /* ---- 分组管理 / 变更分组里的轻量动作 ---- */
     .wf-modal.wide { width: 480px; }
@@ -1049,9 +1131,8 @@ const SORTS = [
       color: var(--muted);
       font-size: 11.5px;
     }
-    .cm-source { margin: 8px 0 10px; font-size: 11.5px; color: var(--muted); }
-    .cm-source b { font-weight: 500; color: var(--text); }
     .cm-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+    .cm-actions .btn-xs { flex: none; }
     .cm-custom { padding-top: 12px; border-top: 1px solid var(--border); }
     .cm-label { margin: 0 0 8px; font-size: 11.5px; color: var(--muted); }
     .cm-url-row { display: flex; gap: 8px; }
@@ -1078,9 +1159,6 @@ const SORTS = [
       cursor: pointer;
     }
     .cm-file input { width: auto; max-width: 190px; font-size: 11px; }
-    .cm-rules { margin: 12px 0 4px; font-size: 11.5px; color: var(--muted); }
-    .cm-rules summary { cursor: pointer; color: var(--text-2); }
-    .cm-rules ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.75; }
     .cm-error { margin: 8px 0 0; font-size: 11.5px; color: var(--err); }
 
     /* ---- 悬浮提示：不占文档流，点 × 或等几秒自己走 ---- */
@@ -1143,16 +1221,15 @@ const SORTS = [
       font-size: 11.5px;
     }
     .lw-count { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
-    .lw-dir {
-      min-width: 0;
-      flex: 1;
-      color: var(--muted);
-      font-size: 10.5px;
+    .lw-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+    .lw-act {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-    .lw-bar button { margin-left: auto; }
+    .lw-act svg { width: 13px; height: 13px; flex: none; }
 
     /* 列表行：与卡片同构 —— 缩略图 → 名称/规格 → 徽标 → 格式 → 唯一主按钮 → ⋯。
        用 flex 而不是 grid：文本列给固定宽度会在标题长短不一时刻意留白，
@@ -1427,6 +1504,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   readonly sources = SOURCES;
   readonly sorts = SORTS;
+  readonly localSorts = LOCAL_SORTS;
   /** 视图由路由决定：/workflows 是我的工作流，/workflows/discover 是发现 */
   tab: 'mine' | 'discover' = 'mine';
   local: LocalWorkflow[] = [];
@@ -1438,8 +1516,9 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   groupFilter: string | null = null;
   readonly UNGROUPED = '__ungrouped__';
   view: 'card' | 'list' = 'card';
-  /** 排序循环：最近修改 → 节点数 → 名称 */
+  /** 排序方式：由下拉选择决定，偏好里持久化 */
   sortKey: 'mtime' | 'nodes' | 'name' = 'mtime';
+  sortMenu = false;
   readonly statusFilters = [
     { key: 'all' as const, label: '全部' },
     { key: 'missing' as const, label: '缺依赖' },
@@ -1472,8 +1551,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   definedGroups: string[] = [];
   /** 手动钉过封面的工作流键 —— 封面管理框里才显示「恢复自动封面」 */
   pinnedKeys: string[] = [];
-  /** 其中来源是「用户自定义」的那些 */
-  customKeys: string[] = [];
   /** 封面管理弹层：预览 / 换一张 / 自定义 / 恢复自动 */
   coverMgr: CoverManager | null = null;
 
@@ -1668,13 +1745,22 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   get sortLabel(): string {
-    return { mtime: '最近修改', nodes: '按节点数', name: '按名称' }[this.sortKey];
+    return LOCAL_SORTS.find((s) => s.key === this.sortKey)?.label || '排序';
   }
 
-  cycleSort(): void {
-    const order: Array<'mtime' | 'nodes' | 'name'> = ['mtime', 'nodes', 'name'];
-    const i = order.indexOf(this.sortKey);
-    this.sortKey = order[(i + 1) % order.length];
+  /** 按钮自身要阻止冒泡，否则 document 上的关闭监听会把它刚打开的菜单立刻收掉 */
+  toggleSortMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.sortMenu = !this.sortMenu;
+  }
+
+  closeSortMenu(): void {
+    this.sortMenu = false;
+  }
+
+  setSortKey(key: 'mtime' | 'nodes' | 'name'): void {
+    this.sortKey = key;
+    this.sortMenu = false;
     this.savePrefs();
   }
 
@@ -1776,6 +1862,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
    * 画布根本载不进去，只能交给系统默认程序 —— 后者是唯一能真正修复坏 JSON 的路。
    */
   openEditor(it: LocalWorkflow): void {
+    this.closeMenu();
     if (it.format === 'ui') {
       this.useWorkflow(it);
       return;
@@ -1803,37 +1890,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   revealModel(m: WorkflowModelDep): void {
     this.drawerOf = null;
     this.router.navigate(['/models/discover'], { queryParams: { q: m.file } });
-  }
-
-  copyPath(it: LocalWorkflow): void {
-    const text = it.path;
-    const done = () => {
-      this.closeMenu();
-      this.notice = '路径已复制';
-    };
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
-      return;
-    }
-    this.fallbackCopy(text, done);
-  }
-
-  /** 剪贴板被拒（非 https / 无权限）时的退路：老办法仍是最好的办法 */
-  private fallbackCopy(text: string, done: () => void): void {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    document.body.appendChild(area);
-    area.select();
-    try {
-      document.execCommand('copy');
-      done();
-    } catch {
-      this.localError = '复制失败，请手动从定位的文件里取';
-    } finally {
-      area.remove();
-    }
   }
 
   openRename(it: LocalWorkflow): void {
@@ -1897,6 +1953,10 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   askOrganize(): void {
     this.closeMenu();
+    // 整理是全局动作：从分组管理框进入时把上层弹层一起收掉，
+    // 免得编辑框还挂在被移动前的旧路径上。
+    this.editing = null;
+    this.groupMgr = null;
     this.pendingOrganize = true;
   }
 
@@ -2067,14 +2127,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   /** 封面管理框里说明「这张图是哪来的」，别让用户猜为什么改不动 */
-  coverSource(key: string): string {
-    if (this.customKeys.includes(key)) return '自定义图片（已钉住）';
-    if (this.isPinnedKey(key)) return '手动换的图（已钉住）';
-    const url = this.coverMgr?.url || '';
-    if (url.startsWith('/api/workflows/local/cover')) return '工作流自带出图';
-    return url ? '自动匹配（社区 / 底模样图）' : '无封面，显示家族铭牌';
-  }
-
   openCoverManager(it: LocalWorkflow): void {
     this.closeMenu();
     this.coverMgr = {
@@ -2094,12 +2146,8 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   /** 抽到 / 自定义成功之后，列表、卡片、弹层预览三处一起换，别只改一处 */
-  private applyCover(key: string, url: string, source: 'manual' | 'custom'): void {
+  private applyCover(key: string, url: string): void {
     if (!this.pinnedKeys.includes(key)) this.pinnedKeys = [...this.pinnedKeys, key];
-    this.customKeys =
-      source === 'custom'
-        ? this.customKeys.includes(key) ? this.customKeys : [...this.customKeys, key]
-        : this.customKeys.filter((k) => k !== key);
     this.local = this.local.map((x) =>
       (x.key || x.path) === key ? { ...x, cover: url } : x,
     );
@@ -2133,7 +2181,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
             mgr.error = '没找到别的可用封面，先保留原图';
             return;
           }
-          this.applyCover(mgr.key, res.cover, 'manual');
+          this.applyCover(mgr.key, res.cover);
           this.notice = '已换一张封面，这条会被钉住';
         },
         error: (err) => {
@@ -2192,7 +2240,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.api.customWorkflowCover(body).subscribe({
       next: (res) => {
         if (this.coverMgr !== mgr) return;
-        this.applyCover(mgr.key, res.cover, 'custom');
+        this.applyCover(mgr.key, res.cover);
         mgr.customUrl = '';
         this.notice = '已设为自定义封面';
       },
@@ -2212,7 +2260,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.api.resetWorkflowCover(mgr.key).subscribe({
       next: () => {
         this.pinnedKeys = this.pinnedKeys.filter((k) => k !== mgr.key);
-        this.customKeys = this.customKeys.filter((k) => k !== mgr.key);
         this.coverMgr = null;
         this.notice = '已恢复自动封面';
         this.loadLocal();
@@ -2227,6 +2274,10 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   /** Esc 逐层退出：菜单 → 封面管理 / 分组管理 → 编辑 → 删除 → 整理 → 抽屉 */
   onEsc(): void {
+    if (this.sortMenu) {
+      this.sortMenu = false;
+      return;
+    }
     if (this.menuOf) {
       this.closeMenu();
       return;
@@ -2395,7 +2446,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.pinnedKeys = res.pinned || [];
-          this.customKeys = res.custom || [];
           if (!Object.keys(res.covers || {}).length) return;
           this.local = this.local.map((it) => {
             const url = res.covers[it.key || it.path];
