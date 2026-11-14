@@ -390,9 +390,16 @@ def import_workflow(body: WorkflowImportRequest) -> dict:
 
 # ---------------- 节点发现 / 节点管理 ----------------
 @router.get("/nodes")
-def search_nodes(q: str = "", sort: str = "nodes", scope: str = "all", limit: int = 20, page: int = 1) -> dict:
+def search_nodes(
+    q: str = "",
+    sort: str = "nodes",
+    scope: str = "all",
+    limit: int = 20,
+    page: int = 1,
+    category: str = "",
+) -> dict:
     try:
-        return node_service.search(q, sort, scope, limit, page)
+        return node_service.search(q, sort, scope, limit, page, category)
     except SourceError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 

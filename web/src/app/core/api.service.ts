@@ -404,16 +404,30 @@ export class ApiService {
     q?: string;
     sort?: string;
     scope?: string;
+    category?: string;
     limit?: number;
     page?: number;
-  }): Observable<{ items: NodeItem[]; total: number; done: boolean; installed_count: number }> {
+  }): Observable<{
+    items: NodeItem[];
+    total: number;
+    done: boolean;
+    installed_count: number;
+    categories?: { id: string; label: string; count: number }[];
+  }> {
     let httpParams = new HttpParams();
     if (params.q) httpParams = httpParams.set('q', params.q);
     if (params.sort) httpParams = httpParams.set('sort', params.sort);
     if (params.scope) httpParams = httpParams.set('scope', params.scope);
+    if (params.category) httpParams = httpParams.set('category', params.category);
     httpParams = httpParams.set('limit', String(params.limit ?? 20));
     httpParams = httpParams.set('page', String(params.page ?? 1));
-    return this.http.get<{ items: NodeItem[]; total: number; done: boolean; installed_count: number }>(
+    return this.http.get<{
+      items: NodeItem[];
+      total: number;
+      done: boolean;
+      installed_count: number;
+      categories?: { id: string; label: string; count: number }[];
+    }>(
       `${this.base}/nodes`,
       { params: httpParams },
     );

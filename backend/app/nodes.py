@@ -36,6 +36,7 @@ from .config import (
     WORKSPACE_CUSTOM_NODES_DIR,
     WORKSPACE_WORKFLOWS_DIR,
 )
+from .node_categories import CATEGORIES, category_of
 from .sources.base import SourceError
 
 CNL_URL = "https://raw.githubusercontent.com/Comfy-Org/ComfyUI-Manager/main/custom-node-list.json"
@@ -198,13 +199,16 @@ def _build() -> dict[str, Any]:
         install_type = (entry.get("install_type") or "").strip() or "git-clone"
         repo_classes = classes.get(_norm(ref), [])
         title = (entry.get("title") or entry.get("name") or slug.rsplit("/", 1)[-1]).strip()
+        desc = (entry.get("description") or "").strip()
         item = {
             "id": slug,
             "name": title,
             "author": (entry.get("author") or slug.split("/")[0]).strip(),
             "repo": ref,
             "source": "manager",
-            "description": (entry.get("description") or "").strip(),
+            "description": desc,
+            # 主用途分类：清单的 category 字段几乎全空，只能按名字/描述/节点类名推
+            "category": category_of(title, desc, repo_classes),
             "tags": [t for t in (entry.get("tags") or []) if isinstance(t, str)][:6],
             "nodes": repo_classes[:10],
             "node_count": len(repo_classes),
@@ -431,8 +435,18 @@ def installed_index() -> dict[str, dict]:
 SORTS = ("nodes", "name", "default")
 
 
-def search(q: str = "", sort: str = "nodes", scope: str = "all", limit: int = 20, page: int = 1) -> dict:
-    """按标题 / 作者 / 描述 / 仓库 / 节点类名匹配；scope 可只看已装或未装。"""
+def search(
+    q: str = "",
+    sort: str = "nodes",
+    scope: str = "all",
+    limit: int = 20,
+    page: int = 1,
+    category: str = "",
+) -> dict:
+    """按标题 / 作者 / 描述 / 仓库 / 节点类名匹配。
+
+    `scope` 可只看已装或未装；`category` 按用途分类过滤（多标签，包含即命中）。
+    """
     data = catalog()
     keyword = (q or "").strip().lower()
     limit = max(1, min(int(limit or 20), 60))
@@ -455,6 +469,19 @@ def search(q: str = "", sort: str = "nodes", scope: str = "all", limit: int = 20
     elif scope == "available":
         rows = [it for it in rows if it["id"] not in have]
 
+    # 分面计数在「分类过滤之前」算：切分类时其余分类的数量不该跟着归零
+    counts: dict[str, int] = {}
+    for it in rows:
+        cid = it.get("category") or "utility"
+        counts[cid] = counts.get(cid, 0) + 1
+    facets = [
+        {"id": cid, "label": label, "count": counts.get(cid, 0)}
+        for cid, label in CATEGORIES
+    ]
+
+    if category:
+        rows = [it for it in rows if (it.get("category") or "utility") == category]
+
     if sort == "name":
         rows = sorted(rows, key=lambda it: it["name"].lower())
     elif sort == "nodes":
@@ -473,6 +500,8 @@ def search(q: str = "", sort: str = "nodes", scope: str = "all", limit: int = 20
         "done": end >= total,
         "errors": {},
         "sorts": list(SORTS),
+        "categories": facets,
+        "category": category,
         "installed_count": len(have),
     }
 
