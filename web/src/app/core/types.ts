@@ -91,6 +91,12 @@ export interface LibraryModel {
   params?: string;
   hasWeights?: boolean;
   isDemo?: boolean;
+  /** 存放类型：models/ 后的目录名 = 物理事实（后端现算，不落库） */
+  folder?: string;
+  folderLabel?: string;
+  /** 任务类型：拿来干什么 = 使用意图（文件名 + 源站 tags 推断） */
+  task?: string;
+  taskLabel?: string;
   vram?: {
     level: string;
     text: string;

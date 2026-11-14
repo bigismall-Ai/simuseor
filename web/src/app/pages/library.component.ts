@@ -4,12 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { LibraryModel, errMsg, fmtNum, fmtSize } from '../core/types';
-import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
+
+/** 来源显示名。`imported` 是本地扫描入库，不在 settings.sources 里 */
+const SOURCE_LABELS: Record<string, string> = {
+  huggingface: 'Hugging Face',
+  modelscope: 'ModelScope',
+  civitai: 'Civitai',
+  demo: 'Demo',
+  imported: '本地导入',
+  templates: '官方模板',
+};
 
 @Component({
   selector: 'app-library',
@@ -17,7 +26,6 @@ import { PanelComponent } from '../ui/panel.component';
   imports: [
     CommonModule,
     FormsModule,
-    BadgeComponent,
     CoverPlateComponent,
     EmptyComponent,
     FieldComponent,
@@ -89,6 +97,7 @@ import { PanelComponent } from '../ui/panel.component';
               <tr>
                 <th>模型</th>
                 <th class="col-source">来源</th>
+                <th>类型</th>
                 <th class="col-size">大小</th>
                 <th class="col-count">文件</th>
                 <th>标签</th>
@@ -108,11 +117,47 @@ import { PanelComponent } from '../ui/panel.component';
                       </div>
                     </div>
                   </td>
-                  <td><ui-badge tone="blue">{{ m.source }}</ui-badge></td>
+                  <td>
+                    <!-- 来源显示中文名，不显示 huggingface / imported 这类内部 key -->
+                    <span class="pill">{{ sourceLabel(m.source) }}</span>
+                  </td>
+                  <td>
+                    @if (m.taskLabel) {
+                      <span class="pill">{{ m.taskLabel }}</span>
+                    }
+                  </td>
                   <td class="mono">{{ fmtSize(m.size_bytes) }}</td>
                   <td class="mono muted">{{ m.file_count }}</td>
                   <td class="cell-tags">
-                    <input [value]="tagsText(m)" (blur)="saveTags(m, $event)" placeholder="逗号分隔">
+                    <!-- 标签用胶囊展示，跟卡片上的分类标签同一套规格；
+                         点一下才展开输入框 —— 表格里常年摆一个输入框，
+                         看着像没做完的表单，而且抢了模型名的注意力。 -->
+                    @if (editingTagId === m.id) {
+                      <input
+                        class="tag-edit"
+                        [value]="tagsText(m)"
+                        (blur)="saveTags(m, $event)"
+                        (keydown.enter)="saveTags(m, $event)"
+                        placeholder="逗号分隔"
+                        data-testid="tag-edit"
+                      />
+                    } @else {
+                      <button
+                        type="button"
+                        class="tag-chips"
+                        (click)="editTags(m)"
+                        [title]="m.tags.length ? '编辑标签' : '添加标签'"
+                        data-testid="tag-edit-open"
+                      >
+                        @if (m.tags.length) {
+                          @for (t of m.tags; track t) {
+                            <span class="pill">{{ t }}</span>
+                          }
+                        } @else {
+                          <span class="pill pill-count">＋ 标签</span>
+                        }
+                      </button>
+                    }
                   </td>
                   <td class="cell-vram">
                     @if (vramPct(m) !== null) {
@@ -217,6 +262,36 @@ import { PanelComponent } from '../ui/panel.component';
       .lib-table th:first-child,
       .lib-table td:first-child { padding-left: 4px; }
       .lib-table td { padding-top: 8px; padding-bottom: 8px; }
+
+      /* 标签列：平时是胶囊组，点一下换成输入框。
+         整组包在一个 button 里是为了让「空标签」也有可点的地方 ——
+         否则没标签的模型在这一列完全没入口。 */
+      .cell-tags { min-width: 120px; }
+      .tag-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        text-align: left;
+        max-width: 100%;
+      }
+      .tag-chips:hover .pill { background: var(--pill-bg-hover); color: var(--pill-ink-hover); }
+      .tag-edit {
+        width: 100%;
+        min-width: 120px;
+        height: 24px;
+        padding: 0 8px;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
+        background: var(--input-bg);
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+      }
     `,
   ],
 })
@@ -239,6 +314,16 @@ export class LibraryComponent implements OnInit {
     civitai: 'Civitai',
     demo: 'Demo',
   };
+
+  /**
+   * 来源显示名。
+   *
+   * 除了四个已知来源，还有 `imported`（本地扫描入库）这一路，
+   * 之前表格里直接显示 `imported` 这个内部 key —— 看着像没做完的。
+   */
+  sourceLabel(source: string): string {
+    return this.shortLabel[source] || SOURCE_LABELS[source] || source;
+  }
 
   constructor(private api: ApiService, private route: ActivatedRoute) {}
 
@@ -337,12 +422,25 @@ export class LibraryComponent implements OnInit {
     return (m.tags || []).join(', ');
   }
 
+  /** 正在编辑标签的模型 id（同一时刻只开一个，避免表格里一堆输入框） */
+  editingTagId = '';
+
+  editTags(m: LibraryModel): void {
+    this.editingTagId = m.id;
+    setTimeout(() => {
+      const el = document.querySelector<HTMLInputElement>('[data-testid="tag-edit"]');
+      el?.focus();
+      el?.select();
+    });
+  }
+
   saveTags(m: LibraryModel, event: Event): void {
     const raw = (event.target as HTMLInputElement).value;
     const tags = raw
       .split(/[，,]/)
       .map((t) => t.trim())
       .filter((t) => !!t);
+    this.editingTagId = '';
     this.api.patchLibrary(m.id, { tags }).subscribe(() => this.load());
   }
 

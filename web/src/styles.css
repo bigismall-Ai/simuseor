@@ -59,6 +59,13 @@
   --chip: #f4f4f5;
   --star: #d97706;
 
+  /* 分类标签胶囊：底色比面板深一档，文字用次级灰。
+     强调色一律不给 —— 分类标签是「这模型是什么」，不是「当前选中了什么」。 */
+  --pill-bg: #f1f1f3;
+  --pill-bg-hover: #e7e7ea;
+  --pill-ink: #52525b;
+  --pill-ink-hover: #18181b;
+
   --radius: 12px;
   --radius-sm: 8px;
   --radius-xs: 5px;
@@ -113,6 +120,12 @@
   --track: #232329;
   --chip: #232329;
   --star: #fbbf24;
+
+  /* 深色下反过来：底比面板亮一档，文字用浅灰 */
+  --pill-bg: #26262c;
+  --pill-bg-hover: #32323a;
+  --pill-ink: #b4b4bc;
+  --pill-ink-hover: #ededf0;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 14px 36px -16px rgb(0 0 0 / 0.7), 0 2px 8px -4px rgb(0 0 0 / 0.4);
@@ -771,6 +784,75 @@ select:disabled { opacity: 0.6; }
   padding: 1px 7px;
   font-size: 11px;
   margin: 0 4px 4px 0;
+}
+
+/* ================= 9.1 标签胶囊（.pill） =================
+   规格取自 comfy.org Hub 模型卡：全圆角、1px 透明边、左右 12px 内边距、
+   12px/500 字重、半透明填充、次级文字色。
+
+   为什么单独一套而不复用 .badge：
+   - .badge 是**状态**（已安装 / 已禁用 / 未登记），带语义色，一眼要看出好坏；
+   - .pill 是**分类**（文生图 / LoRA / VAE / HF），同权重、可并列很多个，
+     用语义色就会变成一墙红黄绿。分类标签一律中性，只靠填充深浅分层。
+
+   实测 comfy.org 的做法：标签底是白 8% 半透明 + backdrop-blur，
+   压在深色封面上时靠模糊把后面的图压下去，文字才读得出来。
+   我们的卡片正文偶尔也压在封面上，所以同样给了 .pill-on-media 变体。 */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  height: 20px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--pill-bg);
+  color: var(--pill-ink);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 描边版：底太浅、跟面板糊在一起时用这一档（与工作流分组标签同规格） */
+.pill-outlined {
+  background: var(--panel-3);
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+/* 压在封面上：白 8% 半透明 + 背景模糊，跟 comfy.org 的做法一致 */
+.pill-on-media {
+  background: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.88);
+  backdrop-filter: blur(6px);
+}
+/* 可点：来源、作者这类跳出去的链接 */
+.pill-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.pill-link:hover {
+  background: var(--pill-bg-hover);
+  color: var(--pill-ink-hover);
+}
+/* 数字计数（如 +4）：更小更淡，是「还有更多」的提示而不是内容 */
+.pill-count {
+  height: 18px;
+  padding: 0 7px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+/* 一行放不下时换行，不裁掉 */
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
 }
 
 .badge {

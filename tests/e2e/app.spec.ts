@@ -211,6 +211,53 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('.task').first()).toContainText('demo/', { timeout: 15_000 });
   });
 
+  test('模型卡：分类标签是统一胶囊，单行不换行', async ({ page }) => {
+    await page.goto('/models/discover?demo=1');
+    await page.waitForTimeout(1500);
+
+    const card = page.locator('md-model-card').first();
+    const tags = card.locator('.card-tags .pill');
+    await expect(tags.first()).toBeVisible();
+
+    // 全圆角胶囊 —— 参考 comfy.org Hub 模型卡的规格
+    const radius = await tags.first().evaluate((el) => getComputedStyle(el).borderRadius);
+    expect(radius).toMatch(/999px|^50%$/);
+
+    // 标签行单行：高度只有一行高，且卡片高度全墙一致
+    const rowH = await card.locator('.card-tags').evaluate((el) => el.getBoundingClientRect().height);
+    expect(rowH).toBeLessThan(26);
+    const heights = await page.evaluate(() =>
+      [...document.querySelectorAll('md-model-card .card')].map((c) =>
+        Math.round(c.getBoundingClientRect().height),
+      ),
+    );
+    expect(new Set(heights).size).toBe(1);
+
+    // 标签内容是分类信息，不是来源的全大写字母。
+    // 注意别一刀切禁止大写 —— LoRA / VAE 是专有名词，本来就该大写。
+    const texts = await tags.allTextContents();
+    expect(texts.some((t) => /Hugging Face|ModelScope|Civitai|Demo/.test(t))).toBe(true);
+    expect(
+      texts.every((t) => t.trim() === t && !/^[A-Z][A-Z ]+$/.test(t)),
+    ).toBe(true);
+    await page.screenshot({ path: ART + '/60-model-card-pills.png', fullPage: false });
+  });
+
+  test('模型库：标签列是胶囊，点击才展开编辑', async ({ page }) => {
+    await page.goto('/models?demo=1');
+    const cell = page.locator('.cell-tags').first();
+    await expect(cell).toBeVisible();
+
+    // 平时是胶囊组，没有裸露的输入框
+    await expect(cell.locator('input')).toHaveCount(0);
+    await expect(cell.locator('.pill').first()).toBeVisible();
+
+    // 点一下换成输入框
+    await cell.getByTestId('tag-edit-open').click();
+    await expect(cell.getByTestId('tag-edit')).toBeVisible();
+    await page.screenshot({ path: ART + '/61-library-tag-edit.png', fullPage: false });
+  });
+
   test('环境管理：显示本机设备与安装方案', async ({ page }) => {
     await page.goto('/environments');
     await expect(page.getByRole('heading', { name: '环境管理' })).toBeVisible();

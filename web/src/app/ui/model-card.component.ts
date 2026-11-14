@@ -1,5 +1,6 @@
 import { Component, Input, output } from '@angular/core';
 import { SearchItem, fmtNum } from '../core/types';
+import { sourceTaskLabel } from '../core/task-labels';
 import { CoverPlateComponent } from './cover-plate.component';
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -13,6 +14,14 @@ const SOURCE_LABELS: Record<string, string> = {
 
 /** 封面取图顺序，与后端 `covers.PREFERENCE` 保持一致 */
 const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
+
+/** 卡片上的一枚分类标签。有 href 的是可点的来源链接。 */
+interface CardTag {
+  key: string;
+  text: string;
+  title: string;
+  href?: string;
+}
 
 /**
  * 模型卡：一张海报，不是「封面 + 正文」两段。
@@ -38,31 +47,35 @@ const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
       <div class="card-body">
         <h2 class="card-name" [title]="primary?.id">{{ primary?.name }}</h2>
 
-        <div class="card-meta">
-          @for (it of items; track it.source + '/' + it.id) {
-            <a
-              class="src"
-              [href]="it.url"
-              target="_blank"
-              rel="noreferrer"
-              [title]="'打开 ' + labelOf(it.source) + ' 上的原始仓库'"
-              >{{ labelOf(it.source) }}<span class="arrow" aria-hidden="true">↗</span></a
-            >
+        <!-- 分类标签：类型 / 来源 / 作者。
+             规格跟 comfy.org Hub 模型卡一致 —— 一排等权重胶囊，
+             分类信息用文字说明，权重信息（下载量）另行一路。
+             装不下的折叠成「+N」，标题里给出全部内容。 -->
+        <div class="pill-row card-tags">
+          @for (t of visibleTags(); track t.key) {
+            @if (t.href) {
+              <a
+                class="pill pill-link"
+                [href]="t.href"
+                target="_blank"
+                rel="noreferrer"
+                [title]="t.title"
+                >{{ t.text }}</a
+              >
+            } @else {
+              <span class="pill" [title]="t.title">{{ t.text }}</span>
+            }
           }
-          @if (authorText) {
-            <span class="sep">·</span>
-            <span class="card-author">{{ authorText }}</span>
+          @if (hiddenTagCount() > 0) {
+            <span class="pill pill-count is-more" [title]="allTagText()">+{{ hiddenTagCount() }}</span>
           }
-          <span class="card-stat" title="下载量">↓ {{ fmtNum(maxDownloads) }}</span>
         </div>
 
         <div class="card-actions">
           <button class="primary btn-xs" (click)="download.emit()" data-testid="card-download">
             下载
           </button>
-          @if (items.length > 1) {
-            <span class="src-count">{{ items.length }} 个来源</span>
-          }
+          <span class="card-stat" title="下载量">↓ {{ fmtNum(maxDownloads) }}</span>
           @if (inLibrary) {
             <span class="in-lib">已在库</span>
           }
@@ -165,38 +178,40 @@ const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
       overflow: hidden;
     }
 
-    /* 来源写成小号大写字母：它是「去哪儿下载」的索引，不是正文，
-       用字重和字距区分层级，不用另一种颜色再加噪音。
-       末尾的 ↗ 必须留着——没有它，这一串字母看起来只是一个标签，
-       没人知道点它能跳到原始仓库。 */
-    .src {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 2px;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      flex: none;
-      border-bottom: 1px solid transparent;
-    }
-    .src .arrow { font-size: 9px; opacity: 0.55; letter-spacing: 0; }
-    .src:hover { color: var(--accent); border-bottom-color: currentColor; }
-    .src:hover .arrow { opacity: 1; }
-    .sep { flex: none; opacity: 0.5; }
-    .card-author {
-      flex: 0 1 auto;
-      min-width: 0;
+    /* 标签行：单行不换行，装不下的折叠成「+N」。
+       换行会让同一网格里的卡片高度参差 —— 卡片是海报，
+       高度一乱，整墙的节奏就没了。折叠规则跟 comfy.org 一样。 */
+    .card-tags {
+      position: relative;
+      z-index: 1;
+      flex-wrap: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
+    .card-tags .pill {
+      flex: none;
+      max-width: 46%;
+    }
+    .card-tags .pill.is-more {
+      flex: none;
+      max-width: none;
+    }
+    .on-shot .card-tags .pill {
+      background: rgb(255 255 255 / 0.14);
+      color: rgb(255 255 255 / 0.88);
+      backdrop-filter: blur(6px);
+    }
+    .on-shot .card-tags .pill:hover {
+      background: rgb(255 255 255 / 0.24);
+      color: #fff;
+    }
+
+    /* 下载量：权重信息，单独一路，不跟分类标签混在一行 */
     .card-stat {
       flex: none;
       margin-left: auto;
       font-variant-numeric: tabular-nums;
-      padding-left: 6px;
+      font-size: 11px;
+      color: var(--muted);
     }
 
     .card-actions {
@@ -205,24 +220,18 @@ const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
       gap: 8px;
       margin-top: 2px;
     }
-    .src-count,
     .in-lib {
       font-size: 11px;
-      color: var(--muted);
+      color: var(--ok);
       white-space: nowrap;
     }
-    .in-lib { color: var(--ok); }
 
     /* 有真实封面时正文翻白：蒙版下沿已经是近实色的深底，正文永远落在稳定底色上 */
     .on-shot .card-name {
       color: #fff;
       text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
     }
-    .on-shot .card-meta { color: rgb(255 255 255 / 0.76); }
-    .on-shot .src { color: rgb(255 255 255 / 0.76); }
-    .on-shot .src:hover { color: #fff; }
-    .on-shot .card-stat,
-    .on-shot .src-count { color: rgb(255 255 255 / 0.66); }
+    .on-shot .card-stat { color: rgb(255 255 255 / 0.66); }
   `,
 })
 export class ModelCardComponent {
@@ -276,6 +285,65 @@ export class ModelCardComponent {
   get authorText(): string {
     const authors = [...new Set(this.items.map((i) => i.author).filter((a) => !!a))];
     return authors.join(' · ');
+  }
+
+  /**
+   * 分类标签里的「类型」。
+   *
+   * 同一模型可能同时挂在几个来源上，而各来源的 task 词表不同
+   * （HF 给 text-to-image，Civitai 给 Checkpoint）。取第一个能翻译的，
+   * 免得一个模型卡上同时冒出中英两种写法。
+   */
+  get taskLabel(): string {
+    for (const it of this.items) {
+      const label = sourceTaskLabel(it.task || '');
+      if (label) return label;
+    }
+    return '';
+  }
+
+  /**
+   * 卡片上的分类标签：类型 → 来源 → 作者。
+   *
+   * 顺序有讲究：类型先出来（这是模型「是什么」），来源次之（去哪儿拿），
+   * 作者最后（谁做的，最不重要）。同一个模型挂了几个来源就并列几个来源，
+   * 因为它们都是下载入口，不能只留一个。
+   */
+  private get allTags(): CardTag[] {
+    const out: CardTag[] = [];
+    const task = this.taskLabel;
+    if (task) out.push({ key: 'task', text: task, title: `类型：${task}` });
+    for (const it of this.items) {
+      const label = this.labelOf(it.source);
+      out.push({
+        key: 'src-' + it.source,
+        text: label,
+        href: it.url,
+        title: `在 ${label} 上打开原始仓库`,
+      });
+    }
+    const author = this.authorText;
+    if (author) out.push({ key: 'author', text: author, title: `发布者：${author}` });
+    return out;
+  }
+
+  /**
+   * 最多露 3 枚，其余折成「+N」。
+   *
+   * 3 枚是量出来的：250px 的卡片减去内边距约 224px，
+   * 一枚「Hugging Face」占 92px，3 枚刚好一行放得下。作者名可能很长，
+   * 单枚上限 46%，超出就省略号 —— 宁可少露一枚，也不能让标签行换行。
+   */
+  visibleTags(): CardTag[] {
+    return this.allTags.slice(0, 3);
+  }
+
+  hiddenTagCount(): number {
+    return Math.max(0, this.allTags.length - 3);
+  }
+
+  allTagText(): string {
+    return this.allTags.map((t) => t.text).join(' · ');
   }
 
   get maxDownloads(): number {

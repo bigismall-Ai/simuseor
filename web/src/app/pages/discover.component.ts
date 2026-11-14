@@ -5,6 +5,7 @@ import { Subscription, timer } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { DiscoverCacheService } from '../core/discover-cache.service';
 import { RepoInfo, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
+import { sourceTaskLabel } from '../core/task-labels';
 import { BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { ModelCardComponent } from '../ui/model-card.component';
@@ -71,23 +72,6 @@ const SOURCE_LABELS: Record<string, string> = {
   modelscope: 'ModelScope',
   civitai: 'Civitai',
   demo: 'Demo',
-};
-
-const TASK_LABELS: Record<string, string> = {
-  'text-generation': '文生文',
-  'text-to-image': '文生图',
-  'text-to-video': '文生视频',
-  'image-classification': '图像分类',
-  'automatic-speech-recognition': '语音识别',
-  'feature-extraction': '文本向量',
-  'text-classification': '文本分类',
-  translation: '翻译',
-  summarization: '摘要',
-  Checkpoint: 'Checkpoint',
-  LORA: 'LoRA',
-  TextualInversion: '文本反转',
-  Controlnet: 'ControlNet',
-  Upscaler: '放大模型',
 };
 
 const HOT_KEYWORDS = ['qwen', 'flux', 'lora', 'sdxl', 'whisper', 'embedding'];
@@ -205,21 +189,27 @@ const PAGE_SIZE = 20;
                     <div class="mono muted cell-path">{{ row.items[0].author }}</div>
                   </td>
                   <td>
-                    <div class="toolbar">
+                    <div class="pill-row">
                       @for (it of row.items; track it.source) {
                         <a
-                          class="src-badge"
+                          class="pill pill-link"
                           [href]="it.url"
                           target="_blank"
                           rel="noreferrer"
                           [title]="'打开 ' + sourceLabel(it.source) + ' 上的原始仓库'"
                         >
-                          <ui-badge [tone]="sourceTone(it.source)">{{ it.source }} ↗</ui-badge>
+                          {{ sourceLabel(it.source) }}
                         </a>
                       }
                     </div>
                   </td>
-                  <td class="muted">{{ row.items[0].task ? taskLabel(row.items[0].task) : '-' }}</td>
+                  <td>
+                    @if (row.items[0].task) {
+                      <span class="pill">{{ taskLabel(row.items[0].task) }}</span>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
                   <td>{{ fmtNum(maxDownloads(row)) }}</td>
                   <td>{{ fmtNum(maxLikes(row)) }}</td>
                   <td class="muted">{{ latestUpdate(row) }}</td>
@@ -879,15 +869,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     return SOURCE_LABELS[key] || key;
   }
 
-  sourceTone(source: string): 'blue' | 'green' | 'orange' | 'gray' {
-    if (source === 'huggingface') return 'blue';
-    if (source === 'modelscope') return 'green';
-    if (source === 'civitai') return 'orange';
-    return 'gray';
-  }
-
   taskLabel(task: string): string {
-    return TASK_LABELS[task] || task;
+    return sourceTaskLabel(task);
   }
 
   fmtNum = fmtNum;
