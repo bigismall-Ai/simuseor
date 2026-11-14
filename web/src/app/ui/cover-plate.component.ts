@@ -491,7 +491,8 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         height: 16px;
       }
 
-      /* 家族色板：9 桶 × 明暗两套。色相在这里定死，不按 id 哈希取 */
+      /* 家族色板：17 桶 × 明暗两套（16 个家族 + other）。色相在这里定死，不按 id 哈希取。
+         撞色不可避免（16 个家族、一屏十来张卡）——身份由家族码承担，颜色只做分组。 */
       .f-flux {
         --plate-bg: #f1eefc;
         --plate-ink: #574f8c;
@@ -548,13 +549,56 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         --plate-strong: #6d2645;
         --plate-mark: #e88ab0;
       }
+      .f-krea {
+        --plate-bg: #e2f2f5;
+        --plate-ink: #2c6d78;
+        --plate-strong: #0d4a54;
+        --plate-mark: #66b3bf;
+      }
+      .f-zimage {
+        --plate-bg: #e9ebfa;
+        --plate-ink: #464c8e;
+        --plate-strong: #262a63;
+        --plate-mark: #8d94d6;
+      }
+      .f-hidream {
+        --plate-bg: #fdeae6;
+        --plate-ink: #93503f;
+        --plate-strong: #70301f;
+        --plate-mark: #dda08c;
+      }
+      /* ERNIE：底色跟官方蓝走（#002F8E / #26AAFF），但压低饱和度，
+         免得和 hunyuan 的蓝抢；品牌识别交给官方 symbol 本身。 */
+      .f-ernie {
+        --plate-bg: #e8edfc;
+        --plate-ink: #2f4fa0;
+        --plate-strong: #16306e;
+        --plate-mark: #7f9ede;
+      }
+      .f-noobai {
+        --plate-bg: #eef2df;
+        --plate-ink: #67703c;
+        --plate-strong: #474e1f;
+        --plate-mark: #a8b477;
+      }
+      .f-illustrious {
+        --plate-bg: #f3ebf7;
+        --plate-ink: #7a4a8c;
+        --plate-strong: #582866;
+        --plate-mark: #b789c9;
+      }
+      .f-chroma {
+        --plate-bg: #f7ece2;
+        --plate-ink: #7d5a3a;
+        --plate-strong: #5a3c1e;
+        --plate-mark: #c39a72;
+      }
       .f-other {
         --plate-bg: #f2f1ed;
         --plate-ink: #6b6a63;
         --plate-strong: #57564f;
         --plate-mark: #b3b2aa;
       }
-
       :host-context([data-theme='dark']) .f-flux {
         --plate-bg: #1e1b33;
         --plate-ink: #c3bcfa;
@@ -608,6 +652,48 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         --plate-ink: #f0a3c1;
         --plate-strong: #ffc8dc;
         --plate-mark: #e88ab0;
+      }
+      :host-context([data-theme='dark']) .f-krea {
+        --plate-bg: #10282c;
+        --plate-ink: #8fd6e0;
+        --plate-strong: #bdeef5;
+        --plate-mark: #66b3bf;
+      }
+      :host-context([data-theme='dark']) .f-zimage {
+        --plate-bg: #1a1b33;
+        --plate-ink: #b0b6f2;
+        --plate-strong: #d9dcff;
+        --plate-mark: #8d94d6;
+      }
+      :host-context([data-theme='dark']) .f-hidream {
+        --plate-bg: #2b1a15;
+        --plate-ink: #f0b5a2;
+        --plate-strong: #ffd6c7;
+        --plate-mark: #dda08c;
+      }
+      :host-context([data-theme='dark']) .f-ernie {
+        --plate-bg: #141d33;
+        --plate-ink: #a8bdf0;
+        --plate-strong: #d3e0ff;
+        --plate-mark: #7f9ede;
+      }
+      :host-context([data-theme='dark']) .f-noobai {
+        --plate-bg: #202415;
+        --plate-ink: #c3cf95;
+        --plate-strong: #e2ecc0;
+        --plate-mark: #a8b477;
+      }
+      :host-context([data-theme='dark']) .f-illustrious {
+        --plate-bg: #251a2b;
+        --plate-ink: #d9b2e6;
+        --plate-strong: #f2d9fb;
+        --plate-mark: #b789c9;
+      }
+      :host-context([data-theme='dark']) .f-chroma {
+        --plate-bg: #2a2018;
+        --plate-ink: #d8b596;
+        --plate-strong: #f2dcc4;
+        --plate-mark: #c39a72;
       }
       :host-context([data-theme='dark']) .f-other {
         --plate-bg: #232321;

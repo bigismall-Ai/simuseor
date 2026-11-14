@@ -20,7 +20,7 @@
  * 两个字段，但从来没人消费——颜色早就搬进 CSS 了。留着只会让后来的人以为改它有用。
  */
 
-export type FamilyId = 'flux' | 'wan' | 'sdxl' | 'sd15' | 'qwen' | 'pony' | 'hunyuan' | 'ltx' | 'minimax' | 'other';
+export type FamilyId = 'flux' | 'wan' | 'sdxl' | 'sd15' | 'qwen' | 'pony' | 'hunyuan' | 'ltx' | 'minimax' | 'krea' | 'zimage' | 'hidream' | 'ernie' | 'noobai' | 'illustrious' | 'chroma' | 'other';
 
 export interface FamilySpec {
   id: FamilyId;
@@ -78,7 +78,29 @@ export const FAMILIES: FamilySpec[] = [
     logoScale: 0.86,
     mark: 'M5 5h14v14H5Z',
     filled: false,
-    test: /sd[\s._-]?1[._]?5|stable[\s._-]?diffusion[\s._-]?1/i,
+    test: /sd[\s._-]?v?1[._]?5|stable[\s._-]?diffusion[\s._-]?v?1/i,
+  },
+  {
+    /*
+     * Illustrious / NoobAI 这类社区家族**必须排在 sdxl 前面**：
+     * 它们的微调名普遍写成 `waiIllustriousSDXL_v170`、`noobaiXLSDXL_v...`，
+     * 先撞到 sdxl 的 /sd[\s._-]?xl/i 就永远认不出真正的家族。
+     * 家族判定是「第一个命中」，顺序就是优先级。
+     *
+     * 两者都没有官方品牌资产（作者只发效果图），所以只给家族码 —— 和 pony 同一处理。
+     */
+    id: 'illustrious',
+    code: 'ILST',
+    mark: '',
+    filled: true,
+    test: /illustrious/i,
+  },
+  {
+    id: 'noobai',
+    code: 'NOOB',
+    mark: '',
+    filled: true,
+    test: /noob[\s._-]?ai/i,
   },
   {
     id: 'sdxl',
@@ -90,7 +112,13 @@ export const FAMILIES: FamilySpec[] = [
     logoScale: 0.86,
     mark: 'M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0M9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0',
     filled: false,
-    test: /sdxl|sd[\s._-]?xl/i,
+    /*
+     * 只认「SDXL」和官方全名 `stable-diffusion-xl`。
+     * **不要**放宽到裸 `XL`：社区 SDXL 微调（RealVisXL / Juggernaut-XL）不是 Stability 发布的，
+     * 给它们挂 Stability 标会违反官方 shorthand 规范的前置条件（该场合须同时出现
+     * Stability AI 的名称或标）。认不出就让它落 other / 自己的家族码。
+     */
+    test: /sdxl|sd[\s._-]?xl|stable[\s._-]?diffusion[\s._-]?xl/i,
   },
   {
     id: 'pony',
@@ -99,6 +127,53 @@ export const FAMILIES: FamilySpec[] = [
     filled: true,
     // 作者没有任何品牌资产，Civitai 页只有效果图，任何「Pony 标」都是二创
     test: /pony/i,
+  },
+  {
+    id: 'krea',
+    code: 'KREA',
+    // 官网只有「Krea」文字字标，没有 symbol；留空 → 只显示家族码，不画二创图形
+    mark: '',
+    filled: true,
+    test: /krea/i,
+  },
+  {
+    id: 'zimage',
+    code: 'ZIMG',
+    mark: '',
+    filled: true,
+    // 通义 Z-Image，命名有 Z-Image / ZImage / z_image 三种写法
+    test: /z[\s._-]?image/i,
+  },
+  {
+    id: 'hidream',
+    code: 'HDRM',
+    mark: '',
+    filled: true,
+    test: /hidream/i,
+  },
+  {
+    id: 'ernie',
+    code: 'ERN',
+    /*
+     * 百度文心（ERNIE）。官网 /assets/ 下直接给出 symbol 的宽高两版：
+     * 浅色版 #002F8E + 蓝渐变，深色版是同几何的白色渐变（自带透明度 0.4→0.95）。
+     * viewBox 21.76×24.78 已是 symbol 边界，不补 logoScale。
+     *
+     * 深色主题必须用官方白色版 —— 浅色版深端 #0439B5 压在 #232220 上只有约 1.9:1，
+     * 而白色版实测 4.3:1 以上。这是「黑白标才备反白版」规则的又一例。
+     */
+    logo: 'families/ernie.svg',
+    logoDark: 'families/ernie-dark.svg',
+    mark: '',
+    filled: true,
+    test: /ernie|文心/i,
+  },
+  {
+    id: 'chroma',
+    code: 'CHRM',
+    mark: '',
+    filled: true,
+    test: /chroma/i,
   },
   {
     id: 'hunyuan',
@@ -146,7 +221,9 @@ export const FAMILIES: FamilySpec[] = [
     id: 'qwen',
     code: 'QWEN',
     logo: 'families/qwen.svg',
-    logoDark: 'families/qwen-dark.svg',
+    // 不备反白版：Qwen 是官方紫（#6950EF），反白等于改色。
+    // 深色主题下仍用这一份官方紫 —— 深色底 (#232220) 上对比度 3.3:1，
+    // 作为品牌图形（3:1 门槛）够用，且保住了「官方紫」这个识别特征。
     mark: 'M4 9V4h16v5M4 15v5h16v-5',
     filled: false,
     test: /qwen/i,

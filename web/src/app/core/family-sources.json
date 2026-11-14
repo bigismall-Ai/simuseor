@@ -1,0 +1,275 @@
+{
+  "$note": "厂牌标识来源登记表 —— 唯一权威。来源从哪来、什么颜色、官方规范在哪、当前资产指纹是什么，全在这里。",
+  "$workflow": "新增家族：先在 families 里登记 → 放资产 → node scripts/fetch-family-assets.mjs --approve <id> 写入指纹 → cd tests && node families-assets.mjs 校验。资产改动后必须重新 --approve，否则校验会报「与登记不符」。",
+  "version": 1,
+  "families": [
+    {
+      "id": "flux",
+      "code": "FLUX",
+      "guidelines": "https://bfl.ai/brand",
+      "assets": [
+        {
+          "path": "families/flux.svg",
+          "variant": "light",
+          "sha256": "382a4fd703731c9af94a4af3d68755dd5444e32ef7d79d0ad270ed01e7970801",
+          "sig": "bdb967c4868c5343"
+        },
+        {
+          "path": "families/flux-dark.svg",
+          "variant": "dark",
+          "sha256": "b431b6c59983975140725e0af338efeb26afc734a2387a060983ace34e278685",
+          "sig": "6ded7c84ef5efca0"
+        }
+      ],
+      "source": {
+        "kind": "simple-icons",
+        "slug": "flux",
+        "color": "000000",
+        "colorDark": "FFFFFF",
+        "note": "Simple Icons 的 flux 路径与本地资产逐字一致（已核）。CDN 默认填品牌色 #5468FF，但 BFL 规范只出黑白两版 → 用颜色段显式指定，别直接吃默认值。"
+      }
+    },
+    {
+      "id": "qwen",
+      "code": "QWEN",
+      "guidelines": "https://github.com/QwenLM/Qwen",
+      "assets": [
+        {
+          "path": "families/qwen.svg",
+          "variant": "light",
+          "sha256": "189f77fb476f0a399e22ec968b05f6d24ceb9cad258c5cb3355b114f443757d2",
+          "sig": "520d74db1406e90e"
+        }
+      ],
+      "source": {
+        "kind": "simple-icons",
+        "slug": "qwen",
+        "color": "6950EF",
+        "note": "官方紫 #6950EF，与 Simple Icons 品牌色一致。**不备反白版**：反白等于改色，违反「绝不改色」。深色主题直接用这一份 —— 深色底 (#232220) 上对比度 3.3:1，达到品牌图形 3:1 门槛，且保住了「官方紫」这个识别特征。曾在 2026-11 试过白色反白版（qwen-dark.svg），已按此结论移除。"
+      }
+    },
+    {
+      "id": "minimax",
+      "code": "MMX",
+      "guidelines": "https://www.minimaxi.com/",
+      "assets": [
+        {
+          "path": "families/minimax.svg",
+          "variant": "light",
+          "sha256": "d1db5f2a0920aecdbc74d1fe92f2b34a592dfe5357a7e7566105685e2adbb251",
+          "sig": "6e38a55c784d9b2e"
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "url": null,
+        "note": "取自 platform.minimaxi.com 首屏字标 svg 的第一个 path（symbol），viewBox 裁到 0 0 57.14 48，官方渐变 #E21680 → #FF633A 原样保留。该站是 JS 渲染，静态 HTML 里取不到 svg 元素，只能在浏览器里抓。",
+        "hint": "在浏览器打开 platform.minimaxi.com，定位 viewBox=\"0 0 201 48\" 的 svg，取其第一个 path 与渐变 id paint0_linear_7229_73014。"
+      }
+    },
+    {
+      "id": "hunyuan",
+      "code": "HYV",
+      "guidelines": "https://hunyuan.tencent.com/",
+      "assets": [
+        {
+          "path": "families/hunyuan.svg",
+          "variant": "light",
+          "sha256": "53c2f65a305b56f4b872459b972a5f505c50e8bbb9bc2df622b31c2f582de807",
+          "sig": "c1b831ca968b39e9"
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "url": null,
+        "note": "多色圆标（#0053E0 / #2AB9FF / #B3DDF2 / #ECECEE），viewBox 0 -0.5 31 31，title \"Tencent Hunyuan\"。hunyuan.tencent.com 是 JS 壳，静态 HTML 里没有该 svg。",
+        "hint": "注意 Simple Icons 收录的 tencenthy 是单色 #0052D9 版，和官网多色圆标不是同一资产 —— 这就是「官网主视觉优先于 SI 单色版」的实例。"
+      }
+    },
+    {
+      "id": "sd15",
+      "code": "SD15",
+      "guidelines": "https://stability.ai/",
+      "assets": [
+        {
+          "path": "families/sd15.svg",
+          "variant": "light",
+          "sha256": "b85574b09e5119544d10c0cb2c8a4f4adb2b37ff95567398e6bd62c6e5df6ef9",
+          "sig": "7c13dd562ec946fb"
+        },
+        {
+          "path": "families/sd15-dark.svg",
+          "variant": "dark",
+          "sha256": "f35ea3692e7009d1a835c2acec0ecb6d18110297a2b472a7b1cc992ef3fbb555",
+          "sig": "94f347598d491b0a"
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "url": null,
+        "note": "Stability AI 标，viewBox 0 -47.5 1101 1101，浅色 #1E1E1E / 深色 #EEEEEE。原始抓取地址未留存 —— 这正是要建这张表的原因。sd15 与 sdxl 用的是同一份资产（sha256 相同）。",
+        "hint": "stability.ai 现为 Squarespace 站，标是 JS 注入的静态资源，静态 HTML 里搜不到 1101 这样的 viewBox；需在浏览器网络面板里定位 svg 请求。"
+      }
+    },
+    {
+      "id": "sdxl",
+      "code": "SDXL",
+      "guidelines": "https://stability.ai/",
+      "assets": [
+        {
+          "path": "families/sdxl.svg",
+          "variant": "light",
+          "sha256": "b85574b09e5119544d10c0cb2c8a4f4adb2b37ff95567398e6bd62c6e5df6ef9",
+          "sig": "7c13dd562ec946fb"
+        },
+        {
+          "path": "families/sdxl-dark.svg",
+          "variant": "dark",
+          "sha256": "f35ea3692e7009d1a835c2acec0ecb6d18110297a2b472a7b1cc992ef3fbb555",
+          "sig": "94f347598d491b0a"
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "url": null,
+        "sharedWith": "sd15",
+        "note": "与 sd15 是同一份 Stability AI 标（字节级相同）。SDXL 卡片正文带 stabilityai 发布方，满足官方 shorthand 规范的硬前置；若哪天隐藏作者名，这两个要退回自绘标记。"
+      }
+    },
+    {
+      "id": "ltx",
+      "code": "LTX",
+      "guidelines": "https://ltx.video/",
+      "assets": [
+        {
+          "path": "families/_candidates/ltx-wordmark-white.svg",
+          "variant": "candidate",
+          "sha256": "bdf9fcb9935712450ff2772a434dc3f0992f57067fb9521191da1024eede82e1",
+          "sig": "9eaf8b09d88b98ec"
+        }
+      ],
+      "source": {
+        "kind": "manual",
+        "note": "官方只有字标（75×32），没有 symbol。塞进 22px 方槽后高只剩 7.7px 且与家族码重复，所以没启用。ltx.video 对脚本返回 403（机器人防护），需浏览器访问。GitHub Lightricks/LTX-Video 仓库根目录没有任何图形资产。",
+        "hint": "若哪天出现横排槽位（卡片头部），可直接启用候选区这份字标。"
+      }
+    },
+    {
+      "id": "wan",
+      "code": "WAN",
+      "guidelines": "https://github.com/Wan-Video/Wan2.1",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "官方仓库 assets/ 里只有 logo.png（56KB 位图），没有任何 SVG。位图描摹成 SVG 属重绘、形状不可靠 → 保持留白，只给家族码。"
+      }
+    },
+    {
+      "id": "pony",
+      "code": "PONY",
+      "guidelines": "",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "作者（PurpleSmartAI）没有发布任何品牌资产，Civitai 页只有效果图。任何「Pony 标」都是二创 → 保持留白。"
+      }
+    },
+    {
+      "id": "krea",
+      "code": "KREA",
+      "guidelines": "https://www.krea.ai/",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "官网与产品界面只有「Krea」文字字标，没有可单独使用的 symbol；press/brand 页 404，favicon 也没有矢量标。按「没有就留白」处理，只给家族码。",
+        "hint": "krea.ai 是 SvelteKit 应用，首屏里的 196×140 图形是页面装饰纹样，不是品牌标 —— 别误用。"
+      }
+    },
+    {
+      "id": "zimage",
+      "code": "ZIMG",
+      "guidelines": "https://tongyi-mai.github.io/Z-Image-blog/",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "通义 Z-Image：官方 blog 与 GitHub 仓库均无 logo 资产（assets/ 里只有效果图与架构图），HF 模型卡也没有。留白。"
+      }
+    },
+    {
+      "id": "hidream",
+      "code": "HDRM",
+      "guidelines": "https://hidreamai.com/",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "hidreamai.com 只有位图 logo_v2.png / logo_v2_white.png，没有 SVG。按规矩不描摹位图 → 留白。"
+      }
+    },
+    {
+      "id": "ernie",
+      "code": "ERN",
+      "guidelines": "https://ernie.baidu.com/",
+      "assets": [
+        {
+          "path": "families/ernie.svg",
+          "variant": "light",
+          "sha256": "61d66cc51a1c229f680ce9deebf2b4a1df65400ee7cfb78dd811e25301a52a5b",
+          "sig": "3b155b7035ab6d80"
+        },
+        {
+          "path": "families/ernie-dark.svg",
+          "variant": "dark",
+          "sha256": "5155d3f0bda02ad94878f0edd5830442d0c355f7ecc883d94594d260de31978f",
+          "sig": "12e4e580cb5d7d79"
+        }
+      ],
+      "source": {
+        "kind": "official",
+        "url": "https://ernie.baidu.com/assets/wenxin-mark-color.svg",
+        "urlDark": "https://ernie.baidu.com/assets/wenxin-mark.svg",
+        "note": "百度文心（ERNIE）官方 symbol，官网 /assets/ 下直接可取的 SVG。浅色版是 #002F8E + 蓝渐变（#0439B5 → #146DD7 → #26AAFF），深色版是同一几何的白色渐变。viewBox 21.76×24.78，symbol 满幅，无需 logoScale。",
+        "hint": "ernie.baidu.com 上另有 wenxin-wordmark.svg（横排字标），不用 —— 22px 槽位用 symbol。"
+      }
+    },
+    {
+      "id": "noobai",
+      "code": "NOOB",
+      "guidelines": "",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "社区家族（Laxhar/noobai-XL），作者没有发布品牌资产，Civitai 页只有效果图。任何「NoobAI 标」都是二创 → 留白。"
+      }
+    },
+    {
+      "id": "illustrious",
+      "code": "ILST",
+      "guidelines": "",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "社区家族（OnomaAI Illustrious-XL），无官方品牌资产。留白。注意：大量 Illustrious 微调名里带 SDXL 字样，所以 cover.ts 里这个正则必须排在 sdxl 之前。"
+      }
+    },
+    {
+      "id": "chroma",
+      "code": "CHRM",
+      "guidelines": "",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Chroma1-HD（lodestones，Flux 系社区项目），GitHub 仓库不存在/不可访问，无品牌资产。留白。"
+      }
+    },
+    {
+      "id": "other",
+      "code": "—",
+      "guidelines": "",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "认不出家族 → 什么都不画。"
+      }
+    }
+  ]
+}
