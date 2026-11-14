@@ -18,6 +18,9 @@ from ..comfy.model_dirs import infer_folder
 from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
 from .. import workflows as workflow_service
+from ..library_meta import describe_model
+from ..weight_class import all_folders, all_tasks
+from ..weight_meta import fmt_bytes
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
 from ..db import execute, new_id, now_iso, query
 from ..download.manager import manager
@@ -469,7 +472,48 @@ def list_library(q: str = "", source: str = "", review: str = "", favorite: bool
     for m in models:
         m["tags"] = _json.loads(m.get("tags") or "[]")
         m["files"] = query("SELECT id, path, size FROM library_files WHERE model_id=? ORDER BY path", (m["id"],))
+        m.update(describe_model(m["local_path"], m["name"], m["tags"], m.get("size_bytes") or 0))
     return models
+
+
+@router.get("/library/facets")
+def library_facets() -> dict:
+    """筛选面板用的分面：存放类型 / 任务类型，各带条数与占用体积。
+
+    分类是**现算**的（读目录路径 + 文件名推断），不落库 ——
+    存一份就会和实际文件脱节，用户移动了模型目录就失效。
+    """
+    import json as _json
+
+    rows = query("SELECT * FROM library_models")
+    buckets: dict[str, dict] = {"folder": {}, "task": {}, "source": {}}
+    for r in rows:
+        tags = _json.loads(r.get("tags") or "[]")
+        info = describe_model(r["local_path"], r["name"], tags, r.get("size_bytes") or 0)
+        for dim in ("folder", "task"):
+            key = info[dim]
+            b = buckets[dim].setdefault(key, {"id": key, "label": info[dim + "Label"], "count": 0, "bytes": 0})
+            b["count"] += 1
+            b["bytes"] += r.get("size_bytes") or 0
+        src = r.get("source") or ""
+        b = buckets["source"].setdefault(src, {"id": src, "label": src, "count": 0, "bytes": 0})
+        b["count"] += 1
+        b["bytes"] += r.get("size_bytes") or 0
+
+    def _pack(dim: str) -> list[dict]:
+        out = sorted(buckets[dim].values(), key=lambda x: (-x["count"], x["label"]))
+        return [
+            {"id": b["id"], "label": b["label"], "count": b["count"], "sizeText": fmt_bytes(b["bytes"])}
+            for b in out
+        ]
+
+    return {
+        "folder": _pack("folder"),
+        "task": _pack("task"),
+        "source": _pack("source"),
+        "allFolders": all_folders(),
+        "allTasks": all_tasks(),
+    }
 
 
 def _library_item(model_id: str) -> dict:

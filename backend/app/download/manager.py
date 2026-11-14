@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import struct
 import threading
 import time
 from pathlib import Path
@@ -19,6 +20,37 @@ from ..sources.base import SourceError
 from .aria2_client import Aria2Client, Aria2Error
 
 TERMINAL = {"completed", "failed", "canceled"}
+
+
+def _demo_safetensors_header() -> bytes:
+    """造一段合法的 safetensors 头（载荷是假的，格式是真的）。
+
+    格式：前 8 字节 = 头部长度（小端 u64），紧跟一段 JSON 头。
+    JSON 头形如 {"tensor.name": {"dtype": "F16", "shape": [n, m], "data_offsets": [a, b]}, ...}
+    长度字段必须与 JSON 的实际字节数一致，否则解析器会读到错位。
+
+    头部里带上 __metadata__ 的 demo 标记：模型库据此把这条标成「演示数据」，
+    不会让用户以为磁盘上那个 3 MB 的东西是真能跑的权重。
+    """
+    meta = {
+        "__metadata__": {
+            "demo": "true",
+            "demo_note": "离线演示占位文件，权重内容为假",
+            "format": "pt",
+        }
+    }
+    # 两个假张量：形状能算出参数量，dtype 决定精度档位
+    tensors = {
+        "demo.embed.weight": {"dtype": "F16", "shape": [512, 512], "data_offsets": [0, 524288]},
+        "demo.output.weight": {"dtype": "F16", "shape": [512, 512], "data_offsets": [524288, 1048576]},
+    }
+    header = dict(meta)
+    header.update(tensors)
+    blob = json.dumps(header, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    # safetensors 规范要求 JSON 头以空格补齐到 8 字节倍数
+    pad = (8 - len(blob) % 8) % 8
+    blob += b" " * pad
+    return struct.pack("<Q", len(blob)) + blob
 
 
 def _is_workflow_target(target: str | Path) -> bool:
@@ -225,6 +257,16 @@ class DownloadManager:
                 threading.Thread(target=self._aria2_file, args=(task_id, row, target, "direct", src_cfg, index), daemon=True).start()
 
     def _demo_file(self, task_id: str, row: dict, target: Path) -> None:
+        """生成 demo 占位文件。
+
+        .safetensors 要写出**合法的头部**：前 8 字节是头长度（小端 u64），
+        紧跟一段 JSON 头，声明每个张量的 dtype 与 shape。
+        全填 ASCII '0' 的话，8 个 '0' 会被读成 3.4 EB 的头长度，
+        任何 safetensors 解析器都会崩（MemoryError）。
+
+        头部之后用 0 填充 —— 载荷是假的，但**格式是真的**，
+        这样下游（模型库读精度、算参数量）能完整走通。
+        """
         fid = row["id"]
         size = int(row["size"])
         event = threading.Event()
@@ -234,6 +276,10 @@ class DownloadManager:
         path.parent.mkdir(parents=True, exist_ok=True)
         written = int(row["done_bytes"] or 0)
         with open(path, "ab" if written else "wb") as fh:
+            if not written and path.suffix == ".safetensors":
+                prefix = _demo_safetensors_header()
+                fh.write(prefix)
+                written = len(prefix)
             while written < size:
                 if task_id in self._canceled:
                     execute("UPDATE task_files SET status='canceled' WHERE id=?", (fid,))

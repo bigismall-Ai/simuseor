@@ -1,0 +1,141 @@
+"""模型库条目的一���描述：规格 + 分类 + 显存结论。
+
+前端表格的「规格」「本机可跑」「任务类型」三列都从这里出。
+
+设计要点：
+- **只读文件头**，不加载权重。safetensors 头几百 KB，毫秒级。
+- **给不出结论就说清原因**，不给「跑得动 0.0 GB」这种自相矛盾的假结论。
+- **分类现算不落库** —— 存一份就会和实际文件脱节。
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+from .weight_class import classify
+from .weight_meta import fmt_bytes, pick_weight_file, read_weight
+
+# 各家族类别的显存系数：权重之外还要留激活、缓存与框架开销。
+# 这些是经验值，不是精确测量 —— 所以 UI 上只给档位（跑得动/勉强/装不下），
+# 不给「需要 14.23 GB」这种伪精确数字。
+VRAM_FACTOR = {
+    "sd15": 1.25, "sdxl": 1.7, "flux": 1.9, "qwen": 2.0,
+    "hunyuan": 2.4, "wan": 2.6, "ltx": 2.6, "pony": 1.7,
+}
+DEFAULT_VRAM_FACTOR = 1.6
+
+
+def _gpu_vram_mb() -> int | None:
+    """本机独显显存。探测有缓存，不会每次都跑 nvidia-smi。"""
+    try:
+        from .comfy.probe import probe_device
+
+        report = probe_device()
+        gpu = report.primary_gpu
+        return gpu.vram_mb if gpu else None
+    except Exception:
+        # 探测失败不该拖垮整个列表
+        return None
+
+
+def _family_of(name: str) -> str:
+    """家族判定。前端 core/cover.ts 的 FAMILIES 是权威，这里只用来算显存系数。"""
+    import re
+
+    rules = [
+        ("sd15", r"sd[\s._-]?1[._]?5|stable[\s._-]?diffusion[\s._-]?1"),
+        ("sdxl", r"sdxl|sd[\s._-]?xl"),
+        ("pony", r"pony"),
+        ("hunyuan", r"hunyuan|\bhyv\b"),
+        ("ltx", r"\bltx[\s.-]?v?\b"),
+        ("wan", r"\bwan[\s._-]?2|\bwan\b|wan2"),
+        ("flux", r"flux"),
+        ("qwen", r"qwen[-_. ]?image"),
+    ]
+    hay = name or ""
+    for fid, pat in rules:
+        if re.search(pat, hay, re.I):
+            return fid
+    return ""
+
+
+def _vram_verdict(need_gb: float, vram_mb: int | None, has_weights: bool,
+                  reason: str, is_demo: bool) -> dict:
+    """显存结论。
+
+    给不出结论的原因分三种，别混成一句「未读到权重」：
+      - none       目录里没有权重文件
+      - unreadable 有权重文件但解析失败
+      - nogpu      读到了但本机没独显
+    demo 条目一律不给结论 —— 假头算出来的「需要 0 GB」毫无意义。
+    """
+    if is_demo:
+        return {"level": "demo", "text": "演示数据",
+                "hint": "离线演示占位文件，权重内容为假，不参与显存判定"}
+    if reason == "none":
+        return {"level": "none", "text": "无权重文件",
+                "hint": "目录里没有 .safetensors / .gguf 等权重"}
+    if reason == "unreadable":
+        return {"level": "unknown", "text": "权重不可读",
+                "hint": "有权重文件但头部解析失败（占位文件 / 损坏 / 非 safetensors 格式）"}
+    if not has_weights:
+        return {"level": "unknown", "text": "未读到权重", "hint": ""}
+    if not vram_mb:
+        return {"level": "unknown", "text": "无独显", "hint": "本机未检测到独立显卡"}
+    vram_gb = vram_mb / 1024
+    if need_gb <= vram_gb * 0.85:
+        return {"level": "ok", "text": "跑得动", "hint": f"余量 {(vram_gb - need_gb):.1f} GB"}
+    if need_gb <= vram_gb:
+        return {"level": "warn", "text": "勉强", "hint": "建议开显存优化或换更小量化"}
+    return {"level": "err", "text": "装不下", "hint": f"超出 {need_gb - vram_gb:.1f} GB"}
+
+
+def describe_model(local_path: str, name: str = "", tags: list[str] | None = None,
+                   size_bytes: int = 0) -> dict:
+    """给一条模型记录补上规格、分类与显存结论。
+
+    返回的键直接拼到 API 响应里。
+    """
+    cls = classify(local_path or "", name or "", tags or [])
+
+    directory = Path(local_path) if local_path else None
+    info = None
+    reason = "none"
+    if directory is not None and directory.is_dir():
+        w = pick_weight_file(directory)
+        if w is not None:
+            info = read_weight(w)
+            reason = "" if info is not None else "unreadable"
+    elif directory is not None and directory.is_file():
+        info = read_weight(directory)
+        reason = "" if info is not None else "unreadable"
+
+    is_demo = bool((info or {}).get("isDemo"))
+    family = _family_of(name or "")
+    factor = VRAM_FACTOR.get(family, DEFAULT_VRAM_FACTOR)
+
+    size_gb = (size_bytes or 0) / 1024 ** 3
+    base = (info or {}).get("weightGb") or size_gb
+    need = base * factor
+
+    vram_mb = _gpu_vram_mb()
+
+    return {
+        # 分类
+        "folder": cls["folder"],
+        "folderLabel": cls["folderLabel"],
+        "task": cls["task"],
+        "taskLabel": cls["taskLabel"],
+        # 规格
+        "precision": (info or {}).get("precision", ""),
+        "params": (info or {}).get("paramsText", ""),
+        "mixed": (info or {}).get("mixed", []),
+        "tensors": (info or {}).get("tensors", 0),
+        "weightBytes": (info or {}).get("weightBytes", 0),
+        "weightGb": round(base, 2),
+        "needGb": round(need, 1),
+        "isDemo": is_demo,
+        "hasWeights": bool(info),
+        "noReason": reason,
+        # 结论
+        "vram": _vram_verdict(need, vram_mb, bool(info), reason, is_demo),
+    }
