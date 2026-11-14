@@ -89,6 +89,29 @@ const SORTS = [
           <button class="btn-xs" (click)="loadLocal()" [disabled]="localLoading">刷新</button>
         </div>
 
+        <!-- 分组筛选：独立一行。分组名来自侧车里设的名称，一条都没分组时整行不出现
+             —— 空的分组栏只会让人以为哪里坏了。 -->
+        @if (groupNames.length) {
+          <div class="wf-groups" role="group" aria-label="按分组筛选" data-testid="lw-groups">
+            <span class="wf-glabel">分组</span>
+            <div class="wf-chips">
+              <button class="wf-chip" [class.on]="groupFilter === null" (click)="setGroup(null)">
+                全部<b>{{ allCount }}</b>
+              </button>
+              @for (g of groupNames; track g.name) {
+                <button class="wf-chip" [class.on]="groupFilter === g.name" (click)="setGroup(g.name)">
+                  {{ g.name }}<b>{{ groupCount(g.name) }}</b>
+                </button>
+              }
+              @if (ungroupedCount) {
+                <button class="wf-chip" [class.on]="groupFilter === UNGROUPED" (click)="setGroup(UNGROUPED)">
+                  未分组<b>{{ groupCount(UNGROUPED) }}</b>
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         <!-- 工具栏：搜索 / 状态筛选 / 排序 / 视图切换。
              四态互斥，筛选项就是卡片徽标能出现的四种情况。 -->
         <div class="wf-tools">
@@ -406,8 +429,14 @@ const SORTS = [
         </label>
         <label class="wf-field">
           <span>分组</span>
-          <input [(ngModel)]="editing.group" maxlength="24" placeholder="留空则取消分组" />
+          <input [(ngModel)]="editing.group" maxlength="24" list="wf-group-names" placeholder="留空则取消分组" />
         </label>
+        <!-- 已有分组名做候选：手打容易造出「人像」「人像 」这种看着一样的两组 -->
+        <datalist id="wf-group-names">
+          @for (g of groupNames; track g.name) {
+            <option [value]="g.name">{{ g.name }}</option>
+          }
+        </datalist>
         <label class="wf-check">
           <input type="checkbox" [(ngModel)]="editing.rename" />
           <span>同时重命名文件（ComfyUI 里也会变成新名字）</span>
@@ -520,6 +549,30 @@ const SORTS = [
       padding: 0 10px;
     }
     .wf-tools > .wf-chip:hover { border-color: var(--border-strong); color: var(--text); }
+
+    /* ---- 分组筛选：独立一行，分组多了横向滚，不换行把工具栏顶下去 ---- */
+    .wf-groups {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 12px 0 -4px;
+      min-width: 0;
+    }
+    .wf-glabel {
+      flex: none;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .wf-groups .wf-chips {
+      /* 不拉伸到满宽：分组名长短不一，chip 贴着内容排，多了才横向滚 */
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .wf-groups .wf-chip { flex: none; }
 
     /* ---- 卡片栅格：4 列，窄屏自动降列 ---- */
     .wf-grid {
@@ -1063,6 +1116,9 @@ export class WorkflowsComponent implements OnInit {
   /* ---- 卡片视图的筛选与视图状态 ---- */
   localQ = '';
   statusFilter: 'all' | 'missing' | 'ready' | 'broken' = 'all';
+  /** 分组筛选：null = 不过滤；UNGROUPED = 只看没分组的 */
+  groupFilter: string | null = null;
+  readonly UNGROUPED = '__ungrouped__';
   view: 'card' | 'list' = 'card';
   /** 排序循环：最近修改 → 节点数 → 名称 */
   sortKey: 'mtime' | 'nodes' | 'name' = 'mtime';
@@ -1132,13 +1188,7 @@ export class WorkflowsComponent implements OnInit {
   }
 
   get filtered(): LocalWorkflow[] {
-    const q = this.localQ.trim().toLowerCase();
-    let rows = this.local;
-    if (q) {
-      rows = rows.filter((it) =>
-        `${it.title || ''} ${it.name} ${it.group || ''} ${it.main_model || ''}`.toLowerCase().includes(q),
-      );
-    }
+    let rows = this.searched().filter((it) => this.inGroup(it));
     if (this.statusFilter !== 'all') {
       rows = rows.filter((it) => this.stateOf(it) === this.statusFilter);
     }
@@ -1150,9 +1200,82 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
+  /** 搜索命中的那一批：分组与状态两个筛选面都在它上面求交集 */
+  private searched(): LocalWorkflow[] {
+    const q = this.localQ.trim().toLowerCase();
+    if (!q) return this.local;
+    return this.local.filter((it) =>
+      `${it.title || ''} ${it.name} ${it.group || ''} ${it.main_model || ''}`.toLowerCase().includes(q),
+    );
+  }
+
+  private groupOf(it: LocalWorkflow): string {
+    return (it.group || '').trim();
+  }
+
+  private inGroup(it: LocalWorkflow): boolean {
+    if (this.groupFilter === null) return true;
+    const g = this.groupOf(it);
+    return this.groupFilter === this.UNGROUPED ? !g : g === this.groupFilter;
+  }
+
+  /**
+   * 分组清单。
+   *
+   * 从条目自身的 group 汇总，不用后端那份 meta 汇总 —— 侧车里可能留着已经删掉的
+   * 文件的旧键，那会数出一个点进去是空的组。
+   */
+  get groupNames(): { name: string; count: number }[] {
+    const acc = new Map<string, number>();
+    for (const it of this.local) {
+      const g = this.groupOf(it);
+      if (g) acc.set(g, (acc.get(g) || 0) + 1);
+    }
+    return [...acc]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'zh'));
+  }
+
+  get ungroupedCount(): number {
+    return this.local.filter((it) => !this.groupOf(it)).length;
+  }
+
+  /**
+   * 分组 chip 上的数字：叠加搜索与状态，但不叠加分组本身
+   * —— 每个筛选面只回答「在其他条件下我这儿还剩几条」。
+   */
+  groupCount(name: string): number {
+    const rows = this.searched().filter(
+      (it) => this.statusFilter === 'all' || this.stateOf(it) === this.statusFilter,
+    );
+    if (name === this.UNGROUPED) return rows.filter((it) => !this.groupOf(it)).length;
+    return rows.filter((it) => this.groupOf(it) === name).length;
+  }
+
+  /** 「全部」chip：与各分组 chip 同口径，叠搜索与状态但不叠分组 */
+  get allCount(): number {
+    return this.searched().filter(
+      (it) => this.statusFilter === 'all' || this.stateOf(it) === this.statusFilter,
+    ).length;
+  }
+
+  setGroup(name: string | null): void {
+    this.groupFilter = name;
+    this.savePrefs();
+  }
+
+  /** 分组名没了（改名/删除/改分组）就别把筛选卡在一个不存在的组上 */
+  private reconcileGroup(): void {
+    if (this.groupFilter === null) return;
+    const f = this.groupFilter;
+    const alive = f === this.UNGROUPED ? this.ungroupedCount > 0 : this.groupNames.some((g) => g.name === f);
+    if (!alive) this.groupFilter = null;
+  }
+
   countOf(key: 'all' | 'missing' | 'ready' | 'broken'): number {
-    if (key === 'all') return this.local.length;
-    return this.local.filter((it) => this.stateOf(it) === key).length;
+    const rows = this.searched().filter((it) => this.inGroup(it));
+    if (key === 'all') return rows.length;
+    return rows.filter((it) => this.stateOf(it) === key).length;
   }
 
   setStatus(key: 'all' | 'missing' | 'ready' | 'broken'): void {
@@ -1454,6 +1577,9 @@ export class WorkflowsComponent implements OnInit {
       if (['all', 'missing', 'ready', 'broken'].includes(raw.statusFilter)) {
         this.statusFilter = raw.statusFilter;
       }
+      if (raw.groupFilter === null || typeof raw.groupFilter === 'string') {
+        this.groupFilter = raw.groupFilter;
+      }
     } catch {
       // 坏数据就用默认值，别让整个页面起不来
     }
@@ -1463,7 +1589,12 @@ export class WorkflowsComponent implements OnInit {
     try {
       localStorage.setItem(
         this.prefsKey,
-        JSON.stringify({ view: this.view, sortKey: this.sortKey, statusFilter: this.statusFilter }),
+        JSON.stringify({
+          view: this.view,
+          sortKey: this.sortKey,
+          statusFilter: this.statusFilter,
+          groupFilter: this.groupFilter,
+        }),
       );
     } catch {
       // 隐私模式下写不进去，忽略
@@ -1542,6 +1673,7 @@ export class WorkflowsComponent implements OnInit {
         this.local = res.items;
         this.localDir = res.dir;
         this.localLoading = false;
+        this.reconcileGroup();
         this.loadCovers();
       },
       error: (err) => {

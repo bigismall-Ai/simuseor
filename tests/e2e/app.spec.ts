@@ -1076,6 +1076,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(dialog).toBeVisible();
     // 打开时焦点应当已经进入对话框（键盘用户不用从头 Tab）
     await expect(dialog.locator('input').first()).toBeFocused();
+    // 分组框给已有分组做候选：手打容易造出「人像」「人像 」这种看着一样的两组
+    await expect(dialog.locator('datalist option')).toHaveText(['人像']);
 
     await dialog.locator('input').first().fill('新名字');
     await dialog.getByRole('button', { name: '保存' }).click();
@@ -1178,6 +1180,61 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('.dr')).toHaveCount(0);
 
     await page.screenshot({ path: ART + '/30-workflow-list.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：分组筛选按组收窄，也能只看未分组', async ({ page }) => {
+    const ready = (key: string, title: string, group: string) => ({
+      ...COVER_ITEM,
+      key,
+      path: `E:/mock/workflows/${key}`,
+      title,
+      group,
+      cover: '',
+      deps: { have: COVER_ITEM.deps.have, missing: [] },
+      node_deps: { have: [], missing: [], unknown: [] },
+    });
+    const rows = [
+      { ...COVER_ITEM, cover: '' }, // 人像 · 缺依赖
+      ready('b.json', '人像放大 · 二遍', '人像'),
+      ready('c.json', '商品图换背景', '电商'),
+      ready('d.json', '还没归类的一条', ''),
+    ];
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({ json: { dir: 'E:/mock/workflows', total: rows.length, groups: [], items: rows } }));
+    await page.goto('/workflows');
+
+    const bar = page.locator('[data-testid="lw-groups"]');
+    await expect(bar).toBeVisible();
+    // 分组 chip 的数字是「这个组有几条」，未分组单独一个入口。
+    // 顺序按拼音排（电商在 人像 前），不是按写入元数据的先后。
+    await expect(bar.locator('.wf-chip')).toHaveText([
+      /\s*全部\s*4$/,
+      /\s*电商\s*1$/,
+      /\s*人像\s*2$/,
+      /\s*未分组\s*1$/,
+    ]);
+
+    await bar.getByRole('button', { name: /^人像/ }).click();
+    await expect(page.locator('app-workflow-card')).toHaveCount(2);
+    await expect(page.locator('.lw-count')).toHaveText('2 / 4 个工作流');
+
+    await bar.getByRole('button', { name: /^未分组/ }).click();
+    await expect(page.locator('app-workflow-card')).toHaveCount(1);
+    await expect(page.locator('app-workflow-card h3')).toHaveText('还没归类的一条');
+
+    // 分组与状态是交集，chip 数字按「其他条件已生效」重算
+    await bar.getByRole('button', { name: /^全部/ }).click();
+    await page.locator('.wf-tools').getByRole('button', { name: /^缺依赖/ }).click();
+    await expect(page.locator('app-workflow-card')).toHaveCount(1);
+    await expect(bar.locator('.wf-chip')).toHaveText([
+      /\s*全部\s*1$/,
+      /\s*电商\s*0$/,
+      /\s*人像\s*1$/,
+      /\s*未分组\s*0$/,
+    ]);
+
+    await page.screenshot({ path: ART + '/33-workflow-groups.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
