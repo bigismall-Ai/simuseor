@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
 from .. import image_proxy
-from ..comfy.model_dirs import infer_folder
+from ..comfy.model_dirs import infer_folder, plan_folders
 from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
 from .. import workflows as workflow_service
@@ -195,9 +195,24 @@ def resolve(body: ResolveRequest) -> dict:
     adapter = get_adapter(body.source)
     repo = adapter.resolve(body.repo_id, body.revision, cfg)
     payload = repo.to_dict()
-    # 建议的落盘目录（ComfyUI 模型分类），前端可覆盖
+    # 每个文件各自的落盘目录（分体仓库的 transformer / text_encoder / vae 分属不同目录）；
+    # target_folder 是「整条任务一个目录」时的建议值，混装时为空字符串。
+    plan = plan_folders([f.path for f in repo.files])
+    for item in payload["files"]:
+        item["folder"] = plan.get(item["path"], "")
     payload["target_folder"] = infer_folder(body.source, body.task, [f.path for f in repo.files])
     return payload
+
+
+# ---------------- ComfyUI 模型目录 ----------------
+@router.get("/folders")
+def folders() -> list[dict]:
+    """可选的 ComfyUI 模型目录（核心目录 + 扩展目录），给下载页的目录下拉用。
+
+    前端不该自己维护一份 —— 上次就是因为前端写死了 3 个目录，和 ComfyUI 的
+    25 个核心目录对不上。
+    """
+    return all_folders()
 
 
 # ---------------- 工作流发现 ----------------

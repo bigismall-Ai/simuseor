@@ -29,6 +29,8 @@ export interface RemoteFile {
   path: string;
   size: number;
   candidates: string[];
+  /** 该文件自己的 ComfyUI 目标目录（分体仓库里每个组件不同） */
+  folder?: string;
 }
 
 export interface RepoInfo {
@@ -50,6 +52,9 @@ export interface TaskFile {
   url?: string;
   candidates: string[];
   error?: string;
+  /** 该文件自己的 ComfyUI 目录与绝对落点（老任务为空，回退到 task.target_dir） */
+  folder?: string;
+  target_dir?: string;
 }
 
 export interface Task {

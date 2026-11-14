@@ -419,6 +419,10 @@ export class ApiService {
     );
   }
 
+  folders(): Observable<{ id: string; label: string }[]> {
+    return this.http.get<{ id: string; label: string }[]>(`${this.base}/folders`);
+  }
+
   nodeStats(): Observable<NodeStats> {
     return this.http.get<NodeStats>(`${this.base}/nodes/stats`);
   }

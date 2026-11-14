@@ -7,7 +7,7 @@ import threading
 import time
 from pathlib import Path
 
-from ..comfy.model_dirs import infer_folder, normalize_folder
+from ..comfy.model_dirs import normalize_folder, plan_folders
 from ..config import (
     WORKSPACE_WORKFLOWS_DIR,
     build_proxy_url,
@@ -123,17 +123,33 @@ class DownloadManager:
 
         strategy = (strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "direct").lower()
         base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
-        # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录
-        folder = normalize_folder(target_folder) or infer_folder(source, task, [f.path for f in files])
-        if folder == "workflows":
-            # 工作流不是 ComfyUI 的模型类型：落到共享工作流目录，所有实例共用一份，
-            # 不再混在 models/ 下（ComfyUI 也不把 workflows 当模型目录扫描）
-            target = WORKSPACE_WORKFLOWS_DIR / repo.display_name.replace("/", "--")
-        else:
-            target = base_dir / folder
-            if adapter.uses_repo_subdir:
-                target = target / repo.display_name.replace("/", "--")
-        target.mkdir(parents=True, exist_ok=True)
+        # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录。
+        # 分体仓库（Flux / SD3）的 transformer、text_encoder、vae 属于不同目录，
+        # 所以**按文件**定目录；显式指定 target_folder 时整条任务都用它。
+        plan = plan_folders([f.path for f in files])
+        override = normalize_folder(target_folder)
+        if override:
+            plan = {p: override for p in plan}
+        repo_dir = repo.display_name.replace("/", "--")
+
+        file_dirs: dict[str, Path] = {}
+        for f in files:
+            folder = plan[f.path]
+            if folder == "workflows":
+                # 工作流不是 ComfyUI 的模型类型：落到共享工作流目录，所有实例共用一份，
+                # 不再混在 models/ 下（ComfyUI 也不把 workflows 当模型目录扫描）
+                dest = WORKSPACE_WORKFLOWS_DIR / repo_dir
+            else:
+                dest = base_dir / folder
+                if adapter.uses_repo_subdir:
+                    dest = dest / repo_dir
+            dest.mkdir(parents=True, exist_ok=True)
+            file_dirs[f.path] = dest
+
+        dirs = {str(d) for d in file_dirs.values()}
+        # task.target_dir 只作「单目录任务的落点」；混装任务记保存根目录，
+        # 真实落点看每个文件的 target_dir。
+        target = Path(next(iter(dirs))) if len(dirs) == 1 else base_dir
 
         task_id = new_id()
         ts = now_iso()
@@ -145,12 +161,29 @@ class DownloadManager:
         )
         for f in files:
             execute(
-                "INSERT INTO task_files (id, task_id, path, size, done_bytes, status, candidates) VALUES (?,?,?,?,?,?,?)",
-                (new_id(), task_id, f.path, f.size, 0, "queued", json.dumps(f.candidates, ensure_ascii=False)),
+                "INSERT INTO task_files (id, task_id, path, size, done_bytes, status, candidates, folder, target_dir)"
+                " VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    new_id(),
+                    task_id,
+                    f.path,
+                    f.size,
+                    0,
+                    "queued",
+                    json.dumps(f.candidates, ensure_ascii=False),
+                    plan[f.path],
+                    str(file_dirs[f.path]),
+                ),
             )
         self._ensure_poller()
         threading.Thread(target=self._start_task, args=(task_id, repo.repo_id, repo.revision), daemon=True).start()
         return self.get_task(task_id)
+
+    @staticmethod
+    def _row_dir(row: dict, fallback: Path) -> Path:
+        """该文件自己的落盘目录；老任务没有这个字段就退回任务级目录。"""
+        raw = (row.get("target_dir") or "").strip()
+        return Path(raw) if raw else fallback
 
     # ---------------- 启动下载 ----------------
     def _start_task(self, task_id: str, repo_id: str, revision: str) -> None:
@@ -165,7 +198,9 @@ class DownloadManager:
 
         if task["source"] == "demo":
             for row in rows:
-                threading.Thread(target=self._demo_file, args=(task_id, row, target), daemon=True).start()
+                threading.Thread(
+                    target=self._demo_file, args=(task_id, row, self._row_dir(row, target)), daemon=True
+                ).start()
             return
 
         if task["strategy"] == "sdk" and adapter.supports_sdk():
@@ -239,22 +274,37 @@ class DownloadManager:
 
     def _sdk_download(self, task_id, repo_id, revision, rows, target: Path, src_cfg: dict) -> None:
         adapter = get_adapter(self._task_row(task_id)["source"])
+        # 分体仓库的文件分属不同目录，SDK 只能逐个目录调用（它按 local_dir 落盘）
+        groups: dict[Path, list[dict]] = {}
+        for row in rows:
+            groups.setdefault(self._row_dir(row, target), []).append(row)
         try:
-            def on_done(path: str) -> None:
-                for row in rows:
-                    if row["path"] == path:
-                        execute("UPDATE task_files SET status='completed', done_bytes=size WHERE id=?", (row["id"],))
+            for dest, group in groups.items():
 
-            adapter.sdk_download(repo_id, revision, [r["path"] for r in rows], target, src_cfg, on_file_done=on_done)
-            for row in rows:
-                execute("UPDATE task_files SET status='completed', done_bytes=size WHERE id=?", (row["id"],))
+                def on_done(path: str, group=group) -> None:
+                    for row in group:
+                        if row["path"] == path:
+                            execute(
+                                "UPDATE task_files SET status='completed', done_bytes=size WHERE id=?",
+                                (row["id"],),
+                            )
+
+                adapter.sdk_download(
+                    repo_id, revision, [r["path"] for r in group], dest, src_cfg, on_file_done=on_done
+                )
+                for row in group:
+                    execute("UPDATE task_files SET status='completed', done_bytes=size WHERE id=?", (row["id"],))
         except Exception as exc:  # noqa: BLE001
             # SDK 失败自动回退 aria2 直连（Rodel 式稳态）
             for index, row in enumerate(rows):
                 done = query("SELECT status FROM task_files WHERE id=?", (row["id"],))
                 if done and done[0]["status"] == "completed":
                     continue
-                threading.Thread(target=self._aria2_file, args=(task_id, row, target, "direct", src_cfg, index), daemon=True).start()
+                threading.Thread(
+                    target=self._aria2_file,
+                    args=(task_id, row, self._row_dir(row, target), "direct", src_cfg, index),
+                    daemon=True,
+                ).start()
 
     def _demo_file(self, task_id: str, row: dict, target: Path) -> None:
         """生成 demo 占位文件。
@@ -390,9 +440,24 @@ class DownloadManager:
             src_cfg = load_settings()["sources"].get(task["source"], {})
             for index, row in enumerate(rows):
                 if task["source"] == "demo":
-                    threading.Thread(target=self._demo_file, args=(task_id, row, Path(task["target_dir"])), daemon=True).start()
+                    threading.Thread(
+                        target=self._demo_file,
+                        args=(task_id, row, self._row_dir(row, Path(task["target_dir"]))),
+                        daemon=True,
+                    ).start()
                 else:
-                    threading.Thread(target=self._aria2_file, args=(task_id, row, Path(task["target_dir"]), task["strategy"], src_cfg, index), daemon=True).start()
+                    threading.Thread(
+                        target=self._aria2_file,
+                        args=(
+                            task_id,
+                            row,
+                            self._row_dir(row, Path(task["target_dir"])),
+                            task["strategy"],
+                            src_cfg,
+                            index,
+                        ),
+                        daemon=True,
+                    ).start()
         for fid, event in self._pause_events.items():
             event.set()
         return self.get_task(task_id)
@@ -472,6 +537,10 @@ class DownloadManager:
             return
         files = query("SELECT * FROM task_files WHERE task_id=? AND status='completed'", (task_id,))
         if not files:
+            return
+        # 分体仓库的文件跨多个目录：没有单一 local_path，暂不自动入库，
+        # 免得建出一条指向 models 根目录的错误记录（按目录分组入库在后续提交）。
+        if len({f["target_dir"] or task["target_dir"] for f in files}) > 1:
             return
         existing = query("SELECT id FROM library_models WHERE local_path=?", (task["target_dir"],))
         model_id = existing[0]["id"] if existing else new_id()

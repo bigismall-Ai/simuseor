@@ -37,7 +37,10 @@ CREATE TABLE IF NOT EXISTS task_files (
   gid TEXT,
   url TEXT,
   candidates TEXT,
-  error TEXT
+  error TEXT,
+  -- 该文件自己的落盘目录（分体仓库里每个组件进各自的 ComfyUI 目录）
+  folder TEXT,
+  target_dir TEXT
 );
 CREATE TABLE IF NOT EXISTS library_models (
   id TEXT PRIMARY KEY,
@@ -82,6 +85,7 @@ def init_db() -> None:
         conn = get_conn()
         conn.executescript(SCHEMA)
         _migrate_library_columns(conn)
+        _ensure_task_file_columns(conn)
         conn.commit()
 
 
@@ -113,6 +117,25 @@ def _migrate_library_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE library_models DROP COLUMN {col}")
         except sqlite3.Error:
             # 老版本 SQLite：不做破坏性操作，留着列（前端已经不用了）
+            continue
+
+
+def _ensure_task_file_columns(conn: sqlite3.Connection) -> None:
+    """给老库的 task_files 补上「每个文件自己的目录」两列。
+
+    分体仓库（Flux / SD3）的 transformer、text_encoder、vae 属于不同 ComfyUI
+    目录，不能再共用一个 task.target_dir；老数据留空，读取时回退到 task 级目录。
+    """
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(task_files)")}
+    except sqlite3.Error:
+        return
+    for name in ("folder", "target_dir"):
+        if name in cols:
+            continue
+        try:
+            conn.execute(f"ALTER TABLE task_files ADD COLUMN {name} TEXT")
+        except sqlite3.Error:
             continue
 
 

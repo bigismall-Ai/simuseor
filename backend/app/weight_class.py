@@ -14,6 +14,7 @@ from pathlib import Path
 
 # ---- 存放类型：ComfyUI 的模型目录 ----
 FOLDER_LABELS = {
+    # 核心目录（与 ComfyUI folder_paths.py 对齐）
     "checkpoints": "主模型",
     "diffusion_models": "扩散模型",
     "unet": "扩散模型",
@@ -23,12 +24,30 @@ FOLDER_LABELS = {
     "loras": "LoRA",
     "controlnet": "ControlNet",
     "upscale_models": "放大模型",
+    "latent_upscale_models": "潜空间放大",
     "embeddings": "Embedding",
     "clip_vision": "CLIP Vision",
     "style_models": "风格模型",
+    "model_patches": "模型补丁",
+    "photomaker": "PhotoMaker",
     "gligen": "GLIGEN",
-    "diffusers": "Diffusers",
     "hypernetworks": "Hypernetwork",
+    "audio_encoders": "音频编码器",
+    "background_removal": "背景移除",
+    "detection": "目标检测",
+    "frame_interpolation": "视频插帧",
+    "geometry_estimation": "几何估计",
+    "optical_flow": "光流",
+    "classifiers": "分类器",
+    "configs": "配置文件",
+    "diffusers": "Diffusers",
+    # 自定义节点扩展目录
+    "sams": "SAM 分割",
+    "ultralytics": "YOLO 检测",
+    "rmbg": "背景移除（扩展）",
+    "onnx": "ONNX",
+    "animatediff_models": "AnimateDiff 运动模块",
+    "workflows": "工作流",
     "unclassified": "未分类",
 }
 

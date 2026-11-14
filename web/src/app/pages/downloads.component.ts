@@ -51,6 +51,14 @@ import { PanelComponent } from '../ui/panel.component';
             <option value="sdk">sdk - 官方下载 SDK</option>
           </select>
         </ui-field>
+        <ui-field label="目标目录">
+          <select [(ngModel)]="targetFolder">
+            <option value="">自动（按文件归类）</option>
+            @for (f of folders; track f.id) {
+              <option [value]="f.id">{{ f.id }} · {{ f.label }}</option>
+            }
+          </select>
+        </ui-field>
         <ui-field label="保存目录（可选，留空用设置值）">
           <div class="toolbar">
             <input class="grow mono" [(ngModel)]="saveDir" [placeholder]="currentSaveDir()">
@@ -79,6 +87,11 @@ import { PanelComponent } from '../ui/panel.component';
               <span class="muted">{{ repo.files.length }} 个文件</span>
             </div>
             <span class="grow"></span>
+            <span class="pill-row">
+              @for (g of folderPlan; track g.id) {
+                <span class="pill" [title]="g.id">{{ g.id }} · {{ g.count }}</span>
+              }
+            </span>
             <span class="muted picked">已选 {{ selectedCount() }} 个 · {{ fmtSize(selectedSize()) }}</span>
             <button class="primary" (click)="startDownload()" [disabled]="selectedCount() === 0 || starting">
               {{ starting ? '创建中…' : '开始下载' }}
@@ -91,6 +104,7 @@ import { PanelComponent } from '../ui/panel.component';
                 <tr>
                   <th class="col-check"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
                   <th>文件</th>
+                  <th class="col-folder">目录</th>
                   <th class="col-size">大小</th>
                   <th class="col-progress">候选站点</th>
                 </tr>
@@ -108,6 +122,7 @@ import { PanelComponent } from '../ui/panel.component';
                         @if (file.candidates.length > 2) { +{{ file.candidates.length - 2 }} }
                       </div>
                     </td>
+                    <td><span class="pill">{{ file.folder || '—' }}</span></td>
                     <td class="muted">{{ fmtSize(file.size) }}</td>
                     <td class="muted">{{ file.candidates.length }} 个</td>
                   </tr>
@@ -170,6 +185,7 @@ import { PanelComponent } from '../ui/panel.component';
                 <thead>
                   <tr>
                     <th>文件</th>
+                    <th class="col-folder">目录</th>
                     <th class="col-progress">进度</th>
                     <th class="col-status">状态</th>
                     <th class="col-url">来源 URL</th>
@@ -179,6 +195,7 @@ import { PanelComponent } from '../ui/panel.component';
                   @for (f of task.files; track f.id) {
                     <tr>
                       <td class="mono">{{ f.path }}</td>
+                      <td><span class="pill">{{ f.folder || '—' }}</span></td>
                       <td class="mono muted">{{ fmtSize(f.done_bytes) }} / {{ fmtSize(f.size) }}</td>
                       <td><ui-badge [tone]="statusTone(f.status)">{{ statusLabel(f.status) }}</ui-badge></td>
                       <td class="mono muted" [title]="f.url || ''">{{ hostOf(f.url) }}</td>
@@ -268,6 +285,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   revision = '';
   strategy = 'direct';
   saveDir = '';
+  /** 目标目录覆盖；空 = 按文件自动归类 */
+  targetFolder = '';
+  folders: { id: string; label: string }[] = [];
   repo: RepoInfo | null = null;
   selected = new Set<string>();
   tasks: Task[] = [];
@@ -305,8 +325,19 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       }
       this.tryAutoResolve();
     });
+    this.api.folders().subscribe((f) => (this.folders = f));
     this.refreshTasks();
     this.timer = setInterval(() => this.refreshTasks(), 1500);
+  }
+
+  /** 解析结果里每个目标目录各几个文件（分体仓库会显示多枚） */
+  get folderPlan(): { id: string; count: number }[] {
+    const counts = new Map<string, number>();
+    for (const f of this.repo?.files || []) {
+      const key = f.folder || 'checkpoints';
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    return [...counts.entries()].map(([id, count]) => ({ id, count }));
   }
 
   get visibleSourceKeys(): string[] {
@@ -376,6 +407,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   resolveRepo(): void {
     this.resolving = true;
+    this.targetFolder = '';
     this.error = '';
     this.api.resolve(this.source, this.repoId, this.revision).subscribe({
       next: (repo) => {
@@ -431,6 +463,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         files: [...this.selected],
         strategy: this.strategy,
         save_dir: this.saveDir,
+        target_folder: this.targetFolder || undefined,
       })
       .subscribe({
         next: () => {
