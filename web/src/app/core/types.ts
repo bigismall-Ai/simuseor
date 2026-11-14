@@ -118,6 +118,8 @@ export interface WorkflowItem extends SearchItem {
 /** 本地工作流（共享目录 workspace/userdata/default/workflows 里的文件） */
 export interface LocalWorkflow {
   name: string;
+  /** 侧车键：相对共享目录的路径（含子目录），命名/分组与封面缓存都按它索引 */
+  key?: string;
   path: string;
   /** 相对共享目录的子目录，根目录为空串 */
   folder: string;
@@ -140,7 +142,7 @@ export interface LocalWorkflow {
   title?: string;
   /** 分组（用户自定义） */
   group?: string;
-  /** 工作流级封面图的 URL —— 后端出图接口就绪后填 */
+  /** 工作流级封面图的 URL：本地自带出图优先，其次社区真实样图；空则用家族铭牌兜底 */
   cover?: string;
 }
 

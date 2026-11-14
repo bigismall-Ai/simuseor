@@ -984,4 +984,166 @@ test.describe('Model Downloader Web UI', () => {
     await expect(drawer).toBeHidden();
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
+
+  // ---------------- 卡片交互：封面 / 溢出菜单 / 重命名 / 删除 / 去找 ----------------
+  // 封面解析要打 Civitai，E2E 里固定返回一张内联 SVG：
+  // 既证明 img 真的渲染了，也不用依赖外网。
+  const COVER_ITEM = {
+    name: 'flux_img2img_1_2',
+    key: '🟢 F.1 img2img 1.3/flux_img2img_1_2.json',
+    path: 'E:/mock/workflows/flux_img2img_1_2.json',
+    folder: '🟢 F.1 img2img 1.3',
+    size: 15981, mtime: 1730000000, nodes: 17, format: 'ui',
+    main_model: 'flux1-dev.sft', model_slots: [],
+    title: '人像高清修复', group: '人像', cover: '',
+    deps: {
+      have: [{ file: 'flux1-dev.sft', directory: 'diffusion_models', node: 'UNETLoader', url: '' }],
+      missing: [{ file: 'ae.sft', directory: 'vae', node: 'VAELoader', url: '' }],
+    },
+    node_deps: {
+      have: [],
+      missing: [{ id: 'jps/x', name: 'JPS Nodes', author: 'JPS', repo: '', node_count: 9, installable: true, covers: ['SDXL Resolutions (JPS)'] }],
+      unknown: [],
+    },
+  };
+
+  const COVER_SVG = 'data:image/svg+xml,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="448" height="280"><rect width="448" height="280" fill="#3b2f4a"/></svg>',
+  );
+
+  async function mockLocalWorkflows(page: any) {
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({
+        json: {
+          dir: 'E:/mock/workflows', total: 1, groups: [{ name: '人像', count: 1 }],
+          items: [COVER_ITEM],
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers', (route: any) =>
+      route.fulfill({ json: { covers: { [COVER_ITEM.key]: COVER_SVG } } }));
+  }
+
+  test('我的工作流：远程封面渲染成真实图片', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+
+    const img = page.locator('app-workflow-card img.wc-cover-img');
+    await expect(img).toHaveCount(1);
+    // 图真的解码出来了才算渲染成功（src 有值不等于图能显示）
+    await expect
+      .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth), { timeout: 5000 })
+      .toBeGreaterThan(0);
+    await page.screenshot({ path: ART + '/27-workflow-cover.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：溢出菜单含完整动作并贴着卡片弹出', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+
+    await page.locator('app-workflow-card .wc-kebab').click();
+    const menu = page.locator('.wf-menu');
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    await expect(menu).toContainText('复制文件路径');
+    await expect(menu).toContainText('重命名');
+    await expect(menu).toContainText('删除');
+
+    // 菜单是 fixed 定位且贴着按钮：不该跑到视口外
+    const box = await menu.boundingBox();
+    const viewport = page.viewportSize()!;
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
+    await page.screenshot({ path: ART + '/28-workflow-menu.png' });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：重命名与分组走后端并刷新列表', async ({ page }) => {
+    let patchBody: any = null;
+    await mockLocalWorkflows(page);
+    await page.route((url: URL) => url.pathname === '/api/workflows/local/meta', (route: any) => {
+      patchBody = route.request().postDataJSON();
+      route.fulfill({ json: { title: patchBody.title, group: patchBody.group, file: '', key: COVER_ITEM.key } });
+    });
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /重命名/ }).click();
+
+    const dialog = page.getByRole('dialog', { name: '重命名与分组' });
+    await expect(dialog).toBeVisible();
+    // 打开时焦点应当已经进入对话框（键盘用户不用从头 Tab）
+    await expect(dialog.locator('input').first()).toBeFocused();
+
+    await dialog.locator('input').first().fill('新名字');
+    await dialog.getByRole('button', { name: '保存' }).click();
+
+    await expect.poll(() => patchBody?.title).toBe('新名字');
+    expect(patchBody.path).toBe(COVER_ITEM.path);
+    expect(patchBody.rename_file).toBe(false);
+    await page.screenshot({ path: ART + '/29-workflow-rename.png' });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：删除需要二次确认', async ({ page }) => {
+    let deleted = false;
+    await mockLocalWorkflows(page);
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) => {
+      if (route.request().method() === 'DELETE') {
+        deleted = true;
+        return route.fulfill({ json: { deleted: COVER_ITEM.path, key: COVER_ITEM.key } });
+      }
+      return route.fallback();
+    });
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /删除/ }).click();
+
+    const confirm = page.getByRole('alertdialog');
+    await expect(confirm).toBeVisible();
+    await expect(confirm).toContainText('人像高清修复');
+
+    // 取消不删
+    await confirm.getByRole('button', { name: '取消' }).click();
+    await expect(confirm).toBeHidden();
+    expect(deleted).toBe(false);
+
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: /删除/ }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: '删除' }).click();
+    await expect.poll(() => deleted).toBe(true);
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：缺模型的「去找」跳到模型发现页并带关键词', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.goto('/workflows');
+
+    await page.getByRole('button', { name: '补齐依赖' }).click();
+    const row = page.locator('.dr-row').filter({ hasText: 'ae.sft' });
+    await row.getByRole('button', { name: '去找' }).click();
+
+    await expect(page).toHaveURL(/\/models\/discover\?q=ae\.sft/);
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  // ---------------- 无障碍 ----------------
+  test('无障碍：表单标签与控件真正关联', async ({ page }) => {
+    await page.goto('/settings');
+    await expect(page.getByRole('heading', { name: '设置' })).toBeVisible();
+
+    // label 上的 for 必须指向真实存在的控件 id，点标签才能聚焦输入框
+    const result = await page.evaluate(() => {
+      const pairs: Array<{ for: string; ok: boolean }> = [];
+      document.querySelectorAll('ui-field label.field-label').forEach((label) => {
+        const id = label.getAttribute('for') || '';
+        const bound = id ? document.getElementById(id) : null;
+        pairs.push({ for: id, ok: !!bound });
+      });
+      return pairs;
+    });
+    expect(result.length).toBeGreaterThan(3);
+    expect(result.every((pair) => pair.ok)).toBe(true);
+  });
 });

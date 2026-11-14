@@ -1658,3 +1658,16 @@ details.files[open] summary::before { transform: rotate(90deg); }
   .ring-wrap, .prg-ring { width: 100px; height: 100px; }
   .ring-label strong { font-size: 21px; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  /* 全局收敛：位移、缩放、渐变一律去掉。个别组件（如 model-card）另有更细的规则，
+     这里兜住剩下的地方 —— 前庭失调用户不该被满屏的过渡效果拖住。 */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

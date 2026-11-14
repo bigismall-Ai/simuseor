@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
+import { focusFirst, trapTab } from '../core/a11y';
 import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
@@ -46,6 +47,8 @@ const SORTS = [
 
 @Component({
   selector: 'app-workflows',
+  // Esc 逐层退出（菜单 → 编辑 → 删除 → 抽屉）：键盘用户不该被弹层困住
+  host: { '(document:keydown.escape)': 'onEsc()' },
   standalone: true,
   imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
@@ -268,7 +271,8 @@ const SORTS = [
     <!-- 补齐依赖抽屉：模型与节点包两段，输入图不在这里（它属于「使用工作流」的前置检查） -->
     @if (drawerOf) {
       <div class="dr-mask" (click)="closeDrawer()"></div>
-      <aside class="dr" role="dialog" aria-label="补齐依赖">
+      <aside #drawerBox class="dr" role="dialog" aria-modal="true" aria-label="补齐依赖"
+             tabindex="-1" (keydown.tab)="trapTab($event, drawerBox)">
         <header class="dr-head">
           <div>
             <p class="dr-kicker">补齐依赖</p>
@@ -334,6 +338,63 @@ const SORTS = [
           </div>
         </footer>
       </aside>
+    }
+
+    <!-- ⋯ 溢出菜单：低频动作都在这里，卡片上只留一个主按钮 -->
+    @if (menuOf) {
+      <div class="wf-menu-mask" (click)="closeMenu()"></div>
+      <div class="wf-menu" role="menu" [style.left.px]="menuAt.x" [style.top.px]="menuAt.y">
+        <button role="menuitem" (click)="openEditor(menuOf)">
+          {{ menuOf.format === 'ui' ? '在画布中编辑' : '用默认程序打开' }}
+        </button>
+        <button role="menuitem" (click)="reveal(menuOf); closeMenu()">在文件夹中定位</button>
+        <button role="menuitem" (click)="copyPath(menuOf)">复制文件路径</button>
+        <span class="wf-menu-sep"></span>
+        <button role="menuitem" (click)="openRename(menuOf)">重命名 / 分组…</button>
+        <button role="menuitem" class="danger" (click)="askDelete(menuOf)">删除…</button>
+      </div>
+    }
+
+    <!-- 重命名与分组：只改显示名，原文件名默认保留（ComfyUI 也要读它） -->
+    @if (editing) {
+      <div class="wf-modal-mask" (click)="editing = null"></div>
+      <div #editBox class="wf-modal" role="dialog" aria-modal="true" aria-label="重命名与分组"
+           tabindex="-1" (keydown.tab)="trapTab($event, editBox)">
+        <h2>重命名 / 分组</h2>
+        <p class="wf-modal-sub mono" [title]="editing.item.path">{{ editing.item.path }}</p>
+        <label class="wf-field">
+          <span>显示名称</span>
+          <input [(ngModel)]="editing.title" maxlength="80" placeholder="留空则回落文件名" />
+        </label>
+        <label class="wf-field">
+          <span>分组</span>
+          <input [(ngModel)]="editing.group" maxlength="24" placeholder="留空则取消分组" />
+        </label>
+        <label class="wf-check">
+          <input type="checkbox" [(ngModel)]="editing.rename" />
+          <span>同时重命名文件（ComfyUI 里也会变成新名字）</span>
+        </label>
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="editing = null">取消</button>
+          <button class="primary btn-xs" (click)="saveMeta()">保存</button>
+        </div>
+      </div>
+    }
+
+    <!-- 删除二次确认：删的是共享目录里的文件，不是列表里的一行 -->
+    @if (pendingDelete) {
+      <div class="wf-modal-mask" (click)="pendingDelete = null"></div>
+      <div #delBox class="wf-modal narrow" role="alertdialog" aria-modal="true" aria-label="删除工作流"
+           tabindex="-1" (keydown.tab)="trapTab($event, delBox)">
+        <h2>删除这条工作流？</h2>
+        <p class="wf-modal-sub">
+          「{{ pendingDelete.title || pendingDelete.name }}」会从共享目录里删掉，所有实例都看不到它。
+        </p>
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="pendingDelete = null">取消</button>
+          <button class="primary btn-xs" (click)="confirmDelete()">删除</button>
+        </div>
+      </div>
     }
   `,
   styles: `
@@ -434,6 +495,9 @@ const SORTS = [
       background: var(--panel);
       border-left: 1px solid var(--border);
     }
+    /* tabindex=-1 是为了让焦点能落到弹层上，这圈描边只对纯键盘用户有意义 */
+    .dr:focus,
+    .wf-modal:focus { outline: none; }
     .dr-head {
       display: flex;
       align-items: flex-start;
@@ -529,6 +593,119 @@ const SORTS = [
       white-space: nowrap;
     }
     .dr-ops { display: flex; gap: 8px; flex: none; }
+
+    /* ---- ⋯ 溢出菜单：贴着按钮弹出，点空白处收起 ---- */
+    .wf-menu-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 44;
+    }
+    .wf-menu {
+      position: fixed;
+      z-index: 45;
+      min-width: 168px;
+      padding: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 16px 34px -22px rgb(0 0 0 / 0.55);
+    }
+    .wf-menu button {
+      display: block;
+      width: 100%;
+      padding: 7px 9px;
+      border: 0;
+      border-radius: var(--radius-xs);
+      background: none;
+      color: var(--text-2);
+      font: inherit;
+      font-size: 12.5px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .wf-menu button:hover { background: var(--panel-3); color: var(--text); }
+    .wf-menu button.danger { color: var(--err); }
+    .wf-menu button.danger:hover { background: var(--err-soft); }
+    .wf-menu-sep {
+      display: block;
+      height: 1px;
+      margin: 4px 6px;
+      background: var(--border-soft);
+    }
+
+    /* ---- 重命名 / 删除对话框 ---- */
+    .wf-modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 46;
+      background: rgb(0 0 0 / 0.34);
+    }
+    :host-context([data-theme='dark']) .wf-modal-mask { background: rgb(0 0 0 / 0.6); }
+    .wf-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 47;
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      transform: translate(-50%, -50%);
+      padding: 16px 18px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px -30px rgb(0 0 0 / 0.6);
+    }
+    .wf-modal.narrow { width: 360px; }
+    .wf-modal h2 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .wf-modal-sub {
+      margin: 0 0 12px;
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .wf-modal-sub.mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px; }
+    .wf-field {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .wf-field span {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .wf-field input {
+      width: 100%;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .wf-check {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 2px 0 14px;
+      font-size: 11.5px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .wf-modal-ops {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
 
     .lw-bar {
       display: flex;
@@ -756,6 +933,7 @@ const SORTS = [
 export class WorkflowsComponent implements OnInit {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   readonly sources = SOURCES;
   readonly sorts = SORTS;
@@ -777,6 +955,19 @@ export class WorkflowsComponent implements OnInit {
   ];
   /** 依赖抽屉：当前展开的那条 */
   drawerOf: LocalWorkflow | null = null;
+  /** ⋯ 溢出菜单：点在哪张卡上、弹在哪个坐标 */
+  menuOf: LocalWorkflow | null = null;
+  menuAt = { x: 0, y: 0 };
+  /** 重命名与分组对话框 */
+  editing: { item: LocalWorkflow; title: string; group: string; rename: boolean } | null = null;
+  /** 删除二次确认 */
+  pendingDelete: LocalWorkflow | null = null;
+
+  /* 弹层焦点管理：打开时焦点进入弹层，Tab 在弹层内环绕，Esc 逐层退出 */
+  @ViewChild('drawerBox') drawerBox?: ElementRef<HTMLElement>;
+  @ViewChild('editBox') editBox?: ElementRef<HTMLElement>;
+  @ViewChild('delBox') delBox?: ElementRef<HTMLElement>;
+  readonly trapTab = trapTab;
   localDir = '';
   localLoading = false;
   localError = '';
@@ -793,6 +984,7 @@ export class WorkflowsComponent implements OnInit {
   sourceErrors: { label: string; message: string }[] = [];
 
   ngOnInit(): void {
+    this.restorePrefs();
     // 两个路径共用同一个组件实例，切换时组件不会重建，所以视图由路由的 data 驱动
     this.route.data.subscribe((data) => {
       const next: 'mine' | 'discover' = data['tab'] === 'discover' ? 'discover' : 'mine';
@@ -844,10 +1036,12 @@ export class WorkflowsComponent implements OnInit {
 
   setStatus(key: 'all' | 'missing' | 'ready' | 'broken'): void {
     this.statusFilter = key;
+    this.savePrefs();
   }
 
   setView(view: 'card' | 'list'): void {
     this.view = view;
+    this.savePrefs();
   }
 
   get sortLabel(): string {
@@ -858,6 +1052,7 @@ export class WorkflowsComponent implements OnInit {
     const order: Array<'mtime' | 'nodes' | 'name'> = ['mtime', 'nodes', 'name'];
     const i = order.indexOf(this.sortKey);
     this.sortKey = order[(i + 1) % order.length];
+    this.savePrefs();
   }
 
   dpText(it: LocalWorkflow): string {
@@ -874,24 +1069,203 @@ export class WorkflowsComponent implements OnInit {
 
   onPrimary(ev: { item: LocalWorkflow; act: 'fix' | 'use' | 'edit' }): void {
     if (ev.act === 'fix') {
-      this.drawerOf = ev.item;
+      this.openDrawer(ev.item);
       return;
     }
     if (ev.act === 'use') {
-      this.notice = `「${ev.item.title || ev.item.name}」已就绪，可在 ComfyUI 里打开（编辑器尚未接入）`;
+      this.useWorkflow(ev.item);
       return;
     }
     this.openEditor(ev.item);
   }
 
-  onMore(it: LocalWorkflow): void {
-    // 溢出菜单只放低频动作：定位文件 / 复制路径 / 复制主模型名
-    this.reveal(it);
+  /**
+   * 使用工作流：确保实例在跑，打开画布。
+   *
+   * ComfyUI 0.45 的前端没有「按名字打开某条工作流」的深链（画布是 SPA 根路由，
+   * 路由表里只有 / 与登录相关路径），所以这里能自动做的是把环境准备好；
+   * 工作流本身已经在 `--user-directory` 指向的共享目录里，画布左侧即可看到。
+   */
+  useWorkflow(it: LocalWorkflow): void {
+    this.notice = '正在准备 ComfyUI 实例…';
+    this.api.useLocalWorkflow(it.path).subscribe({
+      next: (res) => {
+        window.open(res.url, '_blank', 'noopener');
+        this.notice = res.instance
+          ? `已打开实例 ${res.instance} 的画布；工作流「${it.title || it.name}」在左侧「工作流」里`
+          : `已打开画布；工作流「${it.title || it.name}」在左侧「工作流」里`;
+      },
+      error: (err) => {
+        this.notice = '';
+        this.localError = errMsg(err, '启动实例失败');
+      },
+    });
   }
 
-  /** 缺的模型：原型阶段只能给去向（去模型库搜同族文件），不做假安装 */
+  /**
+   * 用编辑器打开。
+   *
+   * UI 格式进画布（那才是能改节点连线的编辑器）；API 格式与语法错误的文件
+   * 画布根本载不进去，只能交给系统默认程序 —— 后者是唯一能真正修复坏 JSON 的路。
+   */
+  openEditor(it: LocalWorkflow): void {
+    if (it.format === 'ui') {
+      this.useWorkflow(it);
+      return;
+    }
+    this.api.openLocalWorkflow(it.path, 'edit').subscribe({
+      next: () => (this.notice = `已用默认程序打开「${it.name}」`),
+      error: (err) => (this.localError = errMsg(err, '打开文件失败')),
+    });
+  }
+
+  onMore(ev: { item: LocalWorkflow; x: number; y: number }): void {
+    this.menuOf = ev.item;
+    // 贴边时往回收，别让菜单跑出视口
+    this.menuAt = {
+      x: Math.max(8, Math.min(ev.x - 168, window.innerWidth - 184)),
+      y: Math.max(8, Math.min(ev.y + 4, window.innerHeight - 214)),
+    };
+  }
+
+  closeMenu(): void {
+    this.menuOf = null;
+  }
+
+  /** 缺的模型：跳到模型发现页并带上文件名，那边会自动搜 */
   revealModel(m: WorkflowModelDep): void {
-    this.notice = `在模型库里搜索「${m.file}」${m.directory ? '（目录 ' + m.directory + '）' : ''}`;
+    this.drawerOf = null;
+    this.router.navigate(['/models/discover'], { queryParams: { q: m.file } });
+  }
+
+  copyPath(it: LocalWorkflow): void {
+    const text = it.path;
+    const done = () => {
+      this.closeMenu();
+      this.notice = '路径已复制';
+    };
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+      return;
+    }
+    this.fallbackCopy(text, done);
+  }
+
+  /** 剪贴板被拒（非 https / 无权限）时的退路：老办法仍是最好的办法 */
+  private fallbackCopy(text: string, done: () => void): void {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand('copy');
+      done();
+    } catch {
+      this.localError = '复制失败，请手动从定位的文件里取';
+    } finally {
+      area.remove();
+    }
+  }
+
+  openRename(it: LocalWorkflow): void {
+    this.closeMenu();
+    this.editing = { item: it, title: it.title || '', group: it.group || '', rename: false };
+    setTimeout(() => focusFirst(this.editBox?.nativeElement));
+  }
+
+  saveMeta(): void {
+    const ed = this.editing;
+    if (!ed) return;
+    this.api
+      .setLocalWorkflowMeta({
+        path: ed.item.path,
+        title: ed.title.trim(),
+        group: ed.group.trim(),
+        rename_file: ed.rename,
+      })
+      .subscribe({
+        next: (res) => {
+          this.editing = null;
+          this.notice = res.file ? `已重命名为「${res.file}」` : '已保存';
+          this.loadLocal();
+        },
+        error: (err) => (this.localError = errMsg(err, '保存失败')),
+      });
+  }
+
+  askDelete(it: LocalWorkflow): void {
+    this.closeMenu();
+    this.pendingDelete = it;
+    setTimeout(() => focusFirst(this.delBox?.nativeElement));
+  }
+
+  /** 打开补齐依赖抽屉。焦点要跟着进去，否则键盘用户还得从页面顶部 Tab 过来 */
+  openDrawer(it: LocalWorkflow): void {
+    this.drawerOf = it;
+    setTimeout(() => focusFirst(this.drawerBox?.nativeElement));
+  }
+
+  confirmDelete(): void {
+    const it = this.pendingDelete;
+    if (!it) return;
+    this.api.deleteLocalWorkflow(it.path).subscribe({
+      next: () => {
+        this.pendingDelete = null;
+        this.notice = `已删除「${it.title || it.name}」`;
+        this.loadLocal();
+      },
+      error: (err) => {
+        this.pendingDelete = null;
+        this.localError = errMsg(err, '删除失败');
+      },
+    });
+  }
+
+  /** Esc 逐层退出：菜单 → 编辑 → 删除 → 抽屉 */
+  onEsc(): void {
+    if (this.menuOf) {
+      this.closeMenu();
+      return;
+    }
+    if (this.editing) {
+      this.editing = null;
+      return;
+    }
+    if (this.pendingDelete) {
+      this.pendingDelete = null;
+      return;
+    }
+    if (this.drawerOf) this.closeDrawer();
+  }
+
+  /* ---- 偏好持久化：视图 / 排序 / 筛选 ---- */
+
+  private readonly prefsKey = 'md.wf.prefs';
+
+  private restorePrefs(): void {
+    try {
+      const raw = JSON.parse(localStorage.getItem(this.prefsKey) || '{}');
+      if (raw.view === 'card' || raw.view === 'list') this.view = raw.view;
+      if (['mtime', 'nodes', 'name'].includes(raw.sortKey)) this.sortKey = raw.sortKey;
+      if (['all', 'missing', 'ready', 'broken'].includes(raw.statusFilter)) {
+        this.statusFilter = raw.statusFilter;
+      }
+    } catch {
+      // 坏数据就用默认值，别让整个页面起不来
+    }
+  }
+
+  private savePrefs(): void {
+    try {
+      localStorage.setItem(
+        this.prefsKey,
+        JSON.stringify({ view: this.view, sortKey: this.sortKey, statusFilter: this.statusFilter }),
+      );
+    } catch {
+      // 隐私模式下写不进去，忽略
+    }
   }
 
   /** 装一个节点包：走后端已有的安装通道 */
@@ -939,10 +1313,6 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
-  openEditor(it: LocalWorkflow): void {
-    this.notice = `「${it.title || it.name}」：内置可视化编辑器尚未接入，先用「定位」在文件管理器里打开`;
-  }
-
   closeDrawer(): void {
     this.drawerOf = null;
   }
@@ -970,12 +1340,38 @@ export class WorkflowsComponent implements OnInit {
         this.local = res.items;
         this.localDir = res.dir;
         this.localLoading = false;
+        this.loadCovers();
       },
       error: (err) => {
         this.localLoading = false;
         this.localError = errMsg(err, '读取本地工作流失败');
       },
     });
+  }
+
+  /**
+   * 本地没有自带出图的条目，再去社区补真实封面。
+   *
+   * 单独一批请求、失败也不报错：封面是锦上添花，取不到就用家族铭牌兜底，
+   * 不该因为它把整个列表变成错误态。后端按 key 缓存 7 天，第二次进页面是毫秒级。
+   */
+  private loadCovers(): void {
+    const need = this.local.filter((it) => !it.cover && it.format !== 'broken');
+    if (!need.length) return;
+    this.api
+      .workflowCovers(
+        need.map((it) => ({ key: it.key || it.path, name: it.title || it.name, model: it.main_model || '' })),
+      )
+      .subscribe({
+        next: (res) => {
+          if (!Object.keys(res.covers || {}).length) return;
+          this.local = this.local.map((it) => {
+            const url = res.covers[it.key || it.path];
+            return url ? { ...it, cover: url } : it;
+          });
+        },
+        error: () => undefined,
+      });
   }
 
   reveal(item: LocalWorkflow): void {

@@ -107,8 +107,41 @@ export class ApiService {
     );
   }
 
-  openLocalWorkflow(path: string): Observable<{ opened: string }> {
-    return this.http.post<{ opened: string }>(`${this.base}/workflows/local/open`, { path });
+  openLocalWorkflow(path: string, mode: 'reveal' | 'edit' = 'reveal'): Observable<{ opened: string }> {
+    return this.http.post<{ opened: string }>(`${this.base}/workflows/local/open`, { path, mode });
+  }
+
+  /** 使用工作流：确保有实例在跑，拿到画布地址。 */
+  useLocalWorkflow(path: string): Observable<{ url: string; instance: string; name: string }> {
+    return this.http.post<{ url: string; instance: string; name: string }>(
+      `${this.base}/workflows/local/use`,
+      { path },
+    );
+  }
+
+  /** 批量取远程封面。本地有图的条目不用传。 */
+  workflowCovers(
+    items: Array<{ key: string; name: string; model: string }>,
+  ): Observable<{ covers: Record<string, string> }> {
+    return this.http.post<{ covers: Record<string, string> }>(`${this.base}/workflows/covers`, { items });
+  }
+
+  setLocalWorkflowMeta(body: {
+    path: string;
+    title: string;
+    group: string;
+    rename_file: boolean;
+  }): Observable<{ title: string; group: string; file: string; key: string }> {
+    return this.http.patch<{ title: string; group: string; file: string; key: string }>(
+      `${this.base}/workflows/local/meta`,
+      body,
+    );
+  }
+
+  deleteLocalWorkflow(path: string): Observable<{ deleted: string; key: string }> {
+    return this.http.delete<{ deleted: string; key: string }>(`${this.base}/workflows/local`, {
+      params: { path },
+    });
   }
 
   listWorkflowInstances(): Observable<{ items: WorkflowInstance[] }> {

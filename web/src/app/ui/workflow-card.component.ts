@@ -30,8 +30,13 @@ interface StateView {
   imports: [FamilyMarkComponent],
   template: `
     <article class="wc" [class.broken]="state() === 'broken'" [attr.data-name]="it.name">
-      <div class="wc-cover" [class.broken-cover]="state() === 'broken'"
-           [style.background-image]="state() === 'broken' ? null : coverUrl()">
+      <div class="wc-cover" [class.broken-cover]="state() === 'broken'">
+        @if (state() !== 'broken' && it.cover && !coverFailed) {
+          <!-- 用 img 而不是 background-image：Civitai 按 referrer 拦图，
+               只有 img 能带 referrerpolicy，背景图带不了 -->
+          <img class="wc-cover-img" [src]="it.cover" alt="" referrerpolicy="no-referrer"
+               loading="lazy" (error)="coverFailed = true" />
+        }
         @if (state() === 'broken') {
           <div class="wc-broken">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
@@ -70,8 +75,8 @@ interface StateView {
                 <span class="wc-fmt-o" [class.on]="it.format === 'api'">API</span>
               </span>
             }
-            <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
-                    title="更多操作" (click)="more.emit(it)">⋯</button>
+                <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
+                        title="更多操作" (click)="openMore($event)">⋯</button>
           </div>
         </div>
 
@@ -136,9 +141,16 @@ interface StateView {
       position: relative;
       aspect-ratio: 16 / 10;
       background-color: var(--panel-3);
-      background-size: cover;
-      background-position: center 28%;
       overflow: hidden;
+    }
+    .wc-cover-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 28%;
+      display: block;
     }
     .wc-cover.broken-cover {
       background: repeating-linear-gradient(45deg, var(--panel-3), var(--panel-3) 9px,
@@ -362,7 +374,17 @@ interface StateView {
 export class WorkflowCardComponent {
   @Input({ required: true }) it!: LocalWorkflow;
   @Output() primary = new EventEmitter<{ item: LocalWorkflow; act: 'fix' | 'use' | 'edit' }>();
-  @Output() more = new EventEmitter<LocalWorkflow>();
+  /** 带上点击坐标，菜单才能贴着按钮弹出来而不是回页面顶上去找 */
+  @Output() more = new EventEmitter<{ item: LocalWorkflow; x: number; y: number }>();
+
+  /** 远程图挂掉（防盗链 / 404）就退回空封面，别留一块碎图 */
+  coverFailed = false;
+
+  openMore(event: MouseEvent): void {
+    event.stopPropagation();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.more.emit({ item: this.it, x: rect.right, y: rect.bottom });
+  }
 
   state(): WorkflowState {
     if (this.it.format === 'broken') return 'broken';
@@ -410,11 +432,6 @@ export class WorkflowCardComponent {
     if (p) parts.push(`${p} 个节点包`);
     if (un) parts.push(`${un} 个节点类型待人工确认`);
     return '缺 ' + parts.join('、') + '，点「补齐依赖」处理';
-  }
-
-  coverUrl(): string | null {
-    // 封面留给设计稿的 wf-covers 方案；后端出图接口就绪前不硬编码假图
-    return this.it.cover ? `url('${this.it.cover}')` : null;
   }
 
   sizeText(): string {
