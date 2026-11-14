@@ -23,10 +23,15 @@ const OPEN_KEY = 'md-nav-discover';
     <div class="shell">
       <aside class="sidebar">
         <div class="brand">
-          <span class="brand-mark">MD</span>
-          <span class="brand-text">
-            Model Downloader
-            <small>Local Studio</small>
+          <!-- 蝉形是辅助图形，字标才是主视觉（VIS v2.0 §2.0.2）。
+               明暗两版靠 CSS 切换显隐，不在 TS 里读主题。 -->
+          <span class="brand-mark" aria-hidden="true">
+            <img class="logo-light" src="/brand/cicada-max.svg" alt="" />
+            <img class="logo-dark" src="/brand/cicada-max-dark.svg" alt="" />
+          </span>
+          <span class="brand-wordmark">
+            SiMuseor
+            <small class="brand-sub">剧集导演台</small>
           </span>
         </div>
 

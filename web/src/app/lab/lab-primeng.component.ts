@@ -141,7 +141,7 @@ import { LAB_FILES, LAB_MODELS, LabFile, LabModel } from './fixtures';
       .lab-head h1 {
         margin: 0;
         font-size: 21px;
-        font-weight: 650;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 8px;

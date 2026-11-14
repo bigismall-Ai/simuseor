@@ -220,7 +220,7 @@ import { PanelComponent } from '../ui/panel.component';
         gap: 9px;
         min-width: 0;
       }
-      .repo-id strong { font-size: 12.5px; font-weight: 620; word-break: break-all; }
+      .repo-id strong { font-size: 12.5px; font-weight: 600; word-break: break-all; }
       .picked { font-variant-numeric: tabular-nums; font-size: 11.5px; }
 
       .file-table {
@@ -251,7 +251,7 @@ import { PanelComponent } from '../ui/panel.component';
       .task-dir {
         margin-top: 8px;
         font-size: 10.5px;
-        color: var(--faint);
+        color: var(--muted);
         word-break: break-all;
       }
     `,

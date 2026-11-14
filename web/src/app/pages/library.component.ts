@@ -178,10 +178,10 @@ import { PanelComponent } from '../ui/panel.component';
         font-size: 10px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--faint);
+        color: var(--muted);
       }
       .stat strong {
-        font: 620 15px/1.1 "Cascadia Mono", Consolas, monospace;
+        font: 600 15px/1.1 "Cascadia Mono", Consolas, monospace;
         letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
       }

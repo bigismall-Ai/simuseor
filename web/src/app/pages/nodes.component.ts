@@ -213,7 +213,7 @@ const SORTS = [
     .nd-sum {
       margin-top: 10px;
       font-size: 11.5px;
-      color: var(--faint);
+      color: var(--muted);
       font-variant-numeric: tabular-nums;
     }
 
@@ -256,13 +256,13 @@ const SORTS = [
     }
     .nd-tile strong {
       font-size: 16px;
-      font-weight: 620;
+      font-weight: 600;
       line-height: 1.1;
       font-variant-numeric: tabular-nums;
     }
     .nd-tile span {
       font-size: 10px;
-      color: var(--faint);
+      color: var(--muted);
     }
 
     .nd-body { min-width: 0; }
@@ -276,7 +276,7 @@ const SORTS = [
     .nd-title {
       margin: 0;
       font-size: 13.5px;
-      font-weight: 620;
+      font-weight: 600;
       letter-spacing: -0.01em;
       line-height: 1.35;
       max-width: 66%;
@@ -332,7 +332,7 @@ const SORTS = [
     .nd-more {
       font-size: 10.5px;
       line-height: 17px;
-      color: var(--faint);
+      color: var(--muted);
     }
 
     .nd-needs {
@@ -363,7 +363,7 @@ const SORTS = [
     }
     .nd-done {
       font-size: 11.5px;
-      color: var(--faint);
+      color: var(--muted);
     }
 
     .nd-job-panel { margin-bottom: 0; }

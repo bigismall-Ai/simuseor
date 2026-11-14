@@ -359,7 +359,7 @@ const PAGE_SIZE = 20;
     `
       .head-count {
         font: 500 11px/1 "Cascadia Mono", Consolas, monospace;
-        color: var(--faint);
+        color: var(--muted);
         letter-spacing: 0.02em;
         font-variant-numeric: tabular-nums;
       }

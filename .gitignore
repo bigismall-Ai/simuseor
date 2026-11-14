@@ -42,6 +42,12 @@ tests/*.mjs
 web/public/**/_candidates/
 /wf.tmp.json
 
+# VIS/LOGO 设计过程中的中间产物：素材稿、字体试用、一次性脚本。
+# 定稿资产在 web/public/brand/，这里只放「还没进产品」的过程材料。
+/designkit-artifacts/
+/logo-vector/
+/grad_demo_tmp.py
+
 # IDE 助手的工作记忆：与项目源码无关，只在本地保留
 .workbuddy/
 

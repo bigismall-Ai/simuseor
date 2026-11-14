@@ -176,42 +176,58 @@ body {
 .container { max-width: 1240px; margin: 0 auto; padding: 26px 28px 72px; }
 
 /* ================= 3.1 品牌 ================= */
+/* VIS v2.0 §2.0.2 组合标定案：蝉形 56×26 + 10px gap + 字标，
+   实测视觉总宽 130px（蝉形 56 + gap 10 + 墨迹 64.01），侧栏可用宽 200px，余量 70px。
+   蝉形宽 56 < 字标墨迹 64.01，坐稳「辅助」地位。 */
 .brand {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
   padding: 2px 6px 16px;
 }
 .brand-mark {
   flex: none;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: linear-gradient(150deg, #6366f1, #4338ca);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  box-shadow: 0 2px 6px -2px rgb(79 70 229 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.24);
+  display: block;
+  width: 56px;
+  height: 26px;
+  /* 地脚线对齐：蝉形底边落在字标基线上，不是盒子居中对齐 */
+  align-self: baseline;
 }
-.brand-text {
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+/* 品牌层反白靠双份资产切换，不是 CSS 取色（VIS §2.5） */
+.brand-mark .logo-dark { display: none; }
+:root[data-theme="dark"] .brand-mark .logo-dark { display: block; }
+:root[data-theme="dark"] .brand-mark .logo-light { display: none; }
+
+/* 字标：Barlow Condensed Regular 400 / 20px / letter-spacing .028em
+   （VIS §2.1）。字重严格 400，禁止 300/500/600/700。 */
+.brand-wordmark {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  font-size: 13.5px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-family: "Barlow Condensed", "Segoe UI", system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.028em;
+  line-height: 1;
   white-space: nowrap;
-  line-height: 1.2;
+  color: var(--text);
 }
-.brand-text small {
+/* 副标是中文，Barlow 无中文字形，必须回退 UI 栈；中文一律 letter-spacing:0。
+   颜色用 --muted —— VIS 红线：--faint 不得承载文本。 */
+.brand-sub {
+  font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--faint);
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: var(--muted);
 }
 
 /* ================= 3.2 侧边导航 ================= */
@@ -223,7 +239,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
 }
 .nav-group:first-child { margin-top: 0; }
 
@@ -247,7 +263,7 @@ body {
   height: 15px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.9;
@@ -267,7 +283,7 @@ body {
   font-size: 9.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--faint);
+  color: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   padding: 0 5px;
@@ -367,7 +383,7 @@ body {
   height: 15px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -377,7 +393,7 @@ body {
   font-style: normal;
   font-size: 11px;
   font-weight: 500;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 /* 外观选择：点按钮向上弹一层，不占常驻版面。留一个容器好判断「点在框内还是框外」 */
@@ -403,7 +419,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
 }
 .tp-opt {
   display: flex;
@@ -441,7 +457,7 @@ body {
   flex: none;
   width: 15px;
   height: 15px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   border: 1px solid var(--border);
 }
 .tp-swatch[data-tone='light'] { background: #fff; border-color: #d6d6dc; }
@@ -455,11 +471,11 @@ body {
   padding: 7px 8px 2px;
   border-top: 1px solid var(--border-soft);
   font-size: 11px;
-  color: var(--faint);
+  color: var(--muted);
 }
 .tp-hint kbd {
   font: 500 10px/1 ui-monospace, Consolas, monospace;
-  color: var(--faint);
+  color: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   padding: 2px 5px;
@@ -521,12 +537,12 @@ body {
   font-weight: 600;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
 }
 .page-heading h1 {
   margin: 0;
   font-size: 22px;
-  font-weight: 660;
+  font-weight: 600;
   letter-spacing: -0.022em;
   line-height: 1.2;
 }
@@ -560,7 +576,7 @@ body {
 .panel-heading h2 {
   margin: 0;
   font-size: 14px;
-  font-weight: 640;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 .panel-hint {
@@ -589,7 +605,7 @@ button {
   color: var(--text-2);
   font-family: inherit;
   font-size: 12.5px;
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
@@ -605,9 +621,11 @@ button.primary {
   color: var(--on-primary);
   box-shadow: 0 1px 2px rgb(79 70 229 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
+/* hover 背景保持 --primary：--primary-hover #6366f1 上白字深色 4.47:1 差 0.03 不达标。
+   可点性靠 border-color 的装饰描边 + cursor + :focus-visible 承担。 */
 button.primary:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
+  background: var(--primary);
+  border-color: var(--accent);
   color: var(--on-primary);
 }
 button.danger { color: var(--err); border-color: var(--border); background: var(--panel); }
@@ -618,7 +636,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 button:disabled:hover { background: var(--panel); border-color: var(--border); color: var(--text-2); }
 button.primary:disabled:hover { background: var(--primary); border-color: var(--primary); }
 
-.btn-xs { height: 25px; padding: 0 9px; font-size: 11.5px; border-radius: 6px; }
+.btn-xs { height: 25px; padding: 0 9px; font-size: 11.5px; border-radius: var(--radius-sm); }
 
 /* ================= 8. 表单 ================= */
 .field { min-width: 0; }
@@ -626,7 +644,7 @@ button.primary:disabled:hover { background: var(--primary); border-color: var(--
   display: block;
   margin-bottom: 6px;
   font-size: 11.5px;
-  font-weight: 550;
+  font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--muted);
 }
@@ -650,7 +668,7 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   box-shadow: var(--ring);
 }
-input::placeholder, textarea::placeholder { color: var(--placeholder); }
+input::placeholder, textarea::placeholder { color: var(--muted); }
 input[readonly] { background: var(--panel-2); color: var(--muted); }
 input[type="checkbox"], input[type="radio"] {
   width: auto;
@@ -692,7 +710,7 @@ select:disabled { opacity: 0.6; }
   background: var(--accent-soft);
 }
 .radio-row span { font-size: 12.5px; }
-.radio-row:has(input:checked) span { color: var(--accent); font-weight: 550; }
+.radio-row:has(input:checked) span { color: var(--accent); font-weight: 500; }
 
 /* ================= 9. 分段控件 / 筛选 chips / 徽章 ================= */
 .segmented {
@@ -719,7 +737,6 @@ select:disabled { opacity: 0.6; }
   background: var(--panel);
   color: var(--accent);
   font-weight: 600;
-  box-shadow: 0 1px 2px rgb(24 24 27 / 0.08);
 }
 
 .chip-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
@@ -735,12 +752,14 @@ select:disabled { opacity: 0.6; }
 }
 .filter-chip:hover { border-color: var(--border-strong); color: var(--text); background: var(--hover); }
 .filter-chip.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--primary);
+  border-color: var(--primary);
   color: var(--on-primary);
-  font-weight: 550;
+  font-weight: 500;
 }
-.filter-chip.active:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-primary); }
+/* hover 与 active 完全一致：--accent-hover #c7d2fe 上白字 1.49:1、--primary-hover #6366f1 上
+   白字 4.47:1 都不达标。可点性由 cursor / aria-pressed / :focus-visible 承担。 */
+.filter-chip.active:hover { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 .chip-count { opacity: 0.6; font-size: 10.5px; margin-left: 3px; font-variant-numeric: tabular-nums; }
 .filter-chip.active .chip-count { opacity: 0.8; }
 
@@ -761,7 +780,7 @@ select:disabled { opacity: 0.6; }
   padding: 1px 8px;
   border-radius: 999px;
   font-size: 11px;
-  font-weight: 550;
+  font-weight: 500;
   line-height: 18px;
   white-space: nowrap;
 }
@@ -783,7 +802,7 @@ th, td {
   vertical-align: middle;
 }
 th {
-  color: var(--faint);
+  color: var(--muted);
   font-weight: 600;
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -879,7 +898,7 @@ tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
   100% { background-position: -200% 0; }
 }
 .skel-card { gap: 10px; pointer-events: none; }
-.skel-line { height: 11px; border-radius: 4px; }
+.skel-line { height: 11px; border-radius: var(--radius-xs); }
 .sk-w-40 { width: 40%; }
 .sk-w-60 { width: 60%; }
 .sk-w-80 { width: 80%; }
@@ -906,7 +925,7 @@ tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
   padding: 18px 20px 16px;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
   animation: pop-in 0.16s cubic-bezier(0.2, 0.8, 0.3, 1);
@@ -957,7 +976,6 @@ tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
 }
 .task:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
 }
 .task .head {
   display: flex;
@@ -967,7 +985,7 @@ tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
 }
 .task .title {
   font-size: 13px;
-  font-weight: 620;
+  font-weight: 600;
   letter-spacing: -0.005em;
   word-break: break-all;
 }
@@ -1006,7 +1024,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   border: 1px solid var(--border);
   border-radius: var(--radius);
 }
-.mc-title { font-weight: 620; font-size: 13px; word-break: break-all; line-height: 1.4; }
+.mc-title { font-weight: 600; font-size: 13px; word-break: break-all; line-height: 1.4; }
 .mc-author { font-size: 11.5px; color: var(--muted); }
 .mc-desc {
   margin: 0;
@@ -1103,12 +1121,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .env-name { color: var(--text-2); font-size: 12px; letter-spacing: 0.01em; }
 .env-value { display: flex; align-items: center; gap: 7px; justify-self: end; min-width: 0; }
 .env-value strong {
-  font: 550 12px/1.4 "Cascadia Mono", Consolas, monospace;
+  font: 500 12px/1.4 "Cascadia Mono", Consolas, monospace;
   color: var(--text);
   text-align: right;
   word-break: break-all;
 }
-.env-state { font-size: 10px; color: var(--faint); letter-spacing: 0.02em; }
+.env-state { font-size: 10px; color: var(--muted); letter-spacing: 0.02em; }
 /* 这张卡只有一件事要做，按钮就占满一行，不用在标题旁挤一个窄按钮 */
 .env-cta { width: 100%; margin-top: 14px; }
 
@@ -1122,22 +1140,22 @@ details.files[open] summary::before { transform: rotate(90deg); }
 .dev-plate-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .dev-vendor {
   font-size: 9.5px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
 }
 .dev-gpu {
   display: block;
   margin-top: 4px;
   font-size: 13px;
-  font-weight: 640;
+  font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.01em;
   color: var(--text);
   word-break: break-word;
 }
-.dev-gpu-meta { display: block; margin-top: 3px; font-size: 10.5px; color: var(--faint); }
+.dev-gpu-meta { display: block; margin-top: 3px; font-size: 10.5px; color: var(--muted); }
 
 .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
 .spec { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
@@ -1145,12 +1163,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
 /* 显存 / 内存 / 磁盘是这一页唯一的量化读数，字号给到 15 才像「数据」而不像正文 */
 .spec-value {
   font-size: 15px;
-  font-weight: 620;
+  font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
-.spec-sub { font-size: 10.5px; line-height: 1.45; color: var(--faint); }
+.spec-sub { font-size: 10.5px; line-height: 1.45; color: var(--muted); }
 .spec-wide { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
 .spec-foot {
   display: flex;
@@ -1160,11 +1178,11 @@ details.files[open] summary::before { transform: rotate(90deg); }
   padding-top: 10px;
   border-top: 1px solid var(--border-soft);
   font-size: 10.5px;
-  color: var(--faint);
+  color: var(--muted);
 }
 .spec-more { margin-top: auto; padding-top: 10px; font-size: 11px; color: var(--muted); }
 .spec-more summary { cursor: pointer; }
-.spec-more p { margin: 6px 0 0; line-height: 1.55; color: var(--faint); }
+.spec-more p { margin: 6px 0 0; line-height: 1.55; color: var(--muted); }
 .device-note { margin: 12px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
 .device-note strong { display: block; color: var(--text-2); font-weight: 600; }
 
@@ -1208,7 +1226,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 .inst-add:hover:not(:disabled) { border-color: transparent; background: transparent; color: var(--accent); }
 .inst-add-plus { font-size: 14px; line-height: 1; opacity: 0.75; }
-.inst-count { font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.inst-count { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .instance-row {
   display: flex;
@@ -1291,7 +1309,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   gap: 0;
   min-width: 0;
   font-size: 10.5px;
-  color: var(--faint);
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -1382,13 +1400,13 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 .ring-label strong {
   font-size: 27px;
-  font-weight: 680;
+  font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 .ring-label small { font-size: 12px; font-weight: 600; margin-left: 1px; color: var(--muted); }
-.ring-label span { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); margin-top: 4px; }
+.ring-label span { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
 
 .hero-text { min-width: 0; }
 .hero-stage {
@@ -1398,7 +1416,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   text-transform: uppercase;
   color: var(--accent);
 }
-.hero-title { font-size: 16px; font-weight: 650; letter-spacing: -0.015em; margin-top: 4px; }
+.hero-title { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; margin-top: 4px; }
 .hero-sub {
   font-size: 11.5px;
   margin-top: 4px;
@@ -1429,12 +1447,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
   border-radius: var(--radius-sm);
   min-width: 0;
 }
-.metric span { display: block; font-size: 10px; letter-spacing: 0.04em; color: var(--faint); }
+.metric span { display: block; font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
 .metric strong {
   display: block;
   margin-top: 3px;
   font-size: 14px;
-  font-weight: 620;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
@@ -1447,7 +1465,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   align-items: center;
   gap: 9px;
   padding: 5px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   font-size: 12px;
   color: var(--muted);
 }
@@ -1462,11 +1480,11 @@ details.files[open] summary::before { transform: rotate(90deg); }
   height: 17px;
   border-radius: 50%;
   background: var(--chip);
-  color: var(--faint);
+  color: var(--muted);
   font-size: 9.5px;
   font-weight: 700;
 }
-.step-row.active .step-dot { background: var(--accent); color: var(--on-primary); }
+.step-row.active .step-dot { background: var(--primary); color: var(--on-primary); }
 .step-row.done .step-dot { background: var(--ok-soft); color: var(--ok); }
 .step-row.failed .step-dot { background: var(--err-soft); color: var(--err); }
 .step-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1505,7 +1523,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 .log-line { color: var(--text-2); }
 .log-line.step { color: var(--accent); font-weight: 600; margin-top: 6px; }
-.log-line.cmd { color: var(--faint); }
+.log-line.cmd { color: var(--muted); }
 .log-line.ok { color: var(--ok); }
 .log-line.warn { color: var(--warn); }
 .log-line.err { color: var(--err); }
@@ -1613,7 +1631,9 @@ details.files[open] summary::before { transform: rotate(90deg); }
     overflow: visible;
   }
   .brand { padding: 0 8px 0 0; }
-  .brand-text { display: none; }
+  /* 横条里只藏副标，蝉形 + 字标保留：整块隐藏会让品牌位只剩一个孤立图形，
+     而蝉形单独出现按 VIS §2.0 只允许用于 favicon。 */
+  .brand-sub { display: none; }
   .nav { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px; }
   .nav-group, .nav-item.is-disabled { display: none; }
   .nav-item { white-space: nowrap; }

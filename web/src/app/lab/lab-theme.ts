@@ -16,11 +16,12 @@ export const LabPreset = definePreset(Aura, {
   primitive: {
     borderRadius: {
       none: '0',
-      xs: '3px',
-      sm: '6px',
-      md: '10px',
-      lg: '12px',
-      xl: '16px',
+      // M1-g：与主 UI 三档对齐（5 / 8 / 12），lab 不再是第四套尺度
+      xs: '5px',
+      sm: '8px',
+      md: '12px',
+      lg: '12px',   // 不动：改 md 后 md 与 lg 同为 12 是既有结构，动 lg 会牵动 PrimeNG 组件映射
+      xl: '16px',   // 与 components.dialog.root.borderRadius 16px 对齐
     },
   },
   semantic: {
@@ -68,7 +69,10 @@ export const LabPreset = definePreset(Aura, {
       },
       dark: {
         primary: {
-          color: '{primary.400}',
+          // 裁决 G：归一对象只到「文字/描边/图形型 --accent」。
+          // 这是「亮底 + 深字」另一条合法路线：400 上深字 5.36:1，300 上 8.02:1；
+          // 若改成白字会掉到 2.98:1 / 1.99:1 全 FAIL —— contrastColor 绝不动。
+          color: '{primary.300}',
           contrastColor: '{primary.950}',
           hoverColor: '{primary.300}',
           activeColor: '{primary.200}',

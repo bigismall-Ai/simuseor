@@ -215,7 +215,7 @@ import { PanelComponent } from '../ui/panel.component';
     .nl-stat span { font-size: 11px; color: var(--muted); }
     .nl-stat strong {
       font-size: 18px;
-      font-weight: 620;
+      font-weight: 600;
       letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
     }
@@ -249,7 +249,7 @@ import { PanelComponent } from '../ui/panel.component';
       flex: 1;
     }
     .nl-provider-main strong { font-size: 12.5px; }
-    .nl-provider-meta { font-size: 10.5px; color: var(--faint); }
+    .nl-provider-meta { font-size: 10.5px; color: var(--muted); }
     .nl-provider-covers {
       font-size: 10.5px;
       color: var(--warn);
@@ -296,7 +296,7 @@ import { PanelComponent } from '../ui/panel.component';
     .nl-wf-count {
       margin-left: auto;
       font-size: 10.5px;
-      color: var(--faint);
+      color: var(--muted);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
@@ -316,10 +316,10 @@ import { PanelComponent } from '../ui/panel.component';
     }
     .nl-chip.is-unknown {
       background: var(--panel-3);
-      color: var(--faint);
+      color: var(--muted);
     }
 
-    .nl-name { font-size: 12.5px; font-weight: 550; }
+    .nl-name { font-size: 12.5px; font-weight: 500; }
     .nl-sub {
       display: flex;
       align-items: center;
@@ -330,9 +330,9 @@ import { PanelComponent } from '../ui/panel.component';
     .nl-dir {
       font-family: "Cascadia Mono", Consolas, monospace;
       font-size: 10.5px;
-      color: var(--faint);
+      color: var(--muted);
     }
-    .nl-dep { font-size: 10.5px; color: var(--faint); }
+    .nl-dep { font-size: 10.5px; color: var(--muted); }
 
     .nl-col-node, .nl-col-commit, .nl-col-size { width: 76px; font-variant-numeric: tabular-nums; }
     .nl-col-commit { width: 92px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px; }

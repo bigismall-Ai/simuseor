@@ -28,7 +28,8 @@
             ],
             "styles": [
               "src/tailwind.css",
-              "src/styles.css"
+              "src/styles.css",
+              "src/vis-tokens.css"
             ]
           },
           "configurations": {

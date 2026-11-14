@@ -106,10 +106,11 @@ const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
      * 看起来就是「有图的卡没有 hover 效果」。内描边画在图片上就注定没法统一，
      * 所以改画在外圈（贴着页面底色），与卡片内容无关；内描边同时让位，避免两层边。
      */
+    /* M1-c：hover 不再位移 + 不再外阴影。边框优先于阴影是全站约束，
+       抬起 2px 在密集列表里会让整行抖动，阴影又掩盖了 1px 描边的分层。 */
     .card:hover,
     .card:focus-within {
-      transform: translateY(-2px);
-      box-shadow: 0 0 0 1px var(--accent), 0 14px 30px -20px rgb(0 0 0 / 0.45);
+      box-shadow: inset 0 0 0 1px var(--accent);
     }
     .card:hover::after,
     .card:focus-within::after {
@@ -142,7 +143,7 @@ const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
     .card-name {
       margin: 0;
       font-size: 13px;
-      font-weight: 620;
+      font-weight: 600;
       line-height: 1.38;
       letter-spacing: -0.008em;
       color: var(--text);
