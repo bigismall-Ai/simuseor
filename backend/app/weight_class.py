@@ -58,6 +58,21 @@ _FOLDER_TASK = {
     "text_encoders": "text_generation",
 }
 
+# 源站 tags 里的任务标记。HF 的 tags 最规范（text-generation / text-to-image / …），
+# 比从文件名猜靠谱得多 —— 排在最前面。
+_TAG_TASK_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("text_to_video", re.compile(r"(^|[-_ ])(text-to-video|image-to-video|video-to-video|video-generation)([-_ ]|$)", re.I)),
+    ("text_to_image", re.compile(r"(^|[-_ ])(text-to-image|image-generation)([-_ ]|$)", re.I)),
+    ("image_to_image", re.compile(r"(^|[-_ ])(image-to-image|image-editing|inpainting)([-_ ]|$)", re.I)),
+    ("text_generation", re.compile(r"(^|[-_ ])(text-generation|conversational|conversational-instruct)([-_ ]|$)", re.I)),
+    ("image_understanding", re.compile(r"(^|[-_ ])(image-text-to-text|visual-question|vqa|classification)([-_ ]|$)", re.I)),
+    ("text_to_speech", re.compile(r"(^|[-_ ])(text-to-speech|tts|speech-synthesis)([-_ ]|$)", re.I)),
+    ("speech_to_text", re.compile(r"(^|[-_ ])(speech-to-text|asr|automatic-speech)([-_ ]|$)", re.I)),
+    ("embedding", re.compile(r"(^|[-_ ])(feature-extraction|sentence-similarity|embeddings)([-_ ]|$)", re.I)),
+    ("upscaler", re.compile(r"(^|[-_ ])(upscal|super-resolution|image-super-resolution)([-_ ]|$)", re.I)),
+    ("controlnet", re.compile(r"(^|[-_ ])(controlnet|depth-estimation|canny|openpose)([-_ ]|$)", re.I)),
+]
+
 # 文件名/模型名里的任务特征。顺序敏感：先命中具体的。
 #
 # 边界写法：关键词后面允许接数字或分隔符。
@@ -126,6 +141,11 @@ def task_of(name: str, folder: str = "", tags: list[str] | None = None) -> str:
     文件名特征最后兜。
     """
     hay_tags = " ".join(tags or [])
+    # 源站 tags 里的任务标记最直接
+    for tid, pat in _TAG_TASK_PATTERNS:
+        if pat.search(hay_tags):
+            return tid
+
     for tid, pat in _TASK_PATTERNS:
         if pat.search(hay_tags):
             return tid

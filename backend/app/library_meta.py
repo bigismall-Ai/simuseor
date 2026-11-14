@@ -38,7 +38,12 @@ def _gpu_vram_mb() -> int | None:
 
 
 def _family_of(name: str) -> str:
-    """家族判定。前端 core/cover.ts 的 FAMILIES 是权威，这里只用来算显存系数。"""
+    """家族判定。
+
+    表必须与前端 `core/cover.ts` 的 FAMILIES **保持一致** ——
+    两处不一致会导致同一个模型在两边显示不同家族。
+    顺序敏感：具体家族排在通用家族前面。
+    """
     import re
 
     rules = [
@@ -49,7 +54,8 @@ def _family_of(name: str) -> str:
         ("ltx", r"\bltx[\s.-]?v?\b"),
         ("wan", r"\bwan[\s._-]?2|\bwan\b|wan2"),
         ("flux", r"flux"),
-        ("qwen", r"qwen[-_. ]?image"),
+        ("qwen", r"qwen"),
+        ("minimax", r"minimax|\bmmx\b"),
     ]
     hay = name or ""
     for fid, pat in rules:
