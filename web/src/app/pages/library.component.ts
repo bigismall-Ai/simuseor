@@ -146,8 +146,9 @@ import { PanelComponent } from '../ui/panel.component';
          绿 1~2 格（≤67%）· 黄 3 格满（67%~100%）· 红 3 格满+溢出（>100%）
          三等分而不是五等分：模型权重是重资产，真实分布是「要么几乎不占
          （VAE/Embedding 占 0%），要么占一大半」—— 五等分会把大批 0% 全挤在第一格。 */
-      .col-vram { width: 92px; }
-      .cell-vram { white-space: nowrap; }
+      .col-vram { width: 74px; }
+      /* 垂直居中 —— 标志是上下两层，不居中的话会比同行其它单元格高一截 */
+      .cell-vram { white-space: nowrap; vertical-align: middle; }
       /* 上下结构：格子在上、百分比在下，外面套一块**与压力同色**的底。
          底衬不透明 —— 半透明底压在封面上会跟背景图混，颜色就不纯了。
          纯红 #FF0000 只用在「满格」这个图形上（图形对比度门槛 3:1），
@@ -156,26 +157,30 @@ import { PanelComponent } from '../ui/panel.component';
         display: inline-flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px;
-        padding: 4px 6px 3px;
-        border-radius: 5px;
+        gap: 1px;
       }
+      /* 背景色块只裹住「格子」那一层，百分比数字在下面裸露 ——
+         整块都上底的话，一个状态标志会比同行的主数据还重（实测：粉底方块
+         比 imported 徽标还抢眼），而且行高被撑高了。
+         底衬用浅色、格子用纯色 —— 「纯红」还在，浅底只是把格子托起来。 */
       .vram-bars {
         display: inline-flex;
         align-items: center;
-        gap: 1.5px;
+        gap: 2px;
+        padding: 2px 4px;
+        border-radius: 3px;
       }
       /* 未填充的槽 = 透明 + 细描边（不是灰底）——
          灰底填充看起来像「满格」，就分不出 1 格和 3 格了。
          「上色」由模板直接给前 N 格加 .on 类 —— 不用 nth-child，
          那依赖元素在父节点里的位置，模板里插个 <em> 就全错位（实测踩到）。 */
       .vram-flag i {
-        width: 5px;
-        height: 9px;
+        width: 6px;
+        height: 10px;
         border-radius: 1.5px;
         display: block;
         background: transparent;
-        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.28);
       }
       :host-context([data-theme='dark']) .vram-flag i {
         box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
@@ -206,15 +211,21 @@ import { PanelComponent } from '../ui/panel.component';
         border-top: 3.5px solid transparent;
         border-bottom: 3.5px solid transparent;
       }
-      /* 三档：格子颜色 + 同色系底衬。红色用纯 #FF0000。 */
-      .v-ok { color: #15803d; background: #dcfce7; }
-      .v-warn { color: #b45309; background: #fef3c7; }
-      .v-err { color: #ff0000; background: #fee2e2; }
+      /* 三档：格子用纯色（红 = #FF0000），浅色底衬托在格子层。 */
+      .v-ok { color: #15803d; }
+      .v-warn { color: #b45309; }
+      .v-err { color: #ff0000; }
+      .v-ok .vram-bars { background: #dcfce7; }
+      .v-warn .vram-bars { background: #fef3c7; }
+      .v-err .vram-bars { background: #fee2e2; }
       /* 深色主题：浅色底衬在深色封面上整块发白 → 换成深底 + 亮字。
          纯红 #FF0000 在深底上对比 4.0:1，够图形用。 */
-      :host-context([data-theme='dark']) .v-ok { color: #4ade80; background: #14351f; }
-      :host-context([data-theme='dark']) .v-warn { color: #fbbf24; background: #3a2e10; }
-      :host-context([data-theme='dark']) .v-err { color: #ff0000; background: #3d1414; }
+      :host-context([data-theme='dark']) .v-ok { color: #4ade80; }
+      :host-context([data-theme='dark']) .v-warn { color: #fbbf24; }
+      :host-context([data-theme='dark']) .v-err { color: #ff0000; }
+      :host-context([data-theme='dark']) .v-ok .vram-bars { background: #14351f; }
+      :host-context([data-theme='dark']) .v-warn .vram-bars { background: #3a2e10; }
+      :host-context([data-theme='dark']) .v-err .vram-bars { background: #3d1414; }
       :host-context([data-theme='dark']) .vram-flag em { color: #f4f4f5; }
       /* 无法判定：空心描边 —— 实心=有结论，空心=没结论 */
       .v-na i {
