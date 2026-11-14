@@ -32,7 +32,7 @@ test.describe('Model Downloader Web UI', () => {
     // 放它打到真后端会把测试键写进 var/data/workflow_covers.json 并占掉图池名额。
     // 个别要用真封面响应的用例在后面注册自己的 route，后注册的优先。
     await page.route((url) => url.pathname === '/api/workflows/covers', (route) =>
-      route.fulfill({ json: { covers: {}, pinned: [] } }));
+      route.fulfill({ json: { covers: {}, pinned: [], custom: [] } }));
     // 分组管理接口默认返回空：测试用假路径，不该读到本机真实分组/钉图
     await page.route((url) => url.pathname === '/api/workflows/groups', (route) =>
       route.fulfill({ json: { groups: [], defined: [] } }));
@@ -1139,7 +1139,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('app-workflow-card .wc-kebab').click();
     const menu = page.locator('.wf-menu');
     await expect(menu).toBeVisible();
-    // 6 个固定动作（含「换一张封面」）+ 有分组时多一个「按分组整理目录」
+    // 6 个固定动作（含「管理封面」）+ 有分组时多一个「按分组整理目录」
     await expect(menu.getByRole('menuitem')).toHaveCount(7);
     await expect(menu).toContainText('复制文件路径');
     await expect(menu).toContainText('重命名');
@@ -1171,8 +1171,10 @@ test.describe('Model Downloader Web UI', () => {
     await expect(dialog).toBeVisible();
     // 打开时焦点应当已经进入对话框（键盘用户不用从头 Tab）
     await expect(dialog.locator('input').first()).toBeFocused();
-    // 分组框给已有分组做候选：手打容易造出「人像」「人像 」这种看着一样的两组
-    await expect(dialog.locator('datalist option')).toHaveText(['人像']);
+    // 分组改成真 select：已有组做候选，当前值也要选中（不是空的）
+    const groupSelect = dialog.getByTestId('lw-edit-group');
+    await expect(groupSelect.locator('option')).toHaveText(['未分组', /人像/]);
+    await expect(groupSelect).toHaveValue('人像');
 
     await dialog.locator('input').first().fill('新名字');
     await dialog.getByRole('button', { name: '保存' }).click();
@@ -1380,8 +1382,13 @@ test.describe('Model Downloader Web UI', () => {
     await page.getByRole('alertdialog').getByRole('button', { name: '整理' }).click();
 
     await expect.poll(() => called).toBe(1);
-    await expect(page.locator('.notice.ok')).toContainText('移进分组目录');
+    // 动作结果是右下角悬浮 toast，不是插在列表上方的一段文字
+    const toast = page.getByTestId('wf-toast');
+    await expect(toast).toContainText('移进分组目录');
+    expect(await toast.evaluate((el) => getComputedStyle(el).position)).toBe('fixed');
     await page.screenshot({ path: ART + '/32-workflow-organize.png', fullPage: true });
+    await toast.getByTestId('wf-toast-close').click();
+    await expect(toast).toHaveCount(0);
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
@@ -1432,20 +1439,47 @@ test.describe('Model Downloader Web UI', () => {
     await expect(dlg.locator('.gm-row[data-group="商品图"]')).toHaveCount(0);
     await dlg.getByTestId('gm-close').click();
 
-    // 变更分组的弹层里可以「+ 新分组」，但没有任何改名入口
+    // 「变更分组」里不再有「+ 新分组」，改为跳到分组管理；改名也不在这里
     await page.locator('app-workflow-card .wc-kebab').click();
     await page.getByRole('menuitem', { name: /重命名/ }).click();
     const edit = page.getByRole('dialog', { name: '重命名与分组' });
     await expect(edit).not.toContainText('改名');
-    await edit.getByTestId('lw-edit-group').fill('试拍');
-    await edit.getByTestId('lw-new-group').click();
+    await expect(edit).not.toContainText('+ 新分组');
+    const groupSelect = edit.getByTestId('lw-edit-group');
+    await expect(groupSelect.locator('option')).toHaveCount(2); // 未分组 + 人像
+
+    // 点「分组管理」叠开管理框，编辑框不能被关掉
+    await edit.getByTestId('lw-group-manager-link').click();
+    const nested = page.getByRole('dialog', { name: '分组管理' });
+    await expect(nested).toBeVisible();
+    await expect(edit).toBeVisible();
+    await nested.getByTestId('gm-new-name').fill('试拍');
+    await nested.getByTestId('gm-add').click();
     await expect.poll(() => defined).toContain('试拍');
+
+    // 关闭管理框后，之前那条工作流的分组下拉要拿到新组
+    await nested.getByTestId('gm-close').click();
+    await expect(nested).toHaveCount(0);
+    await expect(edit).toBeVisible();
+    await expect(groupSelect.locator('option', { hasText: '试拍' })).toHaveCount(1);
+    await groupSelect.selectOption('试拍');
+    await expect(groupSelect).toHaveValue('试拍');
+
+    // 管理框里改名，回来时已选中的值也要跟着改（不能挂着旧组名）
+    await edit.getByTestId('lw-group-manager-link').click();
+    const nested2 = page.getByRole('dialog', { name: '分组管理' });
+    await nested2.getByTestId('gm-rename-试拍').click();
+    await nested2.getByTestId('gm-rename-input').fill('商品图');
+    await nested2.getByTestId('gm-rename-save').click();
+    await nested2.getByTestId('gm-close').click();
+    await expect(groupSelect).toHaveValue('商品图');
+
     expect(calls).toEqual(expect.arrayContaining(['POST', 'PATCH', 'DELETE']));
     await page.screenshot({ path: ART + '/43-workflow-group-manager.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
-  test('我的工作流：换一张封面会钉住，可恢复自动', async ({ page }) => {
+  test('我的工作流：封面管理框可换一张、恢复自动', async ({ page }) => {
     await mockLocalWorkflows(page);
     const next = 'data:image/svg+xml,' + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" width="448" height="280"><rect width="448" height="280" fill="#244"/></svg>',
@@ -1457,7 +1491,7 @@ test.describe('Model Downloader Web UI', () => {
       const body = route.request().postDataJSON();
       expect(body.current).toBe(COVER_SVG);
       expect(body.key).toBe(COVER_ITEM.key);
-      return route.fulfill({ json: { key: body.key, cover: next, pinned: true } });
+      return route.fulfill({ json: { key: body.key, cover: next, pinned: true, source: 'manual' } });
     });
     await page.route((url: URL) => url.pathname === '/api/workflows/covers/reset', (route: any) => {
       reset += 1;
@@ -1466,18 +1500,99 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/workflows');
     await page.locator('app-workflow-card .wc-kebab').click();
-    await page.getByRole('menuitem', { name: '换一张封面' }).click();
+    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    const dlg = page.getByRole('dialog', { name: '封面管理' });
+    await expect(dlg).toBeVisible();
+    await expect(dlg.getByTestId('cm-preview')).toBeVisible();
+    await expect(dlg).toContainText('自动匹配');
+
+    // 规则说明就在框里，不用去别处翻
+    await dlg.getByText('封面的选取规则').click();
+    await expect(dlg).toContainText('同名社区图');
+
+    await dlg.getByTestId('cm-redeal').click();
     await expect.poll(() => refreshed).toBe(1);
     const img = page.locator('app-workflow-card img.wc-cover-img');
     await expect(img).toHaveAttribute('src', next);
+    await expect(dlg).toContainText('手动换的图');
+    await page.screenshot({ path: ART + '/44-workflow-cover-manager.png', fullPage: true });
 
-    // 钉住后菜单多出「恢复自动封面」，点它回到原来的自动结果
-    await page.locator('app-workflow-card .wc-kebab').click();
-    await expect(page.locator('.wf-menu')).toContainText('恢复自动封面');
-    await page.getByRole('menuitem', { name: '恢复自动封面' }).click();
+    // 「恢复自动封面」收进管理框，菜单里不再多一条
+    await dlg.getByTestId('cm-reset').click();
     await expect.poll(() => reset).toBe(1);
+    await expect(dlg).toHaveCount(0);
     await expect(img).toHaveAttribute('src', COVER_SVG);
-    await page.screenshot({ path: ART + '/44-workflow-cover-refresh.png', fullPage: true });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：封面管理框支持自定义 URL 与本地上传', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    const custom = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="448" height="280"><rect width="448" height="280" fill="#a3f"/></svg>',
+    );
+    const bodies: Array<Record<string, string>> = [];
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers/custom', (route: any) => {
+      bodies.push(route.request().postDataJSON());
+      return route.fulfill({
+        json: { key: COVER_ITEM.key, cover: custom, pinned: true, source: 'custom' },
+      });
+    });
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    const dlg = page.getByRole('dialog', { name: '封面管理' });
+
+    // 非 http(s) 地址在前端就拦下，不发给后端
+    await dlg.getByTestId('cm-url').fill('javascript:alert(1)');
+    await dlg.getByTestId('cm-url-apply').click();
+    await expect(dlg.locator('.cm-error')).toContainText('http');
+    expect(bodies).toHaveLength(0);
+
+    await dlg.getByTestId('cm-url').fill('https://img.example/my.png');
+    await dlg.getByTestId('cm-url-apply').click();
+    await expect.poll(() => bodies.length).toBe(1);
+    expect(bodies[0].url).toBe('https://img.example/my.png');
+    const img = page.locator('app-workflow-card img.wc-cover-img');
+    await expect(img).toHaveAttribute('src', custom);
+    await expect(dlg).toContainText('自定义图片');
+    await expect(page.getByTestId('wf-toast')).toContainText('已设为自定义封面');
+
+    // 上传走 FileReader → data URI，后端把图内容寻址落到本机
+    await dlg.getByTestId('cm-file').setInputFiles({
+      name: 'cover.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+        'base64',
+      ),
+    });
+    await expect.poll(() => bodies.length).toBe(2);
+    expect(bodies[1].data).toContain('data:image/png;base64,');
+    await page.screenshot({ path: ART + '/46-workflow-cover-custom.png', fullPage: true });
+    await dlg.getByTestId('cm-close').click();
+    await expect(dlg).toHaveCount(0);
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('我的工作流：深色主题下封面管理框与悬浮提示可读', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('md-theme', 'dark'));
+    await mockLocalWorkflows(page);
+    await page.route((url: URL) => url.pathname === '/api/workflows/covers/refresh', (route: any) =>
+      route.fulfill({ json: { key: COVER_ITEM.key, cover: COVER_SVG, pinned: true, source: 'manual' } }));
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-kebab').click();
+    await page.getByRole('menuitem', { name: '管理封面' }).click();
+    const dlg = page.getByRole('dialog', { name: '封面管理' });
+    await expect(dlg).toBeVisible();
+    expect(await dlg.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(20, 20, 23)');
+
+    await dlg.getByTestId('cm-redeal').click();
+    const toast = page.getByTestId('wf-toast');
+    await expect(toast).toBeVisible();
+    expect(await toast.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(20, 20, 23)');
+    await page.screenshot({ path: ART + '/47-workflow-cover-dark.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 });

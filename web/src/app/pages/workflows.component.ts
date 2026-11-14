@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
@@ -14,6 +14,17 @@ import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
 
 const PAGE_SIZE = 12;
+
+/** 封面管理弹层的状态。单独抽出来，异步回调里能拿到一个稳定的引用。 */
+type CoverManager = {
+  item: LocalWorkflow;
+  key: string;
+  url: string;
+  customUrl: string;
+  failed: boolean;
+  busy: boolean;
+  error: string;
+};
 
 const SOURCES = [
   { key: 'all', label: '全部来源' },
@@ -66,14 +77,7 @@ const SORTS = [
     />
 
     @if (tab === 'mine') {
-      @if (localError) {
-        <div class="notice err">{{ localError }}</div>
-      }
-      <!-- 重命名 / 删除 / 整理这些动作的结果得说一声，否则用户不知道点没点成 -->
-      @if (notice) {
-        <div class="notice ok">{{ notice }}</div>
-      }
-
+      <!-- 动作结果走右下角悬浮 toast，不在页面里插一段会顶走列表的文字 -->
       @if (!localLoading && !local.length) {
         <ui-panel>
           <ui-empty
@@ -248,12 +252,6 @@ const SORTS = [
       @if (errorText) {
         <div class="notice err">{{ errorText }}</div>
       }
-      @if (notice) {
-        <div class="notice ok">
-          {{ notice }}
-          <a routerLink="/downloads">查看下载任务 →</a>
-        </div>
-      }
       @if (sourceErrors.length) {
         <div class="notice err">
           @for (e of sourceErrors; track e.label) {
@@ -413,13 +411,7 @@ const SORTS = [
         <button role="menuitem" (click)="copyPath(menuOf)">复制文件路径</button>
         <span class="wf-menu-sep"></span>
         <button role="menuitem" (click)="openRename(menuOf)">重命名 / 变更分组…</button>
-        <button role="menuitem" [disabled]="busyCover === (menuOf.key || menuOf.path)"
-                (click)="refreshCover(menuOf)">
-          {{ busyCover === (menuOf.key || menuOf.path) ? '换封面中…' : '换一张封面' }}
-        </button>
-        @if (isPinned(menuOf)) {
-          <button role="menuitem" (click)="resetCover(menuOf)">恢复自动封面</button>
-        }
+        <button role="menuitem" (click)="openCoverManager(menuOf)">管理封面…</button>
         @if (hasGroups) {
           <button role="menuitem" (click)="askOrganize()">按分组整理目录…</button>
         }
@@ -429,7 +421,7 @@ const SORTS = [
 
     <!-- 重命名与分组：只改显示名，原文件名默认保留（ComfyUI 也要读它） -->
     @if (editing) {
-      <div class="wf-modal-mask" (click)="editing = null"></div>
+      <div class="wf-modal-mask" (click)="closeEditor()"></div>
       <div #editBox class="wf-modal" role="dialog" aria-modal="true" aria-label="重命名与分组"
            tabindex="-1" (keydown.tab)="trapTab($event, editBox)">
         <h2>重命名 / 分组</h2>
@@ -440,25 +432,28 @@ const SORTS = [
         </label>
         <label class="wf-field">
           <span>分组</span>
-          <input [(ngModel)]="editing.group" maxlength="24" list="wf-group-names"
-                 placeholder="留空则取消分组" data-testid="lw-edit-group" />
+          <!-- 用真正的 select 而不是 datalist：原生 datalist 要点一下才弹、
+               输入过滤时会把已有组藏掉，管理框里改名后选项还常常是旧的。 -->
+          <div class="wf-group-row">
+            <select [(ngModel)]="editing.group" data-testid="lw-edit-group">
+              <option value="">未分组</option>
+              @for (g of groupNames; track g.name) {
+                <option [value]="g.name">{{ g.name }}（{{ g.count }}）</option>
+              }
+              @if (editing.group && !hasGroup(editing.group)) {
+                <option [value]="editing.group">{{ editing.group }}（已不存在）</option>
+              }
+            </select>
+            <button class="btn-xs" type="button" (click)="openGroupManager(true)"
+                    data-testid="lw-group-manager-link">分组管理</button>
+          </div>
         </label>
-        <!-- 已有分组名做候选：手打容易造出「人像」「人像 」这种看着一样的两组 -->
-        <datalist id="wf-group-names">
-          @for (g of groupNames; track g.name) {
-            <option [value]="g.name">{{ g.name }}</option>
-          }
-        </datalist>
-        <!-- 这里只负责「加一个新分组」，改名统一去分组管理里做 -->
-        <button class="wf-inline-add" type="button" (click)="newGroupFromEditor()" data-testid="lw-new-group">
-          + 新分组
-        </button>
         <label class="wf-check">
           <input type="checkbox" [(ngModel)]="editing.rename" />
           <span>同时重命名文件（ComfyUI 里也会变成新名字）</span>
         </label>
         <div class="wf-modal-ops">
-          <button class="btn-xs" (click)="editing = null">取消</button>
+          <button class="btn-xs" (click)="closeEditor()">取消</button>
           <button class="primary btn-xs" (click)="saveMeta()">保存</button>
         </div>
       </div>
@@ -499,8 +494,8 @@ const SORTS = [
 
     <!-- 分组管理：新建 / 改名 / 删除都在这里，变更分组的弹层不掺和改名 -->
     @if (groupMgr) {
-      <div class="wf-modal-mask" (click)="closeGroupManager()"></div>
-      <div #groupBox class="wf-modal wide" role="dialog" aria-modal="true" aria-label="分组管理"
+      <div class="wf-modal-mask stack" (click)="closeGroupManager()"></div>
+      <div #groupBox class="wf-modal wide stack" role="dialog" aria-modal="true" aria-label="分组管理"
            tabindex="-1" (keydown.tab)="trapTab($event, groupBox)" data-testid="lw-group-manager">
         <h2>分组管理</h2>
         <p class="wf-modal-sub wrap">
@@ -542,6 +537,82 @@ const SORTS = [
         <div class="wf-modal-ops">
           <button class="btn-xs" (click)="closeGroupManager()" data-testid="gm-close">关闭</button>
         </div>
+      </div>
+    }
+
+    <!-- 封面管理：抽一张 / 自定义 / 恢复自动都在一个地方，⋯ 菜单只留一个入口 -->
+    @if (coverMgr) {
+      <div class="wf-modal-mask stack" (click)="closeCoverManager()"></div>
+      <div #coverBox class="wf-modal wide stack cm" role="dialog" aria-modal="true" aria-label="封面管理"
+           tabindex="-1" (keydown.tab)="trapTab($event, coverBox)" data-testid="lw-cover-manager">
+        <h2>封面管理</h2>
+        <p class="wf-modal-sub mono" [title]="coverMgr.item.path">{{ coverMgr.item.title || coverMgr.item.name }}</p>
+
+        <div class="cm-preview" data-testid="cm-preview">
+          @if (coverMgr.url && !coverMgr.failed) {
+            <img [src]="coverMgr.url" alt="当前封面预览" referrerpolicy="no-referrer"
+                 (error)="coverMgr.failed = true" />
+          } @else {
+            <div class="cm-preview-empty">
+              <ui-family-mark [model]="coverMgr.item.main_model || ''" />
+              <span>{{ coverMgr.failed ? '这张图加载不出来，换一张或自己指定' : '暂无封面，显示家族铭牌' }}</span>
+            </div>
+          }
+        </div>
+        <p class="cm-source">当前：<b>{{ coverSource(coverMgr.key) }}</b></p>
+
+        <div class="cm-actions">
+          <button class="primary btn-xs" (click)="redealFromManager()" [disabled]="coverMgr.busy"
+                  data-testid="cm-redeal">{{ coverMgr.busy ? '正在换…' : '换一张' }}</button>
+          @if (isPinnedKey(coverMgr.key)) {
+            <button class="btn-xs" (click)="resetFromManager()" [disabled]="coverMgr.busy"
+                    data-testid="cm-reset">恢复自动封面</button>
+          }
+        </div>
+
+        <div class="cm-custom">
+          <p class="cm-label">自定义封面</p>
+          <div class="cm-url-row">
+            <input [(ngModel)]="coverMgr.customUrl" placeholder="粘贴图片地址 https://…"
+                   data-testid="cm-url" (keydown.enter)="applyCustomUrl()" />
+            <button class="btn-xs" (click)="applyCustomUrl()" [disabled]="coverMgr.busy"
+                    data-testid="cm-url-apply">使用</button>
+          </div>
+          <label class="cm-file">
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+                   (change)="onCoverFile($event)" data-testid="cm-file" />
+            <span>或上传本地图片（png / jpg / webp / gif，≤ 8MB）</span>
+          </label>
+        </div>
+
+        <details class="cm-rules">
+          <summary>封面的选取规则</summary>
+          <ul>
+            <li>优先级：自定义 / 手动换的图 → 工作流自带出图 → 同名社区工作流样图 → 底模样图池 → 家族铭牌。</li>
+            <li>「换一张」清掉这条的自动结果与旧钉图、避开当前这张重新抽；结果钉住，7 天内不再自动变。</li>
+            <li>同名社区图要和工作流名有至少两个词重合才采用，宁可没封面也不贴错图；同底模的多条工作流会分到不同样图。</li>
+            <li>自定义可填 http(s) 地址或上传本地文件（内容寻址存到本机 wf-covers/），同样钉住；改名 / 整理目录会跟着迁移。</li>
+            <li>「恢复自动封面」取消钉图并清掉手动结果，下一次刷新回到自带出图 / 自动匹配。</li>
+          </ul>
+        </details>
+
+        @if (coverMgr.error) { <p class="cm-error">{{ coverMgr.error }}</p> }
+        <div class="wf-modal-ops">
+          <button class="btn-xs" (click)="closeCoverManager()" data-testid="cm-close">关闭</button>
+        </div>
+      </div>
+    }
+
+    <!-- 动作反馈：悬浮、可关闭、自动消失，不在页面流里插一段会顶走列表的文字 -->
+    @if (toast) {
+      <div class="wf-toast" [class.err]="toast.tone === 'err'" role="status" data-testid="wf-toast">
+        <span class="wf-toast-dot"></span>
+        <span class="wf-toast-text">{{ toast.text }}</span>
+        @if (tab === 'discover') {
+          <a routerLink="/downloads">查看任务 →</a>
+        }
+        <button type="button" class="wf-toast-close" aria-label="关闭提示" title="关闭提示"
+                data-testid="wf-toast-close" (click)="dismissToast()">×</button>
       </div>
     }
   `,
@@ -884,17 +955,6 @@ const SORTS = [
 
     /* ---- 分组管理 / 变更分组里的轻量动作 ---- */
     .wf-modal.wide { width: 480px; }
-    .wf-inline-add {
-      margin: -2px 0 12px;
-      padding: 0;
-      border: 0;
-      background: none;
-      color: var(--primary);
-      font: inherit;
-      font-size: 11.5px;
-      cursor: pointer;
-    }
-    .wf-inline-add:hover { text-decoration: underline; }
     .gm-add { display: flex; gap: 8px; margin-bottom: 10px; }
     .gm-add input,
     .gm-rename {
@@ -938,6 +998,141 @@ const SORTS = [
     .gm-row .btn-xs.danger { color: var(--err); }
     .gm-empty, .gm-error { margin: 6px 0; font-size: 11.5px; color: var(--muted); }
     .gm-error { color: var(--err); }
+
+    /* 从「变更分组」里叠开分组管理时，两层弹层都在：上面那层要完整盖住下面 */
+    .wf-modal-mask.stack { z-index: 48; }
+    .wf-modal.stack { z-index: 49; }
+
+    /* 分组下拉用真 select，旁边给一个去管理框的入口 */
+    .wf-group-row { display: flex; align-items: center; gap: 8px; }
+    .wf-group-row select {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 8px;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .wf-group-row .btn-xs { flex: none; }
+
+    /* ---- 封面管理 ---- */
+    .wf-modal.cm { width: 520px; }
+    .cm-preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      max-height: 260px;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+    }
+    .cm-preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px var(--border);
+      pointer-events: none;
+    }
+    .cm-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .cm-preview-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 100%;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+    .cm-source { margin: 8px 0 10px; font-size: 11.5px; color: var(--muted); }
+    .cm-source b { font-weight: 500; color: var(--text); }
+    .cm-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+    .cm-custom { padding-top: 12px; border-top: 1px solid var(--border); }
+    .cm-label { margin: 0 0 8px; font-size: 11.5px; color: var(--muted); }
+    .cm-url-row { display: flex; gap: 8px; }
+    .cm-url-row input {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--border-control);
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .cm-url-row .btn-xs { flex: none; }
+    .cm-file {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 9px;
+      font-size: 11.5px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .cm-file input { width: auto; max-width: 190px; font-size: 11px; }
+    .cm-rules { margin: 12px 0 4px; font-size: 11.5px; color: var(--muted); }
+    .cm-rules summary { cursor: pointer; color: var(--text-2); }
+    .cm-rules ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.75; }
+    .cm-error { margin: 8px 0 0; font-size: 11.5px; color: var(--err); }
+
+    /* ---- 悬浮提示：不占文档流，点 × 或等几秒自己走 ---- */
+    .wf-toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: min(420px, calc(100vw - 44px));
+      padding: 10px 10px 10px 14px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 12px;
+      box-shadow: 0 18px 48px -24px rgb(0 0 0 / 0.55);
+      animation: wf-toast-in 180ms ease-out;
+    }
+    .wf-toast::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px var(--border);
+      pointer-events: none;
+    }
+    .wf-toast-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+    .wf-toast.err .wf-toast-dot { background: var(--err); }
+    .wf-toast-text { flex: 1; min-width: 0; line-height: 1.5; }
+    .wf-toast a { flex: none; color: var(--primary); font-size: 11.5px; text-decoration: none; }
+    .wf-toast a:hover { text-decoration: underline; }
+    .wf-toast-close {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-xs);
+      background: transparent;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .wf-toast-close:hover { background: var(--panel-3); color: var(--text); }
+    /* 只做位移、不做淡入：淡入会让刚出现的一瞬截图/实际观感都发灰 */
+    @keyframes wf-toast-in {
+      from { transform: translateY(8px); }
+      to { transform: none; }
+    }
 
     .lw-bar {
       display: flex;
@@ -1225,7 +1420,7 @@ const SORTS = [
     }
   `,
 })
-export class WorkflowsComponent implements OnInit {
+export class WorkflowsComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -1269,22 +1464,28 @@ export class WorkflowsComponent implements OnInit {
     renameDraft: string;
     pendingDelete: string | null;
     error: string;
+    /** 从「变更分组」打开时，关闭后要回到编辑框并刷新下拉 */
+    fromEditor: boolean;
+    dirty: boolean;
   } | null = null;
   /** 显式创建的分组（可能是空组，条目里汇总不出来） */
   definedGroups: string[] = [];
-  /** 手动钉过封面的工作流键 —— 菜单里才显示「恢复自动封面」 */
+  /** 手动钉过封面的工作流键 —— 封面管理框里才显示「恢复自动封面」 */
   pinnedKeys: string[] = [];
-  busyCover = '';
+  /** 其中来源是「用户自定义」的那些 */
+  customKeys: string[] = [];
+  /** 封面管理弹层：预览 / 换一张 / 自定义 / 恢复自动 */
+  coverMgr: CoverManager | null = null;
 
   /* 弹层焦点管理：打开时焦点进入弹层，Tab 在弹层内环绕，Esc 逐层退出 */
   @ViewChild('drawerBox') drawerBox?: ElementRef<HTMLElement>;
   @ViewChild('editBox') editBox?: ElementRef<HTMLElement>;
   @ViewChild('delBox') delBox?: ElementRef<HTMLElement>;
   @ViewChild('groupBox') groupBox?: ElementRef<HTMLElement>;
+  @ViewChild('coverBox') coverBox?: ElementRef<HTMLElement>;
   readonly trapTab = trapTab;
   localDir = '';
   localLoading = false;
-  localError = '';
   q = '';
   source = 'all';
   sort = 'downloads';
@@ -1293,11 +1494,46 @@ export class WorkflowsComponent implements OnInit {
   done = true;
   page = 1;
   busy = '';
-  notice = '';
   errorText = '';
   sourceErrors: { label: string; message: string }[] = [];
+
+  /* 动作反馈：悬浮 toast。业务代码照旧写 this.notice / this.localError，
+     由 setter 转成一条可关闭的提示，不再在页面流里插文字。 */
+  toast: { text: string; tone: 'ok' | 'err' } | null = null;
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
+  private _notice = '';
+  private _localError = '';
+  get notice(): string { return this._notice; }
+  set notice(text: string) {
+    this._notice = text;
+    if (text) this.showToast(text, 'ok');
+  }
+  get localError(): string { return this._localError; }
+  set localError(text: string) {
+    this._localError = text;
+    if (text) this.showToast(text, 'err');
+  }
+
+  private showToast(text: string, tone: 'ok' | 'err'): void {
+    this.toast = { text, tone };
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => (this.toast = null), tone === 'ok' ? 4500 : 8000);
+  }
+
+  dismissToast(): void {
+    this.toast = null;
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+      this.toastTimer = null;
+    }
+  }
+
   /** 检索请求序号：切源/搜索/翻页时旧请求可能后到，不能让它覆盖当前结果 */
   private reqSeq = 0;
+
+  ngOnDestroy(): void {
+    this.dismissToast();
+  }
 
   ngOnInit(): void {
     this.restorePrefs();
@@ -1697,14 +1933,45 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
-  openGroupManager(): void {
-    this.closeMenu();
-    this.groupMgr = { draft: '', renaming: null, renameDraft: '', pendingDelete: null, error: '' };
+  /** select 里若还挂着一个已经被删掉的组名，补一个占位选项免得值凭空消失 */
+  hasGroup(name: string): boolean {
+    return this.groupNames.some((g) => g.name === name);
+  }
+
+  openGroupManager(fromEditor = false): void {
+    if (!fromEditor) this.closeMenu();
+    this.groupMgr = {
+      draft: '', renaming: null, renameDraft: '', pendingDelete: null, error: '',
+      fromEditor, dirty: false,
+    };
     setTimeout(() => focusFirst(this.groupBox?.nativeElement));
   }
 
   closeGroupManager(): void {
+    const mgr = this.groupMgr;
+    if (!mgr) return;
     this.groupMgr = null;
+    if (!mgr.fromEditor) return;
+    // 从「变更分组」叠开来的：关闭后回到原来那条工作流的编辑框，
+    // 下拉候选（新建/改名/删除过的组）与选中值都必须是新的。
+    this.loadLocal(() => this.syncEditorGroup());
+    setTimeout(() => focusFirst(this.editBox?.nativeElement));
+  }
+
+  private syncEditorGroup(): void {
+    const ed = this.editing;
+    if (!ed) return;
+    const key = ed.item.key || ed.item.path;
+    const fresh = this.local.find((x) => (x.key || x.path) === key || x.path === ed.item.path);
+    if (fresh) ed.item = fresh;
+    // 组被删了、或组名已经不在清单里，就回落到这条工作流当前的真实分组
+    if (ed.group && !this.hasGroup(ed.group)) ed.group = fresh ? this.groupOf(fresh) : '';
+  }
+
+  /** 上面还叠着管理框时，点编辑框的遮罩不该把编辑框一起关掉 */
+  closeEditor(): void {
+    if (this.groupMgr || this.coverMgr) return;
+    this.editing = null;
   }
 
   createGroupFromManager(): void {
@@ -1720,27 +1987,10 @@ export class WorkflowsComponent implements OnInit {
         this.definedGroups = res.defined || [];
         mgr.draft = '';
         mgr.error = '';
+        mgr.dirty = true;
         this.notice = `已新建分组「${name}」`;
       },
       error: (err) => (mgr.error = errMsg(err, '新建分组失败')),
-    });
-  }
-
-  /** 变更分组的弹层里只能「加新组」，改名统一在分组管理里做。 */
-  newGroupFromEditor(): void {
-    const ed = this.editing;
-    if (!ed) return;
-    const name = ed.group.trim();
-    if (!name) {
-      this.notice = '先在分组框里写个名字，再点「+ 新分组」';
-      return;
-    }
-    this.api.createWorkflowGroup(name).subscribe({
-      next: (res) => {
-        this.definedGroups = res.defined || [];
-        this.notice = `已新建分组「${name}」`;
-      },
-      error: (err) => (this.localError = errMsg(err, '新建分组失败')),
     });
   }
 
@@ -1765,8 +2015,16 @@ export class WorkflowsComponent implements OnInit {
       next: () => {
         mgr.renaming = null;
         mgr.error = '';
+        mgr.dirty = true;
         this.definedGroups = this.definedGroups.map((n) => (n === old ? name : n));
         if (this.groupFilter === old) this.groupFilter = name;
+        // 编辑框可能就开着、且选中的正是这个组：别让它关掉管理框后还挂着旧名字
+        if (this.editing) {
+          if (this.editing.group === old) this.editing.group = name;
+          if ((this.editing.item.group || '') === old) {
+            this.editing.item = { ...this.editing.item, group: name };
+          }
+        }
         this.savePrefs();
         this.notice = `分组「${old}」已改名为「${name}」`;
         this.loadLocal();
@@ -1790,8 +2048,10 @@ export class WorkflowsComponent implements OnInit {
       next: () => {
         mgr.pendingDelete = null;
         mgr.error = '';
+        mgr.dirty = true;
         this.definedGroups = this.definedGroups.filter((n) => n !== name);
         if (this.groupFilter === name) this.groupFilter = null;
+        if (this.editing && this.editing.group === name) this.editing.group = '';
         this.savePrefs();
         this.notice = `已删除分组「${name}」，工作流保留`;
         this.loadLocal();
@@ -1800,68 +2060,187 @@ export class WorkflowsComponent implements OnInit {
     });
   }
 
-  /* ================= 手动换封面 ================= */
+  /* ================= 封面管理 ================= */
 
-  isPinned(it: LocalWorkflow): boolean {
-    return this.pinnedKeys.includes(it.key || it.path);
+  isPinnedKey(key: string): boolean {
+    return this.pinnedKeys.includes(key);
   }
 
-  refreshCover(it: LocalWorkflow): void {
+  /** 封面管理框里说明「这张图是哪来的」，别让用户猜为什么改不动 */
+  coverSource(key: string): string {
+    if (this.customKeys.includes(key)) return '自定义图片（已钉住）';
+    if (this.isPinnedKey(key)) return '手动换的图（已钉住）';
+    const url = this.coverMgr?.url || '';
+    if (url.startsWith('/api/workflows/local/cover')) return '工作流自带出图';
+    return url ? '自动匹配（社区 / 底模样图）' : '无封面，显示家族铭牌';
+  }
+
+  openCoverManager(it: LocalWorkflow): void {
     this.closeMenu();
-    const key = it.key || it.path;
-    this.busyCover = key;
+    this.coverMgr = {
+      item: it,
+      key: it.key || it.path,
+      url: it.cover || '',
+      customUrl: '',
+      failed: false,
+      busy: false,
+      error: '',
+    };
+    setTimeout(() => focusFirst(this.coverBox?.nativeElement));
+  }
+
+  closeCoverManager(): void {
+    this.coverMgr = null;
+  }
+
+  /** 抽到 / 自定义成功之后，列表、卡片、弹层预览三处一起换，别只改一处 */
+  private applyCover(key: string, url: string, source: 'manual' | 'custom'): void {
+    if (!this.pinnedKeys.includes(key)) this.pinnedKeys = [...this.pinnedKeys, key];
+    this.customKeys =
+      source === 'custom'
+        ? this.customKeys.includes(key) ? this.customKeys : [...this.customKeys, key]
+        : this.customKeys.filter((k) => k !== key);
+    this.local = this.local.map((x) =>
+      (x.key || x.path) === key ? { ...x, cover: url } : x,
+    );
+    const mgr = this.coverMgr;
+    if (mgr) {
+      mgr.url = url;
+      mgr.failed = false;
+      mgr.busy = false;
+      mgr.error = '';
+      mgr.item = { ...mgr.item, cover: url };
+    }
+  }
+
+  redealFromManager(): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy) return;
+    mgr.busy = true;
+    mgr.error = '';
     this.api
       .refreshWorkflowCover({
-        key,
-        name: it.title || it.name,
-        model: it.main_model || '',
-        current: it.cover || '',
+        key: mgr.key,
+        name: mgr.item.title || mgr.item.name,
+        model: mgr.item.main_model || '',
+        current: mgr.url,
       })
       .subscribe({
         next: (res) => {
-          this.busyCover = '';
+          if (this.coverMgr !== mgr) return;
+          mgr.busy = false;
           if (!res.cover) {
-            this.notice = '没找到别的可用封面，先保留原图';
+            mgr.error = '没找到别的可用封面，先保留原图';
             return;
           }
-          if (!this.pinnedKeys.includes(key)) this.pinnedKeys = [...this.pinnedKeys, key];
-          this.local = this.local.map((x) =>
-            (x.key || x.path) === key ? { ...x, cover: res.cover } : x,
-          );
-          this.notice = '已换一张封面；这条会被钉住，可在 ⋯ 里恢复自动';
+          this.applyCover(mgr.key, res.cover, 'manual');
+          this.notice = '已换一张封面，这条会被钉住';
         },
         error: (err) => {
-          this.busyCover = '';
-          this.localError = errMsg(err, '换封面失败');
+          if (this.coverMgr !== mgr) return;
+          mgr.busy = false;
+          mgr.error = errMsg(err, '换封面失败');
         },
       });
   }
 
-  resetCover(it: LocalWorkflow): void {
-    this.closeMenu();
-    const key = it.key || it.path;
-    this.api.resetWorkflowCover(key).subscribe({
-      next: () => {
-        this.pinnedKeys = this.pinnedKeys.filter((k) => k !== key);
-        this.notice = '已恢复自动封面';
-        this.loadLocal();
+  applyCustomUrl(): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy) return;
+    const url = mgr.customUrl.trim();
+    if (!url) {
+      mgr.error = '先粘贴一张图片的地址';
+      return;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+      mgr.error = '图片地址要以 http:// 或 https:// 开头';
+      return;
+    }
+    this.saveCustomCover({ key: mgr.key, url }, mgr);
+  }
+
+  onCoverFile(event: Event): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy) return;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      mgr.error = '图片超过 8MB，请压缩后再传';
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (this.coverMgr !== mgr) return;
+      this.saveCustomCover({ key: mgr.key, data: String(reader.result || '') }, mgr);
+    };
+    reader.onerror = () => {
+      if (this.coverMgr !== mgr) return;
+      mgr.error = '读文件失败，请换一张试试';
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  private saveCustomCover(
+    body: { key: string; url?: string; data?: string },
+    mgr: CoverManager,
+  ): void {
+    mgr.busy = true;
+    mgr.error = '';
+    this.api.customWorkflowCover(body).subscribe({
+      next: (res) => {
+        if (this.coverMgr !== mgr) return;
+        this.applyCover(mgr.key, res.cover, 'custom');
+        mgr.customUrl = '';
+        this.notice = '已设为自定义封面';
       },
-      error: (err) => (this.localError = errMsg(err, '恢复自动封面失败')),
+      error: (err) => {
+        if (this.coverMgr !== mgr) return;
+        mgr.busy = false;
+        mgr.error = errMsg(err, '设置自定义封面失败');
+      },
     });
   }
 
-  /** Esc 逐层退出：菜单 → 编辑 → 分组管理 → 删除 → 整理 → 抽屉 */
+  resetFromManager(): void {
+    const mgr = this.coverMgr;
+    if (!mgr || mgr.busy) return;
+    mgr.busy = true;
+    mgr.error = '';
+    this.api.resetWorkflowCover(mgr.key).subscribe({
+      next: () => {
+        this.pinnedKeys = this.pinnedKeys.filter((k) => k !== mgr.key);
+        this.customKeys = this.customKeys.filter((k) => k !== mgr.key);
+        this.coverMgr = null;
+        this.notice = '已恢复自动封面';
+        this.loadLocal();
+      },
+      error: (err) => {
+        if (this.coverMgr !== mgr) return;
+        mgr.busy = false;
+        mgr.error = errMsg(err, '恢复自动封面失败');
+      },
+    });
+  }
+
+  /** Esc 逐层退出：菜单 → 封面管理 / 分组管理 → 编辑 → 删除 → 整理 → 抽屉 */
   onEsc(): void {
     if (this.menuOf) {
       this.closeMenu();
       return;
     }
-    if (this.editing) {
-      this.editing = null;
+    if (this.coverMgr) {
+      this.closeCoverManager();
       return;
     }
     if (this.groupMgr) {
-      this.groupMgr = null;
+      this.closeGroupManager();
+      return;
+    }
+    if (this.editing) {
+      this.editing = null;
       return;
     }
     if (this.pendingDelete) {
@@ -1975,7 +2354,7 @@ export class WorkflowsComponent implements OnInit {
 
   /* ================= 数据加载 ================= */
 
-  loadLocal(): void {
+  loadLocal(after?: () => void): void {
     this.localLoading = true;
     this.localError = '';
     this.api.localWorkflows().subscribe({
@@ -1986,6 +2365,7 @@ export class WorkflowsComponent implements OnInit {
         this.reconcileGroup();
         this.loadGroups();
         this.loadCovers();
+        after?.();
       },
       error: (err) => {
         this.localLoading = false;
@@ -2015,6 +2395,7 @@ export class WorkflowsComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.pinnedKeys = res.pinned || [];
+          this.customKeys = res.custom || [];
           if (!Object.keys(res.covers || {}).length) return;
           this.local = this.local.map((it) => {
             const url = res.covers[it.key || it.path];

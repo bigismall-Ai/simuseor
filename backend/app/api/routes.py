@@ -106,6 +106,14 @@ class WorkflowCoverRefreshRequest(BaseModel):
     current: str = ""
 
 
+class WorkflowCoverCustomRequest(BaseModel):
+    """自定义封面：url 是外链，data 是浏览器读出的 base64 data URI（二选一）。"""
+
+    key: str
+    url: str = ""
+    data: str = ""
+
+
 class WorkflowCoverResetRequest(BaseModel):
     key: str
 
@@ -223,6 +231,7 @@ def workflow_covers(body: WorkflowCoversRequest) -> dict:
     return {
         "covers": wf_covers.resolve_batch([item.model_dump() for item in body.items]),
         "pinned": wf_covers.pinned_keys(),
+        "custom": wf_covers.custom_keys(),
     }
 
 
@@ -295,13 +304,23 @@ def refresh_workflow_cover(body: WorkflowCoverRefreshRequest) -> dict:
     url = wf_covers.redeal(
         {"key": body.key, "name": body.name, "model": body.model}, body.current
     )
-    return {"key": body.key, "cover": url, "pinned": bool(url)}
+    return {"key": body.key, "cover": url, "pinned": bool(url), "source": "manual" if url else ""}
+
+
+@router.post("/workflows/covers/custom")
+def set_custom_workflow_cover(body: WorkflowCoverCustomRequest) -> dict:
+    """用户自己指定封面：外链 URL 或上传的本地图片，结果钉在这条工作流上。"""
+    try:
+        cover = wf_covers.set_custom(body.key, body.url, body.data)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"key": body.key, "cover": cover, "pinned": True, "source": "custom"}
 
 
 @router.post("/workflows/covers/reset")
 def reset_workflow_cover(body: WorkflowCoverResetRequest) -> dict:
-    """恢复自动封面：取消钉图，下次列表刷新回到本地出图/常规抽牌。"""
-    wf_covers.unpin(body.key)
+    """恢复自动封面：取消钉图并清掉手动结果，下次刷新回到本地出图/常规抽牌。"""
+    wf_covers.restore_auto(body.key)
     return {"key": body.key, "pinned": False}
 
 

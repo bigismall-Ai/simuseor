@@ -25,6 +25,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 
@@ -44,6 +45,20 @@ COVER_RATIO = 16 / 10
 # 裁到卡面上只剩碎片，宁可不要 —— 它们恰恰最容易被比例打分排到前面。
 MAX_ASPECT = 2.2
 MATURE_PENALTY = 1.2
+# 用户自己传的图：8MB 足够一张封面，太大只会拖慢列表
+MAX_CUSTOM_BYTES = 8 * 1024 * 1024
+_CUSTOM_MIME = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
+_CUSTOM_MAGIC = {
+    ".png": lambda b: b.startswith(b"\x89PNG\r\n\x1a\n"),
+    ".jpg": lambda b: b.startswith(b"\xff\xd8\xff"),
+    ".webp": lambda b: b.startswith(b"RIFF") and b[8:12] == b"WEBP",
+    ".gif": lambda b: b.startswith((b"GIF87a", b"GIF89a")),
+}
 
 # 工作流名字里的通用词：不参与匹配，也不该拿去当搜索词
 _STOP = {
@@ -111,15 +126,32 @@ def _remember(key: str, url: str, origin: str = "") -> str:
     return url
 
 
-def pin(key: str, url: str) -> None:
-    """手动挑的封面钉在这个键上，优先级高于本地出图与自动抽牌。"""
+def pin(key: str, url: str, source: str = "manual") -> None:
+    """手动挑的封面钉在这个键上，优先级高于本地出图与自动抽牌。
+
+    `source` 区分「换一张自动抽的」与「用户自己给的自定义图」，界面要分开说明。
+    """
     if not key or not url:
         return
     global _dirty
     with _lock:
-        _load()["pinned"][key] = {"url": url, "ts": time.time()}
+        _load()["pinned"][key] = {"url": url, "ts": time.time(), "source": source}
         _dirty = True
     _flush()
+
+
+def pin_source(key: str) -> str:
+    """这条封面是怎么来的：custom / manual / 空（没有钉图）。"""
+    with _lock:
+        entry = _load()["pinned"].get(key)
+    if not isinstance(entry, dict):
+        return ""
+    return str(entry.get("source") or "manual")
+
+
+def custom_keys() -> list[str]:
+    with _lock:
+        return [k for k, v in _load()["pinned"].items() if isinstance(v, dict) and v.get("source") == "custom"]
 
 
 def unpin(key: str) -> bool:
@@ -130,6 +162,15 @@ def unpin(key: str) -> bool:
         _dirty = True
     _flush()
     return True
+
+
+def restore_auto(key: str) -> bool:
+    """恢复自动封面：钉图和「换一张」写进自动缓存的结果一起清掉。
+
+    只 unpin 的话，seen 里还留着用户刚换掉的那张，刷新后又会回来 ——
+    看起来就像「恢复自动」没生效。
+    """
+    return forget(key)
 
 
 def pinned(key: str) -> str:
@@ -220,6 +261,59 @@ def _data_uri_blob(payload: str) -> str:
         return _served(target)
     except (ValueError, OSError):
         return ""
+
+
+def _custom_blob(data_uri: str) -> str:
+    """上传的图片存成内容寻址的本地文件，返回一个后端 serve 的 URL。
+
+    只认 base64 data URI，且按魔数而不是扩展名验图片 —— 用户改个后缀
+    就把 HTML 塞进封面目录这种事不能发生。
+    """
+    head, _, body = data_uri.strip().partition(",")
+    if not head.startswith("data:image/") or ";base64" not in head or not body:
+        raise ValueError("图片格式不对，请重新选一张 png / jpg / webp / gif")
+    mime = head[len("data:"):].split(";", 1)[0].strip().lower()
+    ext = _CUSTOM_MIME.get(mime)
+    if not ext:
+        raise ValueError("只支持 png / jpg / webp / gif 图片")
+    try:
+        raw = base64.b64decode(body, validate=False)
+    except ValueError as exc:
+        raise ValueError("图片内容不是合法的 base64") from exc
+    if len(raw) < 128:
+        raise ValueError("图片太小了，不像一张封面")
+    if len(raw) > MAX_CUSTOM_BYTES:
+        raise ValueError("图片超过 8MB，请压缩后再传")
+    if not _CUSTOM_MAGIC[ext](raw):
+        raise ValueError("图片内容和格式对不上")
+    BLOB_DIR.mkdir(parents=True, exist_ok=True)
+    target = BLOB_DIR / f"custom-{hashlib.sha256(raw).hexdigest()[:20]}{ext}"
+    if not target.is_file():
+        target.write_bytes(raw)
+    return _served(target)
+
+
+def _custom_url(url: str) -> str:
+    """外链图片只放行 http(s)，堵掉 javascript: / file: / 带账号密码的地址。"""
+    text = url.strip()
+    if len(text) > 2048:
+        raise ValueError("图片地址太长了")
+    parsed = urlparse(text)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        raise ValueError("图片地址要以 http:// 或 https:// 开头")
+    if parsed.username or parsed.password:
+        raise ValueError("图片地址里不能带账号密码")
+    return text
+
+
+def set_custom(key: str, url: str = "", data: str = "") -> str:
+    """用户自己指定封面：钉住，来源标成 custom（区别于自动换的一张）。"""
+    key = (key or "").strip()
+    if not key:
+        raise ValueError("缺少工作流标识")
+    final = _custom_blob(data) if (data or "").strip() else _custom_url(url or "")
+    pin(key, final, source="custom")
+    return final
 
 
 def _sibling_image(folder: Path, stem: str) -> Path | None:

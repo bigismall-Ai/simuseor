@@ -345,3 +345,80 @@ def test_rename_key_moves_pin():
     assert wc.rename_key("old/a.json", "new/a.json") is True
     assert wc.pinned("new/a.json") == "https://x/one.jpg"
     assert wc.pinned("old/a.json") == ""
+
+
+# ---------------- 自定义封面 ----------------
+
+_PNG = b"\x89PNG\r\n\x1a\n" + b"x" * 240
+
+
+def _data_uri(mime: str, raw: bytes) -> str:
+    return f"data:{mime};base64," + base64.b64encode(raw).decode("ascii")
+
+
+def test_custom_url_is_pinned_as_custom():
+    url = wc.set_custom("a.json", url="https://img.example/cover.png")
+
+    assert url == "https://img.example/cover.png"
+    assert wc.pinned("a.json") == url
+    assert wc.pin_source("a.json") == "custom"
+    assert wc.custom_keys() == ["a.json"]
+    # 自定义图连工作流自带的出图也盖得过
+    assert wc.resolve_batch([{**_ENTRY, "has_local": True}]) == {"a.json": url}
+
+
+def test_custom_upload_is_saved_and_served_locally(tmp_path):
+    cover = wc.set_custom("nested/a.json", data=_data_uri("image/png", _PNG))
+
+    assert cover.startswith("/api/workflows/local/cover?path=")
+    path = pathlib.Path(cover.split("path=", 1)[1])
+    assert path.is_file()
+    assert path.parent == wc.BLOB_DIR
+    assert path.read_bytes() == _PNG
+    assert wc.serve_file(str(path)) == path
+    assert wc.pin_source("nested/a.json") == "custom"
+
+
+def test_custom_rejects_unsafe_inputs(monkeypatch):
+    bad = [
+        {"url": "javascript:alert(1)"},
+        {"url": "file:///C:/secret.png"},
+        {"url": "https://user:pw@img.example/a.png"},
+        {"data": _data_uri("text/html", b"<script>x</script>" * 20)},
+        {"data": _data_uri("image/png", b"not a png" * 40)},
+        {"data": _data_uri("image/png", b"\x89PNG\r\n\x1a\n" + b"x" * 10)},
+    ]
+    for kwargs in bad:
+        with pytest.raises(ValueError):
+            wc.set_custom("a.json", **kwargs)
+
+    with pytest.raises(ValueError):
+        wc.set_custom("", url="https://img.example/a.png")
+
+    monkeypatch.setattr(wc, "MAX_CUSTOM_BYTES", 100)
+    with pytest.raises(ValueError):
+        wc.set_custom("a.json", data=_data_uri("image/png", _PNG))
+    assert wc.pinned_keys() == []
+
+
+def test_restore_auto_clears_manual_result(monkeypatch):
+    _four_images(monkeypatch)
+    first = wc.redeal(_ENTRY)
+    assert first
+
+    assert wc.restore_auto("a.json") is True
+    assert wc.pinned("a.json") == ""
+    assert wc.pin_source("a.json") == ""
+    assert wc.custom_keys() == []
+    # 只 unpin 的话 seen 里那张手动图会当成「自动命中」立刻回来
+    assert wc._cached_url("a.json") is None
+    auto = wc.resolve_batch([_ENTRY])
+    assert "a.json" in auto
+    assert wc.pinned("a.json") == ""  # 重新抽出来的图没有钉住
+
+
+def test_rename_key_keeps_custom_source():
+    wc.set_custom("old/a.json", url="https://img.example/cover.png")
+    assert wc.rename_key("old/a.json", "new/a.json") is True
+    assert wc.pin_source("new/a.json") == "custom"
+    assert wc.custom_keys() == ["new/a.json"]

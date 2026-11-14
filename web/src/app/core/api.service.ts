@@ -122,8 +122,8 @@ export class ApiService {
   /** 批量取远程封面。本地自带出图的条目也传（用 has_local 标出），后端只在钉过图时才覆盖。 */
   workflowCovers(
     items: Array<{ key: string; name: string; model: string; has_local?: boolean }>,
-  ): Observable<{ covers: Record<string, string>; pinned?: string[] }> {
-    return this.http.post<{ covers: Record<string, string>; pinned?: string[] }>(
+  ): Observable<{ covers: Record<string, string>; pinned?: string[]; custom?: string[] }> {
+    return this.http.post<{ covers: Record<string, string>; pinned?: string[]; custom?: string[] }>(
       `${this.base}/workflows/covers`,
       { items },
     );
@@ -138,6 +138,18 @@ export class ApiService {
   }): Observable<{ key: string; cover: string; pinned: boolean }> {
     return this.http.post<{ key: string; cover: string; pinned: boolean }>(
       `${this.base}/workflows/covers/refresh`,
+      body,
+    );
+  }
+
+  /** 自定义封面：外链 URL 或浏览器读出的 base64 data URI，二选一。 */
+  customWorkflowCover(body: {
+    key: string;
+    url?: string;
+    data?: string;
+  }): Observable<{ key: string; cover: string; pinned: boolean; source: string }> {
+    return this.http.post<{ key: string; cover: string; pinned: boolean; source: string }>(
+      `${this.base}/workflows/covers/custom`,
       body,
     );
   }
