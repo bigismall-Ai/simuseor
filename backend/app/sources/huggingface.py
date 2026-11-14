@@ -3,14 +3,34 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 from urllib.parse import quote
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 OFFICIAL = "https://huggingface.co"
+
+
+def _json(resp: httpx.Response, what: str) -> Any:
+    """取 JSON，失败时把「哪一步、什么状态码、重定向到哪」说清楚。
+
+    踩过的坑：hf-mirror.com 在非大陆出口会把 `/api/*` 与 `/{repo}/resolve/*` 一律
+    308 跳回官方站，响应体是空的。`resp.json()` 直接抛 JSONDecodeError，一路冒到 500，
+    前端只能给出「搜索失败，请检查网络」—— 看起来像网络问题，实际是镜像没在代理。
+    """
+    try:
+        return resp.json()
+    except ValueError as exc:
+        location = resp.headers.get("location") or ""
+        detail = f"HTTP {resp.status_code}" + (f" → {location}" if location else "")
+        raise SourceError(
+            f"Hugging Face {what}返回的不是 JSON（{detail}）—— "
+            "镜像站可能没有代理这个接口（或当前出口让它跳回官方），"
+            "可在设置里关掉「使用镜像」后重试"
+        ) from exc
 
 
 class HuggingFaceAdapter(SourceAdapter):
@@ -28,9 +48,13 @@ class HuggingFaceAdapter(SourceAdapter):
         cfg = cfg or {}
         revision = revision or "main"
         api_base = cfg.get("mirror") if cfg.get("use_mirror") and cfg.get("mirror") else OFFICIAL
+        # 走镜像时强制直连：镜像是国内线路，绕代理会让它看到海外 IP 并 308 跳回官方
+        proxy = None if api_base != OFFICIAL else source_proxy(cfg)
         url = f"{api_base}/api/models/{repo_id}/tree/{quote(revision)}?recursive=true"
         try:
-            resp = httpx.get(url, headers=self._headers(cfg), timeout=30, follow_redirects=True)
+            resp = httpx.get(
+                url, headers=self._headers(cfg), timeout=30, follow_redirects=True, proxy=proxy
+            )
         except httpx.HTTPError as exc:
             raise SourceError(f"Hugging Face 解析失败: {exc}") from exc
         if resp.status_code == 401:
@@ -43,7 +67,7 @@ class HuggingFaceAdapter(SourceAdapter):
         mirror = (cfg.get("mirror") or "").rstrip("/")
         use_mirror = bool(cfg.get("use_mirror"))
         files: list[RemoteFile] = []
-        for item in resp.json():
+        for item in _json(resp, "文件列表"):
             if item.get("type") != "file":
                 continue
             path = item.get("path") or ""
@@ -71,6 +95,7 @@ class HuggingFaceAdapter(SourceAdapter):
     def search(self, q: str, limit: int, page: int, sort: str, cfg: dict, task: str = "") -> dict:
         cfg = cfg or {}
         api_base = cfg.get("mirror") if cfg.get("use_mirror") and cfg.get("mirror") else OFFICIAL
+        proxy = None if api_base != OFFICIAL else source_proxy(cfg)
         sort_map = {"downloads": "downloads", "likes": "likes", "recent": "lastModified"}
         params = {
             "search": q or "",
@@ -87,14 +112,19 @@ class HuggingFaceAdapter(SourceAdapter):
             params["filter"] = task
         try:
             resp = httpx.get(
-                f"{api_base}/api/models", params=params, headers=self._headers(cfg), timeout=30
+                f"{api_base}/api/models",
+                params=params,
+                headers=self._headers(cfg),
+                timeout=30,
+                follow_redirects=True,
+                proxy=proxy,
             )
         except httpx.HTTPError as exc:
             raise SourceError(f"Hugging Face 搜索失败: {exc}") from exc
         if resp.status_code >= 400:
             raise SourceError(f"Hugging Face 搜索错误 {resp.status_code}")
         items = []
-        for m in resp.json():
+        for m in _json(resp, "搜索"):
             rid = m.get("id") or ""
             items.append(
                 {

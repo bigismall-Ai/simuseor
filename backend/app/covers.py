@@ -19,7 +19,7 @@ import time
 
 import httpx
 
-from .config import DATA_DIR
+from .config import DATA_DIR, source_proxy
 from .sources.civitai import pick_cover
 
 COVERS_PATH = DATA_DIR / "covers.json"
@@ -97,12 +97,18 @@ def _remember(key: str, url: str) -> str:
 
 
 def _get_json(url: str, cfg: dict, timeout: float = 10.0) -> dict:
-    """和搜索一样直连：代理只作用于下载（aria2），给 API 也套代理会和设置页的语义冲突。"""
+    """跟随该源的代理开关：TUN 关闭（系统代理模式）下 HF / Civitai 直连被墙，封面也得经代理取。
+
+    早先这里是硬直连，理由是「代理只作用于下载」—— 那个前提在 TUN 模式下成立（系统级接管），
+    系统代理模式一开就割裂了：搜索能走、封面走不了。现在与搜索同一套语义。
+    """
     headers = {"User-Agent": "model-downloader/0.1"}
     token = (cfg or {}).get("token") or ""
     if token and "civitai" in url:
         headers["Authorization"] = f"Bearer {token}"
-    with httpx.Client(timeout=timeout, follow_redirects=True, headers=headers) as client:
+    with httpx.Client(
+        timeout=timeout, follow_redirects=True, headers=headers, proxy=source_proxy(cfg)
+    ) as client:
         resp = client.get(url)
         if resp.status_code >= 400:
             return {}

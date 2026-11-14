@@ -8,6 +8,7 @@ from typing import Callable
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 API = "https://civitai.com/api/v1"
@@ -77,11 +78,12 @@ class CivitaiAdapter(SourceAdapter):
         if token:
             headers["Authorization"] = f"Bearer {token}"
         page = max(1, int(page))
+        proxy = source_proxy(cfg)
         if q:
             # Civitai 关键词搜索不支持 page 参数，走游标分页（缓存各页游标避免重复翻页）
-            data = self._fetch_query_page(params, headers, page)
+            data = self._fetch_query_page(params, headers, page, proxy)
         else:
-            data = self._fetch({**params, "page": page}, headers)
+            data = self._fetch({**params, "page": page}, headers, proxy)
         items = []
         for m in data.get("items") or []:
             if m.get("type") == "Workflows":
@@ -111,10 +113,15 @@ class CivitaiAdapter(SourceAdapter):
             items = [m for m in items if (m.get("task") or "") == task]
         return {"items": items, "total": len(items)}
 
-    def _fetch(self, params: dict, headers: dict) -> dict:
+    def _fetch(self, params: dict, headers: dict, proxy: str | None = None) -> dict:
         try:
             resp = httpx.get(
-                f"{API}/models", params=params, headers=headers, timeout=30, follow_redirects=True
+                f"{API}/models",
+                params=params,
+                headers=headers,
+                timeout=30,
+                follow_redirects=True,
+                proxy=proxy,
             )
         except httpx.HTTPError as exc:
             raise SourceError(f"Civitai 搜索失败: {exc}") from exc
@@ -122,7 +129,7 @@ class CivitaiAdapter(SourceAdapter):
             raise SourceError(f"Civitai 搜索错误 {resp.status_code}")
         return resp.json()
 
-    def _fetch_query_page(self, params: dict, headers: dict, page: int) -> dict:
+    def _fetch_query_page(self, params: dict, headers: dict, page: int, proxy: str | None = None) -> dict:
         """关键词搜索游标翻页：cursors[i] 为获取第 i+1 页的游标，末页之后再记 None。"""
         key = (params.get("query"), params.get("sort"), params.get("nsfw"), params.get("limit"))
         cursors = self._cursors.get(key) or [None]
@@ -135,7 +142,7 @@ class CivitaiAdapter(SourceAdapter):
             p = dict(params)
             if cur is not None:
                 p["cursor"] = cur
-            data = self._fetch(p, headers)
+            data = self._fetch(p, headers, proxy)
             fetched = len(cursors)
             cursors.append(self._next_cursor(data))
         self._cursors[key] = cursors
@@ -144,11 +151,11 @@ class CivitaiAdapter(SourceAdapter):
         if fetched == page and data is not None:
             return data
         if page == 1:
-            return self._fetch(dict(params), headers)
+            return self._fetch(dict(params), headers, proxy)
         cur = cursors[page - 1] if page - 1 < len(cursors) else None
         if cur is None:
             return {"items": []}  # 已越过末页
-        return self._fetch({**params, "cursor": cur}, headers)
+        return self._fetch({**params, "cursor": cur}, headers, proxy)
 
     @staticmethod
     def _next_cursor(data: dict) -> str | None:
@@ -171,7 +178,14 @@ class CivitaiAdapter(SourceAdapter):
         token = cfg.get("token") or ""
         detail_params = {"nsfw": "true"} if cfg.get("full_catalog") else None
         try:
-            resp = httpx.get(f"{API}/models/{model_id}", params=detail_params, headers=headers, timeout=30, follow_redirects=True)
+            resp = httpx.get(
+                f"{API}/models/{model_id}",
+                params=detail_params,
+                headers=headers,
+                timeout=30,
+                follow_redirects=True,
+                proxy=source_proxy(cfg),
+            )
         except httpx.HTTPError as exc:
             raise SourceError(f"Civitai 解析失败: {exc}") from exc
         if resp.status_code == 404:

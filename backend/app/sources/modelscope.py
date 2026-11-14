@@ -7,6 +7,7 @@ from urllib.parse import quote
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 API = "https://modelscope.cn"
@@ -28,7 +29,13 @@ class ModelScopeAdapter(SourceAdapter):
         revision = revision or "master"
         url = f"{API}/api/v1/models/{repo_id}/repo/files?Revision={quote(revision)}&Root="
         try:
-            resp = httpx.get(url, headers=self._headers(cfg), timeout=30, follow_redirects=True)
+            resp = httpx.get(
+                url,
+                headers=self._headers(cfg),
+                timeout=30,
+                follow_redirects=True,
+                proxy=source_proxy(cfg),
+            )
         except httpx.HTTPError as exc:
             raise SourceError(f"ModelScope 解析失败: {exc}") from exc
         if resp.status_code == 404:
@@ -84,6 +91,7 @@ class ModelScopeAdapter(SourceAdapter):
                 params=params,
                 headers=self._headers(cfg or {}),
                 timeout=30,
+                proxy=source_proxy(cfg),
             )
         except httpx.HTTPError as exc:
             raise SourceError(f"ModelScope 搜索失败: {exc}") from exc

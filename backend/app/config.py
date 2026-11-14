@@ -188,6 +188,22 @@ def build_proxy_url(proxy: dict) -> str:
     return f"{host}:{port}" if port else host
 
 
+def source_proxy(cfg: dict | None) -> str | None:
+    """该源启用代理时返回代理 URL，否则 None。`cfg` 是 settings['sources'][源名]。
+
+    每源的 `proxy_enabled` 原本只作用于 aria2 下载，搜索 / 解析 / 封面这些元数据请求
+    一直是裸请求。TUN 模式下这没暴露问题（系统级接管），但系统代理模式下就割裂了：
+    HF 和 Civitai 直连被墙时，**下载能走、搜索不能走** —— 设置页写着「按源控制代理」，
+    实际只控制了一半。
+
+    注意：调用方负责在「走镜像」时不要套代理（镜像是国内直连，绕代理会回到
+    「镜像看到海外 IP → 308 跳回官方」的老问题）。
+    """
+    if not (cfg or {}).get("proxy_enabled"):
+        return None
+    return build_proxy_url(load_settings().get("proxy") or {}) or None
+
+
 def split_proxy_url(url: str) -> dict:
     """旧 proxy.url 拆成 {host, port}；非 http 的 scheme 保留在 host 上（socks5:// 等不丢）。"""
     raw = str(url or "").strip()
