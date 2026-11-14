@@ -116,13 +116,8 @@ import { PanelComponent } from '../ui/panel.component';
                   </td>
                   <td class="cell-vram">
                     <span class="vram-flag" [class]="vramClass(m)" [title]="vramTip(m)">
-                      <span class="vram-bars">
-                        @for (k of [1, 2, 3]; track k) {
-                          <i [class.on]="k <= vramFilled(m)"></i>
-                        }
-                      </span>
                       @if (vramPct(m) !== null) {
-                        <em>{{ vramPct(m) }}%</em>
+                        <span class="vram-gauge" [style.--fill]="vramFill(m) + '%'"></span>
                       }
                     </span>
                   </td>
@@ -154,83 +149,32 @@ import { PanelComponent } from '../ui/panel.component';
          纯红 #FF0000 只用在「满格」这个图形上（图形对比度门槛 3:1），
          底衬用同色系浅红 —— 纯红铺满一屏几十张卡会变成警告墙。 */
       .vram-flag {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1px;
-      }
-      .vram-bars {
-        display: inline-flex;
-        align-items: center;
-        gap: 2px;
-      }
-      /* 未填充的槽 = 透明 + 细描边（不是灰底）——
-         灰底填充看起来像「满格」，就分不出 1 格和 3 格了。
-         「上色」由模板直接给前 N 格加 .on 类 —— 不用 nth-child，
-         那依赖元素在父节点里的位置，模板里插个 <em> 就全错位（实测踩到）。 */
-      .vram-flag i {
-        width: 6px;
-        height: 10px;
-        border-radius: 1.5px;
         display: block;
-        background: transparent;
-        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.28);
       }
-      :host-context([data-theme='dark']) .vram-flag i {
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+      /* 填充式渐变条：灰底 + 按 --fill 裁切的绿→黄→红渐变。
+         渐变铺满整条再用 clip-path 裁出左侧填充段 ——
+         用 background-size 压缩会把整条渐变塞进那一小段（错）。
+         **不给数字** —— needGb = weightGb × factor 是经验系数，
+         实际占用因 offload / attention 实现 / 量化方式而差很多。 */
+      .vram-gauge {
+        position: relative;
+        display: block;
+        width: 62px;
+        height: 6px;
+        background: var(--border-strong);
       }
-      .vram-flag i.on {
-        box-shadow: none;
-        background: currentColor;
-      }
-      /* 百分比数字：**背景色在数字上**（不是格子上），且是半透明的 ——
-         半透明底压在封面上能透出底图，不会割裂画面。
-         文字用深色保证在浅底上可读。 */
-      .vram-flag em {
-        font-style: normal;
-        font-size: 9.5px;
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-        color: #18181b;
-        letter-spacing: -0.02em;
-        line-height: 1;
-        padding: 1px 3px;
-        border-radius: 3px;
-      }
-      /* 溢出尾：>100% 时第三格后面多一个三角 */
-      .v-err i.on:nth-child(3) { position: relative; }
-      .v-err i.on:nth-child(3)::after {
+      .vram-gauge::before {
         content: '';
         position: absolute;
-        left: 6px;
-        top: 1px;
-        width: 0;
-        height: 0;
-        border-left: 4px solid var(--err);
-        border-top: 3.5px solid transparent;
-        border-bottom: 3.5px solid transparent;
+        inset: 0;
+        background: linear-gradient(to right,
+          #15803d 0%, #15803d 26%,
+          #b45309 56%, #b45309 74%,
+          #ff0000 100%);
+        clip-path: inset(0 calc(100% - var(--fill)) 0 0);
       }
-      /* 三档：格子用纯色（红 = #FF0000），数字底衬是同色的半透明。 */
-      .v-ok { color: #15803d; }
-      .v-warn { color: #b45309; }
-      .v-err { color: #ff0000; }
-      .v-ok em { background: rgb(21 128 61 / 0.16); }
-      .v-warn em { background: rgb(180 83 9 / 0.18); }
-      .v-err em { background: rgb(255 0 0 / 0.16); }
-      /* 深色主题：底衬提亮一档才看得见，文字换亮色。
-         纯红 #FF0000 在深底上对比 4.0:1，够图形用。 */
-      :host-context([data-theme='dark']) .v-ok { color: #4ade80; }
-      :host-context([data-theme='dark']) .v-warn { color: #fbbf24; }
-      :host-context([data-theme='dark']) .v-err { color: #ff0000; }
-      :host-context([data-theme='dark']) .v-ok em { background: rgb(74 222 128 / 0.22); }
-      :host-context([data-theme='dark']) .v-warn em { background: rgb(251 191 36 / 0.22); }
-      :host-context([data-theme='dark']) .v-err em { background: rgb(255 0 0 / 0.26); }
-      :host-context([data-theme='dark']) .vram-flag em { color: #f4f4f5; }
-      /* 无法判定：空心描边 —— 实心=有结论，空心=没结论 */
-      .v-na i {
-        background: transparent;
-        box-shadow: inset 0 0 0 1px var(--border-strong);
-      }
+      /* 无法判定（无独显）：整条中性灰，无填充 */
+      .v-na .vram-gauge::before { display: none; }
 
       .stat-strip {
         display: flex;
@@ -376,22 +320,16 @@ export class LibraryComponent implements OnInit {
     return Math.round((need / gb) * 100);
   }
 
-  /** 填几格：绿 1~2 格 / 黄 3 格满 / 红 3 格满 + 溢出 */
-  vramFilled(m: LibraryModel): number {
+  /** 填充百分比（0~100）。超过 100% 就填满 —— 条子表达不了更多。 */
+  vramFill(m: LibraryModel): number {
     const pct = this.vramPct(m);
     if (pct === null) return 0;
-    if (pct > 100) return 3;
-    if (pct > 67) return 3;
-    return pct > 33 ? 2 : 1;
+    return Math.max(0, Math.min(pct, 100));
   }
 
-  /** 三等分：绿 1~2 格 / 黄 3 格满 / 红 3 格满 + 溢出 */
+  /** 无法判定（无独显）：整条中性灰。 */
   vramClass(m: LibraryModel): string {
-    const pct = this.vramPct(m);
-    if (pct === null) return 'v-na';
-    if (pct > 100) return 'v-err';
-    if (pct > 67) return 'v-warn';
-    return 'v-ok';
+    return this.vramPct(m) === null ? 'v-na' : 'v-ok';
   }
 
   vramTip(m: LibraryModel): string {
