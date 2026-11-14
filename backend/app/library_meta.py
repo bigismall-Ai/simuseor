@@ -37,6 +37,30 @@ def _gpu_vram_mb() -> int | None:
         return None
 
 
+def gpu_snapshot() -> dict:
+    """本机独显快照 —— 权重压力标志的分母。
+
+    前端要拿它算「这个模型占我显存百分之几」，所以给结构化数据而不是文本。
+    """
+    try:
+        from .comfy.probe import probe_device
+
+        report = probe_device()
+        gpu = report.primary_gpu
+    except Exception:
+        return {"name": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
+    if gpu is None:
+        return {"name": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
+    mb = int(gpu.vram_mb or 0)
+    return {
+        "name": gpu.name or "",
+        "vendor": gpu.vendor or "",
+        "vramMb": mb,
+        "vramGb": round(mb / 1024, 2),
+        "vramText": f"{mb / 1024:.0f} GB" if mb else "未检测到",
+    }
+
+
 def _family_of(name: str) -> str:
     """家族判定。
 

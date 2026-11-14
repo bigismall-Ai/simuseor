@@ -124,9 +124,6 @@ class NodeInstallRequest(BaseModel):
 
 class LibraryPatch(BaseModel):
     tags: list[str] | None = None
-    favorite: bool | None = None
-    review_state: str | None = None
-    notes: str | None = None
 
 
 class ScanRequest(BaseModel):
@@ -472,8 +469,6 @@ def delete_task(task_id: str) -> dict:
 def list_library(
     q: str = "",
     source: str = "",
-    review: str = "",
-    favorite: bool = False,
     sort: str = "created",
     folder: str = "",
     task: str = "",
@@ -498,11 +493,6 @@ def list_library(
     if source:
         sql += " AND source=?"
         params.append(source)
-    if review:
-        sql += " AND review_state=?"
-        params.append(review)
-    if favorite:
-        sql += " AND favorite=1"
     sql += " ORDER BY created_at DESC"
     models = query(sql, tuple(params))
     for m in models:
@@ -525,6 +515,18 @@ def list_library(
     else:  # created（默认，最新入库）
         models.sort(key=lambda m: m.get("created_at") or "", reverse=True)
     return models
+
+
+@router.get("/library/gpu")
+def library_gpu() -> dict:
+    """本机独显显存 —— 权重压力标志的分母。
+
+    单独一个端点而不是塞进 /library 的响应：
+    /library 返回的是 list，套对象会破坏前端契约。
+    """
+    from ..library_meta import gpu_snapshot
+
+    return gpu_snapshot()
 
 
 @router.get("/library/facets")
@@ -590,15 +592,6 @@ def patch_library(model_id: str, body: LibraryPatch) -> dict:
     if body.tags is not None:
         fields.append("tags=?")
         params.append(_json.dumps(body.tags, ensure_ascii=False))
-    if body.favorite is not None:
-        fields.append("favorite=?")
-        params.append(1 if body.favorite else 0)
-    if body.review_state is not None:
-        fields.append("review_state=?")
-        params.append(body.review_state)
-    if body.notes is not None:
-        fields.append("notes=?")
-        params.append(body.notes)
     if fields:
         params.append(model_id)
         execute(f"UPDATE library_models SET {', '.join(fields)} WHERE id=?", tuple(params))
@@ -630,9 +623,9 @@ def scan_library(body: ScanRequest) -> dict:
         model_id = new_id()
         size = sum(f.stat().st_size for f in files)
         execute(
-            "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, favorite, review_state, notes, created_at)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            (model_id, child.name, "", "imported", str(child), size, len(files), "[]", 0, "untried", "", now_iso()),
+            "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, created_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?)",
+            (model_id, child.name, "", "imported", str(child), size, len(files), "[]", now_iso()),
         )
         for f in files:
             execute(

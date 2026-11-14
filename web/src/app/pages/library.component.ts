@@ -28,7 +28,7 @@ import { PanelComponent } from '../ui/panel.component';
     <ui-page-header
       kicker="Models"
       title="模型库"
-      hint="问自己三个问题：这个模型还在用吗（收藏）、试过没有（评审）、属于什么（标签）。"
+      hint="本地已下载的模型。按存放类型或任务类型筛选，也可以搜名称与标签。"
     />
 
     <ui-panel>
@@ -42,20 +42,6 @@ import { PanelComponent } from '../ui/panel.component';
               <option [value]="o.key">{{ o.label }}</option>
             }
           </select>
-        </ui-field>
-        <ui-field label="评审状态">
-          <select [(ngModel)]="filterReview">
-            <option value="">全部</option>
-            <option value="untried">未试用</option>
-            <option value="keep">保留</option>
-            <option value="discard">弃用</option>
-          </select>
-        </ui-field>
-        <ui-field label="收藏">
-          <div class="check-row">
-            <input type="checkbox" [(ngModel)]="filterFavorite">
-            <span>只看收藏</span>
-          </div>
         </ui-field>
       </div>
 
@@ -83,8 +69,8 @@ import { PanelComponent } from '../ui/panel.component';
         <strong>{{ fmtSize(totalSize) }}</strong>
       </div>
       <div class="stat">
-        <span>收藏</span>
-        <strong>{{ favCount }}</strong>
+        <span>本机显存</span>
+        <strong>{{ gpuText }}</strong>
       </div>
     </div>
 
@@ -101,24 +87,18 @@ import { PanelComponent } from '../ui/panel.component';
           <table>
             <thead>
               <tr>
-                <th class="col-check"></th>
                 <th>模型</th>
                 <th class="col-source">来源</th>
                 <th class="col-size">大小</th>
                 <th class="col-count">文件</th>
                 <th>标签</th>
-                <th class="col-review">评审</th>
+                <th class="col-vram">本机可跑</th>
                 <th class="col-actions">操作</th>
               </tr>
             </thead>
             <tbody>
               @for (m of models; track m.id) {
                 <tr>
-                  <td>
-                    <button class="favorite-btn" (click)="toggleFavorite(m)" title="收藏">
-                      {{ isFav(m) ? '★' : '☆' }}
-                    </button>
-                  </td>
                   <td>
                     <div class="name-cell">
                       <app-cover-plate class="thumb" size="mini" [model]="m" />
@@ -134,12 +114,15 @@ import { PanelComponent } from '../ui/panel.component';
                   <td class="cell-tags">
                     <input [value]="tagsText(m)" (blur)="saveTags(m, $event)" placeholder="逗号分隔">
                   </td>
-                  <td>
-                    <select [ngModel]="m.review_state" (ngModelChange)="setReview(m, $event)">
-                      <option value="untried">未试用</option>
-                      <option value="keep">保留</option>
-                      <option value="discard">弃用</option>
-                    </select>
+                  <td class="cell-vram">
+                    <span class="vram-flag" [class]="vramClass(m)" [title]="vramTip(m)">
+                      @for (k of [1, 2, 3]; track k) {
+                        <i [class.on]="k <= vramFilled(m)"></i>
+                      }
+                      @if (vramPct(m) !== null) {
+                        <em>{{ vramPct(m) }}%</em>
+                      }
+                    </span>
                   </td>
                   <td>
                     <div class="toolbar">
@@ -157,6 +140,62 @@ import { PanelComponent } from '../ui/panel.component';
   `,
   styles: [
     `
+      /* 权重压力标志：三等分 + 百分比
+         绿 1~2 格（≤67%）· 黄 3 格满（67%~100%）· 红 3 格满+溢出（>100%）
+         三等分而不是五等分：模型权重是重资产，真实分布是「要么几乎不占
+         （VAE/Embedding 占 0%），要么占一大半」—— 五等分会把大批 0% 全挤在第一格。 */
+      .col-vram { width: 92px; }
+      .cell-vram { white-space: nowrap; }
+      .vram-flag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      /* 未填充的槽 = 透明 + 细描边（不是灰底）——
+         灰底填充看起来像「满格」，就分不出 1 格和 3 格了。
+         「上色」由模板直接给前 N 格加 .on 类 —— 不用 nth-child，
+         那依赖元素在父节点里的位置，模板里插个 <em> 就全错位（实测踩到）。 */
+      .vram-flag i {
+        width: 5px;
+        height: 9px;
+        border-radius: 1.5px;
+        display: block;
+        background: transparent;
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+      }
+      .vram-flag i.on {
+        box-shadow: none;
+        background: currentColor;
+      }
+      .vram-flag em {
+        font-style: normal;
+        font-size: 10.5px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-2);
+      }
+      /* 溢出尾：>100% 时第三格后面多一个三角 */
+      .v-err i.on:nth-child(3) { position: relative; }
+      .v-err i.on:nth-child(3)::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 1px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid var(--err);
+        border-top: 3.5px solid transparent;
+        border-bottom: 3.5px solid transparent;
+      }
+      .v-ok { color: var(--ok); }
+      .v-warn { color: var(--warn); }
+      .v-err { color: var(--err); }
+      /* 无法判定：空心描边 —— 实心=有结论，空心=没结论 */
+      .v-na i {
+        background: transparent;
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+      }
+
       .stat-strip {
         display: flex;
         flex-wrap: wrap;
@@ -206,9 +245,9 @@ export class LibraryComponent implements OnInit {
   models: LibraryModel[] = [];
   q = '';
   filterSource = '';
-  filterReview = '';
-  filterFavorite = false;
   scanPath = '';
+  /** 本机独显信息 —— 权重压力标志的分母 */
+  gpu: { vramMb?: number; name?: string } | null = null;
   message = '';
   messageOk = true;
   loading = false;
@@ -235,6 +274,10 @@ export class LibraryComponent implements OnInit {
         { key: 'imported', label: '导入' },
       ];
     });
+    this.api.libraryGpu().subscribe({
+      next: (g) => (this.gpu = g),
+      error: () => (this.gpu = null),
+    });
     this.load();
   }
 
@@ -242,14 +285,20 @@ export class LibraryComponent implements OnInit {
     return this.models.reduce((sum, m) => sum + (m.size_bytes || 0), 0);
   }
 
-  get favCount(): number {
-    return this.models.filter((m) => this.isFav(m)).length;
+  /** 本机独显显存 —— 权重压力标志的分母就是它 */
+  get gpuText(): string {
+    return this.gpuVramGb > 0 ? `${this.gpuVramGb.toFixed(0)} GB` : '未检测到';
+  }
+
+  get gpuVramGb(): number {
+    const mb = (this.gpu as { vramMb?: number } | null)?.vramMb ?? 0;
+    return mb / 1024;
   }
 
   load(): void {
     this.loading = true;
     this.api
-      .listLibrary({ q: this.q, source: this.filterSource, review: this.filterReview, favorite: this.filterFavorite })
+      .listLibrary({ q: this.q, source: this.filterSource })
       .subscribe({
         next: (models) => {
           this.models = models;
@@ -264,8 +313,6 @@ export class LibraryComponent implements OnInit {
   reset(): void {
     this.q = '';
     this.filterSource = '';
-    this.filterReview = '';
-    this.filterFavorite = false;
     this.load();
   }
 
@@ -284,16 +331,38 @@ export class LibraryComponent implements OnInit {
     });
   }
 
-  isFav(m: LibraryModel): boolean {
-    return !!m.favorite;
+  /** 权重压力标志：占本机显存的百分比（无权重则 null） */
+  vramPct(m: LibraryModel): number | null {
+    if (!m.hasWeights || m.isDemo) return null;
+    const need = m.needGb ?? 0;
+    const gb = this.gpuVramGb;
+    if (!gb || need <= 0) return null;
+    return Math.round((need / gb) * 100);
   }
 
-  toggleFavorite(m: LibraryModel): void {
-    this.api.patchLibrary(m.id, { favorite: !this.isFav(m) }).subscribe(() => this.load());
+  /** 填几格：绿 1~2 格 / 黄 3 格满 / 红 3 格满 + 溢出 */
+  vramFilled(m: LibraryModel): number {
+    const pct = this.vramPct(m);
+    if (pct === null) return 0;
+    if (pct > 100) return 3;
+    if (pct > 67) return 3;
+    return pct > 33 ? 2 : 1;
   }
 
-  setReview(m: LibraryModel, value: string): void {
-    this.api.patchLibrary(m.id, { review_state: value }).subscribe(() => this.load());
+  /** 三等分：绿 1~2 格 / 黄 3 格满 / 红 3 格满 + 溢出 */
+  vramClass(m: LibraryModel): string {
+    const pct = this.vramPct(m);
+    if (pct === null) return 'v-na';
+    if (pct > 100) return 'v-err';
+    if (pct > 67) return 'v-warn';
+    return 'v-ok';
+  }
+
+  vramTip(m: LibraryModel): string {
+    const pct = this.vramPct(m);
+    const need = m.needGb ?? 0;
+    if (pct === null) return m.vram?.hint || '没有权重信息';
+    return `预计需要 ${need} GB · 本机 ${this.gpuVramGb.toFixed(0)} GB（${pct}%）`;
   }
 
   tagsText(m: LibraryModel): string {

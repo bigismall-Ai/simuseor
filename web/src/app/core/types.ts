@@ -84,11 +84,19 @@ export interface LibraryModel {
   size_bytes: number;
   file_count: number;
   tags: string[];
-  favorite: number | boolean;
-  review_state: string;
-  notes: string;
   created_at: string;
   files: LibraryFile[];
+  /** 权重规格与本机可跑性（后端 describe_model 算出来的） */
+  precision?: string;
+  params?: string;
+  hasWeights?: boolean;
+  isDemo?: boolean;
+  vram?: {
+    level: string;
+    text: string;
+    hint: string;
+  };
+  needGb?: number;
 }
 
 export interface SearchItem {

@@ -253,13 +253,18 @@ export class ApiService {
     return this.http.delete(`${this.base}/tasks/${id}`);
   }
 
-  listLibrary(params: { q?: string; source?: string; review?: string; favorite?: boolean }): Observable<LibraryModel[]> {
+  listLibrary(params: { q?: string; source?: string }): Observable<LibraryModel[]> {
     let httpParams = new HttpParams();
     if (params.q) httpParams = httpParams.set('q', params.q);
     if (params.source) httpParams = httpParams.set('source', params.source);
-    if (params.review) httpParams = httpParams.set('review', params.review);
-    if (params.favorite) httpParams = httpParams.set('favorite', 'true');
     return this.http.get<LibraryModel[]>(`${this.base}/library`, { params: httpParams });
+  }
+
+  /** 本机独显显存 —— 权重压力标志的分母 */
+  libraryGpu(): Observable<{ name: string; vramMb: number; vramGb: number; vramText: string }> {
+    return this.http.get<{ name: string; vramMb: number; vramGb: number; vramText: string }>(
+      `${this.base}/library/gpu`
+    );
   }
 
   patchLibrary(id: string, body: Record<string, unknown>): Observable<LibraryModel> {
