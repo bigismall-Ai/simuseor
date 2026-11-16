@@ -14,8 +14,10 @@
 import fs from 'fs';
 import path from 'path';
 import { extractRules, render } from '../scripts/gen-family-rules.mjs';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = 'E:/Projects/model-downloader';
+// 从脚本自身位置推导仓库根 —— 硬编码绝对路径换台机器/CI 就崩。
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const COVER = path.join(ROOT, 'web/src/app/core/cover.ts');
 const RULES_PY = path.join(ROOT, 'backend/app/family_rules.py');
 const META_PY = path.join(ROOT, 'backend/app/library_meta.py');

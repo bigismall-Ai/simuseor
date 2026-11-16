@@ -13,11 +13,18 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = 'E:/Projects/model-downloader';
+// 从脚本自身位置推导仓库根 —— 硬编码绝对路径换台机器/CI 就崩。
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUB = path.join(ROOT, 'web/public');
 const coverSrc = fs.readFileSync(path.join(ROOT, 'web/src/app/core/cover.ts'), 'utf8');
-const sha256 = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
+// 指纹要归一化行尾后再算 —— 否则 Windows 上一次保存就把指纹改了，
+// 校验会报「资产被手改过」，而图形其实一模一样。假报警比漏报警更坏。
+const sha256 = (buf) => {
+  const norm = Buffer.from(buf.toString('utf8').replace(/\r\n/g, '\n'), 'utf8');
+  return crypto.createHash('sha256').update(norm).digest('hex');
+};
 
 const errors = [];
 const log = [];

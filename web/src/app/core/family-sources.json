@@ -75,7 +75,7 @@
         {
           "path": "families/hunyuan.svg",
           "variant": "light",
-          "sha256": "53c2f65a305b56f4b872459b972a5f505c50e8bbb9bc2df622b31c2f582de807",
+          "sha256": "51952d0ee5def90344ff4f1d0310d02c1f9b6ce1f1d37df29262cca68ff6c816",
           "sig": "c1b831ca968b39e9"
         }
       ],
@@ -102,13 +102,13 @@
         {
           "path": "families/sd15.svg",
           "variant": "light",
-          "sha256": "b85574b09e5119544d10c0cb2c8a4f4adb2b37ff95567398e6bd62c6e5df6ef9",
+          "sha256": "05473e466152a45d32a17292a42530aee563a6fe81a2798e7669f23be463e048",
           "sig": "7c13dd562ec946fb"
         },
         {
           "path": "families/sd15-dark.svg",
           "variant": "dark",
-          "sha256": "f35ea3692e7009d1a835c2acec0ecb6d18110297a2b472a7b1cc992ef3fbb555",
+          "sha256": "c7275e41c1b2c0de39b509784bd465d734249d0bafc96eb237ad34547c35d8e7",
           "sig": "94f347598d491b0a"
         }
       ],
@@ -141,13 +141,13 @@
         {
           "path": "families/sdxl.svg",
           "variant": "light",
-          "sha256": "b85574b09e5119544d10c0cb2c8a4f4adb2b37ff95567398e6bd62c6e5df6ef9",
+          "sha256": "05473e466152a45d32a17292a42530aee563a6fe81a2798e7669f23be463e048",
           "sig": "7c13dd562ec946fb"
         },
         {
           "path": "families/sdxl-dark.svg",
           "variant": "dark",
-          "sha256": "f35ea3692e7009d1a835c2acec0ecb6d18110297a2b472a7b1cc992ef3fbb555",
+          "sha256": "c7275e41c1b2c0de39b509784bd465d734249d0bafc96eb237ad34547c35d8e7",
           "sig": "94f347598d491b0a"
         }
       ],
@@ -166,7 +166,7 @@
         {
           "path": "families/_candidates/ltx-wordmark-white.svg",
           "variant": "candidate",
-          "sha256": "bdf9fcb9935712450ff2772a434dc3f0992f57067fb9521191da1024eede82e1",
+          "sha256": "c1a7c3c65dfc04a76db828d511e469cccccff89b9c0d63c5de27757c1b27d948",
           "sig": "9eaf8b09d88b98ec"
         }
       ],
@@ -235,13 +235,13 @@
         {
           "path": "families/ernie.svg",
           "variant": "light",
-          "sha256": "61d66cc51a1c229f680ce9deebf2b4a1df65400ee7cfb78dd811e25301a52a5b",
+          "sha256": "de2bcbc75e2a10a516c18e0644b0dcef68d1c26fa65af4712c1d28bf1fbefac1",
           "sig": "3b155b7035ab6d80"
         },
         {
           "path": "families/ernie-dark.svg",
           "variant": "dark",
-          "sha256": "5155d3f0bda02ad94878f0edd5830442d0c355f7ecc883d94594d260de31978f",
+          "sha256": "c3795d4f8924cf9f1fd0cb7b783bfdcff8b6eb02b345259ca82989aae394a6c0",
           "sig": "12e4e580cb5d7d79"
         }
       ],

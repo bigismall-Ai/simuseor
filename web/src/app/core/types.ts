@@ -571,3 +571,47 @@ export interface NodeMissingReport {
   core_nodes: number;
   installed_nodes: number;
 }
+
+/** 厂标资产巡检：一个家族某个变体的状态。 */
+export interface FamilyScanVariant {
+  variant: string;
+  state: string;
+  detail?: string;
+}
+
+/** 需要人看的家族（上游改了 / 抓不到了）。 */
+export interface FamilyAttention {
+  id: string;
+  kind: string;
+  state: string;
+  variants: FamilyScanVariant[];
+}
+
+export interface FamilyScanSummary {
+  families?: number;
+  upToDate?: number;
+  drifted?: number;
+  pending?: number;
+  unreachable?: number;
+  noSourceUrl?: number;
+  noAsset?: number;
+  manual?: number;
+}
+
+export interface FamilyScanStatus {
+  lastScanAt: string | null;
+  ok: boolean | null;
+  summary: FamilyScanSummary;
+  attention: FamilyAttention[];
+  lastError?: string | null;
+  running: boolean;
+  intervalHours: number;
+}
+
+export interface FamilyScanTrigger {
+  started: boolean;
+  skipped: boolean;
+  reason: string;
+  lastScanAt?: string | null;
+  attention?: FamilyAttention[];
+}

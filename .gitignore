@@ -43,6 +43,9 @@ tests/*.mjs
 !tests/family-table-sync.mjs
 !tests/wt-ink.mjs
 !tests/wt-tune.mjs
+# 例外：CNB 的 CI 配置必须入库。`.*` 规则会把它挡掉，但 CI 配置不跟着仓库走，
+# 门禁就等于没有 —— 那正是这套机制当初缺的那一环。
+!.cnb.yml
 # 临时素材候选与抓取快照
 web/public/**/_candidates/
 /wf.tmp.json

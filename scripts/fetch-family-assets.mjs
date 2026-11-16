@@ -23,8 +23,10 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = 'E:/Projects/model-downloader';
+// 从脚本自身位置推导仓库根 —— 硬编码绝对路径换台机器/CI 就崩。
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // 登记表放在 web/src/app/core/ —— 必须进版本库。
 // （artifacts/ 与 .workbuddy/ 都在 .gitignore 里，权威数据放那儿会在换机器/clone 时丢失）
 const REGISTRY = path.join(ROOT, 'web/src/app/core/family-sources.json');
@@ -35,7 +37,21 @@ const PUB = path.join(ROOT, 'web/public');
 const CAND = path.join(ROOT, 'var/tmp/family-candidates');
 
 const args = process.argv.slice(2);
-const sha256 = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
+/**
+ * 指纹 = 归一化行尾后的 sha256。
+ *
+ * 为什么归一化：行尾不是「资产被手改」—— 图形一模一样。
+ * Windows 上任何一次保存都会把 LF 变成 CRLF，指纹随之改变，
+ * 门禁就会天天报「资产被手改过」。假报警比漏报警更坏：
+ * 报警一旦成了习惯，人就会开始无视它。
+ *
+ * 真正抓「手改」的是这一对：归一化指纹对内容变化敏感，
+ * 语义签名（几何 path + 配色）对图形变化敏感 —— 两者互补。
+ */
+const sha256 = (buf) => {
+  const norm = Buffer.from(buf.toString('utf8').replace(/\r\n/g, '\n'), 'utf8');
+  return crypto.createHash('sha256').update(norm).digest('hex');
+};
 
 /**
  * 语义签名：几何 + 配色，忽略字节级噪音。
@@ -135,7 +151,16 @@ function fingerprint(fam) {
   for (const a of fam.assets || []) {
     const abs = absOf(a.path);
     if (!fs.existsSync(abs)) {
-      out.push({ path: a.path, variant: a.variant, state: '缺失', disk: null, approved: a.sha256 || null });
+      // 候选区（_candidates/）本来就不进版本库 —— 干净检出里没有它是正常的，
+      // 不能算「与登记不符」，否则离线自检永远返回失败。
+      const isCandidate = a.path.includes('_candidates');
+      out.push({
+        path: a.path,
+        variant: a.variant,
+        state: isCandidate ? '候选缺失（不入库）' : '缺失',
+        disk: null,
+        approved: a.sha256 || null,
+      });
       continue;
     }
     const disk = sha256(fs.readFileSync(abs));
@@ -153,10 +178,11 @@ function fingerprint(fam) {
   return out;
 }
 
-async function cmdFetchAll(reg, offline) {
+async function cmdFetchAll(reg, offline, reportPath) {
   let drift = 0;
   let ok = 0;
   let pending = 0;
+  const famStates = [];
   console.log('── 家族资产来源核查 ──\n');
   for (const fam of reg.families) {
     const fps = fingerprint(fam);
@@ -164,33 +190,52 @@ async function cmdFetchAll(reg, offline) {
     const head = `${fam.id.padEnd(9)} ${src.kind.padEnd(13)}`;
 
     if (offline) {
-      const bad = fps.filter((f) => f.state !== '已批准' && f.state !== '未登记指纹');
+      const bad = fps.filter(
+        (f) => f.state !== '已批准' && f.state !== '未登记指纹' && f.state !== '候选缺失（不入库）',
+      );
       const missing = fps.filter((f) => f.state === '缺失');
       const unreg = fps.filter((f) => f.state === '未登记指纹');
       const mark = missing.length || bad.length ? '✗' : unreg.length ? '○' : '✓';
       console.log(`${mark} ${head} ${fps.map((f) => `${f.variant}:${f.state}`).join('  ')}`);
       if (bad.length || missing.length) drift++;
+      famStates.push({
+        id: fam.id,
+        kind: src.kind,
+        state: missing.length || bad.length ? 'mismatch' : unreg.length ? 'pending' : 'upToDate',
+        variants: fps.map((f) => ({ variant: f.variant, state: f.state })),
+      });
       continue;
     }
 
     if (src.kind === 'none') {
       console.log(`— ${head} 无官方资产 → 保持留白`);
+      famStates.push({ id: fam.id, kind: src.kind, state: 'noAsset', variants: [] });
       continue;
     }
     if (src.kind === 'manual') {
       console.log(`— ${head} 人工资产（${fam.assets.length ? '候选区 ' + fam.assets.map((a) => a.path).join(',') : '无'}）→ 不自动抓取`);
+      famStates.push({ id: fam.id, kind: src.kind, state: 'manual', variants: [] });
       continue;
     }
 
     const vs = variantsOf(fam);
     let line = `${head} `;
+    const varStates = [];
     for (const v of vs) {
       // 官网来源可能浅/深两版是两个地址（ERNIE 的白色版和彩色版就是两个文件）；
       // 只登记了 url 的家族，两版都抓同一个地址。
       const override = src.kind === 'simple-icons' ? null : v.variant === 'dark' ? (src.urlDark || src.url) : src.url;
       const res = await grab({ ...src, color: v.color }, override);
       if (res.error) {
-        line += `${v.variant}: 取不到（${res.error}）  `;
+        // 「官方地址本来就没登记」是**已知状态**，不是抓取故障。
+        // 两者混在一起报出去，巡检就会天天喊「4 个家族异常」—— 喊久了就是噪音。
+        const knownNoUrl = src.kind === 'official' && !src.url;
+        line += `${v.variant}: ${knownNoUrl ? '无官方地址（属实）' : `取不到（${res.error}）`}  `;
+        varStates.push({
+          variant: v.variant,
+          state: knownNoUrl ? 'noSourceUrl' : 'unreachable',
+          detail: res.error,
+        });
         continue;
       }
       fs.mkdirSync(CAND, { recursive: true });
@@ -202,15 +247,62 @@ async function cmdFetchAll(reg, offline) {
         // 首次登记：磁盘上的资产还没批准过指纹，不能说「上游变了」
         line += `${v.variant}: 未登记指纹 → 待批准  `;
         pending++;
+        varStates.push({ variant: v.variant, state: 'pending' });
       } else if (asset.sig === candSig) {
         line += `${v.variant}: 已是最新  `;
         ok++;
+        varStates.push({ variant: v.variant, state: 'upToDate' });
       } else {
         line += `${v.variant}: 上游已变更（几何/配色）→ 待确认  `;
         drift++;
+        varStates.push({ variant: v.variant, state: 'drifted' });
       }
     }
     console.log(line + (src.kind === 'official' && !src.url ? '（官方地址需人工提供）' : ''));
+    famStates.push({
+      id: fam.id,
+      kind: src.kind,
+      // 聚合优先级：漂移 > 抓不到 > 无地址 > 待登记 > 已是最新。
+      // 漏掉任何一档都会把「没检查到」误报成「没问题」。
+      state: varStates.some((v) => v.state === 'drifted')
+        ? 'drifted'
+        : varStates.some((v) => v.state === 'unreachable')
+          ? 'unreachable'
+          : varStates.some((v) => v.state === 'noSourceUrl')
+            ? 'noSourceUrl'
+            : varStates.some((v) => v.state === 'pending')
+              ? 'pending'
+              : 'upToDate',
+      variants: varStates,
+    });
+  }
+
+  if (reportPath) {
+    const summary = {
+      upToDate: 0,
+      drifted: 0,
+      pending: 0,
+      unreachable: 0,
+      noSourceUrl: 0,
+      noAsset: 0,
+      manual: 0,
+    };
+    for (const f of famStates) {
+      if (f.state in summary) summary[f.state]++;
+      else if (f.state === 'mismatch') summary.drifted++;
+    }
+    const payload = {
+      scannedAt: new Date().toISOString(),
+      offline: !!offline,
+      summary: { families: famStates.length, ...summary },
+      // 需要人看的只有漂移和抓取失败；noSourceUrl / noAsset / manual 都是已知状态。
+      attention: famStates
+        .filter((f) => f.state === 'drifted' || f.state === 'unreachable')
+        .map((f) => ({ id: f.id, kind: f.kind, state: f.state, variants: f.variants })),
+      families: famStates,
+    };
+    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+    fs.writeFileSync(reportPath, JSON.stringify(payload, null, 2), 'utf8');
   }
 
   console.log('');
@@ -284,8 +376,21 @@ function cmdApprove(reg, id) {
 
 const reg = loadRegistry();
 
+// --report <path>：把结构化结果写成 JSON。
+// 人读终端输出，程序读这份文件 —— 不去解析终端文本，输出格式一改就静默出错。
+const reportIdx = args.indexOf('--report');
+let reportPath = null;
+if (reportIdx >= 0) {
+  const raw = args[reportIdx + 1];
+  if (!raw || raw.startsWith('--')) {
+    console.error('✗ --report 需要一个文件路径');
+    process.exit(1);
+  }
+  reportPath = path.isAbsolute(raw) ? raw : path.resolve(ROOT, raw);
+}
+
 if (args[0] === '--offline') {
-  process.exit(await cmdFetchAll(reg, true));
+  process.exit(await cmdFetchAll(reg, true, reportPath));
 } else if (args[0] === '--fetch') {
   await cmdFetchOne(reg, args[1], args[2]);
 } else if (args[0] === '--promote') {
@@ -293,5 +398,5 @@ if (args[0] === '--offline') {
 } else if (args[0] === '--approve') {
   cmdApprove(reg, args[1]);
 } else {
-  process.exit(await cmdFetchAll(reg, false));
+  process.exit(await cmdFetchAll(reg, false, reportPath));
 }

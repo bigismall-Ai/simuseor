@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# 厂标资产提交前门禁 —— 入口壳，逻辑在 pre-commit.mjs
+#
+# 由 scripts/install-hooks.sh 安装（设置 core.hooksPath 指向 scripts/hooks）。
+# 直接放在 .git/hooks/ 里也行，但那样换台机器就没了 —— 所以脚本进版本库，
+# 安装脚本负责接线。
+#
+# 找不到 node 就放过：GUI 客户端提交时 PATH 常常是残缺的，
+# 这种情况下拦住提交只会让人恼火，而 CI 上还有一道同样的门禁。
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[门禁] PATH 里没有 node，跳过本地检查（CI 上仍会检查）" >&2
+  exit 0
+fi
+
+HOOK_DIR=$(dirname "$0")
+exec node "$HOOK_DIR/pre-commit.mjs"

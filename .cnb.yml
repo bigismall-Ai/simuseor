@@ -1,0 +1,48 @@
+# CNB 构建配置
+# 文档：https://docs.cnb.cool/zh/build/configuration.html
+#
+# 这个仓库的门禁只管一件事：厂标资产与家族表不能悄悄漂移。
+# 校验脚本在本仓库长期存在（tests/families-assets.mjs / tests/family-table-sync.mjs），
+# 但没有 CI 就等于没有 —— 漂移只有有人想起来跑的时候才暴露。
+#
+# 两道检查：
+#   1. 家族表一致性 —— 纯 Node，零依赖，秒级。拦「改了 cover.ts 的正则忘了重新生成」
+#   2. 厂牌资产校验 —— 需要 Chromium。拦「手改资产没登记」「色板漏补」「野生资产」
+#
+# 校验脚本自己会决定「上游有没有改版」并写进候选区，但**永远不会自动替换正式资产**
+# —— 那一步永远要人点头（--promote）。
+
+main:
+  push:
+    - stages:
+        - name: 家族表一致性
+          image: node:22
+          script:
+            - node tests/family-table-sync.mjs
+
+        - name: 厂牌资产校验
+          image: node:22
+          caches:
+            - ~/.npm
+            - ~/.cache/ms-playwright
+          script:
+            - cd tests && npm install --no-audit --no-fund
+            - cd tests && npx playwright install --with-deps chromium
+            - node tests/families-assets.mjs
+
+  pull_request:
+    - stages:
+        - name: 家族表一致性
+          image: node:22
+          script:
+            - node tests/family-table-sync.mjs
+
+        - name: 厂牌资产校验
+          image: node:22
+          caches:
+            - ~/.npm
+            - ~/.cache/ms-playwright
+          script:
+            - cd tests && npm install --no-audit --no-fund
+            - cd tests && npx playwright install --with-deps chromium
+            - node tests/families-assets.mjs
