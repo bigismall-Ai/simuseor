@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # 一键启动：环境检查 → 按需构建前端 → 起后端 → 等待健康 → 打开浏览器
-# 用法: bash scripts/start.sh [--build] [--no-build] [--restart] [--no-open]
+# 用法: bash scripts/start.sh [--build] [--no-build] [--restart] [--no-open] [--dev]
 #   --build      强制重建前端（默认：产物缺失或源码比产物新时自动构建）
 #   --no-build   跳过构建检查，直接用现有 web/dist
 #   --restart    强制重启（停掉占用端口的旧进程）
 #   --no-open    不自动打开浏览器
+#   --dev        开发模式：后端开热重载(8000) + 前端 dev server(4200，HMR)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
@@ -12,6 +13,7 @@ ROOT="$PWD"
 BUILD=auto          # auto | yes | no
 RESTART=0
 OPEN=1
+DEV=0
 
 usage() {
   cat <<'EOF'
@@ -21,9 +23,11 @@ usage() {
   --no-build    跳过构建检查，直接用现有 web/dist
   --restart     强制重启（先停掉占用 8000 的旧进程）
   --no-open     不自动打开浏览器
+  --dev         开发模式：后端热重载(8000) + 前端 dev server(4200, HMR)
   -h, --help    显示帮助
 
 无参数：一条命令起服务，Ctrl+C 停止。访问 http://127.0.0.1:8000
+--dev  ：访问 http://127.0.0.1:4200（改前端即时生效，改后端自动重启）
 EOF
 }
 
@@ -33,6 +37,7 @@ while [ $# -gt 0 ]; do
     --no-build) BUILD=no;  shift ;;
     --restart)  RESTART=1; shift ;;
     --no-open)  OPEN=0;    shift ;;
+    --dev)      DEV=1;     shift ;;
     -h|--help)  usage; exit 0 ;;
     *) echo "未知参数: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -108,9 +113,12 @@ open_browser() {
 }
 
 # ---- 前端产物 ----
+# dev 模式不需要 dist：前端 dev server 自己编译，且带 HMR
 DIST="$ROOT/web/dist/browser/index.html"
 need_build=0
-if [ "$BUILD" = yes ]; then
+if [ "$DEV" = 1 ]; then
+  :
+elif [ "$BUILD" = yes ]; then
   need_build=1
 elif [ "$BUILD" = no ]; then
   need_build=0
@@ -152,6 +160,56 @@ if [ -n "$OLD_PID" ]; then
 fi
 
 # ---- 启动 ----
+if [ "$DEV" = 1 ]; then
+  DEV_PORT=4200
+  DEV_URL="http://127.0.0.1:$DEV_PORT"
+
+  # 旧的 8000 / 4200 都要清掉，否则端口被占，两个服务都起不来
+  for P in "$PORT" "$DEV_PORT"; do
+    OLD="$(netstat -ano 2>/dev/null | awk -v port="$P" \
+      'toupper($4)=="LISTENING" && $2 ~ (":" port "$") { print $5; exit }')"
+    if [ -n "$OLD" ]; then
+      echo "→ 清理占用 $P 的旧进程 $OLD"
+      taskkill //PID "$OLD" //T //F >/dev/null 2>&1 || kill -9 "$OLD" 2>/dev/null || true
+    fi
+  done
+  sleep 1
+
+  echo "→ 启动后端（热重载）：$URL"
+  RELOAD=1 "$PY" backend/run.py &
+  SERVER_PID=$!
+
+  echo "→ 启动前端 dev server：$DEV_URL"
+  (cd "$ROOT/web" && npm start -- --host 127.0.0.1 --port "$DEV_PORT") &
+  WEB_PID=$!
+
+  cleanup() {
+    kill "$SERVER_PID" "$WEB_PID" 2>/dev/null || true
+    # Windows 上 npm start 会再拉一层 node 子进程，得连树一起杀
+    taskkill //PID "$WEB_PID" //T //F >/dev/null 2>&1 || true
+    taskkill //PID "$SERVER_PID" //T //F >/dev/null 2>&1 || true
+  }
+  trap cleanup INT TERM EXIT
+
+  for _ in $(seq 1 120); do
+    if health; then break; fi
+    kill -0 "$SERVER_PID" 2>/dev/null || { echo "后端进程提前退出" >&2; exit 1; }
+    sleep 0.5
+  done
+  if ! health; then
+    echo "等待后端 /api/health 超时（60s）" >&2
+    exit 1
+  fi
+
+  echo "✔ 后端已就绪：$URL （改后端 .py 自动重启）"
+  echo "✔ 前端开发地址：$DEV_URL （改前端即时生效）"
+  if [ "$OPEN" = 1 ]; then
+    "$PY" -c "import sys, webbrowser; webbrowser.open(sys.argv[1])" "$DEV_URL" >/dev/null 2>&1 &
+  fi
+  wait
+  exit 0
+fi
+
 echo "→ 启动后端：$URL"
 "$PY" backend/run.py &
 SERVER_PID=$!
