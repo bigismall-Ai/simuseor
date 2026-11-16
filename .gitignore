@@ -38,6 +38,11 @@ test-results/
 playwright-report/
 # tests/ 根层的一次性调试 / 截图脚本（E2E 用例是 tests/e2e/ 下的 .ts，不受影响）
 tests/*.mjs
+# 例外：这几支是**长期校验脚本**，不是一次性调试 —— 丢了机制就没人跑了
+!tests/families-assets.mjs
+!tests/family-table-sync.mjs
+!tests/wt-ink.mjs
+!tests/wt-tune.mjs
 # 临时素材候选与抓取快照
 web/public/**/_candidates/
 /wf.tmp.json

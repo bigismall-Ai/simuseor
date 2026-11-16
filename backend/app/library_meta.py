@@ -9,8 +9,10 @@
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
+from .family_rules import FAMILY_RULES
 from .weight_class import classify
 from .weight_meta import fmt_bytes, is_weight_file, pick_weight_file, read_weight
 
@@ -64,25 +66,15 @@ def gpu_snapshot() -> dict:
 def _family_of(name: str) -> str:
     """家族判定。
 
-    表必须与前端 `core/cover.ts` 的 FAMILIES **保持一致** ——
-    两处不一致会导致同一个模型在两边显示不同家族。
+    规则来自 `family_rules.py` —— 那是**自动生成**的，源是前端 `core/cover.ts` 的 FAMILIES。
+    以前这里手抄了一份，后端扩到 9 条时就跟前端脱节了（前端 17 条），
+    新增家族全落到了默认显存系数上。改家族识别请改 cover.ts，然后跑
+    `node scripts/gen-family-rules.mjs`。
+
     顺序敏感：具体家族排在通用家族前面。
     """
-    import re
-
-    rules = [
-        ("sd15", r"sd[\s._-]?1[._]?5|stable[\s._-]?diffusion[\s._-]?1"),
-        ("sdxl", r"sdxl|sd[\s._-]?xl"),
-        ("pony", r"pony"),
-        ("hunyuan", r"hunyuan|\bhyv\b"),
-        ("ltx", r"\bltx[\s.-]?v?\b"),
-        ("wan", r"\bwan[\s._-]?2|\bwan\b|wan2"),
-        ("flux", r"flux"),
-        ("qwen", r"qwen"),
-        ("minimax", r"minimax|\bmmx\b"),
-    ]
     hay = name or ""
-    for fid, pat in rules:
+    for fid, pat in FAMILY_RULES:
         if re.search(pat, hay, re.I):
             return fid
     return ""

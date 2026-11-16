@@ -82,7 +82,15 @@
       "source": {
         "kind": "official",
         "url": null,
-        "note": "多色圆标（#0053E0 / #2AB9FF / #B3DDF2 / #ECECEE），viewBox 0 -0.5 31 31，title \"Tencent Hunyuan\"。hunyuan.tencent.com 是 JS 壳，静态 HTML 里没有该 svg。",
+        "foundUrls": [
+          {
+            "url": "https://hunyuan-blog-web-prod-1258344703.cos.ap-guangzhou.myqcloud.com/assets/hy-blog-zh-white-3ZmO0crg.svg",
+            "what": "官网博客站加载的混元字标（viewBox 0 0 416 96，6 个 path，配色 #0052d9 / #00baff / #a7ddf4 / #fff）",
+            "usable": false,
+            "why": "**与本地资产不是同一份**：本地是 viewBox 0 -0.5 31 31 的 9 path 圆标，配色 #0053E0 / #2AB9FF / #B3DDF2 / #ECECEE —— 路径数与配色都对不上，不是这份字标的裁切版。本地那份的出处仍未坐实。另外该地址文件名带内容哈希（3ZmO0crg），换版即失效。"
+          }
+        ],
+        "note": "多色圆标（#0053E0 / #2AB9FF / #B3DDF2 / #ECECEE），viewBox 0 -0.5 31 31，title \"Tencent Hunyuan\"。hunyuan.tencent.com 是 JS 壳，静态 HTML 里没有该 svg；页面实际加载的是 COS 上的字标（见 foundUrls），但那份与本地资产不是同一份。",
         "hint": "注意 Simple Icons 收录的 tencenthy 是单色 #0052D9 版，和官网多色圆标不是同一资产 —— 这就是「官网主视觉优先于 SI 单色版」的实例。"
       }
     },
@@ -107,8 +115,22 @@
       "source": {
         "kind": "official",
         "url": null,
-        "note": "Stability AI 标，viewBox 0 -47.5 1101 1101，浅色 #1E1E1E / 深色 #EEEEEE。原始抓取地址未留存 —— 这正是要建这张表的原因。sd15 与 sdxl 用的是同一份资产（sha256 相同）。",
-        "hint": "stability.ai 现为 Squarespace 站，标是 JS 注入的静态资源，静态 HTML 里搜不到 1101 这样的 viewBox；需在浏览器网络面板里定位 svg 请求。"
+        "foundUrls": [
+          {
+            "url": "https://static1.squarespace.com/static/6213c340453c3f502425776e/t/6a8c82fb82d0db4c9d7d1451/1787593467907/stable-audio-logo.svg",
+            "what": "stability.ai 首页加载的 Stable Audio 字标（viewBox 0 0 127 18，#EEEEEE）",
+            "usable": false,
+            "why": "是产品字标，不是我们要的 S. symbol 标。"
+          },
+          {
+            "url": "https://platform.stability.ai/marketing/logos/universal-music.svg",
+            "what": "platform.stability.ai 的 universal-music 字标（viewBox 0 0 71 27）",
+            "usable": false,
+            "why": "同为产品字标。platform 的 /marketing/logos/ 下没有 symbol 版（universal / stability-ai / logo / universal-video 全部 404）。"
+          }
+        ],
+        "note": "Stability AI 标，viewBox 0 -47.5 1101 1101，浅色 #1E1E1E / 深色 #EEEEEE。原始抓取地址未留存 —— 这正是要建这张表的原因。sd15 与 sdxl 用的是同一份资产（sha256 相同）。2026-11-16 已用浏览器抓过 stability.ai 与 platform.stability.ai 的全部 svg 响应：只有产品字标，没有 1101 的 S. 标（见 foundUrls）。",
+        "hint": "stability.ai 现为 Squarespace 站，标是 JS 注入的静态资源；S. symbol 可能只存在于旧的品牌页或 app 图标。若哪天真找到地址，用 --fetch <id> <url> 抓进候选区。"
       }
     },
     {
@@ -150,7 +172,7 @@
       ],
       "source": {
         "kind": "manual",
-        "note": "官方只有字标（75×32），没有 symbol。塞进 22px 方槽后高只剩 7.7px 且与家族码重复，所以没启用。ltx.video 对脚本返回 403（机器人防护），需浏览器访问。GitHub Lightricks/LTX-Video 仓库根目录没有任何图形资产。",
+        "note": "官方只有字标（75×32），没有 symbol。塞进 22px 方槽后高只剩 7.7px 且与家族码重复，所以没启用。ltx.video 对脚本返回 403（机器人防护），**用真实浏览器访问也在 45s 内加载不完**（2026-11-16 实测，0 个 svg 响应）。GitHub Lightricks/LTX-Video 仓库根目录没有任何图形资产。",
         "hint": "若哪天出现横排槽位（卡片头部），可直接启用候选区这份字标。"
       }
     },
