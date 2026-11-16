@@ -205,3 +205,71 @@ def test_resolve_keeps_hash_named_file(monkeypatch):
     payload = workflows.resolve("comfyhub", "1d940575328b")
     assert [f["path"] for f in payload["files"]] == ["1d940575328b.json"]
     assert payload["target_folder"] == "workflows"
+
+
+# ---------------- 索引落盘兜底 ----------------
+
+def test_index_reads_disk_without_hitting_network(monkeypatch, tmp_path):
+    """内存空、盘上有：直接返回盘上索引，不发网络请求。
+
+    这是「后端每重启一次，首屏就白等 10 秒」的修法：827 条索引落过盘，
+    重启后先拿旧的顶上，后台再换新的。
+    """
+    import json
+
+    path = tmp_path / "comfyhub-index.json"
+    path.write_text(
+        json.dumps({"at": 0, "items": [{"id": "disk-1", "source": "comfyhub"}]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(workflows, "_HUB_CACHE", {"at": 0.0, "items": []})
+    monkeypatch.setattr(workflows, "_HUB_CACHE_FILE", path)
+
+    def boom(*a, **k):
+        raise AssertionError("不该打网络：盘上已有索引")
+
+    monkeypatch.setattr(workflows.httpx, "get", boom)
+    monkeypatch.setattr(workflows, "_refresh_index_in_background", lambda *a, **k: None)
+
+    items = workflows._hub_index()
+    assert [i["id"] for i in items] == ["disk-1"]
+
+
+def test_index_fetches_and_persists_when_disk_empty(monkeypatch, tmp_path):
+    """盘上也没有（第一次跑）：同步拉一次，并落盘供下次启动用。"""
+    import json
+
+    path = tmp_path / "comfyhub-index.json"
+    monkeypatch.setattr(workflows, "_HUB_CACHE", {"at": 0.0, "items": []})
+    monkeypatch.setattr(workflows, "_HUB_CACHE_FILE", path)
+
+    payload = [{"shareId": "abc123", "title": "Fresh", "status": "approved"}]
+    monkeypatch.setattr(
+        workflows.httpx,
+        "get",
+        lambda *a, **k: SimpleNamespace(status_code=200, json=lambda: payload),
+    )
+
+    items = workflows._hub_index()
+    assert [i["id"] for i in items] == ["abc123"]
+    assert path.exists(), "拉到的索引必须落盘，否则下次重启还要再等一遍"
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert [i["id"] for i in saved["items"]] == ["abc123"]
+
+
+def test_corrupt_disk_index_falls_back_to_network(monkeypatch, tmp_path):
+    """盘上的缓存坏了不能把发现页弄挂，退回网络拉取。"""
+    path = tmp_path / "comfyhub-index.json"
+    path.write_text("{ 这不是 JSON", encoding="utf-8")
+    monkeypatch.setattr(workflows, "_HUB_CACHE", {"at": 0.0, "items": []})
+    monkeypatch.setattr(workflows, "_HUB_CACHE_FILE", path)
+
+    payload = [{"shareId": "ok1", "title": "Ok", "status": "approved"}]
+    monkeypatch.setattr(
+        workflows.httpx,
+        "get",
+        lambda *a, **k: SimpleNamespace(status_code=200, json=lambda: payload),
+    )
+
+    items = workflows._hub_index()
+    assert [i["id"] for i in items] == ["ok1"]

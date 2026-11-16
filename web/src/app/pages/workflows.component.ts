@@ -285,7 +285,9 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
           placeholder="搜索工作流，如 flux / wan / minimax，留空看热门"
           data-testid="wf-search"
         />
-        <button class="primary" (click)="search()" [disabled]="loading">搜索</button>
+        <button class="primary" (click)="search()" [disabled]="loading">
+          {{ loading ? '检索中…' : '搜索' }}
+        </button>
       </div>
 
       <div class="wf-filters">
@@ -317,6 +319,10 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       }
       @if (loading && !items.length) {
         <div class="notice info">正在检索各站工作流…</div>
+      }
+      @if (loading && items.length) {
+        <!-- 已有内容时切换筛选/翻页：不能白屏，但必须让人看见在动 -->
+        <div class="wf-progress" role="progressbar" aria-label="正在刷新"></div>
       }
     </ui-panel>
 
@@ -1568,6 +1574,33 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       gap: 6px;
       margin-left: auto;
     }
+    /* 刷新指示条：2px 细线在面板底部走一遍。
+       已有内容时不能白屏，但也不能一声不响 —— 否则用户以为点了没反应。
+       不遮罩、不降透明度：遮罩会让列表闪一下，比等待本身更烦。 */
+    .wf-progress {
+      position: relative;
+      height: 2px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: var(--panel-3);
+      overflow: hidden;
+    }
+    .wf-progress::after {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 38%;
+      border-radius: inherit;
+      background: var(--accent);
+      animation: wf-progress-slide 1.1s ease-in-out infinite;
+    }
+    @keyframes wf-progress-slide {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(300%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wf-progress::after { animation-duration: 2.4s; }
+    }
     .wf-list {
       display: flex;
       flex-direction: column;
@@ -2750,6 +2783,8 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.errorText = '';
     this.notice = '';
+    // 旧的源错误属于上一次查询，留着会让人以为这次也挂了
+    this.sourceErrors = [];
     this.api
       .searchWorkflows({ q: this.q.trim(), source: this.source, sort: this.sort, limit: PAGE_SIZE, page })
       .subscribe({

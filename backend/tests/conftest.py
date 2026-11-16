@@ -24,3 +24,19 @@ def _clear_search_caches():
     cache.clear_search()
     yield
     cache.clear_search()
+
+
+@pytest.fixture(autouse=True)
+def _isolate_index_disk_cache(tmp_path, monkeypatch):
+    """把两个全量索引（官方模板 / ComfyHub）的内存与磁盘缓存都换成空的。
+
+    它们现在有磁盘兜底（`var/data/*-index.json`），跑过开发机就会留一份真实数据。
+    测试若不隔离，`_hub_index()` 会先读到盘上的 827 条真数据，monkeypatch 的假响应
+    根本轮不到 —— 表现为「同一份测试，干净机器上过、开发机上挂」。
+    """
+    from app import workflows
+
+    monkeypatch.setattr(workflows, "_TEMPLATES_CACHE", {"at": 0.0, "items": []})
+    monkeypatch.setattr(workflows, "_TEMPLATES_CACHE_FILE", tmp_path / "templates-index.json")
+    monkeypatch.setattr(workflows, "_HUB_CACHE", {"at": 0.0, "items": []})
+    monkeypatch.setattr(workflows, "_HUB_CACHE_FILE", tmp_path / "comfyhub-index.json")

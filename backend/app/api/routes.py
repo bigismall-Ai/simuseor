@@ -785,6 +785,32 @@ def warm_discover() -> None:
         list(pool.map(one, ("huggingface", "modelscope", "civitai")))
 
 
+def warm_workflows() -> None:
+    """预热工作流发现页首屏（后台线程调用，失败无所谓）。
+
+    两件事：
+    1. 把官方模板与 ComfyHub 两个全量索引读进内存 —— 它们落过盘，正常是毫秒级；
+       盘上没有才真拉，那一步由 _index_cache 自己兜底。
+    2. 跑一遍默认查询，让聚合结果（含时间预算后的合并结果）进 20 分钟缓存。
+
+    不做这两步的话，后端每重启一次，第一个点进发现页的人就要等 2~3 秒：
+    索引冷 + 聚合缓存冷，两笔一起付。
+    """
+    for warm in (
+        lambda: workflow_service._templates(),
+        lambda: workflow_service._hub_index(),
+    ):
+        try:
+            warm()
+        except Exception:  # noqa: BLE001 —— 预热失败只是少了优化，不该影响启动
+            pass
+    for sort in ("downloads", "latest"):
+        try:
+            workflow_service.search("", "all", 12, 1, sort)
+        except Exception:  # noqa: BLE001
+            pass
+
+
 class CoverItem(BaseModel):
     source: str
     id: str

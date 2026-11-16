@@ -445,7 +445,7 @@ def _search_modelscope(q: str, limit: int, page: int, sort: str = "downloads") -
     items: list[dict] = []
     # 探测仓库文件树是 N+1，必须给整批一个预算：某个仓库的 files 请求挂住时，
     # 不能把整页拖成十几秒。凑到够用的条数就返回，剩下的在后台自然结束。
-    pool = ThreadPoolExecutor(max_workers=10)
+    pool = ThreadPoolExecutor(max_workers=4)
     try:
         futures = {pool.submit(probe, m): m for m in models}
         finished, pending = wait_futures(futures, timeout=PROBE_BUDGET)
@@ -464,14 +464,92 @@ def _search_modelscope(q: str, limit: int, page: int, sort: str = "downloads") -
 
 
 _TEMPLATES_CACHE: dict = {"at": 0.0, "items": []}
+_TEMPLATES_CACHE_FILE = DATA_DIR / "templates-index.json"
 _TEMPLATES_TTL = 600
+
+_INDEX_LOCK = threading.Lock()
+
+
+def _write_index(path: Path, items: list[dict], at: float) -> None:
+    """原子写：先写临时文件再 replace，半截文件不会顶替掉好缓存。"""
+    tmp = path.with_name(path.name + ".tmp")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps({"at": at, "items": items}, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(path)
+    except OSError:
+        pass
+
+
+def _refresh_index_in_background(cache: dict, path: Path, fetch: Callable[[], list[dict]]) -> None:
+    """后台换新；同一时刻只允许一个刷新在跑，避免每次调用都起线程。"""
+    with _INDEX_LOCK:
+        if cache.get("refreshing"):
+            return
+        cache["refreshing"] = True
+
+    def work() -> None:
+        try:
+            items = fetch()
+            at = time.time()
+            with _INDEX_LOCK:
+                cache.update(at=at, items=items)
+            _write_index(path, items, at)
+        except Exception:
+            pass  # 后台刷新失败不影响已返回的旧数据
+        finally:
+            with _INDEX_LOCK:
+                cache["refreshing"] = False
+
+    threading.Thread(target=work, name="index-refresh", daemon=True).start()
+
+
+def _index_cache(cache: dict, path: Path, ttl: float, fetch: Callable[[], list[dict]]) -> list[dict]:
+    """索引型数据的三级取数：内存 → 磁盘 → 网络。
+
+    官方模板（760 条）与 ComfyHub（827 条）都是「一次拉全量、再本地检索」，
+    拉一次要 3~10 秒。纯进程内缓存的问题是**后端每重启一次就清零** ——
+    开发时改一个 .py 就重启，用户每回都白等一趟首屏。
+
+    所以磁盘留一份：内存过期时先用盘上的旧索引顶上（这类「官方清单」
+    变化很慢，晚几分钟无所谓），同时在后台换新的。盘上也没有（第一次跑）
+    才同步等网络。
+    """
+    now = time.time()
+    with _INDEX_LOCK:
+        if cache["items"] and now - cache["at"] < ttl:
+            return cache["items"]
+        cached = list(cache["items"])
+
+    if not cached:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            payload = None
+        items = (payload or {}).get("items")
+        if isinstance(items, list) and items:
+            cached = items
+            with _INDEX_LOCK:
+                cache.update(at=float(payload.get("at") or 0), items=items)
+
+    if cached:
+        _refresh_index_in_background(cache, path, fetch)
+        return cached
+
+    items = fetch()
+    at = time.time()
+    with _INDEX_LOCK:
+        cache.update(at=at, items=items)
+    _write_index(path, items, at)
+    return items
 
 
 def _templates() -> list[dict]:
-    """官方模板清单（进程内缓存 10 分钟，避免每次搜索拉 800KB 索引）。"""
-    now = time.time()
-    if _TEMPLATES_CACHE["items"] and now - _TEMPLATES_CACHE["at"] < _TEMPLATES_TTL:
-        return _TEMPLATES_CACHE["items"]
+    """官方模板清单（内存 10 分钟 + 磁盘兜底，避免每次搜索拉 800KB 索引）。"""
+    return _index_cache(_TEMPLATES_CACHE, _TEMPLATES_CACHE_FILE, _TEMPLATES_TTL, _templates_fetch)
+
+
+def _templates_fetch() -> list[dict]:
     try:
         resp = httpx.get(TEMPLATES_INDEX, headers=UA, timeout=60, follow_redirects=True)
     except httpx.HTTPError as exc:
@@ -510,7 +588,6 @@ def _templates() -> list[dict]:
             # 分类只用于检索与排序（Image / Video / Audio 这些模块标题），不上界面
             entry["categories"] = [module_title, module_cat]
             items.append(entry)
-    _TEMPLATES_CACHE.update(at=now, items=items)
     return items
 
 
@@ -540,7 +617,9 @@ def _search_github(q: str, limit: int, page: int, sort: str = "downloads") -> tu
     if not cfg.get("token"):
         raise SourceError("GitHub 搜索需要 Access Token（设置 → GitHub）；未认证仅 60 次/小时")
     headers = {**UA, "Accept": "application/vnd.github+json", "Authorization": f"Bearer {cfg['token']}"}
-    scan = max(8, int(limit) * 2)
+    # 每个仓库都要列一次文件树（N+1），扫描池越大越慢。够凑满一页再多留几个余量即可，
+    # GitHub 上「comfyui workflow」的仓库里放 .json 的比例很高，不需要翻倍扫。
+    scan = max(8, int(limit) + 4)
     params = {
         "q": f"comfyui workflow {q or ''}".strip(),
         "sort": "updated" if sort == "latest" else "stars",
@@ -585,16 +664,30 @@ def _search_github(q: str, limit: int, page: int, sort: str = "downloads") -> tu
         )
 
     items: list[dict] = []
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        for item in pool.map(probe, repos):
+    # 和 ModelScope 同样的 N+1 问题：每个仓库都要列一次文件树才知道有没有 .json。
+    # 二十多个仓库 × 每次几百毫秒，在「全部来源」并发下能吃掉整个预算，
+    # 于是每页都卡在 6 秒上限 —— 用户看到的就是「点了没反应」。凑够就返回。
+    pool = ThreadPoolExecutor(max_workers=4)
+    try:
+        futures = {pool.submit(probe, repo): repo for repo in repos}
+        finished, pending = wait_futures(futures, timeout=PROBE_BUDGET)
+        for future in finished:
+            try:
+                item = future.result()
+            except Exception:
+                continue
             if item:
                 items.append(item)
+        for future in pending:
+            future.cancel()
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
     return items[:limit], len(repos) >= max(1, int(limit))
 
 
 _HUB_CACHE: dict = {"at": 0.0, "items": []}
+_HUB_CACHE_FILE = DATA_DIR / "comfyhub-index.json"
 _HUB_TTL = 1200
-_HUB_LOCK = threading.Lock()
 
 
 _HUB_ASSETS = "https://comfy-hub-assets.comfy.org/"
@@ -620,15 +713,17 @@ def _hub_thumb(url: str) -> str:
 
 
 def _hub_index() -> list[dict]:
-    """ComfyHub 已审核工作流索引（进程内缓存 20 分钟）。
+    """ComfyHub 已审核工作流索引（内存 20 分钟 + 磁盘兜底，见 _index_cache）。
 
     一次拿全量再在本地做检索/排序/分页：索引本身是列表不是搜索接口，
     服务端 q 只在新版 catalog 上才有，而 catalog 要翻 16 页才能凑齐。
+    冷启动拉 827 条实测 9.8 秒 —— 后端每重启一次首屏就白等一趟，
+    所以走 _index_cache 的落盘兜底。
     """
-    now = time.time()
-    with _HUB_LOCK:
-        if _HUB_CACHE["items"] and now - _HUB_CACHE["at"] < _HUB_TTL:
-            return _HUB_CACHE["items"]
+    return _index_cache(_HUB_CACHE, _HUB_CACHE_FILE, _HUB_TTL, _hub_fetch)
+
+
+def _hub_fetch() -> list[dict]:
     try:
         resp = httpx.get(HUB_INDEX, headers=UA, timeout=60, follow_redirects=True)
     except httpx.HTTPError as exc:
@@ -666,8 +761,6 @@ def _hub_index() -> list[dict]:
         # 只用于检索，不上界面；索引里长篇的 suggestedUseCases 不塞进来
         entry["categories"] = [str(t) for t in (e.get("tags") or []) if t]
         items.append(entry)
-    with _HUB_LOCK:
-        _HUB_CACHE.update(at=now, items=items)
     return items
 
 
@@ -694,11 +787,11 @@ def _search_comfyhub(q: str, limit: int, page: int, sort: str = "downloads") -> 
 # 各源并发，用户的等待时间就是最慢那个源的耗时；某些源（官方模板、GitHub）
 # 在网络不佳时能挂十几二十秒，没有预算就会把首屏拖成 40 秒。
 # 正常时所有源 2~3 秒内齐活，wait 会提前返回，不会白等满这个值。
-SOURCE_BUDGET = 6.0
+SOURCE_BUDGET = 4.0
 
 # 单个源内部「逐个仓库探文件树」的预算（秒）。N+1 探测里只要有一个仓库的
 # 文件树请求挂住，整批就会僵在那里 —— 凑够条数就先返回一部分。
-PROBE_BUDGET = 3.5
+PROBE_BUDGET = 3.0
 
 
 _SEARCHERS: dict[str, Callable[..., tuple[list[dict], bool]]] = {
