@@ -374,3 +374,89 @@ def test_timeout_keeps_done_false(monkeypatch):
 
     result = workflows.search("done-probe", "all", 12, 1, "downloads")
     assert result["done"] is False, "有源超时说明结果不完整，done 必须为 False"
+
+
+# ---------------- GitHub 的扫描池上限 ----------------
+
+def _fake_github(monkeypatch, *, repo_count=16, has_json=True):
+    """把 GitHub 的两段请求都换成假的，并记录探测了哪些仓库。"""
+    from types import SimpleNamespace
+
+    probed: list[str] = []
+    seen_per_page: list[int] = []
+
+    monkeypatch.setattr(
+        workflows, "_source_cfg", lambda name: {"token": "tok"} if name == "github" else {}
+    )
+
+    def fake_get(url, params=None, headers=None, **kw):
+        take = (params or {}).get("per_page", 0)
+        seen_per_page.append(take)
+        # 真实 GitHub 按 per_page 截断；这里必须一起模拟，
+        # 否则「扫描上限」形同虚设 —— 假响应永远返回全量。
+        return SimpleNamespace(
+            status_code=200,
+            headers={},
+            json=lambda: {
+                "items": [
+                    {"full_name": f"owner/repo{i}", "default_branch": "main", "stargazers_count": i}
+                    for i in range(min(repo_count, take or repo_count))
+                ]
+            },
+        )
+
+    monkeypatch.setattr(workflows.httpx, "get", fake_get)
+
+    def fake_tree(rid, branch, cfg):
+        probed.append(rid)
+        return [("workflow.json", 100)] if has_json else [("readme.md", 100)]
+
+    monkeypatch.setattr(workflows, "tree_files", fake_tree)
+    return probed, seen_per_page
+
+
+def test_github_scan_capped_in_all_mode(monkeypatch):
+    """「全部来源」里 GitHub 只探 8 个仓库。
+
+    它是唯一需要 N+1 的源（每个仓库列一次文件树）：实测扫 16 个 3.5 秒、
+    并发 12 反而 9.8 秒（服务端限速），必然顶掉整批预算 → 每次都被标成
+    「响应超时」。扫 8 个只要 1 秒，而且高星仓库 8/8 都含 .json。
+    """
+    probed, per_page = _fake_github(monkeypatch, repo_count=16)
+
+    workflows._search_github("q", 12, 1, "downloads", workflows.GITHUB_SCAN_IN_ALL)
+
+    assert len(probed) == workflows.GITHUB_SCAN_IN_ALL == 8
+    assert per_page[0] == 8, "per_page 必须跟着扫描上限一起收，否则多拉的仓库白费流量"
+
+
+def test_github_full_scan_when_alone(monkeypatch):
+    """单独看 GitHub 时不限扫描池（此时没有整批预算要抢）。"""
+    probed, _ = _fake_github(monkeypatch, repo_count=30)
+
+    workflows._search_github("q", 12, 1, "downloads")
+
+    assert len(probed) == 16, "limit=12 时应扫 limit+4，而不是被 all 模式的 8 限住"
+
+
+def test_search_passes_scan_cap_only_in_all_mode(monkeypatch):
+    """聚合搜索给 GitHub 传扫描上限，单独查某个源时不传。"""
+    calls: list[tuple] = []
+
+    def fake_github(q, limit, page, sort="downloads", scan_cap=None):
+        calls.append(scan_cap)
+        return [{"source": "github", "id": "g1"}], False
+
+    def fake_other(q, limit, page, sort="downloads"):
+        return [{"source": "templates", "id": "t1"}], False
+
+    monkeypatch.setattr(
+        workflows, "_SEARCHERS", {"templates": fake_other, "github": fake_github}
+    )
+    monkeypatch.setattr(workflows, "_source_cfg", lambda name: {"token": "tok"})
+
+    workflows.search("all-mode-probe", "all", 12, 1, "downloads")
+    assert calls[-1] == workflows.GITHUB_SCAN_IN_ALL
+
+    workflows.search("solo-probe", "github", 12, 1, "downloads")
+    assert calls[-1] is None, "单独查源时不该带 all 模式的扫描上限"

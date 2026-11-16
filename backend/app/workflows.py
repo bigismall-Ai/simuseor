@@ -612,14 +612,18 @@ def _search_templates(q: str, limit: int, page: int, sort: str = "downloads") ->
     return items[start:end], end < len(items)
 
 
-def _search_github(q: str, limit: int, page: int, sort: str = "downloads") -> tuple[list[dict], bool]:
+def _search_github(
+    q: str, limit: int, page: int, sort: str = "downloads", scan_cap: int | None = None
+) -> tuple[list[dict], bool]:
     cfg = _source_cfg("github")
     if not cfg.get("token"):
         raise SourceError("GitHub 搜索需要 Access Token（设置 → GitHub）；未认证仅 60 次/小时")
     headers = {**UA, "Accept": "application/vnd.github+json", "Authorization": f"Bearer {cfg['token']}"}
-    # 每个仓库都要列一次文件树（N+1），扫描池越大越慢。够凑满一页再多留几个余量即可，
-    # GitHub 上「comfyui workflow」的仓库里放 .json 的比例很高，不需要翻倍扫。
-    scan = max(8, int(limit) + 4)
+    # 每个仓库都要单独列一次文件树（N+1），这是这个源唯一的结构性开销：
+    # 实测 16 个仓库并发 8 要 3.5 秒，而 GitHub 对并发很敏感（并发 12 反而变 9.8 秒）。
+    # 「全部来源」里它一旦铺满 16 个就必然顶掉整批预算，所以由调用方给一个更小的
+    # 扫描上限（scan_cap）；单独看 GitHub 时才扫足量。
+    scan = scan_cap or max(8, int(limit) + 4)
     params = {
         "q": f"comfyui workflow {q or ''}".strip(),
         "sort": "updated" if sort == "latest" else "stars",
@@ -793,6 +797,11 @@ SOURCE_BUDGET = 4.0
 # 文件树请求挂住，整批就会僵在那里 —— 凑够条数就先返回一部分。
 PROBE_BUDGET = 3.0
 
+# 「全部来源」里 GitHub 的扫描池上限。它要逐仓库列文件树（唯一需要 N+1 的源），
+# 扫满 16 个实测 3.5 秒、并发 12 反而 9.8 秒（服务端对并发限速），
+# 扫 8 个只要 1 秒且 8/8 都含 .json。单独看 GitHub 时不走这个上限。
+GITHUB_SCAN_IN_ALL = 8
+
 
 _SEARCHERS: dict[str, Callable[..., tuple[list[dict], bool]]] = {
     "templates": _search_templates,
@@ -832,7 +841,15 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
     # 所以给整批一个总预算：到点就带上已拿到的结果返回，慢源标记超时。
     pool = ThreadPoolExecutor(max_workers=len(names))
     try:
-        futures = {pool.submit(_SEARCHERS[name], q, limit, page, sort): name for name in names}
+        futures = {}
+        for name in names:
+            fn = _SEARCHERS[name]
+            # 「全部来源」时把 GitHub 的扫描池收到 8：它要逐仓库列文件树，
+            # 扫满 16 个实测 3.5 秒，会把整批预算吃光；扫 8 个只要 1 秒，
+            # 而且这些高星仓库 8/8 都含 .json，够合并进一页。
+            # 单独点 GitHub 时不传这个上限，仍然扫足量。
+            extra = (GITHUB_SCAN_IN_ALL,) if (name == "github" and len(names) > 1) else ()
+            futures[pool.submit(fn, q, limit, page, sort, *extra)] = name
         # 一次性等整批，不能逐个 future.result() —— 逐个等会把超时累加成 n 倍
         finished, pending = wait_futures(futures, timeout=SOURCE_BUDGET)
         for future in finished:
