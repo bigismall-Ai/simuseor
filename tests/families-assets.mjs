@@ -29,13 +29,14 @@ const sha256 = (buf) => {
 const errors = [];
 const log = [];
 
-// 从 cover.ts 里抠出每个家族块的 id / logo / logoDark
+// 从 cover.ts 里抠出每个家族块的 id / logo / logoDark / logoScale
 const blocks = [...coverSrc.matchAll(/id:\s*'([^']+)'([\s\S]*?)\n  \},/g)];
 const families = [];
 for (const [, id, body] of blocks) {
   const logo = /logo:\s*'([^']+)'/.exec(body)?.[1] || null;
   const logoDark = /logoDark:\s*'([^']+)'/.exec(body)?.[1] || null;
-  families.push({ id, logo, logoDark });
+  const logoScale = /logoScale:\s*([0-9.]+)/.exec(body)?.[1] || null;
+  families.push({ id, logo, logoDark, logoScale: logoScale ? parseFloat(logoScale) : null });
 }
 log.push(`家族 ${families.length} 个：${families.map((f) => f.id).join(', ')}`);
 
@@ -173,6 +174,36 @@ if (!fs.existsSync(PLATE_CSS)) {
     if (all < 2) errors.push(`[${f.id}] 缺浅色色板 .f-${f.id} —— 有 logo 却没底色`);
   }
   log.push(`家族色板 ${families.length} 套（浅色 + 深色）✓`);
+}
+
+// 6) logoScale 补偿是否就位
+//
+// 为什么要有这条：各厂牌的官方资产各有各的网格（ernie 21×24、flux/qwen 24×24、
+// hunyuan 31×31、minimax 57×48、sd15 1101×1101），同样放进 20×20 的槽位，
+// 视觉重量能差好几倍。`logoScale` 就是为此存在的补偿旋钮。
+//
+// 但它是**手填**的 —— 现在只有 3 个家族设了值（sd15/sdxl 0.86、flux 1.08），
+// 其余靠默认 1。加家族时十有八九会漏。这条检查抓的就是「漏」。
+//
+// **刻意不做的事：不判定「该设成多少」。**
+// 实测三次证明自动校准不可靠：
+//  1) 直接量 SVG 的非白像素 → 量的是「官方画得多满」，hunyuan 的浅蓝大圆盘
+//     占 75% 面积但视觉很轻，会被误判成最重
+//  2) 用对比度加权 + 反解 scale → 分母口径不一致，家族码与标的量不可比
+//  3) 自己造 DOM 套 transform → 忘了 object-fit:contain，图形被拉伸出槽位
+// 视觉重量最终要人眼在真实卡片上判（见 artifacts/plates-real.png）。
+// 所以这里只保证「旋钮存在」，具体数值由人按实物调。
+{
+  const withLogo = families.filter((f) => f.logo);
+  const missing = withLogo.filter((f) => f.logoScale === null);
+  const valued = withLogo.filter((f) => f.logoScale !== null);
+  log.push(
+    `logoScale 补偿：${valued.length}/${withLogo.length} 个家族已设（${valued.map((f) => `${f.id} ${f.logoScale}`).join('，')}）`,
+  );
+  for (const f of missing) {
+    // 不是错误 —— 但必须让人知道这个家族的视觉重量还没被人眼校准过。
+    log.push(`  ⚠ ${f.id} 没设 logoScale（默认 1）—— 该厂牌网格与其它不同，视觉重量未校准`);
+  }
 }
 
 console.log(log.join('\n'));

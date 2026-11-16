@@ -45,7 +45,8 @@
         "kind": "simple-icons",
         "slug": "qwen",
         "color": "6950EF",
-        "note": "官方紫 #6950EF，与 Simple Icons 品牌色一致。**不备反白版**：反白等于改色，违反「绝不改色」。深色主题直接用这一份 —— 深色底 (#232220) 上对比度 3.3:1，达到品牌图形 3:1 门槛，且保住了「官方紫」这个识别特征。曾在 2026-11 试过白色反白版（qwen-dark.svg），已按此结论移除。"
+        "note": "官方紫 #6950EF，与 Simple Icons 品牌色一致。**不备反白版**：反白等于改色，违反「绝不改色」。深色主题直接用这一份 —— 深色底 (#232220) 上对比度 3.3:1，达到品牌图形 3:1 门槛，且保住了「官方紫」这个识别特征。曾在 2026-11 试过白色反白版（qwen-dark.svg），已按此结论移除。",
+        "visualWeight": "视觉重量略重于同档（紫色块面较满）。**未经人眼校准**，暂按默认 1 渲染。"
       }
     },
     {
@@ -64,7 +65,8 @@
         "kind": "official",
         "url": null,
         "note": "取自 platform.minimaxi.com 首屏字标 svg 的第一个 path（symbol），viewBox 裁到 0 0 57.14 48，官方渐变 #E21680 → #FF633A 原样保留。该站是 JS 渲染，静态 HTML 里取不到 svg 元素，只能在浏览器里抓。",
-        "hint": "在浏览器打开 platform.minimaxi.com，定位 viewBox=\"0 0 201 48\" 的 svg，取其第一个 path 与渐变 id paint0_linear_7229_73014。"
+        "hint": "在浏览器打开 platform.minimaxi.com，定位 viewBox=\"0 0 201 48\" 的 svg，取其第一个 path 与渐变 id paint0_linear_7229_73014。",
+        "visualWeight": "横排字标（57.14×48），本身横向填满方槽 → 放大会溢出，**不放大**。视觉上偏轻是几何决定的，不是补偿能解的。**未经人眼校准**。"
       }
     },
     {
@@ -91,7 +93,8 @@
           }
         ],
         "note": "多色圆标（#0053E0 / #2AB9FF / #B3DDF2 / #ECECEE），viewBox 0 -0.5 31 31，title \"Tencent Hunyuan\"。hunyuan.tencent.com 是 JS 壳，静态 HTML 里没有该 svg；页面实际加载的是 COS 上的字标（见 foundUrls），但那份与本地资产不是同一份。",
-        "hint": "注意 Simple Icons 收录的 tencenthy 是单色 #0052D9 版，和官网多色圆标不是同一资产 —— 这就是「官网主视觉优先于 SI 单色版」的实例。"
+        "hint": "注意 Simple Icons 收录的 tencenthy 是单色 #0052D9 版，和官网多色圆标不是同一资产 —— 这就是「官网主视觉优先于 SI 单色版」的实例。",
+        "visualWeight": "视觉重量偏重（圆形色块占满 31×31 网格，但配色浅淡）。**未经人眼校准**，暂按默认 1 渲染。"
       }
     },
     {
@@ -250,7 +253,8 @@
         "url": "https://ernie.baidu.com/assets/wenxin-mark-color.svg",
         "urlDark": "https://ernie.baidu.com/assets/wenxin-mark.svg",
         "note": "百度文心（ERNIE）官方 symbol，官网 /assets/ 下直接可取的 SVG。浅色版是 #002F8E + 蓝渐变（#0439B5 → #146DD7 → #26AAFF），深色版是同一几何的白色渐变。viewBox 21.76×24.78，symbol 满幅，无需 logoScale。",
-        "hint": "ernie.baidu.com 上另有 wenxin-wordmark.svg（横排字标），不用 —— 22px 槽位用 symbol。"
+        "hint": "ernie.baidu.com 上另有 wenxin-wordmark.svg（横排字标），不用 —— 22px 槽位用 symbol。",
+        "visualWeight": "视觉重量偏重（蓝标比同行的 ERN 家族码明显重）。该资产 viewBox 是 21.76×24.78 —— 官方图形画得满。**未经人眼校准**，暂按默认 1 渲染。"
       }
     },
     {
