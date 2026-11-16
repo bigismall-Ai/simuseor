@@ -22,7 +22,7 @@ import threading
 import time
 import zipfile
 from collections.abc import Iterable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait as wait_futures
 from pathlib import Path
 from typing import Callable
 
@@ -369,7 +369,7 @@ def _ms_files(repo_id: str, cfg: dict) -> list[str]:
             f"{MS_API}/api/v1/models/{repo_id}/repo/files",
             params={"Revision": "master", "Root": ""},
             headers=headers,
-            timeout=20,
+            timeout=5,
             follow_redirects=True,
             proxy=source_proxy(cfg),
         )
@@ -443,10 +443,23 @@ def _search_modelscope(q: str, limit: int, page: int, sort: str = "downloads") -
         )
 
     items: list[dict] = []
-    with ThreadPoolExecutor(max_workers=6) as pool:
-        for item in pool.map(probe, models):
+    # 探测仓库文件树是 N+1，必须给整批一个预算：某个仓库的 files 请求挂住时，
+    # 不能把整页拖成十几秒。凑到够用的条数就返回，剩下的在后台自然结束。
+    pool = ThreadPoolExecutor(max_workers=10)
+    try:
+        futures = {pool.submit(probe, m): m for m in models}
+        finished, pending = wait_futures(futures, timeout=PROBE_BUDGET)
+        for future in finished:
+            try:
+                item = future.result()
+            except Exception:
+                continue
             if item:
                 items.append(item)
+        for future in pending:
+            future.cancel()
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
     return items[:limit], len(models) >= page_size
 
 
@@ -677,6 +690,17 @@ def _search_comfyhub(q: str, limit: int, page: int, sort: str = "downloads") -> 
     return items[start:end], end < len(items)
 
 
+# 一次「全部来源」搜索留给所有源的总等待预算（秒）。
+# 各源并发，用户的等待时间就是最慢那个源的耗时；某些源（官方模板、GitHub）
+# 在网络不佳时能挂十几二十秒，没有预算就会把首屏拖成 40 秒。
+# 正常时所有源 2~3 秒内齐活，wait 会提前返回，不会白等满这个值。
+SOURCE_BUDGET = 6.0
+
+# 单个源内部「逐个仓库探文件树」的预算（秒）。N+1 探测里只要有一个仓库的
+# 文件树请求挂住，整批就会僵在那里 —— 凑够条数就先返回一部分。
+PROBE_BUDGET = 3.5
+
+
 _SEARCHERS: dict[str, Callable[..., tuple[list[dict], bool]]] = {
     "templates": _search_templates,
     "comfyhub": _search_comfyhub,
@@ -709,9 +733,17 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
     parts: dict[str, list[dict]] = {}
     errors: dict[str, str] = {}
     done = True
-    with ThreadPoolExecutor(max_workers=len(names)) as pool:
+
+    # 六个源并发跑，但**用户的等待时间由最慢的那个决定**。官方模板源在代理环境下
+    # 曾 SSL 握手挂 20 秒，直接把「全部来源」拖成 40 秒 —— 页面看起来就是一直转不出来。
+    # 所以给整批一个总预算：到点就带上已拿到的结果返回，慢源标记超时。
+    pool = ThreadPoolExecutor(max_workers=len(names))
+    try:
         futures = {pool.submit(_SEARCHERS[name], q, limit, page, sort): name for name in names}
-        for future, name in futures.items():
+        # 一次性等整批，不能逐个 future.result() —— 逐个等会把超时累加成 n 倍
+        finished, pending = wait_futures(futures, timeout=SOURCE_BUDGET)
+        for future in finished:
+            name = futures[future]
             try:
                 part, has_more = future.result()
                 parts[name] = part
@@ -719,6 +751,17 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
                 done = done and not has_more
             except SourceError as exc:
                 errors[name] = str(exc)
+            except Exception as exc:  # 单个源里的意外错误不该让整页 500
+                errors[name] = str(exc) or exc.__class__.__name__
+        for future in pending:
+            # 超时的源没拿到 has_more，保守认为它还有下一页
+            errors[futures[future]] = f"响应超时（>{SOURCE_BUDGET:.0f}s）"
+            future.cancel()
+            done = False
+    finally:
+        # 不等残留线程：它们在后台跑完自然回收，但请求必须现在返回
+        pool.shutdown(wait=False, cancel_futures=True)
+
     # 按 names 的固定顺序轮询合并：单源结果内保持它自己的排序
     ordered = [parts[name] for name in names if parts.get(name)]
     items = _interleave(ordered) if len(ordered) > 1 else (ordered[0] if ordered else [])

@@ -329,3 +329,48 @@ def test_clear_search_drops_workflow_cache(monkeypatch):
     cache.clear_search()
     workflows.search("flux", "all", 12, 1, "downloads")
     assert calls["n"] == 2
+
+
+# ---------------- 慢源不能拖住整批 ----------------
+
+def test_slow_source_does_not_block_others(monkeypatch):
+    """一个源挂住时，其余源的结果必须照常返回。
+
+    真实故障：官方模板源在代理环境里 SSL 握手挂 20 秒，「全部来源」首屏
+    被拖成 41 秒 —— 用户看到的就是「一直转不出来」。现在给整批一个总预算，
+    到点带上已拿到的结果返回，慢源标记超时。
+    """
+    def fast(q, limit, page, sort="downloads"):
+        return [{"source": "templates", "id": "fast"}], False
+
+    def slow(q, limit, page, sort="downloads"):
+        time.sleep(3)
+        return [{"source": "huggingface", "id": "slow"}], False
+
+    monkeypatch.setattr(workflows, "_SEARCHERS", {"templates": fast, "huggingface": slow})
+    monkeypatch.setattr(workflows, "SOURCE_BUDGET", 0.3)
+
+    started = time.time()
+    result = workflows.search("budget-probe", "all", 12, 1, "downloads")
+    elapsed = time.time() - started
+
+    assert elapsed < 1.5, f"不该等慢源，实际 {elapsed:.2f}s"
+    assert [i["id"] for i in result["items"]] == ["fast"], "快源的结果必须保住"
+    assert "huggingface" in result["errors"], "慢源要标成超时"
+    assert "超时" in result["errors"]["huggingface"]
+
+
+def test_timeout_keeps_done_false(monkeypatch):
+    """超时的源没给出 has_more，就不能把整源当成已到底。"""
+    def fast(q, limit, page, sort="downloads"):
+        return [{"source": "templates", "id": "a"}], False
+
+    def slow(q, limit, page, sort="downloads"):
+        time.sleep(3)
+        return [], False
+
+    monkeypatch.setattr(workflows, "_SEARCHERS", {"templates": fast, "civitai": slow})
+    monkeypatch.setattr(workflows, "SOURCE_BUDGET", 0.3)
+
+    result = workflows.search("done-probe", "all", 12, 1, "downloads")
+    assert result["done"] is False, "有源超时说明结果不完整，done 必须为 False"
