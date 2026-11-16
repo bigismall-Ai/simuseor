@@ -24,6 +24,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'node:url';
+import { LOBEHUB_BASE, brandOf, grabBrandSvg } from './lib/lobehub.mjs';
 
 // 从脚本自身位置推导仓库根 —— 硬编码绝对路径换台机器/CI 就崩。
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -106,6 +107,18 @@ async function grab(source, overrideUrl) {
       url = source.color
         ? `https://cdn.simpleicons.org/${source.slug}/${source.color}`
         : `https://cdn.simpleicons.org/${source.slug}`;
+    } else if (source.kind === 'community') {
+      // 社区档：lobehub 的 @lobehub/icons。
+      // 它没有独立的 .svg 文件 —— SVG path 内联在组件源码里，
+      // 所以抓的不是「一个 URL」，而是「一段源码 → 抠出 SVG」。
+      const brand = source.brand || brandOf(source.id);
+      if (!brand) return { url: null, error: 'community 来源未登记品牌名' };
+      try {
+        const svg = await grabBrandSvg(brand);
+        return { url: `${LOBEHUB_BASE}/${brand}/components/Mono.mjs`, body: Buffer.from(svg, 'utf8') };
+      } catch (e) {
+        return { url: null, error: `社区源抓取失败：${e.message}` };
+      }
     } else if (source.kind === 'official') {
       return { url: null, error: '官方来源未登记可抓地址（需人工提供）' };
     } else {
@@ -133,10 +146,18 @@ async function grab(source, overrideUrl) {
 /** 家族的两个变体各自对应的抓取参数 */
 function variantsOf(fam) {
   const s = fam.source || {};
-  return [
+  const vs = [
     { variant: 'light', color: s.color, rel: fam.assets.find((a) => a.variant === 'light')?.path },
     { variant: 'dark', color: s.colorDark, rel: fam.assets.find((a) => a.variant === 'dark')?.path },
   ].filter((v) => v.rel);
+  // 社区档（lobehub）提供的是**单色规范化 symbol** —— 浅深共用同一份几何，
+  // 深色底靠反白版或 CSS 变量处理，不是两套不同资产。
+  // 如果家族还没登记任何资产（assets 为空），也照样抓一份进候选区，
+  // 否则「社区源能补上留白家族」这件事在机制上就走不通。
+  if (!vs.length && s.kind === 'community') {
+    return [{ variant: 'light', color: s.color, rel: `families/${fam.id}.svg` }];
+  }
+  return vs;
 }
 
 function candidatePath(fam, variant) {

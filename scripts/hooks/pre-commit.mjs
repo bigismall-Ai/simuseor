@@ -49,7 +49,7 @@ const TOUCHES_ASSETS = [
   /^web\/src\/app\/ui\/cover-plate\.component\.ts$/,
   /^backend\/app\/family_rules\.py$/,
   /^backend\/app\/library_meta\.py$/,
-  /^scripts\/(fetch-family-assets|gen-family-rules)\.mjs$/,
+  /^scripts\/(fetch-family-assets|fetch-lobehub-assets|gen-family-rules)\.mjs$/,
   /^tests\/(families-assets|family-table-sync)\.mjs$/,
 ];
 
