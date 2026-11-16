@@ -47,6 +47,11 @@ class TtlCache:
 
 _search = TtlCache(ttl=1200, maxsize=128)
 
+# 工作流搜索单独一个实例。
+# 不跟模型搜索共用一个 dict：两者的 key 空间不同，混在一起会互相挤占 ——
+# 模型页翻几页就能把工作流的缓存条目 LRU 淘汰掉。
+_wf_search = TtlCache(ttl=1200, maxsize=96)
+
 
 def get_search(key: str) -> dict | None:
     return _search.get(key)
@@ -56,6 +61,19 @@ def put_search(key: str, value: dict) -> None:
     _search.put(key, value)
 
 
+def get_workflow_search(key: str) -> dict | None:
+    return _wf_search.get(key)
+
+
+def put_workflow_search(key: str, value: dict) -> None:
+    _wf_search.put(key, value)
+
+
 def clear_search() -> None:
-    """设置变更（token / 完整目录 / 代理）后必须清空，否则旧结果会盖住新配置。"""
+    """设置变更（token / 完整目录 / 代理）后必须清空，否则旧结果会盖住新配置。
+
+    工作流缓存一并清：GitHub token 配没配会决定「全部来源」是否包含 GitHub，
+    token 刚填好却还命中旧缓存的话，用户会以为没生效。
+    """
     _search.clear()
+    _wf_search.clear()

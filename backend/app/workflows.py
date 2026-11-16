@@ -29,6 +29,7 @@ from typing import Callable
 import httpx
 
 from .config import COMFY_DIR, COMFY_ENV_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings, source_proxy
+from . import cache
 from .comfy.runner import active as active_instance, start as start_instance, status as instance_status
 from .sources import get_adapter
 from .sources.base import RepoInfo, SourceError
@@ -687,7 +688,20 @@ _SEARCHERS: dict[str, Callable[..., tuple[list[dict], bool]]] = {
 
 
 def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: str = "downloads") -> dict:
-    """聚合搜索工作流，单源失败不影响其它源。"""
+    """聚合搜索工作流，单源失败不影响其它源。
+
+    结果缓存 20 分钟。发现页每次翻页、改筛选、从别处返回，都会重新打一遍接口；
+    六个源里 Civitai / HF / ModelScope / GitHub 都**没有索引缓存**（每次真打网络），
+    不缓存的话一次翻页要等好几秒。缓存放在聚合层而不是各源里，
+    是因为「同一个查询的结果」才是要复用的东西 —— 单源内部缓存只管索引，管不了分页排序。
+
+    `q` 大小写归一后进 key：搜 "Flux" 和 "flux" 结果是同一批，
+    没必要占两份缓存。
+    """
+    key = f"{q.strip().lower()}|{source}|{limit}|{page}|{sort}"
+    if (hit := cache.get_workflow_search(key)) is not None:
+        return hit
+
     names = [source] if source in _SEARCHERS else list(_SEARCHERS)
     # 没配 GitHub token 时，"全部来源"跳过 GitHub（必然限流，避免每次都弹错误）
     if source not in _SEARCHERS and not _source_cfg("github").get("token"):
@@ -708,7 +722,12 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
     # 按 names 的固定顺序轮询合并：单源结果内保持它自己的排序
     ordered = [parts[name] for name in names if parts.get(name)]
     items = _interleave(ordered) if len(ordered) > 1 else (ordered[0] if ordered else [])
-    return {"items": items, "errors": errors, "done": done}
+    result = {"items": items, "errors": errors, "done": done}
+
+    # 全部源都失败时不缓存：否则一断网就锁死 20 分钟，恢复后要等缓存过期才有内容
+    if items or not errors:
+        cache.put_workflow_search(key, result)
+    return result
 
 
 def resolve(source: str, repo_id: str, revision: str = "") -> dict:
