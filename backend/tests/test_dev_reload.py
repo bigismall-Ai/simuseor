@@ -91,3 +91,58 @@ def test_stop_is_noop_for_dead_process() -> None:
     )
     proc.wait(timeout=10)
     _stop(proc)  # 不应抛异常
+
+
+def test_crash_retry_constants_are_sane() -> None:
+    """崩溃重试要有上限，否则错误会被无限刷屏盖掉。
+
+    也不能是 0 —— 端口占用这类瞬时失败应该自己恢复，
+    而不是要开发者手动改一行代码才醒。
+    """
+    import dev
+
+    assert 0 < dev.MAX_CRASH_RETRIES <= 10
+    assert dev.CRASH_RETRY_INTERVAL >= 1.0
+
+
+def test_run_recovers_after_server_crash(monkeypatch: pytest.MonkeyPatch) -> None:
+    """server 崩溃后，改回代码应能自动恢复。
+
+    曾经的 bug：崩溃时直接退出整个重载器，开发者改回正确代码后
+    服务也不会再起来，只能手动重启整套。
+    """
+    import dev
+
+    events: list[str] = []
+    fake_proc = type("P", (), {"poll": lambda self: 1, "returncode": 1, "pid": 999})()
+
+    def fake_spawn(host: str, port: int):
+        events.append("spawn")
+        return fake_proc
+
+    def fake_stop(proc) -> None:
+        events.append("stop")
+
+    def fake_snapshot():
+        # 第一次与第二次不同，模拟「文件被改了」
+        return {Path("a.py"): float(len(events))}
+
+    monkeypatch.setattr(dev, "_spawn_server", fake_spawn)
+    monkeypatch.setattr(dev, "_stop", fake_stop)
+    monkeypatch.setattr(dev, "_snapshot", fake_snapshot)
+
+    # 让循环在触发一次「改动 + 重启」后退出
+    calls = {"n": 0}
+
+    def fake_sleep(_: float) -> None:
+        calls["n"] += 1
+        if calls["n"] > 6:
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(dev.time, "sleep", fake_sleep)
+
+    dev.run("127.0.0.1", 8000)
+
+    assert "spawn" in events
+    # 崩溃后应尝试拉起，而不是直接放弃
+    assert events.count("spawn") >= 2, f"崩溃后应自动重试，实际事件：{events}"
