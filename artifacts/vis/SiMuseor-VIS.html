@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SiMuseor · VIS 视觉识别系统 v2.2</title>
+<title>SiMuseor · VIS 视觉识别系统 v2.5</title>
 <style>
 /* ============================================================
    SiMuseor VIS 手册样式
@@ -180,7 +180,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
 <div class="wrap">
 <nav class="toc" aria-label="目录">
   <div class="tc-brand">SiMuseor</div>
-  <div class="tc-sub">Visual Identity System · v2.2</div>
+  <div class="tc-sub">Visual Identity System · v2.5</div>
   <ol>
     <li><a href="#s0">卷首 · 状态声明</a></li>
     <li><a href="#s1">品牌内核</a></li>
@@ -210,7 +210,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <h1>视觉识别系统</h1>
     <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
     <dl class="meta">
-      <div><dt>版本</dt><dd>v2.2 · 2026-11-17</dd></div>
+      <div><dt>版本</dt><dd>v2.5 · 2026-11-17</dd></div>
       <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
       <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
       <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
@@ -549,18 +549,21 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <tr><td>描边</td><td>深紫 <code>#2a0a2e</code>；宽度随档位收敛：16px → <strong>0.5</strong>&#12288;&#183;&#12288;32px → <strong>0.28</strong>&#12288;&#183;&#12288;48px+ → <strong>0.16</strong></td></tr>
     <tr><td>色带</td><td>面片按横向位置量化为 <strong>5 档</strong>：<code>#3a0a3f</code> / <code>#6d0a5e</code> / <code>#a3389c</code> / <code>#d2477e</code> / <code>#f4776a</code></td></tr>
     <tr><td>SVG 基准</td><td><code>favicon.svg</code> 以 <strong>32px 档</strong>为基准（16px 过扁、180px 过细）；<code>viewBox="0 0 16 8"</code>，6 条 <code>&lt;path&gt;</code>（<code>outline</code> + <code>band-0..4</code>）</td></tr>
+    <tr><td><strong>档位生成纪律</strong></td><td><strong><code>favicon.svg</code> 仅为 32px 档的矢量源</strong>；其余档位必须由 <code>make_favicon_l3.py</code> 按 <code>CANVAS</code> <strong>逐档生成</strong>，<strong>禁止缩放导出</strong> —— v2.4 下 48/64/180 与 32px <strong>不同构</strong>（长方形画布 + 等比），从 32px 缩放会得到错误比例</td></tr>
     <tr><td>产出档位</td><td>SVG + PNG <strong>16 / 32 / 48 / 64 / 180</strong> + ICO（16/32/48 三档，PNG 压缩）</td></tr>
     <tr><td>构建脚本</td><td><code>artifacts/vis/assets/cicada/make_favicon_l3.py</code>（<strong>必须随产物一同入库</strong> —— 产物在、生成器不在则资产不可复现，规范口径无法复核）</td></tr>
   </table>
-  <h4>实测主体几何（alpha 包围盒，逐档）</h4>
+  <h4>实测主体几何（alpha 包围盒，逐档） <span class="small">—— 口径：favicon v2.4 资产</span></h4>
+  <p class="small">画布比例随档位变的那一版；构建脚本 <code>make_favicon_l3.py</code> 随 <code>642dc4b</code> / <code>06a682e</code> / <code>9c4e096</code> 入库。下表数字取自已落盘的 PNG（alpha &gt; 10 阈值口径），<strong>资产包与部署版逐档一致</strong>。</p>
   <table>
-    <tr><th>档位</th><th>画布</th><th>主体包围盒</th><th>高占画布</th><th>宽占画布</th><th>宽高比</th><th>左右留白</th></tr>
-    <tr><td>16px</td><td>16×16</td><td><strong>12×12</strong> @ (2,2)</td><td class="ok">75.0%</td><td>75.0%</td><td><strong>1.00</strong></td><td>2px</td></tr>
-    <tr><td>32px</td><td>32×<strong>16</strong></td><td><strong>30×14</strong> @ (1,1)</td><td class="ok">87.5%</td><td>93.8%</td><td>2.14</td><td>1px</td></tr>
-    <tr><td>48px</td><td>48×<strong>24</strong></td><td><strong>44×20</strong> @ (2,2)</td><td class="ok">83.3%</td><td>91.7%</td><td>2.20</td><td>2px</td></tr>
-    <tr><td>64px</td><td>64×<strong>32</strong></td><td><strong>58×27</strong> @ (3,2)</td><td class="ok">84.4%</td><td>90.6%</td><td>2.15</td><td>3px</td></tr>
-    <tr><td>180px</td><td>180×<strong>90</strong></td><td><strong>160×74</strong> @ (10,8)</td><td class="ok">82.2%</td><td>88.9%</td><td>2.16</td><td>10px</td></tr>
+    <tr><th>档位</th><th>画布</th><th>主体包围盒</th><th>高占画布</th><th>宽占画布</th><th>宽高比</th><th>左右留白</th><th>透明占比</th></tr>
+    <tr><td>16px</td><td>16×16</td><td><strong>12×12</strong> @ (2,2)</td><td class="ok">75.0%</td><td>75.0%</td><td><strong>1.00</strong></td><td>2px</td><td>66.8%</td></tr>
+    <tr><td>32px</td><td>32×<strong>16</strong></td><td><strong>30×14</strong> @ (1,1)</td><td class="ok">87.5%</td><td>93.8%</td><td>2.14</td><td>1px</td><td>58.8%</td></tr>
+    <tr><td>48px</td><td>48×<strong>24</strong></td><td><strong>44×20</strong> @ (2,2)</td><td class="ok">83.3%</td><td>91.7%</td><td>2.20</td><td>2px</td><td>62.2%</td></tr>
+    <tr><td>64px</td><td>64×<strong>32</strong></td><td><strong>58×27</strong> @ (3,2)</td><td class="ok">84.4%</td><td>90.6%</td><td>2.15</td><td>3px</td><td>63.9%</td></tr>
+    <tr><td>180px</td><td>180×<strong>90</strong></td><td><strong>160×74</strong> @ (10,8)</td><td class="ok">82.2%</td><td>88.9%</td><td>2.16</td><td>10px</td><td>66.6%</td></tr>
   </table>
+  <p class="small"><strong>透明底</strong>：全档<strong>均带透明像素</strong>（58.8%–66.8%），底色由浏览器 chrome 决定 —— 这正是「透明底」裁决的落地形态，<strong>不是</strong>「零透明 + 不透明浅底板」。</p>
   <div class="notice ink">
     <p style="margin:0"><strong>已修复（v2.4 · 提交 <code>642dc4b</code>）</strong>：v2.1 曾用「固定压缩比 × 主体高」推导，导致 <strong>64px 档主体宽 = 16.25 单位（画布 102%）、180px 档 = 17.21 单位（108%）</strong>，两档翼尖<strong>溢出 viewBox 被裁切</strong>（实测 alpha 包围盒左右触边 = 裁切而非设计）。<strong>修法</strong>：改为「y 轴定主体高 + x 轴由 <code>BODY_W_MAX</code> 宽上限反解」，并让 <strong>32px+ 用 2:1 长方形画布等比展翅</strong>。修后逐档路径宽均 ≤ 画布宽 × 0.88，<strong>无一档溢出</strong>。<br>
     视觉复核（最近邻 8× 放大，白底 + <code>#0b0b0d</code> 底双排）：<strong>16px 仍读出「横向双翅 + 中央身体」</strong>（16×16 alpha 网格为清晰三段结构：顶部双翼展开 → 收窄 → 躯干竖条），32px 起接缝白线与面片色差完全可辨。<strong>大档位回到等比后展翅感明显更好</strong>。</p>
@@ -600,6 +603,13 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <tr><td><code>.wf-row</code><br><span class="small">pages/workflows.component.ts:1617</span></td><td>缩略图列 <strong>132px</strong>（<code>grid-template-columns:132px minmax(0,1fr) auto</code>）</td><td><strong><code>12px 14px 12px 12px</code></strong></td></tr>
   </table>
   <div class="notice ink">
+    <p style="margin:0"><strong>卡片 hover 描边统一画在 <code>::after</code>，不画在本体</strong> —— 三个卡片（<code>md-model-card</code> / <code>app-workflow-card</code> / <code>md-library-card</code>）口径一致。<br>
+    本体的 <strong>inset</strong> 描边在<strong>铺满型封面</strong>下会被盖住：<code>md-model-card</code> 的 <code>.card-plate</code> 是 <code>position:absolute; inset:0</code>，铺满整卡 → hover 视觉上毫无反应（实测顶部 20px 的 accent 像素 <strong>off=37 / on=37，完全不变</strong>）。<br>
+    <code>::after</code> 在<strong>两种封面结构下都成立</strong>：<code>model-card</code> 的 <code>::after</code> 是 <code>z-index:2</code>（盖得住铺满封面），<code>library-card</code> 的是 <code>z-index:3</code>（盖得住流式封面）。<br>
+    ⚠️ <strong>常见误解</strong>：<code>box-shadow</code> 的<strong>外圈</strong>绘制在 border box 之外，<strong>不被元素自身的 <code>overflow</code> 裁剪</strong>（<code>overflow</code> 只裁剪<strong>子元素</strong>）—— 所以本体外圈也可行（实测 <code>md-library-card</code> 外圈 accent 像素 <strong>off=0 → on=297</strong>，清晰可见）。但<strong>不统一</strong>，仍以 <code>::after</code> 为准：<strong>口径统一的价值在于「一条规则走天下」，而不是「视觉恰好一样」。</strong><br>
+    <strong>三卡片实测</strong>（顶部 24px 带的 accent 像素，off → on）：<code>md-model-card</code> <strong>40 → 329</strong>（<code>::after</code> z-index 2）　·　<code>md-library-card</code> <strong>0 → 289</strong>（<code>::after</code> z-index 3）　·　<code>app-workflow-card</code> <strong>0 → 289</strong>（<code>::after</code>）—— <strong>三张全部可见、落点全部在 <code>::after</code></strong>（提交 <code>b006877</code> 把 library-card 从本体外圈改到 <code>::after</code>）。</p>
+  </div>
+  <div class="notice ink">
     <p style="margin:0"><strong>登记更正</strong>：主理人简报中 <code>.nd-row</code> / <code>.wf-row</code> 的内边写作「<code>10px 14px</code>」，源码实测<strong>两者均为 <code>12px 14px 12px 12px</code></strong>（四值：上 右 下 左）。<code>10px 10px 10px 14px</code> 属于 <code>workflows.component.ts</code> 的 <code>.wf-toast</code>，与两行无关。<strong>以本表为准。</strong></p>
   </div>
 
@@ -613,7 +623,9 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <tr><td><strong>渐变</strong></td><td><strong>82 个 <code>&lt;linearGradient&gt;</code></strong>（<code>fg001</code>…<code>fg082</code>）+ <strong>164 个 <code>&lt;stop&gt;</code></strong>；每面片一条，色相 ±10° / 饱和 ×1.04→1.00 / 明度 ×0.97→1.03</td></tr>
     <tr><td>深色版</td><td><code>cicada-max-dark.svg</code> <strong>同构同 id</strong>（<code>ids</code> 集合与顺序逐项一致，<code>86</code> 个 id 全等）→ <strong>逐面片对照可改</strong></td></tr>
   </table>
-  <p class="small">另有<strong>扁平版</strong> <code>_flat_cicada-max.svg</code>（<strong>0 渐变</strong>，面片直接填纯色，84 条 path）作为不依赖渐变渲染的兜底。<strong>部署到 <code>web/public/brand/</code> 的当前是扁平版</strong>（<code>cicada-max.svg</code> 与 <code>cicada-max-dark.svg</code> 均为 0 渐变），带渐变版本保留在资产库 —— <strong>两者不可混称</strong>。</p>
+  <p class="small"><strong>部署版与资产库版是同一件</strong>：<code>web/public/brand/cicada-max.svg</code> 与 <code>assets/cicada/svg/cicada-max.svg</code> <strong>逐字节相同</strong>（md5 一致），<strong>都是「面片带语义 id + 4 解剖分组 + 82 条渐变」这一版</strong>。<code>_flat_cicada-max.svg</code>（<strong>0 渐变</strong>、84 条 path）是<strong>纯色底座</strong>，也是 <code>add_facet_gradients.py</code> 的<strong>输入源</strong> —— 脚本读它、给每个面片加微渐变、输出 <code>cicada-max.svg</code>（+ <code>-dark</code> / <code>-mono</code>）。<strong>交付用渐变版</strong>，<code>_flat_*.svg</code> 仅作底座与追溯留档，<strong>不得直接用于交付</strong>。</p>
+  <p class="small"><strong>82 条渐变是刻意加的，不是伪影</strong>（主理人 19:00 裁决「每面片微渐变」方案 A）：源 JPG 是纯色平涂，但低多边形的「拼块感」依赖<strong>面片之间的色差</strong>；若做「全局贯穿渐变」会压平面片差异、拼块感消失。故每面片一条<strong>极轻</strong>渐变（色相 ±10° / 饱和 ×1.04→1.00 / 明度 ×0.97→1.03）—— 保住每个面片的独立色相与身份。</p>
+  <div class="notice ink"><p style="margin:0"><strong>部署同步纪律</strong>：后端服务的是 <code>web/dist/browser/</code>，<strong>不是</strong> <code>web/public/</code>。改 favicon 后必须 <code>rm -rf dist &amp;&amp; npm run build</code> —— 否则产品实际用的仍是 <code>dist</code> 里的旧图标。</p></div>
 
   <h4 id="s3-7-5">3.7.5 token 分层三层结构</h4>
   <p><code>web/src/vis-tokens.css</code>（623 行）的分层口径：</p>
@@ -983,9 +995,13 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
   <strong>v2.1（2026-11-17 · 组件规格登记表 + favicon 底板改判）</strong>：① <strong>§3.7 新增「组件规格登记表」</strong> —— favicon 规格（§3.7.1）、<code>.pill</code> 与 <code>.badge</code> 分工（§3.7.2）、卡片与列表行几何（§3.7.3）、蝉形矢量可编辑性结构（§3.7.4）、token 分层三层结构（§3.7.5）、PrimeNG 移出首屏（§3.7.6）；② <strong>favicon 底板改判</strong> —— 由「必须自带不透明底色」改为<strong>透明底</strong> + 深紫描边保深底可辨（用户 2026-11-17 裁决：深色 OS 标签栏下不透明浅底会成突兀白方块）；③ <strong>favicon 方形化构图</strong> —— 主体高占画布 69%（16px 档 ≥10px），x 压缩按档位分级 0.46→0.72，属 §2.4「禁非等比拉伸」的<strong>登记例外</strong>（仅 favicon 档位）<strong>〔已被 v2.2 取代〕</strong>；④ <strong>favicon 产出档位扩为</strong> 16/32/48/64/180 + ICO 三档；⑤ <strong>登记 64px / 180px 档翼尖溢出裁切缺陷</strong>（主体宽 102% / 108%）（<strong>〔已被 v2.2 修复〕</strong>）；⑥ <strong><code>.pill</code> 实现值更正</strong>（<code>height:20px / padding:0 9px / font-size:11px / font-weight:500</code>；token <code>--pill-bg</code> 浅 <code>#f1f1f3</code> 深 <code>#26262c</code>、<code>--pill-ink</code> 浅 <code>#52525b</code> 深 <code>#b4b4bc</code>）；⑦ <strong><code>.pill</code> 与 <code>.badge</code> 分工登记</strong> —— <code>.badge</code> = 状态（带语义色）、<code>.pill</code> = 分类（一律中性）；⑧ <strong>卡片几何更正</strong> —— <code>.nd-row</code> / <code>.wf-row</code> 内边距实测均为 <code>12px 14px 12px 12px</code>（非 <code>10px 14px</code>）；⑨ <strong>token 分层</strong> —— 产品层（<code>styles.css</code>）/ 品牌层 + 交互层（<code>vis-tokens.css</code>，引入位置最末，零覆盖）<strong>〔已被 v2.2 重写〕</strong>；⑩ <strong>PrimeNG 移出首屏</strong>（仅存于 <code>/lab/*</code>，产品首屏零引用，首屏回归风险解除）。</p>
 
   <br><br>
-  <strong>v2.2（2026-11-17 · 同步 favicon v2.4 资产与后续工程提交）</strong>：① <strong>§3.7.1 favicon 规格按 v2.4 重写</strong> —— 画布比例随档位变（16px 方形 16×16、32px+ 长方形 16×8 等比展翅）；「两条独立的轴」取代原「压缩比按档位分级」（y 轴定主体高 69%，x 轴由 <code>BODY_W_MAX = 0.88</code> 宽上限反解）；<strong>非等比压缩仅限 16px 档</strong>（0.46），32px+ 严格等比；实测几何表换为 12×12 / 30×14 / 44×20 / 58×27 / 160×74。② <strong>原「64px / 180px 溢出裁切」缺陷条改为「已修复」</strong>（提交 <code>642dc4b</code>），并补记构建脚本必须随产物入库。③ <strong>§3.7.5 token 分层按新结构改写</strong> —— primitive（<code>--pri-*</code>，72 枚）/ semantic（<code>--sem-*</code>，46 枚）/ component（<code>--cmp-*</code>，只建结构）/ 品牌层 16 枚；补「改哪一层的后果」对照与「明暗只发生在 semantic 层」。④ <strong>§3.7.6 PrimeNG 改按需装载</strong> —— <code>primeng/config</code> 动态 <code>import()</code>，首屏 chunk 930,702 B → 781,515 B（−16.0%），<code>primeng</code> / <code>@primeng/themes</code> 移入 <code>devDependencies</code>（提交 <code>19bc932</code>）。
+  <p class="small"><strong>v2.2（2026-11-17 · 同步 favicon v2.4 资产与后续工程提交）</strong>：① <strong>§3.7.1 favicon 规格按 v2.4 重写</strong> —— 画布比例随档位变（16px 方形 16×16、32px+ 长方形 16×8 等比展翅）；「两条独立的轴」取代原「压缩比按档位分级」（y 轴定主体高 69%，x 轴由 <code>BODY_W_MAX = 0.88</code> 宽上限反解）；<strong>非等比压缩仅限 16px 档</strong>（0.46），32px+ 严格等比；实测几何表换为 12×12 / 30×14 / 44×20 / 58×27 / 160×74。② <strong>原「64px / 180px 溢出裁切」缺陷条改为「已修复」</strong>（提交 <code>642dc4b</code>），并补记构建脚本必须随产物入库。③ <strong>§3.7.5 token 分层按新结构改写</strong> —— primitive（<code>--pri-*</code>，72 枚）/ semantic（<code>--sem-*</code>，46 枚）/ component（<code>--cmp-*</code>，只建结构）/ 品牌层 16 枚；补「改哪一层的后果」对照与「明暗只发生在 semantic 层」。④ <strong>§3.7.6 PrimeNG 改按需装载</strong> —— <code>primeng/config</code> 动态 <code>import()</code>，首屏 chunk 930,702 B → 781,515 B（−16.0%），<code>primeng</code> / <code>@primeng/themes</code> 移入 <code>devDependencies</code>（提交 <code>19bc932</code>）。</p>
+  <br><br>
+  <p class="small"><strong>v2.3（2026-11-17 · favicon v2.3 资产同步）</strong>：① <strong>描边宽度更正</strong> —— 画布比例改为长方形后描边随之收敛：<strong>16px → 0.5 / 32px → 0.16 / 48px+ → 0.08</strong>（原记 0.28 / 0.16 已不成立）。② <strong>ICO 三档尺寸更正</strong> —— 画布改长方形后 ICO 为 <strong>16×16 / 32×16 / 48×24</strong>（原记 16/32/48 方形），<strong>三档非方形</strong>。③ <strong>补记「favicon 画布不必是方形」</strong> —— 浏览器标签栏按图标自身比例显示、不要求方形；只有 16px 需方形（像素紧，压 x 换高度保主体高 ≥10px），32px+ 用 16×8 长方形等比展翅。④ <strong>实测几何表补「透明占比」列</strong> —— 全档 58.8%–66.8%，坐实「透明底」裁决的落地形态。</p>
+  <br><br>
+  <p class="small"><strong>v2.5（2026-11-17 · §3.7.1 表格标注版本 + hover 描边条款 + 资产同步纪律）</strong>：① <strong>§3.7.1 逐档实测表的标题行标注版本口径</strong> —— 「<strong>口径：favicon v2.4 资产</strong>」，并写明构建脚本随 <code>642dc4b</code> / <code>06a682e</code> / <code>9c4e096</code> 入库、数字取自已落盘 PNG（alpha &gt; 10 阈值）、<strong>资产包与部署版逐档一致</strong>。② <strong>§3.7.1 补「档位生成纪律」</strong> —— <code>favicon.svg</code> <strong>仅为 32px 档的矢量源</strong>，其余档位必须由 <code>make_favicon_l3.py</code> 按 <code>CANVAS</code> <strong>逐档生成</strong>，<strong>禁止缩放导出</strong>（v2.4 下 48/64/180 与 32px 不同构）。③ <strong>§3.7.3 新增「卡片 hover 描边统一画在 <code>::after</code>」条款</strong> —— 本体 inset 描边在铺满型封面下会被盖住（实测 off=37 / on=37），<code>::after</code> 在两种封面结构下都成立；并澄清 <strong><code>box-shadow</code> 外圈不被元素自身的 <code>overflow</code> 裁剪</strong>。④ <strong>§3.7.4 更正「部署版 vs 资产库版不可混称」</strong> —— 二者现已<strong>逐字节相同</strong>（都是「语义 id + 4 分组 + 82 条渐变」这一版），「不可混称」作废；<code>_flat_cicada-max.svg</code> 更正标注为<strong>纯色底座</strong>（<code>add_facet_gradients.py</code> 的<strong>输入源</strong>，0 渐变、84 条 path）—— <strong>交付用渐变版</strong> <code>cicada-max.svg</code>，<code>_flat_*.svg</code> 不得直接用于交付。⑤ <strong>补「部署同步纪律」</strong> —— 后端服务 <code>web/dist/browser/</code>，<strong>不是</strong> <code>web/public/</code>；改 favicon 后必须 <code>rm -rf dist &amp;&amp; npm run build</code>。⑥ <strong><code>_phase2-cicada.md</code> 同步 v2.4 定案</strong> —— favicon 底色改透明、尺寸档改画布比例随档位变、验收项 66 / 67 改写为实测口径。</p>
   <footer>
-    SiMuseor · Visual Identity System v2.2 · 2026-11-17<br>
+    SiMuseor · Visual Identity System v2.5 · 2026-11-17<br>
     编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
     本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
   </footer>
