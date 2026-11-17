@@ -128,14 +128,20 @@ interface CardTag {
      * 所以改画在外圈（贴着页面底色），与卡片内容无关；内描边同时让位，避免两层边。
      */
     /* M1-c：hover 不再位移 + 不再外阴影。边框优先于阴影是全站约束，
-       抬起 2px 在密集列表里会让整行抖动，阴影又掩盖了 1px 描边的分层。 */
+       抬起 2px 在密集列表里会让整行抖动，阴影又掩盖了 1px 描边的分层。
+       v2.1 修正：hover 描边画在 **::after** 而不是本体 —— 本体两条路都不通：
+         · 本体 inset 描边 → 被 position:absolute + inset:0 铺满的 .card-plate 盖住
+         · 本体外圈 box-shadow → 被本体的 overflow:hidden 裁掉
+       实测（Playwright 像素级，顶部 18px 的 accent 像素）：
+         改前 off=37 / on=37（hover 毫无反应）→ 改后 off=0 / on=323（可见）
+       ::after 既有 z-index:2 盖得住封面，又与本体同框不会被裁。 */
     .card:hover,
     .card:focus-within {
-      box-shadow: inset 0 0 0 1px var(--accent);
+      box-shadow: none;
     }
     .card:hover::after,
     .card:focus-within::after {
-      box-shadow: inset 0 0 0 1px transparent;
+      box-shadow: inset 0 0 0 1px var(--accent);
     }
 
     @media (prefers-reduced-motion: reduce) {
