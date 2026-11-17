@@ -10,6 +10,7 @@ from urllib.parse import quote
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 GITHUB_API = "https://api.github.com"
@@ -27,7 +28,14 @@ def _headers(cfg: dict) -> dict:
 
 def _get_json(url: str, cfg: dict, params: dict | None = None) -> dict:
     try:
-        resp = httpx.get(url, headers=_headers(cfg), params=params, timeout=30, follow_redirects=True)
+        resp = httpx.get(
+            url,
+            headers=_headers(cfg),
+            params=params,
+            timeout=30,
+            follow_redirects=True,
+            proxy=source_proxy(cfg),
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"GitHub 请求失败: {exc}") from exc
     if resp.status_code in (403, 429) and "rate limit" in resp.text.lower():

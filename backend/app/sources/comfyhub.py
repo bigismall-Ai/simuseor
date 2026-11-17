@@ -13,6 +13,7 @@ import re
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 DOWNLOAD_BASE = "https://comfy.org/workflows/download"
@@ -35,7 +36,11 @@ class ComfyHubAdapter(SourceAdapter):
         try:
             # 关掉压缩协商，否则 HEAD 的 content-length 是压缩后大小
             head = httpx.head(
-                url, headers={**UA, "Accept-Encoding": "identity"}, timeout=20, follow_redirects=True
+                url,
+                headers={**UA, "Accept-Encoding": "identity"},
+                timeout=20,
+                follow_redirects=True,
+                proxy=source_proxy(cfg),
             )
             if head.status_code >= 400:
                 raise SourceError(f"ComfyHub 工作流不存在: {sid}（HTTP {head.status_code}）")
@@ -44,7 +49,11 @@ class ComfyHubAdapter(SourceAdapter):
             # tasks.total_bytes 恒为 0，进度条会一直停在 0%。
             if not size:
                 probe = httpx.get(
-                    url, headers={**UA, "Accept-Encoding": "identity"}, timeout=30, follow_redirects=True
+                    url,
+                    headers={**UA, "Accept-Encoding": "identity"},
+                    timeout=30,
+                    follow_redirects=True,
+                    proxy=source_proxy(cfg),
                 )
                 if probe.status_code >= 400:
                     raise SourceError(f"ComfyHub 工作流不存在: {sid}（HTTP {probe.status_code}）")

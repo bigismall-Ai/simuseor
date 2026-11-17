@@ -35,6 +35,8 @@ from .config import (
     DATA_DIR,
     WORKSPACE_CUSTOM_NODES_DIR,
     WORKSPACE_WORKFLOWS_DIR,
+    load_settings,
+    source_proxy,
 )
 from .node_categories import CATEGORIES, category_of
 from .sources.base import SourceError
@@ -131,8 +133,23 @@ def _write_json(path: Path, payload: Any) -> None:
     tmp.replace(path)
 
 
-def _fetch(url: str) -> Any:
-    resp = httpx.get(url, headers=UA, timeout=90, follow_redirects=True)
+def _node_source_cfg() -> dict:
+    """节点清单是 GitHub raw 上的文件，归 github 源管 —— 和下载/搜索共用同一个代理开关。
+
+    单独读一次 settings，而不是在 _fetch 里逐次读：两份清单是同一时刻拉的，
+    中途改设置没有意义，还可能一份走代理一份直连。
+    """
+    return (load_settings().get("sources") or {}).get("github") or {}
+
+
+def _fetch(url: str, cfg: dict | None = None) -> Any:
+    resp = httpx.get(
+        url,
+        headers=UA,
+        timeout=90,
+        follow_redirects=True,
+        proxy=source_proxy(cfg if cfg is not None else _node_source_cfg()),
+    )
     if resp.status_code >= 400:
         raise SourceError(f"节点清单拉取失败 {resp.status_code}: {url.rsplit('/', 1)[-1]}")
     return resp.json()

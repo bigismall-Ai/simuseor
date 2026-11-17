@@ -419,3 +419,28 @@ def test_marker_is_per_cache_key(tmp_path):
     assert comfy_marker.name == "requirements.done"
     assert node_marker.name == "requirements.node-x.done"
     assert comfy_fp != node_fp
+
+
+def test_node_catalog_uses_github_proxy(monkeypatch):
+    """节点清单在 GitHub raw 上，跟着 github 源的代理开关走。
+
+    过去它永远直连：5.7MB 在窄链路上要几分钟，而同一时刻下载却走代理。
+    """
+    import httpx as _httpx
+
+    from app import nodes
+
+    seen = {}
+    monkeypatch.setattr(
+        nodes, "load_settings", lambda: {"sources": {"github": {"proxy_enabled": True}}, "proxy": {"host": "127.0.0.1", "port": 7890}}
+    )
+    monkeypatch.setattr(nodes, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+
+    def fake_get(url, **kw):
+        seen.update(kw)
+        return _httpx.Response(200, json={})
+
+    monkeypatch.setattr(nodes.httpx, "get", fake_get)
+    nodes._fetch(nodes.CNL_URL)
+
+    assert seen.get("proxy") == "http://127.0.0.1:7890"

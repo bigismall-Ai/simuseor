@@ -9,6 +9,7 @@ from urllib.parse import quote
 
 import httpx
 
+from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 RAW_BASE = "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates"
@@ -28,7 +29,13 @@ class ComfyTemplatesAdapter(SourceAdapter):
         size = 0
         try:
             # 关掉压缩协商，否则 HEAD 的 content-length 是压缩后大小，和实际下载字节不一致
-            head = httpx.head(url, headers={**UA, "Accept-Encoding": "identity"}, timeout=20, follow_redirects=True)
+            head = httpx.head(
+                url,
+                headers={**UA, "Accept-Encoding": "identity"},
+                timeout=20,
+                follow_redirects=True,
+                proxy=source_proxy(cfg),
+            )
             if head.status_code >= 400:
                 raise SourceError(f"模板不存在: {name}（HTTP {head.status_code}）")
             size = int(head.headers.get("content-length") or 0)

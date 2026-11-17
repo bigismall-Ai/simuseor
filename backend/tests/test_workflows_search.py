@@ -513,3 +513,51 @@ def test_single_source_uses_longer_budget(monkeypatch):
 
     assert seen["timeout"] == workflows.SOURCE_SINGLE_BUDGET
     assert workflows.SOURCE_SINGLE_BUDGET > workflows.SOURCE_BUDGET
+
+
+# ---------------- 「按源代理」必须对搜索生效 ----------------
+#
+# 设置页写着「按源控制代理」，但过去只有 aria2 下载听它的：搜索 / 列文件树 /
+# 拉清单全是裸请求。系统代理模式下就割裂成「下载能走、搜索不能走」，
+# 用户看到的就是「配了代理，发现页照样超时」。这几条守住这层接线。
+
+def test_github_search_passes_proxy(monkeypatch):
+    """该源开了代理，搜仓库这一步就要带上 proxy。"""
+    seen = {}
+    monkeypatch.setattr(workflows, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+    monkeypatch.setattr(workflows, "tree_files", lambda rid, branch, cfg: [])
+    monkeypatch.setattr(
+        workflows,
+        "_source_cfg",
+        lambda name: {"token": "tok", "proxy_enabled": True},
+    )
+
+    def fake_get(url, **kw):
+        seen.update(kw)
+        from types import SimpleNamespace
+
+        return SimpleNamespace(status_code=200, json=lambda: {"items": []})
+
+    monkeypatch.setattr(workflows.httpx, "get", fake_get)
+    workflows._search_github("q", 8, 1, "downloads")
+
+    assert seen.get("proxy") == "http://127.0.0.1:7890", "搜索请求必须带 proxy"
+
+
+def test_github_adapter_tree_uses_source_proxy(monkeypatch):
+    """列文件树（N+1 那一段）是最吃链路的，必须一起走代理。"""
+    from app.sources import github as gh
+
+    seen = {}
+    monkeypatch.setattr(gh, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+
+    def fake_get(url, **kw):
+        seen.update(kw)
+        from types import SimpleNamespace
+
+        return SimpleNamespace(status_code=200, text="", json=lambda: {"tree": []})
+
+    monkeypatch.setattr(gh.httpx, "get", fake_get)
+    gh.tree_files("owner/repo", "main", {"proxy_enabled": True})
+
+    assert seen.get("proxy") == "http://127.0.0.1:7890"

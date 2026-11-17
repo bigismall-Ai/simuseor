@@ -551,7 +551,13 @@ def _templates() -> list[dict]:
 
 def _templates_fetch() -> list[dict]:
     try:
-        resp = httpx.get(TEMPLATES_INDEX, headers=UA, timeout=60, follow_redirects=True)
+        resp = httpx.get(
+            TEMPLATES_INDEX,
+            headers=UA,
+            timeout=60,
+            follow_redirects=True,
+            proxy=source_proxy(_source_cfg("templates")),
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"ComfyUI 官方模板拉取失败: {exc}") from exc
     if resp.status_code >= 400:
@@ -632,7 +638,13 @@ def _search_github(
         "page": max(1, int(page)),
     }
     try:
-        resp = httpx.get(f"{GH_API}/search/repositories", params=params, headers=headers, timeout=30)
+        resp = httpx.get(
+            f"{GH_API}/search/repositories",
+            params=params,
+            headers=headers,
+            timeout=30,
+            proxy=source_proxy(cfg),
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"GitHub 搜索失败: {exc}") from exc
     if resp.status_code in (403, 429):
@@ -729,7 +741,13 @@ def _hub_index() -> list[dict]:
 
 def _hub_fetch() -> list[dict]:
     try:
-        resp = httpx.get(HUB_INDEX, headers=UA, timeout=60, follow_redirects=True)
+        resp = httpx.get(
+            HUB_INDEX,
+            headers=UA,
+            timeout=60,
+            follow_redirects=True,
+            proxy=source_proxy(_source_cfg("comfyhub")),
+        )
     except httpx.HTTPError as exc:
         raise SourceError(f"ComfyHub 索引拉取失败: {exc}") from exc
     if resp.status_code >= 400:
