@@ -190,18 +190,23 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         transition: box-shadow 0.16s ease;
       }
       /* M1-c：hover 不再位移 + 不再外阴影（Phase2 §2.10-13 / §8-E 第 3 处）。
-         保留 1px 描边作为唯一可见反馈，但画在**本体外圈**而不是本体 inset：
-         本卡封面铺满本体、z-index 高于本体，inset 描边会被封面盖住 ——
-         逐像素实测 hover 前后本体边缘没有一像素靛蓝，只有灰边消失，
-         等于「看不出 hover 发生过」。改成外圈 0 0 0 1px 后同一探针实测
-         边缘 7/7 像素为靛蓝 rgb(79,70,229)，反馈真实可见。
-         外圈贴着页面底色、与卡片内容无关，也不与 ::after 的内描边叠成两层。
-         ::after 的 1px 内描边同时让位，避免两层边。 */
+         保留 1px 描边作为唯一可见反馈。
+
+         v2.2 改画在 **::after**（inset accent），与 model-card / workflow-card 统一：
+         本体的 inset 描边在**铺满型封面**下会被盖住（model-card 的 .card-plate 是
+         position:absolute; inset:0 铺满整卡 → 实测 accent 像素 off=37 / on=37，
+         hover 视觉上毫无反应）。::after 在两种封面结构下都成立：
+         本卡 ::after 是 z-index:3，盖得住流式封面的 .mplate。
+
+         注：本体外圈 box-shadow 也能看见（实测 off=0 → on=297），因为 box-shadow
+         的外圈绘制在 border box 之外、不被元素自身的 overflow 裁剪（overflow 只裁
+         子元素）—— 但那样三个卡片口径就不一致了。**统一的价值在于「一条规则走
+         天下」，而不是「视觉恰好一样」。 */
       .mcard:hover {
-        box-shadow: 0 0 0 1px var(--accent);
+        box-shadow: none;
       }
       .mcard:hover::after {
-        box-shadow: inset 0 0 0 1px transparent;
+        box-shadow: inset 0 0 0 1px var(--accent);
       }
 
       /* ---- 封面：固定 145px，6:4 的上部 ---- */
