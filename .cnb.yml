@@ -30,6 +30,17 @@ main:
             - cd tests && npx playwright install --with-deps chromium
             - node tests/families-assets.mjs
 
+# 临时：探测 CNB Runner 到各家源的连通性（决定抓取端放境内还是境外）。
+# 只在 feat/ 分支跑，不动 main 的不流；结论拿到后连同此段一起删。
+"feat/**":
+  push:
+    - stages:
+        - name: 网络探测（HF / Civitai / ComfyHub / GitHub）
+          image: alpine:3.20
+          script:
+            - apk add --no-cache curl
+            - for u in "https://huggingface.co/api/models?limit=1" "https://civitai.com/api/v1/models?limit=1" "https://cloud.comfy.org/api/hub/workflows/index?status=approved" "https://raw.githubusercontent.com/Comfy-Org/ComfyUI-Manager/main/custom-node-list.json"; do echo "=== $u"; curl -s -o /dev/null -w "code=%{http_code} time=%{time_total}s speed=%{speed_download}B/s\n" --max-time 40 "$u" || echo FAIL; done
+
   pull_request:
     - stages:
         - name: 家族表一致性
