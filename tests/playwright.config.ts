@@ -4,6 +4,21 @@ import { resolve } from 'node:path';
 // tests/ 的上一级就是项目根，后端和 .venv 都在那里
 const repoRoot = resolve(__dirname, '..');
 
+// ─────────────────────────────────────────────────────────────────────────────
+// E2E 端口：刻意用 8123 而不是 8000
+// ─────────────────────────────────────────────────────────────────────────────
+// 理由（2026-11-17 实测踩坑）：
+//   1. 开发时 8000 常年跑着主仓库的 dev server（`backend/run.py`）。
+//   2. 旧配置的 `reuseExistingServer: true` 会让 Playwright 直接复用那个进程，
+//      于是**测到的是主仓库的 dist，而不是当前 worktree 的构建** ——
+//      在 worktree 里跑 E2E 会得到「绿的但不是我的代码」的假通过。
+//   3. 多 worktree 并行时更要命：大家抢同一个 8000。
+//
+// 做法：E2E 独占 8123，`reuseExistingServer: false` —— 端口被占就报错，
+// 绝不静默复用别人的服务。测的就是本目录的构建。
+const E2E_PORT = Number(process.env.E2E_PORT || 8123);
+const baseURL = `http://127.0.0.1:${E2E_PORT}`;
+
 export default defineConfig({
   testDir: resolve(__dirname, 'e2e'),
   timeout: 60_000,
@@ -14,18 +29,19 @@ export default defineConfig({
     ['html', { open: 'never', outputFolder: resolve(__dirname, 'playwright-report') }],
   ],
   use: {
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL,
     screenshot: 'only-on-failure',
     viewport: { width: 1440, height: 900 },
   },
   webServer: {
     command:
       process.platform === 'win32'
-        ? '.venv\\Scripts\\python.exe backend/run.py'
-        : '.venv/bin/python backend/run.py',
+        ? `.venv\\Scripts\\python.exe backend/run.py --port ${E2E_PORT}`
+        : `.venv/bin/python backend/run.py --port ${E2E_PORT}`,
     cwd: repoRoot,
-    url: 'http://127.0.0.1:8000/api/health',
-    reuseExistingServer: true,
+    url: `${baseURL}/api/health`,
+    // 绝不静默复用已有服务：端口被占就报错，避免测到别的 worktree 的构建。
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 });

@@ -37,11 +37,31 @@ def _reload_enabled(argv: list[str]) -> bool:
     return os.environ.get("RELOAD", "").strip().lower() in ("1", "true", "yes", "on")
 
 
+def _port_from_arg(argv: list[str], default: int) -> int:
+    """`--port N` 覆盖配置里的端口。
+
+    E2E 用它跑在独立端口上（见 tests/playwright.config.ts）——
+    8000 常年被开发用的 dev server 占着，复用它会测到别的 worktree 的构建。
+    """
+    for i, a in enumerate(argv):
+        if a == "--port" and i + 1 < len(argv):
+            try:
+                return int(argv[i + 1])
+            except ValueError:
+                break
+        if a.startswith("--port="):
+            try:
+                return int(a.split("=", 1)[1])
+            except ValueError:
+                break
+    return default
+
+
 def main() -> None:
     argv = sys.argv[1:]
     cfg = load_settings()["app"]
     host = cfg.get("host", "127.0.0.1")
-    port = int(cfg.get("port", 8000))
+    port = _port_from_arg(argv, int(cfg.get("port", 8000)))
     reload_enabled = _reload_enabled(argv)
 
     if reload_enabled:
