@@ -36,6 +36,9 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
     '[class.is-row]': 'size === "row"',
     '[class.is-mini]': 'size === "mini"',
     '[class.is-wide]': 'size === "wide"',
+    '[class.ratio-wide]': 'ratio === "wide"',
+    '[class.ratio-fill]': 'ratio === "fill"',
+    '[class.ratio-fixed]': 'ratio === "fixed"',
   },
   template: `
     <div [class]="cls" [attr.aria-label]="aria">
@@ -148,6 +151,35 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         overflow: hidden;
       }
       :host(.is-wide) .head { padding: 9px 10px 0; gap: 6px; }
+
+      /* ---- 比例参数（ratio） ----------------------------------------------
+         size 决定「这块铭牌长什么样」（字号、留白、显示哪些行）；
+         ratio 决定「这块铭牌占多大」。两者正交：size=wide 的 132×88 缩略图
+         也可以配 ratio=fixed，size=card 的大卡也可以配 ratio=wide。
+
+           ratio=wide  16:10，工作流卡片那种横版封面
+           ratio=fill  不声明比例，宽高都由外部给（绝对定位铺满整卡）
+           ratio=fixed 固定高 145px，模型库卡片那种「封面 + 正文」的上下分栏
+
+         默认 auto = 现状行为（不声明任何比例，高度交给调用方）。
+         刻意不写成 aspect-ratio 兜底：绝对定位的卡片里 aspect-ratio 会压过
+         inset —— 浏览器先按宽度算出比例高度，比卡片矮一点，底部就露出一条缝。
+         —— 那正是本组件 2024 年踩过的坑，注释还留在上面。 */
+      :host(.ratio-wide) {
+        aspect-ratio: 16 / 10;
+      }
+      /* ratio=fill：宽高都由外部决定，这里只保证不撑开。
+         overflow:hidden 让内部绝对定位的构图不溢出。 */
+      :host(.ratio-fill) {
+        display: block;
+        overflow: hidden;
+      }
+      /* ratio=fixed：固定高，宽度撑满 —— 对应「封面 145px + 正文」的上下分栏 */
+      :host(.ratio-fixed) {
+        display: block;
+        height: 145px;
+        overflow: hidden;
+      }
 
       .plate {
         position: relative;
@@ -750,6 +782,16 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
 export class CoverPlateComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) model!: CoverInput;
   @Input() size: 'card' | 'row' | 'mini' | 'wide' = 'card';
+
+  /**
+   * 封面比例。与 size 正交：size 管「长什么样」，ratio 管「占多大」。
+   *
+   * - `auto`（默认）现状行为：不声明比例，宽高由调用方给
+   * - `wide` 16:10 横版 —— 工作流卡片
+   * - `fill` 铺满 —— 绝对定位撑满整张卡
+   * - `fixed` 固定高 145px —— 「封面 + 正文」上下分栏
+   */
+  @Input() ratio: 'auto' | 'wide' | 'fill' | 'fixed' = 'auto';
 
   /**
    * 照片是否真的显示出来了。
