@@ -793,6 +793,11 @@ def _search_comfyhub(q: str, limit: int, page: int, sort: str = "downloads") -> 
 # 正常时所有源 2~3 秒内齐活，wait 会提前返回，不会白等满这个值。
 SOURCE_BUDGET = 4.0
 
+# 单源搜索的预算（秒）。用户是主动点的这个源，等久一点也比"什么都没出来"好 ——
+# 实测 GitHub 在链路上升时 search 1.6s + 探测 3s 预算 = 4.5s，用 4 秒的整批预算
+# 必然把它标成超时，而这其实只是它正常的工作时长。
+SOURCE_SINGLE_BUDGET = 12.0
+
 # 单个源内部「逐个仓库探文件树」的预算（秒）。N+1 探测里只要有一个仓库的
 # 文件树请求挂住，整批就会僵在那里 —— 凑够条数就先返回一部分。
 PROBE_BUDGET = 3.0
@@ -839,6 +844,8 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
     # 六个源并发跑，但**用户的等待时间由最慢的那个决定**。官方模板源在代理环境下
     # 曾 SSL 握手挂 20 秒，直接把「全部来源」拖成 40 秒 —— 页面看起来就是一直转不出来。
     # 所以给整批一个总预算：到点就带上已拿到的结果返回，慢源标记超时。
+    # 单源时放宽预算：只有它一个在跑，不必为一个源让整页 4 秒收工
+    budget = SOURCE_BUDGET if len(names) > 1 else SOURCE_SINGLE_BUDGET
     pool = ThreadPoolExecutor(max_workers=len(names))
     try:
         futures = {}
@@ -851,7 +858,7 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
             extra = (GITHUB_SCAN_IN_ALL,) if (name == "github" and len(names) > 1) else ()
             futures[pool.submit(fn, q, limit, page, sort, *extra)] = name
         # 一次性等整批，不能逐个 future.result() —— 逐个等会把超时累加成 n 倍
-        finished, pending = wait_futures(futures, timeout=SOURCE_BUDGET)
+        finished, pending = wait_futures(futures, timeout=budget)
         for future in finished:
             name = futures[future]
             try:
@@ -864,8 +871,13 @@ def search(q: str, source: str = "all", limit: int = 12, page: int = 1, sort: st
             except Exception as exc:  # 单个源里的意外错误不该让整页 500
                 errors[name] = str(exc) or exc.__class__.__name__
         for future in pending:
+            name = futures[future]
             # 超时的源没拿到 has_more，保守认为它还有下一页
-            errors[futures[future]] = f"响应超时（>{SOURCE_BUDGET:.0f}s）"
+            # GitHub 是唯一需要 N+1 的源（逐仓库列文件树），在「全部来源」里
+            # 必然顶到预算。把它记成红色错误，等于给用户挂一条永远消不掉的红条；
+            # 静默跳过更诚实 —— 想看它就去点那个源，单源预算 12 秒，能等出结果。
+            if not (len(names) > 1 and name == "github"):
+                errors[name] = f"响应超时（>{budget:.0f}s）"
             future.cancel()
             done = False
     finally:

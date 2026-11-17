@@ -460,3 +460,56 @@ def test_search_passes_scan_cap_only_in_all_mode(monkeypatch):
 
     workflows.search("solo-probe", "github", 12, 1, "downloads")
     assert calls[-1] is None, "单独查源时不该带 all 模式的扫描上限"
+
+
+# ---------------- 超时预算与慢源降级 ----------------
+
+def test_github_timeout_is_silent_in_all_mode(monkeypatch):
+    """「全部来源」里 GitHub 超时不该报错。
+
+    它是唯一需要 N+1 的源（逐仓库列文件树），链路上升时必然顶到预算。
+    记成红色错误等于给用户挂一条永远消不掉的红条 —— 而他手里已经有一页内容了。
+    单源模式不受此影响（那里预算是 12 秒，能等出结果）。
+    """
+    import time as _time
+
+    monkeypatch.setattr(workflows, "SOURCE_BUDGET", 0.05)
+
+    def slow_github(q, limit, page, sort="downloads", scan_cap=None):
+        _time.sleep(0.4)
+        return [{"source": "github", "id": "g1"}], False
+
+    def fast_templates(q, limit, page, sort="downloads"):
+        return [{"source": "templates", "id": "t1"}], False
+
+    monkeypatch.setattr(workflows, "_SEARCHERS", {"templates": fast_templates, "github": slow_github})
+    monkeypatch.setattr(workflows, "_source_cfg", lambda name: {"token": "tok"})
+
+    result = workflows.search("silent-github-probe", "all", 12, 1, "downloads")
+
+    assert "github" not in result["errors"], "GitHub 超时不能进 errors"
+    assert result["items"], "其他源的内容照常返回"
+
+
+def test_single_source_uses_longer_budget(monkeypatch):
+    """单源搜索用 12 秒预算，而不是「全部来源」的 4 秒。
+
+    实测 GitHub 单源要 search 1.6s + 探测 3s ≈ 4.5s，用 4 秒预算必然标超时，
+    而那只是它正常的工作时长。
+    """
+    seen = {}
+
+    def fake_wait(futures, timeout=None):
+        seen["timeout"] = timeout
+        return set(futures), set()
+
+    monkeypatch.setattr(workflows, "wait_futures", fake_wait)
+    monkeypatch.setattr(
+        workflows, "_SEARCHERS", {"github": lambda q, limit, page, sort="downloads": ([], False)}
+    )
+    monkeypatch.setattr(workflows, "_source_cfg", lambda name: {"token": "tok"})
+
+    workflows.search("single-source-budget-probe", "github", 12, 1, "downloads")
+
+    assert seen["timeout"] == workflows.SOURCE_SINGLE_BUDGET
+    assert workflows.SOURCE_SINGLE_BUDGET > workflows.SOURCE_BUDGET
