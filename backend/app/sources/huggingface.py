@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, urlparse
 
 import httpx
 
@@ -36,6 +37,11 @@ def _json(resp: httpx.Response, what: str) -> Any:
 class HuggingFaceAdapter(SourceAdapter):
     name = "huggingface"
     uses_repo_subdir = True
+
+    def __init__(self) -> None:
+        # HF 的 /api/models **不认 page 参数**（实测 1/2/3 页返回同一批），
+        # 翻页只能跟随响应 Link 头里的 cursor。这里按查询缓存每页的游标。
+        self._cursors: dict[tuple, list[str | None]] = {}
 
     def _headers(self, cfg: dict) -> dict:
         headers = {"User-Agent": "model-downloader/0.1"}
@@ -100,7 +106,6 @@ class HuggingFaceAdapter(SourceAdapter):
         params = {
             "search": q or "",
             "limit": max(1, min(int(limit), 50)),
-            "page": max(1, int(page)),
             "full": "false",
         }
         # 综合：不传 sort/direction，等同官网默认排序（trendingScore）
@@ -110,21 +115,9 @@ class HuggingFaceAdapter(SourceAdapter):
             params["direction"] = "-1"
         if task:
             params["filter"] = task
-        try:
-            resp = httpx.get(
-                f"{api_base}/api/models",
-                params=params,
-                headers=self._headers(cfg),
-                timeout=30,
-                follow_redirects=True,
-                proxy=proxy,
-            )
-        except httpx.HTTPError as exc:
-            raise SourceError(f"Hugging Face 搜索失败: {exc}") from exc
-        if resp.status_code >= 400:
-            raise SourceError(f"Hugging Face 搜索错误 {resp.status_code}")
+        data = self._fetch_query_page(api_base, params, self._headers(cfg), proxy, max(1, int(page)))
         items = []
-        for m in _json(resp, "搜索"):
+        for m in data:
             rid = m.get("id") or ""
             items.append(
                 {
@@ -142,6 +135,74 @@ class HuggingFaceAdapter(SourceAdapter):
                 }
             )
         return {"items": items, "total": len(items)}
+
+    def _fetch(self, api_base: str, params: dict, headers: dict,
+               proxy: str | None) -> tuple[list, str | None]:
+        try:
+            resp = httpx.get(
+                f"{api_base}/api/models",
+                params=params,
+                headers=headers,
+                timeout=30,
+                follow_redirects=True,
+                proxy=proxy,
+            )
+        except httpx.HTTPError as exc:
+            raise SourceError(f"Hugging Face 搜索失败: {exc}") from exc
+        if resp.status_code >= 400:
+            raise SourceError(f"Hugging Face 搜索错误 {resp.status_code}")
+        return _json(resp, "搜索"), self._next_cursor(resp)
+
+    @staticmethod
+    def _next_cursor(resp: httpx.Response) -> str | None:
+        """从 Link 头里取下一页游标。
+
+        `Link: <https://huggingface.co/api/models?...&cursor=eyJ...>; rel="next"`
+        """
+        link = resp.headers.get("link") or ""
+        m = re.search(r'<([^>]+)>\s*;\s*rel="next"', link)
+        if not m:
+            return None
+        cur = parse_qs(urlparse(m.group(1)).query).get("cursor")
+        return cur[0] if cur else None
+
+    def _fetch_query_page(self, api_base: str, params: dict, headers: dict,
+                          proxy: str | None, page: int) -> list:
+        """游标翻页：cursors[i] 为获取第 i+1 页所需游标（None = 首页/末页）。"""
+        key = (
+            api_base,
+            params.get("search"),
+            params.get("sort"),
+            params.get("direction"),
+            params.get("filter"),
+            params.get("limit"),
+        )
+        cursors = self._cursors.get(key) or [None]
+        data: list | None = None
+        fetched = 0
+        while len(cursors) <= page:
+            cur = cursors[-1]
+            if cur is None and len(cursors) > 1:
+                break  # 已到末页
+            p = dict(params)
+            if cur is not None:
+                p["cursor"] = cur
+            data, nxt = self._fetch(api_base, p, headers, proxy)
+            fetched = len(cursors)
+            cursors.append(nxt)
+        self._cursors[key] = cursors
+        while len(self._cursors) > 32:  # 有界缓存，淘汰最旧查询
+            self._cursors.pop(next(iter(self._cursors)))
+        if fetched == page and data is not None:
+            return data
+        if page == 1:
+            data, _ = self._fetch(api_base, dict(params), headers, proxy)
+            return data
+        cur = cursors[page - 1] if page - 1 < len(cursors) else None
+        if cur is None:
+            return []  # 已越过末页
+        data, _ = self._fetch(api_base, {**params, "cursor": cur}, headers, proxy)
+        return data
 
     def sdk_download(
         self,

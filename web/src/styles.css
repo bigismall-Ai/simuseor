@@ -38,7 +38,16 @@
   --border-soft: #f0f0f1;
   --border-strong: #d4d4d8;
 
-  /* 主色：靛紫。浅色下用 600，深色下翻到 400 */
+  /* 主色：靛紫。浅色下用 600，深色下翻到 400
+     --accent  = 交互色的**文字 / 描边 / 图标态**（链接文字、选中态描边、focus 环、
+                 图表色、图标）。深色下提亮成 #a5b4fc 的原因：靛底 #4f46e5 上放白字
+                 才达 6.29:1，而 --accent 作为**文字色**压在深色面板 #141417 上时
+                 #4f46e5 实算仅 2.2:1 不达标，必须提亮到 #a5b4fc（约 8.6:1）。
+     --primary = 交互色的**实心填充态**（主按钮底、选中 chip / segmented 底、
+                 进度条）。深色下仍保持 #4f46e5 —— 实心块自己就是底色，
+                 不存在「压在别的底上」的问题，白字压上去仍是 6.29:1。
+     浅色下两者同值 #4f46e5 不是冗余，而是「文字态与填充态在浅底上恰好同色」：
+     强调色只有一个色相（靛紫），变的只是**用法**（描边字 vs 实心块），不是色相。 */
   --accent: #4f46e5;
   --accent-hover: #4338ca;
   --accent-soft: #eef2ff;
@@ -102,6 +111,12 @@
   --border-soft: #1e1e22;
   --border-strong: #34343a;
 
+  /* 深色下的 accent / primary 分工与浅色同源，只是取值不同：
+     --accent  = 交互色的**文字 / 描边 / 图标态**。深色下提亮成 #a5b4fc，
+                 因为 #4f46e5 压在深色面板 #141417 上仅 2.2:1，不达标。
+     --primary = 交互色的**实心填充态**，保持 #4f46e5 不提亮 ——
+                 实心块自带底色，白字压上去 6.29:1 达标；提亮反而会让靛底发灰。
+     浅色下两者同为 #4f46e5 属「文字态与填充态恰好同色」，见浅色 :root 同处注释。 */
   --accent: #a5b4fc;
   --accent-hover: #c7d2fe;
   --accent-soft: rgb(79 70 229 / 0.18);
@@ -533,6 +548,10 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 14px;
 }
+/* 卡片网格唯一栅格值 = minmax(250px, 1fr)，由全局 .grid 提供（VIS §6.1 登记值）。
+   页面内自定义列宽属待收敛项（M2），当前仍有两处偏离：
+   library.component.ts:393 minmax(236px,1fr) / workflows.component.ts:849 minmax(238px,1fr)。
+   归口：.grid 一处定义，页面级覆盖待 M2 收敛，本轮只登记不改。 */
 
 /* ================= 5. 页头 ================= */
 .page-header {
@@ -746,11 +765,17 @@ select:disabled { opacity: 0.6; }
   box-shadow: none;
 }
 .segmented button:hover { background: color-mix(in oklab, var(--panel) 60%, transparent); color: var(--text); }
+/* 选中态唯一口径 = .filter-chip.active（实心 --primary 底 + --on-primary 白字 + 500 字重）。
+   依据 VIS §9.1 主理人补遗第 62 条 + §10 裁决 5「交互亮色白字填充」口径：
+   白字压 --primary #4f46e5 = 6.29:1（AA 达标），而旧写法 --accent 靛字压 --panel 浅底
+   属「文字态」而非「填充态」，与 .filter-chip.active 形成两套视觉。
+   hover 一致性同理：保持 --primary + 白字，仅以 border-color 作 1px 装饰描边。 */
 .segmented button.active {
-  background: var(--panel);
-  color: var(--accent);
-  font-weight: 600;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 500;
 }
+.segmented button.active:hover { background: var(--primary); color: var(--on-primary); }
 
 .chip-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .filter-chip {
@@ -787,8 +812,14 @@ select:disabled { opacity: 0.6; }
 }
 
 /* ================= 9.1 标签胶囊（.pill） =================
-   规格取自 comfy.org Hub 模型卡：全圆角、1px 透明边、左右 12px 内边距、
-   12px/500 字重、半透明填充、次级文字色。
+   本规格为本项目分类标签的唯一口径；来源 comfy.org Hub 统一规格。
+   实际实现值（与本注释同步，改实现必须同步改这里）：
+     高度 20px / 圆角 999px（全圆）/ 1px transparent 边
+     左右内边距 9px（padding: 0 9px）
+     字号 11px / 字重 500 / line-height 18px
+     填充 var(--pill-bg)（浅 #f1f1f3 · 深 #26262c）
+     文字 var(--pill-ink)（浅 #52525b · 深 #b4b4bc）
+   注：早期注释曾写「12px 内边距 / 12px 字号」，与实现不符，已按实现更正为 9px / 11px。
 
    为什么单独一套而不复用 .badge：
    - .badge 是**状态**（已安装 / 已禁用 / 未登记），带语义色，一眼要看出好坏；

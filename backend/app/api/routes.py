@@ -19,8 +19,11 @@ from .. import image_proxy
 from ..comfy.model_dirs import infer_folder, plan_folders
 from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
+from .. import workflow_edit
 from .. import workflows as workflow_service
-from ..library_meta import describe_model
+from ..library_meta import describe_model, flush_meta_cache
+from ..library_match import match_origin
+from ..library_origin import detect_origin
 from ..weight_class import all_folders, all_tasks
 from ..weight_meta import fmt_bytes
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
@@ -81,6 +84,14 @@ class WorkflowCoverEntry(BaseModel):
 
 class WorkflowCoversRequest(BaseModel):
     items: list[WorkflowCoverEntry] = Field(default_factory=list)
+
+
+class WorkflowFileRequest(BaseModel):
+    """编辑器写回：data 是完整工作流对象，mtime 用于乐观锁。"""
+
+    path: str
+    data: dict
+    mtime: float | None = None
 
 
 class WorkflowMetaRequest(BaseModel):
@@ -147,6 +158,8 @@ class LibraryPatch(BaseModel):
 
 class ScanRequest(BaseModel):
     path: str
+    # 默认开启：按名字 + safetensors 头自动匹配来源（要走网络，可能多花几秒）
+    match: bool = True
 
 
 class ProxyTestRequest(BaseModel):
@@ -234,6 +247,32 @@ def resolve_workflow(body: WorkflowResolveRequest) -> dict:
 def local_workflows() -> dict:
     """共享工作流目录里的「我的工作流」。依赖解析在下一步，这里只给列表。"""
     return workflow_service.local()
+
+
+@router.get("/workflows/file")
+def read_workflow_file(path: str) -> dict:
+    """编辑器读取工作流原文与解析结果。"""
+    try:
+        return workflow_edit.load(path)
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.put("/workflows/file")
+def write_workflow_file(body: WorkflowFileRequest) -> dict:
+    """校验后覆盖原文件，并留一份 `.bak`；mtime 不一致时拒绝写入。"""
+    try:
+        return workflow_edit.save(body.path, body.data, body.mtime)
+    except workflow_edit.StaleWorkflow as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except SourceError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/workflows/object-info")
+def workflow_object_info(refresh: bool = False) -> dict:
+    """本机实例的节点定义（带磁盘缓存），供画布节点库与端口类型使用。"""
+    return workflow_edit.object_info(refresh)
 
 
 @router.post("/workflows/local/open")
@@ -576,6 +615,8 @@ def list_library(
         models.sort(key=lambda m: (m["folderLabel"], m["name"] or ""))
     else:  # created（默认，最新入库）
         models.sort(key=lambda m: m.get("created_at") or "", reverse=True)
+    # 文件事实缓存攒到请求结束再落一次盘，不要每个模型写一次 JSON
+    flush_meta_cache()
     return models
 
 
@@ -622,6 +663,7 @@ def library_facets() -> dict:
             for b in out
         ]
 
+    flush_meta_cache()
     return {
         "folder": _pack("folder"),
         "task": _pack("task"),
@@ -673,21 +715,50 @@ def scan_library(body: ScanRequest) -> dict:
     if not root.is_dir():
         raise HTTPException(status_code=400, detail=f"目录不存在: {body.path}")
     created = []
+    matched = 0
     for child in sorted(root.iterdir()):
         if not child.is_dir():
             continue
-        existing = query("SELECT id FROM library_models WHERE local_path=?", (str(child),))
+        existing = query("SELECT id, source FROM library_models WHERE local_path=?", (str(child),))
+        # 已入库的本地导入条目：再扫一次时试着补原址。
+        # 先看明确证据（任务表 / Civitai 侧车），没有再按名字 + 头指纹匹配。
+        origin = None
+        if not existing or existing[0]["source"] == "imported":
+            origin = detect_origin(child)
+            if origin is None and body.match:
+                origin = match_origin(child)
         if existing:
+            if origin:
+                execute(
+                    "UPDATE library_models SET source=?, repo_id=?, revision=?, source_url=? WHERE id=?",
+                    (origin["source"], origin["repo_id"], origin["revision"],
+                     origin["source_url"], existing[0]["id"]),
+                )
+                matched += 1
             continue
         files = [f for f in child.rglob("*") if f.is_file()]
         if not files:
             continue
         model_id = new_id()
         size = sum(f.stat().st_size for f in files)
+        if origin:
+            matched += 1
         execute(
-            "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, created_at)"
-            " VALUES (?,?,?,?,?,?,?,?,?)",
-            (model_id, child.name, "", "imported", str(child), size, len(files), "[]", now_iso()),
+            "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, revision, source_url, created_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                model_id,
+                child.name,
+                origin["repo_id"] if origin else "",
+                origin["source"] if origin else "imported",
+                str(child),
+                size,
+                len(files),
+                "[]",
+                origin["revision"] if origin else "",
+                origin["source_url"] if origin else "",
+                now_iso(),
+            ),
         )
         for f in files:
             execute(
@@ -695,7 +766,7 @@ def scan_library(body: ScanRequest) -> dict:
                 (new_id(), model_id, str(f.relative_to(child)), f.stat().st_size),
             )
         created.append(model_id)
-    return {"created": len(created), "ids": created}
+    return {"created": len(created), "ids": created, "matched": matched}
 
 
 @router.post("/library/{model_id}/open")
@@ -855,23 +926,6 @@ def cover_image(u: str) -> FileResponse:
     """把外部封面取到本地再发给浏览器。
 
     浏览器不挂代理/TUN 时，`image.civitai.com` 之类的图床直连拿不到；由后端按
-    该源自己的代理开关去取，并落到 var/data/cover-cache 长期缓存。
-    """
-    try:
-        path, media = image_proxy.get(u)
-    except image_proxy.CoverError as exc:
-        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
-    return FileResponse(
-        path, media_type=media, headers={"Cache-Control": "public, max-age=604800, immutable"}
-    )
-
-
-# ---------------- 封面图代理 ----------------
-@router.get("/cover")
-def cover_image(u: str) -> FileResponse:
-    """把外部封面取到本地再发给浏览器。
-
-    浏览器不挂代理/TUN 时，`image.civitai.com` 之类的图床直连拿不到；由后端按
     该源自己的代理开关去取，并落到 var/tmp/cover-cache 长期缓存。
     """
     try:
@@ -1022,3 +1076,13 @@ def browse_folder(body: BrowseFolderRequest) -> dict:
     if error:
         result["error"] = error
     return result
+
+# reload probe: touch
+# reload probe 2
+# fg probe
+# precision probe
+# statreload probe
+# patched restart probe
+# patched restart probe
+# real project probe
+# death probe

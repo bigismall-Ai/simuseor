@@ -15,6 +15,7 @@ from ..config import (
     resolve_save_dir,
 )
 from ..db import execute, new_id, now_iso, query
+from ..source_urls import source_page_url
 from ..sources import get_adapter
 from ..sources.base import SourceError
 from .aria2_client import Aria2Client, Aria2Error
@@ -538,32 +539,49 @@ class DownloadManager:
         files = query("SELECT * FROM task_files WHERE task_id=? AND status='completed'", (task_id,))
         if not files:
             return
-        # 分体仓库的文件跨多个目录：没有单一 local_path，暂不自动入库，
-        # 免得建出一条指向 models 根目录的错误记录（按目录分组入库在后续提交）。
-        if len({f["target_dir"] or task["target_dir"] for f in files}) > 1:
-            return
-        existing = query("SELECT id FROM library_models WHERE local_path=?", (task["target_dir"],))
-        model_id = existing[0]["id"] if existing else new_id()
-        size = sum(int(f["size"] or 0) for f in files)
-        name = Path(task["target_dir"]).name
-        ts = now_iso()
-        if existing:
-            execute(
-                "UPDATE library_models SET name=?, size_bytes=?, file_count=? WHERE id=?",
-                (name, size, len(files), model_id),
-            )
-            execute("DELETE FROM library_files WHERE model_id=?", (model_id,))
-        else:
-            execute(
-                "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, favorite, review_state, notes, created_at)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                (model_id, name, task["repo_id"], task["source"], task["target_dir"], size, len(files), "[]", 0, "untried", "", ts),
-            )
+        # 分体仓库的文件落在不同目录，入库也按目录分组：一个目录 = 一条库记录。
+        groups: dict[str, list[dict]] = {}
         for f in files:
-            execute(
-                "INSERT INTO library_files (id, model_id, path, size) VALUES (?,?,?,?)",
-                (new_id(), model_id, f["path"], int(f["size"] or 0)),
-            )
+            groups.setdefault(f["target_dir"] or task["target_dir"], []).append(f)
+        # 原站页面：HF 精确到分支/commit，Civitai 精确到 modelVersionId。
+        # revision 来自下载任务（resolve 时写进去的），入库时一起留下。
+        revision = task.get("revision") or ""
+        source_url = source_page_url(task["source"], task["repo_id"], revision)
+        ts = now_iso()
+        for dir_str, group in groups.items():
+            existing = query("SELECT id FROM library_models WHERE local_path=?", (dir_str,))
+            model_id = existing[0]["id"] if existing else new_id()
+            size = sum(int(f["size"] or 0) for f in group)
+            name = Path(dir_str).name
+            if existing:
+                execute(
+                    "UPDATE library_models SET name=?, size_bytes=?, file_count=?, revision=?, source_url=? WHERE id=?",
+                    (name, size, len(group), revision, source_url, model_id),
+                )
+                execute("DELETE FROM library_files WHERE model_id=?", (model_id,))
+            else:
+                execute(
+                    "INSERT INTO library_models (id, name, repo_id, source, local_path, size_bytes, file_count, tags, revision, source_url, created_at)"
+                    " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        model_id,
+                        name,
+                        task["repo_id"],
+                        task["source"],
+                        dir_str,
+                        size,
+                        len(group),
+                        "[]",
+                        revision,
+                        source_url,
+                        ts,
+                    ),
+                )
+            for f in group:
+                execute(
+                    "INSERT INTO library_files (id, model_id, path, size) VALUES (?,?,?,?)",
+                    (new_id(), model_id, f["path"], int(f["size"] or 0)),
+                )
 
 
 manager = DownloadManager()

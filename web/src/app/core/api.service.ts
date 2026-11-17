@@ -13,6 +13,7 @@ import {
   FamilyScanStatus,
   FamilyScanTrigger,
   LibraryModel,
+  LibraryFacets,
   LocalWorkflow,
   NodeItem,
   NodeJob,
@@ -22,8 +23,11 @@ import {
   RepoInfo,
   SearchItem,
   Task,
+  WorkflowFile,
   WorkflowInstance,
   WorkflowItem,
+  WorkflowObjectInfo,
+  WorkflowSaveResult,
 } from './types';
 
 @Injectable({ providedIn: 'root' })
@@ -107,6 +111,29 @@ export class ApiService {
     return this.http.get<{ dir: string; total: number; items: LocalWorkflow[] }>(
       `${this.base}/workflows/local`,
     );
+  }
+
+  /** 编辑器：读工作流原文与解析结果（坏 JSON 也会返回 raw）。 */
+  readWorkflowFile(path: string): Observable<WorkflowFile> {
+    return this.http.get<WorkflowFile>(`${this.base}/workflows/file`, {
+      params: new HttpParams().set('path', path),
+    });
+  }
+
+  /** 编辑器：校验后覆盖原文件，后端会先留一份 .bak。 */
+  saveWorkflowFile(
+    path: string,
+    data: Record<string, unknown>,
+    mtime: number | null,
+  ): Observable<WorkflowSaveResult> {
+    return this.http.put<WorkflowSaveResult>(`${this.base}/workflows/file`, { path, data, mtime });
+  }
+
+  /** 画布节点库：本机实例 /object_info，实例没开时返回磁盘缓存。 */
+  workflowObjectInfo(refresh = false): Observable<WorkflowObjectInfo> {
+    let params = new HttpParams();
+    if (refresh) params = params.set('refresh', 'true');
+    return this.http.get<WorkflowObjectInfo>(`${this.base}/workflows/object-info`, { params });
   }
 
   openLocalWorkflow(path: string, mode: 'reveal' | 'edit' = 'reveal'): Observable<{ opened: string }> {
@@ -294,6 +321,11 @@ export class ApiService {
     );
   }
 
+  /** 筛选分面：存放类型 / 任务类型 / 来源，各带条数与占用体积 */
+  libraryFacets(): Observable<LibraryFacets> {
+    return this.http.get<LibraryFacets>(`${this.base}/library/facets`);
+  }
+
   patchLibrary(id: string, body: Record<string, unknown>): Observable<LibraryModel> {
     return this.http.patch<LibraryModel>(`${this.base}/library/${id}`, body);
   }
@@ -302,8 +334,11 @@ export class ApiService {
     return this.http.delete(`${this.base}/library/${id}`);
   }
 
-  scanLibrary(path: string): Observable<{ created: number; ids: string[] }> {
-    return this.http.post<{ created: number; ids: string[] }>(`${this.base}/library/scan`, { path });
+  scanLibrary(path: string): Observable<{ created: number; ids: string[]; matched?: number }> {
+    return this.http.post<{ created: number; ids: string[]; matched?: number }>(
+      `${this.base}/library/scan`,
+      { path },
+    );
   }
 
   openLibrary(id: string): Observable<{ opened: string }> {

@@ -10,7 +10,7 @@ interface StateView {
   /** 封面徽标：缺失用红底提示、齐全用中性计数、解析失败不戴徽标 */
   badge: 'dep' | 'count' | 'note' | 'none';
   badgeText: string;
-  /** 唯一主按钮 */
+  /** 唯一主按钮：现在统一进编辑器；补齐/运行都收进 ⋯ 菜单 */
   act: 'fix' | 'use' | 'edit';
   label: string;
 }
@@ -19,8 +19,8 @@ interface StateView {
  * 工作流卡片。
  *
  * 三条来自卡片方案 v2 的硬规则：
- * 1. **一个卡上只有一个主按钮**。使用 / 补齐 / 编辑器三件事是先后关系不是并列，
- *    摆三个再置灰两个只是噪音。状态决定它是谁。
+ * 1. **一个卡上只有一个主按钮，而且永远是「编辑」**。缺不缺依赖不该换掉入口；
+ *    使用工作流 / 补齐依赖是低频动作，收进 ⋯ 菜单。
  * 2. **解析失败的说明长在封面图区里**，不弹 toast、不弹模态、不另开错误块 ——
  *    坏文件是这条资产自己的属性。
  * 3. **徽标与正文不重复表达**。红色徽标已经说了「缺东西」，正文不再写一遍状态行。
@@ -101,7 +101,7 @@ interface StateView {
               </span>
             }
           </div>
-          <button class="wc-primary" [class.ghost]="view().act === 'edit'" (click)="primary.emit({ item: it, act: view().act })">
+          <button class="wc-primary" (click)="primary.emit({ item: it, act: view().act })">
             @if (view().act === 'use') {
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.6 3.3 12.4 8l-6.8 4.7z" fill="currentColor" stroke="none" /></svg>
             } @else if (view().act === 'fix') {
@@ -455,23 +455,27 @@ export class WorkflowCardComponent {
     return m + n;
   }
 
-  /** 四态 → 徽标 + 唯一主按钮。表格就是设计文档 3.0.2 的状态机。 */
+  /**
+   * 四态 → 徽标 + 唯一主按钮。
+   *
+   * 主按钮永远是「编辑」：工作是改工作流，缺不缺依赖不该把入口换掉。
+   * 使用 / 补齐依赖是低频动作，收进 ⋯ 菜单（见 workflows 页的菜单模板）。
+   */
   view(): StateView {
     switch (this.state()) {
       case 'broken':
-        // 语法错误是硬阻断：没有「使用」这回事，只能去改
-        return { badge: 'none', badgeText: '', act: 'edit', label: '用编辑器打开' };
+        return { badge: 'none', badgeText: '', act: 'edit', label: '编辑' };
       case 'api':
-        return { badge: 'note', badgeText: 'API 格式 · 不能载入画布', act: 'edit', label: '用编辑器打开' };
+        return { badge: 'note', badgeText: 'API 格式 · 不能载入画布', act: 'edit', label: '编辑' };
       case 'ready':
-        return { badge: 'count', badgeText: `${this.it.nodes} 节点 · ${this.totalDeps()} 依赖`, act: 'use', label: '使用工作流' };
+        return { badge: 'count', badgeText: `${this.it.nodes} 节点 · ${this.totalDeps()} 依赖`, act: 'edit', label: '编辑' };
       default: {
         const parts: string[] = [];
         const m = this.it.deps?.missing?.length || 0;
         const p = this.it.node_deps?.missing?.length || 0;
         if (m) parts.push(`缺 ${m} 模型`);
         if (p) parts.push(`${p} 节点包`);
-        return { badge: 'dep', badgeText: parts.join(' · '), act: 'fix', label: '补齐依赖' };
+        return { badge: 'dep', badgeText: parts.join(' · '), act: 'edit', label: '编辑' };
       }
     }
   }
@@ -484,7 +488,7 @@ export class WorkflowCardComponent {
     if (m) parts.push(`${m} 个模型`);
     if (p) parts.push(`${p} 个节点包`);
     if (un) parts.push(`${un} 个节点类型待人工确认`);
-    return '缺 ' + parts.join('、') + '，点「补齐依赖」处理';
+    return '缺 ' + parts.join('、') + '，可在「⋯」菜单里补齐依赖';
   }
 
   sizeText(): string {

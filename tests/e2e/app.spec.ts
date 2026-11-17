@@ -94,10 +94,10 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
 
-    // 模型库重构后收藏 / 评审已移除，改为确认入库条目有显存压力标志与目录操作
+    // 模型库 v4：卡片是海报卡，收藏 / 评审已移除，压力条与卡片动作都在
     await expect(page.getByTitle('收藏')).toHaveCount(0);
-    await expect(page.locator('.vram-gauge').first()).toBeVisible();
-    await expect(page.getByRole('button', { name: '打开目录' }).first()).toBeVisible();
+    await expect(page.locator('md-library-card .gauge').first()).toBeVisible();
+    await expect(page.getByRole('button', { name: '查找适配工作流' }).first()).toBeVisible();
   });
 
   test('下载任务：工作流与模型共用任务表，工作流标出类型', async ({ page }) => {
@@ -261,19 +261,127 @@ test.describe('Model Downloader Web UI', () => {
     await page.screenshot({ path: ART + '/60-model-card-pills.png', fullPage: false });
   });
 
-  test('模型库：标签列是胶囊，点击才展开编辑', async ({ page }) => {
-    await page.goto('/models?demo=1');
-    const cell = page.locator('.cell-tags').first();
-    await expect(cell).toBeVisible();
+  test('发现页：Civitai 缓存后加载更多不覆盖第一页', async ({ page }) => {
+    const mk = (p: number) =>
+      Array.from({ length: 20 }, (_, i) => ({
+        id: `civ-${p}-${i}`,
+        name: `Civ ${p} ${i}`,
+        author: 'tester',
+        source: 'civitai',
+        description: '',
+        downloads: 100 - i,
+        likes: 10,
+        tags: [],
+        task: 'Checkpoint',
+        url: `https://civitai.com/models/${p}${i}`,
+        updated_at: '2026-11-14',
+      }));
+    const page1Calls: number[] = [];
+    await page.route((url) => url.pathname === '/api/search', (route) => {
+      const p = Number(new URL(route.request().url()).searchParams.get('page') || '1');
+      if (p === 1) page1Calls.push(Date.now());
+      return route.fulfill({ json: { items: mk(p), total: 20, errors: {} } });
+    });
+    await page.route((url) => url.pathname === '/api/covers', (route) =>
+      route.fulfill({ json: { covers: {} } }));
 
-    // 平时是胶囊组，没有裸露的输入框
-    await expect(cell.locator('input')).toHaveCount(0);
-    await expect(cell.locator('.pill').first()).toBeVisible();
+    await page.goto('/models/discover?source=civitai');
+    await expect(page.locator('md-model-card')).toHaveCount(20);
+    const first = await page.locator('md-model-card .card-name').first().innerText();
 
-    // 点一下换成输入框
-    await cell.getByTestId('tag-edit-open').click();
-    await expect(cell.getByTestId('tag-edit')).toBeVisible();
-    await page.screenshot({ path: ART + '/61-library-tag-edit.png', fullPage: false });
+    // 刷新：命中 3 分钟内的缓存，不应该再发 page=1 请求
+    const before = page1Calls.length;
+    await page.reload();
+    await expect(page.locator('md-model-card')).toHaveCount(20);
+    expect(page1Calls.length).toBe(before);
+
+    // 加载更多必须追加第二页，第一页第一条不能被顶掉
+    await page.getByRole('button', { name: '加载更多' }).click();
+    await expect(page.locator('md-model-card')).toHaveCount(40);
+    await expect(page.locator('md-model-card .card-name').first()).toHaveText(first);
+  });
+
+  test('模型库：海报卡 + 右侧分面筛选', async ({ page }) => {
+    // 全 mock：三种卡（正常 / 残缺 / DEMO）一次看全，不依赖本机真实库
+    const models = [
+      {
+        id: 'm-flux', name: 'FLUX.1-dev', repo_id: 'black-forest-labs/FLUX.1-dev',
+        source: 'huggingface', local_path: 'E:/mock/models/diffusion_models/FLUX.1-dev',
+        size_bytes: 23.8 * 1024 ** 3, file_count: 3, tags: ['text-to-image'],
+        created_at: '2026-11-14T10:00:00', files: [],
+        precision: 'BF16', params: '12.00 B', hasWeights: true, isDemo: false,
+        folder: 'diffusion_models', folderLabel: '扩散模型', task: 'text_to_image',
+        taskLabel: '文生图', needGb: 22.8,
+        vram: { level: 'err', text: '装不下', hint: '超出 6.8 GB' },
+      },
+      {
+        id: 'm-gpt2', name: 'gpt2', repo_id: 'openai/gpt2', source: 'huggingface',
+        local_path: 'E:/mock/models/text_encoders/gpt2', size_bytes: 1024 * 1024,
+        file_count: 2, tags: [], created_at: '2026-11-13T10:00:00', files: [],
+        precision: 'FP16', params: '124 M', hasWeights: false, isDemo: false,
+        folder: 'text_encoders', folderLabel: '文本编码器', task: 'text_generation',
+        taskLabel: '文本生成', needGb: 0,
+        vram: { level: 'missing', text: '缺少权重', hint: '目录里没有权重文件' },
+      },
+      {
+        id: 'm-demo', name: 'text-gen-1.5', repo_id: 'demo/text-gen-1.5', source: 'demo',
+        local_path: 'E:/mock/models/checkpoints/text-gen-1.5', size_bytes: 4 * 1024 ** 2,
+        file_count: 1, tags: [], created_at: '2026-11-12T10:00:00', files: [],
+        precision: 'FP16', params: '524.3 M', hasWeights: true, isDemo: true,
+        folder: 'checkpoints', folderLabel: '主模型', task: 'text_generation',
+        taskLabel: '文本生成', needGb: 0,
+        vram: { level: 'demo', text: '演示数据', hint: '' },
+      },
+    ];
+    await page.route((url) => url.pathname === '/api/library', (route) => route.fulfill({ json: models }));
+    await page.route((url) => url.pathname === '/api/library/facets', (route) => route.fulfill({
+      json: {
+        folder: [
+          { id: 'checkpoints', label: '主模型', count: 1, sizeText: '4.0 MB' },
+          { id: 'diffusion_models', label: '扩散模型', count: 1, sizeText: '23.80 GB' },
+          { id: 'text_encoders', label: '文本编码器', count: 1, sizeText: '1.0 MB' },
+        ],
+        task: [
+          { id: 'text_generation', label: '文本生成', count: 2, sizeText: '5.0 MB' },
+          { id: 'text_to_image', label: '文生图', count: 1, sizeText: '23.80 GB' },
+        ],
+        source: [
+          { id: 'demo', label: 'demo', count: 1, sizeText: '4.0 MB' },
+          { id: 'huggingface', label: 'huggingface', count: 2, sizeText: '23.80 GB' },
+        ],
+        allFolders: [], allTasks: [],
+      },
+    }));
+    await page.route((url) => url.pathname === '/api/library/gpu', (route) => route.fulfill({
+      json: { name: 'RTX 4090', vramMb: 16384, vramGb: 16, vramText: '16 GB' },
+    }));
+    await page.route((url) => url.pathname === '/api/covers', (route) => route.fulfill({ json: { covers: {} } }));
+
+    await page.goto('/models');
+    await expect(page.locator('md-library-card')).toHaveCount(3);
+    // 右侧筛选默认收起：右缘只有一枚浮标
+    await expect(page.locator('.rail-fab')).toBeVisible();
+    await expect(page.locator('.rail.open')).toHaveCount(0);
+    // 展开后是浮层，三个可多选分面都在
+    await page.locator('.rail-fab').click();
+    await expect(page.locator('.rail.open')).toBeVisible();
+    await expect(page.locator('.rail .facet')).toHaveCount(3);
+    // 三种形态都在，压力条一点都不少
+    await expect(page.locator('md-library-card .gauge')).toHaveCount(3);
+    // 残缺条目的主操作是补救，不是「查找适配工作流」
+    await expect(page.getByRole('button', { name: '重新下载模型' })).toBeVisible();
+
+    // 右上角必须能直接跳回原站；发布方仍在底部标签行
+    const src = page.locator('md-library-card a.origin').first();
+    await expect(src).toHaveAttribute('href', 'https://huggingface.co/black-forest-labs/FLUX.1-dev');
+    await expect(src).toHaveAttribute('target', '_blank');
+    await expect(src).toHaveText('HF');
+    await expect(page.locator('md-library-card .pill-author').first()).toHaveText('black-forest-labs');
+
+    // 搜索在客户端过滤
+    await page.getByTestId('lib-search').fill('gpt2');
+    await expect(page.locator('md-library-card')).toHaveCount(1);
+    await page.screenshot({ path: ART + '/61-library-card.png', fullPage: false });
   });
 
   test('环境管理：显示本机设备与安装方案', async ({ page }) => {
@@ -1096,11 +1204,25 @@ test.describe('Model Downloader Web UI', () => {
       await expect(cards.nth(i).locator('.wc-primary')).toHaveCount(1);
     }
 
-    // 四态各自的「唯一主按钮」文案
-    await expect(cards.nth(0).locator('.wc-primary')).toContainText('用编辑器打开');
-    await expect(cards.nth(1).locator('.wc-primary')).toContainText('用编辑器打开');
-    await expect(cards.nth(2).locator('.wc-primary')).toContainText('补齐依赖');
-    await expect(cards.nth(3).locator('.wc-primary')).toContainText('使用工作流');
+    // 主按钮统一是「编辑」：缺不缺依赖都不换入口
+    for (let i = 0; i < 4; i++) {
+      await expect(cards.nth(i).locator('.wc-primary')).toContainText('编辑');
+    }
+
+    // 使用 / 补齐依赖收进 ⋯：缺依赖才有补齐，API / 坏文件不能直接用画布
+    await cards.nth(2).locator('.wc-kebab').click();
+    await expect(page.getByRole('menuitem', { name: '补齐依赖' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: '使用工作流' })).toBeEnabled();
+    await page.keyboard.press('Escape');
+
+    await cards.nth(3).locator('.wc-kebab').click();
+    await expect(page.getByRole('menuitem', { name: '补齐依赖' })).toHaveCount(0);
+    await expect(page.getByRole('menuitem', { name: '使用工作流' })).toBeEnabled();
+    await page.keyboard.press('Escape');
+
+    await cards.nth(1).locator('.wc-kebab').click();
+    await expect(page.getByRole('menuitem', { name: '使用工作流' })).toBeDisabled();
+    await page.keyboard.press('Escape');
 
     // 徽标：坏文件不戴缺失提示，API 用橙色提示，缺依赖用红色，就绪用中性计数
     await expect(cards.nth(0).locator('.wc-broken-title')).toHaveText('无法解析');
@@ -1139,7 +1261,8 @@ test.describe('Model Downloader Web UI', () => {
       }));
 
     await page.goto('/workflows');
-    await page.getByRole('button', { name: '补齐依赖' }).click();
+    await page.locator('app-workflow-card .wc-kebab').first().click();
+    await page.getByRole('menuitem', { name: '补齐依赖' }).click();
 
     const drawer = page.locator('.dr');
     await expect(drawer).toBeVisible();
@@ -1151,6 +1274,19 @@ test.describe('Model Downloader Web UI', () => {
     await expect(drawer).toContainText('Power Lora Loader (rgthree)');
     // 主按钮只补节点包 —— 模型走下载任务
     await expect(drawer.locator('.dr-ops .primary')).toHaveText('补齐节点包');
+
+    // 排序下拉层必须留在抽屉下面：抽屉是模态的，页内浮层不能压上来
+    const sortZ = await page.locator('.wf-sort-wrap').evaluate((el) => Number(getComputedStyle(el).zIndex));
+    const drawerZ = await page.locator('.dr').evaluate((el) => Number(getComputedStyle(el).zIndex));
+    expect(sortZ).toBeLessThan(drawerZ);
+    const sortCovered = await page.evaluate(() => {
+      const btn = document.querySelector('.wf-sort-wrap > .wf-chip');
+      if (!btn) return false;
+      const r = btn.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return !hit || !btn.contains(hit);
+    });
+    expect(sortCovered).toBe(true);
 
     await page.screenshot({ path: ART + '/26-workflow-drawer.png', fullPage: false });
     await page.locator('.dr-mask').click({ position: { x: 5, y: 5 } });
@@ -1217,11 +1353,11 @@ test.describe('Model Downloader Web UI', () => {
     await page.locator('app-workflow-card .wc-kebab').click();
     const menu = page.locator('.wf-menu');
     await expect(menu).toBeVisible();
-    // 指定的 6 项顺序：变更封面 / 重命名 / 更换分组 / 在画布中打开 / 打开文件夹 / 删除
+    // 7 项：使用 / 补齐依赖（这张卡缺件）/ 变更封面 / 重命名 / 更换分组 / 打开文件夹 / 删除
     await expect(menu.getByRole('menuitem')).toHaveText([
-      /变更封面/, /^重命名$/, /^更换分组$/, /在画布中打开/, /打开文件夹/, /^删除$/,
+      /使用工作流/, /补齐依赖/, /变更封面/, /^重命名$/, /^更换分组$/, /打开文件夹/, /^删除$/,
     ]);
-    await expect(menu.getByRole('menuitem')).toHaveCount(6);
+    await expect(menu.getByRole('menuitem')).toHaveCount(7);
 
     // 菜单是 fixed 定位且贴着按钮：不该跑到视口外
     const box = await menu.boundingBox();
@@ -1331,7 +1467,8 @@ test.describe('Model Downloader Web UI', () => {
     await mockLocalWorkflows(page);
     await page.goto('/workflows');
 
-    await page.getByRole('button', { name: '补齐依赖' }).click();
+    await page.locator('app-workflow-card .wc-kebab').first().click();
+    await page.getByRole('menuitem', { name: '补齐依赖' }).click();
     const row = page.locator('.dr-row').filter({ hasText: 'ae.sft' });
     await row.getByRole('button', { name: '去找' }).click();
 
@@ -1369,19 +1506,19 @@ test.describe('Model Downloader Web UI', () => {
     await expect(row.locator('.lw-thumb img')).toHaveCount(1);
     // 徽标与卡片同一套四态：缺 1 模型 + 1 节点包
     await expect(row.locator('.lw-badge')).toHaveText('缺 1 模型 · 1 节点包');
-    // 唯一主按钮：缺依赖 → 补齐依赖
-    await expect(row.locator('.lw-primary')).toHaveText('补齐依赖');
+    // 主按钮统一是「编辑」；缺依赖时 ⋯ 里才有「补齐依赖」
+    await expect(row.locator('.lw-primary')).toHaveText('编辑');
     await expect(row.locator('.lw-fmt')).toHaveText('UI');
 
-    // ⋯ 与卡片同一套菜单
     await row.locator('.lw-kebab').click();
     await expect(page.locator('.wf-menu')).toBeVisible();
-    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(6);
+    await expect(page.locator('.wf-menu').getByRole('menuitem')).toHaveCount(7);
     await page.keyboard.press('Escape');
     await expect(page.locator('.wf-menu')).toHaveCount(0);
 
-    // 点主按钮也走同一套处理：缺依赖开抽屉
-    await row.locator('.lw-primary').click();
+    // 抽屉从 ⋯ 进入
+    await row.locator('.lw-kebab').click();
+    await page.getByRole('menuitem', { name: '补齐依赖' }).click();
     await expect(page.locator('.dr')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('.dr')).toHaveCount(0);
@@ -1799,7 +1936,7 @@ test.describe('Model Downloader Web UI', () => {
     const tag = page.locator('app-workflow-card .wc-tag').first();
     await expect(tag).toHaveText('人像');
     await expect(page.locator('app-workflow-card .wc-tag')).toHaveCount(1);
-    // 主按钮可能是「补齐依赖」，所以只在标签区断言计数已撤掉
+    // 主按钮现在是「编辑」，所以只在标签区断言计数已撤掉
     await expect(page.locator('app-workflow-card .wc-meta')).not.toContainText('节点');
     await expect(page.locator('app-workflow-card .wc-meta')).not.toContainText('依赖');
     // 封面左下不再重复一次分组名
@@ -1815,4 +1952,254 @@ test.describe('Model Downloader Web UI', () => {
     await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
+
+  test('工作流编辑器：从卡片主按钮直接进入编辑器', async ({ page }) => {
+    await mockLocalWorkflows(page);
+    await page.route((url: URL) => url.pathname === '/api/workflows/file', (route: any) =>
+      route.fulfill({
+        json: {
+          path: 'E:/mock/workflows/flux_img2img_1_2.json', name: 'flux_img2img_1_2', folder: '',
+          format: 'ui', size: 100, mtime: 1700000000,
+          data: { nodes: [{ id: 1, type: 'KSampler', pos: [60, 60], size: [210, 120], inputs: [], outputs: [], widgets_values: [] }], links: [], version: 0.4 },
+          raw: '{}', error: '',
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/object-info', (route: any) =>
+      route.fulfill({ json: { available: false, source: '', fetched_at: 0, nodes: {} } }));
+
+    await page.goto('/workflows');
+    await page.locator('app-workflow-card .wc-primary').click();
+
+    await expect(page).toHaveURL(/\/workflows\/edit\?path=/);
+    await expect(page.locator('.node')).toHaveCount(1);
+    await expect(page.locator('.fmt-badge')).toHaveText('UI');
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  // ---------------- 工作流编辑器：UI / API / 坏 JSON ----------------
+  const EDITOR_UI = {
+    last_node_id: 2,
+    last_link_id: 1,
+    nodes: [
+      {
+        id: 1, type: 'UNETLoader', pos: [80, 80], size: [210, 100],
+        inputs: [], outputs: [{ name: 'MODEL', type: 'MODEL', links: [1] }],
+        widgets_values: ['flux1-dev.sft', 'default'],
+        properties: { 'Node name for S&R': 'UNETLoader' },
+      },
+      {
+        id: 2, type: 'KSampler', pos: [500, 80], size: [210, 220],
+        inputs: [
+          { name: 'model', type: 'MODEL', link: 1 },
+          { name: 'seed', type: 'INT', widget: { name: 'seed' }, link: null },
+          { name: 'steps', type: 'INT', widget: { name: 'steps' }, link: null },
+          { name: 'cfg', type: 'FLOAT', widget: { name: 'cfg' }, link: null },
+          { name: 'sampler_name', type: 'COMBO', widget: { name: 'sampler_name' }, link: null },
+          { name: 'scheduler', type: 'COMBO', widget: { name: 'scheduler' }, link: null },
+        ],
+        outputs: [{ name: 'LATENT', type: 'LATENT', links: [] }],
+        widgets_values: [42, 'randomize', 20, 8, 'euler', 'normal'],
+      },
+    ],
+    links: [[1, 1, 0, 2, 0, 'MODEL']],
+    version: 0.4,
+  };
+
+  const EDITOR_INFO = {
+    available: true,
+    source: 'mock',
+    fetched_at: 1,
+    nodes: {
+      UNETLoader: {
+        input: { required: { unet_name: [['flux1-dev.sft']], weight_dtype: [['default', 'fp8']] } },
+        input_order: { required: ['unet_name', 'weight_dtype'] },
+        output: ['MODEL'], output_name: ['MODEL'], display_name: 'UNETLoader', category: 'loaders',
+      },
+      KSampler: {
+        input: { required: {
+          model: ['MODEL'],
+          seed: ['INT', { default: 0, min: 0, max: 100, control_after_generate: true }],
+          steps: ['INT', { default: 20, min: 1, max: 100 }],
+          cfg: ['FLOAT', { default: 8, min: 0, max: 30, step: 0.1 }],
+          sampler_name: [['euler', 'dpmpp_2m']],
+          scheduler: [['normal', 'karras']],
+        } },
+        input_order: { required: ['model', 'seed', 'steps', 'cfg', 'sampler_name', 'scheduler'] },
+        output: ['LATENT'], output_name: ['LATENT'], display_name: 'KSampler', category: 'sampling',
+      },
+    },
+  };
+
+  async function mockEditor(page: any, file: Record<string, unknown>, saveBody?: { value: any }) {
+    await page.route((url: URL) => url.pathname === '/api/workflows/file', async (route: any) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          json: {
+            path: 'E:/mock/a.json', name: 'a', folder: '', format: 'ui',
+            size: 100, mtime: 1700000000, data: file, raw: JSON.stringify(file), error: '',
+          },
+        });
+        return;
+      }
+      if (saveBody) saveBody.value = route.request().postDataJSON();
+      await route.fulfill({
+        json: {
+          path: 'E:/mock/a.json', name: 'a', format: 'ui',
+          size: 120, mtime: 1700000001, backup: 'E:/mock/a.json.bak',
+        },
+      });
+    });
+    await page.route((url: URL) => url.pathname === '/api/workflows/object-info', (route: any) =>
+      route.fulfill({ json: EDITOR_INFO }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({ json: { dir: '', total: 0, groups: [], items: [] } }));
+  }
+
+  test('工作流编辑器：UI 文件画布、参数与 JSON 同步', async ({ page }) => {
+    await mockEditor(page, EDITOR_UI);
+    await page.goto('/workflows/edit?path=' + encodeURIComponent('E:/mock/a.json'));
+
+    const nodes = page.locator('.node');
+    await expect(nodes).toHaveCount(2);
+    await expect(page.locator('.fmt-badge')).toHaveText('UI');
+
+    // 供给线（加载器 → 消费者）默认收起；开关能展开，选中消费者时也会自动出现
+    const wires = page.locator('svg.wires path.wire');
+    await expect(wires).toHaveCount(0);
+    await page.getByTestId('wf-supply').click();
+    await expect(wires).toHaveCount(1);
+    await page.getByTestId('wf-supply').click();
+    await expect(wires).toHaveCount(0);
+
+    // 节点定义到了以后，控件名要认回来，而不是「参数 1」
+    const ks = nodes.filter({ has: page.locator('.n-title', { hasText: 'KSampler' }) }).first();
+    await ks.click();
+    await expect(wires).toHaveCount(1);
+    const insp = page.locator('.insp');
+    await expect(insp.locator('.flabel').first()).toHaveText('种子');
+    await expect(insp.locator('.fnum').first()).toHaveValue('42');
+    await expect(insp.locator('.flabel')).toContainText(['种子', '生成后', '步数', 'CFG', '采样器', '调度器']);
+
+    // JSON 视图与画布是同一份数据
+    await page.getByRole('button', { name: 'UI JSON', exact: true }).click();
+    const area = page.locator('.jsonarea');
+    await expect(area).toHaveValue(/"KSampler"/);
+    await expect(area).toHaveValue(/"widgets_values"/);
+    await page.screenshot({ path: ART + '/52-workflow-editor-json.png', fullPage: false });
+
+    // API JSON 不能粘进 UI 文件：拒绝应用，而不是当成空工作流保存
+    await area.fill(JSON.stringify({ '1': { class_type: 'KSampler', inputs: {} } }));
+    await page.getByRole('button', { name: '应用到画布', exact: true }).click();
+    await expect(page.locator('.jsonerr')).toContainText('API 格式');
+
+    await page.getByRole('button', { name: '画布', exact: true }).click();
+    await expect(page.locator('.status')).toContainText('2 节点');
+    await page.screenshot({ path: ART + '/53-workflow-editor-canvas.png', fullPage: false });
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('工作流编辑器：改参数保存时原样带回未知字段', async ({ page }) => {
+    const saved: { value: any } = { value: null };
+    await mockEditor(page, EDITOR_UI, saved);
+    await page.goto('/workflows/edit?path=' + encodeURIComponent('E:/mock/a.json'));
+
+    const ks = page.locator('.node').filter({ has: page.locator('.n-title', { hasText: 'KSampler' }) }).first();
+    await ks.click();
+    const seed = page.locator('.insp .fnum').first();
+    await seed.fill('43');
+    await seed.blur();
+    await page.getByRole('button', { name: '保存', exact: true }).click();
+    await expect(page.locator('.toast')).toContainText('已保存');
+    await expect(page.locator('.toast')).toContainText('.bak');
+
+    expect(saved.value).toBeTruthy();
+    expect(saved.value.path).toBe('E:/mock/a.json');
+    const nodes = saved.value.data.nodes;
+    expect(nodes[1].widgets_values[0]).toBe(43);
+    // 位置、尺寸、未知字段不能因为过一次编辑器就变形
+    expect(nodes[0].pos).toEqual([80, 80]);
+    expect(nodes[0].size).toEqual([210, 100]);
+    expect(nodes[0].properties['Node name for S&R']).toBe('UNETLoader');
+    // 没有 title 的节点不该被强塞一个
+    expect(nodes[0].title).toBeUndefined();
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('工作流编辑器：API 文件不出 UI JSON，保存写回 API 格式', async ({ page }) => {
+    const api = {
+      '1': { class_type: 'CheckpointLoaderSimple', inputs: { ckpt_name: 'krea2.safetensors' } },
+      '2': { class_type: 'VAEDecode', inputs: { samples: ['1', 0], vae: ['1', 2] } },
+    };
+    const saved: { value: any } = { value: null };
+    await page.route((url: URL) => url.pathname === '/api/workflows/file', async (route: any) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          json: {
+            path: 'E:/mock/api.json', name: 'api', folder: '', format: 'api',
+            size: 80, mtime: 1700000000, data: api, raw: JSON.stringify(api), error: '',
+          },
+        });
+        return;
+      }
+      saved.value = route.request().postDataJSON();
+      await route.fulfill({
+        json: {
+          path: 'E:/mock/api.json', name: 'api', format: 'api',
+          size: 90, mtime: 1700000001, backup: 'E:/mock/api.json.bak',
+        },
+      });
+    });
+    await page.route((url: URL) => url.pathname === '/api/workflows/object-info', (route: any) =>
+      route.fulfill({ json: { available: false, source: '', fetched_at: 0, nodes: {} } }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({ json: { dir: '', total: 0, groups: [], items: [] } }));
+
+    await page.goto('/workflows/edit?path=' + encodeURIComponent('E:/mock/api.json'));
+    await expect(page.locator('.fmt-badge')).toHaveText('API');
+    await expect(page.locator('.node')).toHaveCount(2);
+    // API 格式没有布局信息：UI JSON 明确禁用
+    await expect(page.getByRole('button', { name: 'UI JSON', exact: true })).toBeDisabled();
+
+    await page.getByRole('button', { name: 'API', exact: true }).click();
+    const area = page.locator('.jsonarea');
+    await expect(area).toHaveValue(/"class_type": "VAEDecode"/);
+    await area.fill(JSON.stringify({
+      '1': { class_type: 'CheckpointLoaderSimple', inputs: { ckpt_name: 'other.safetensors' } },
+      '2': { class_type: 'VAEDecode', inputs: { samples: ['1', 0], vae: ['1', 2] } },
+    }, null, 2));
+    await page.getByRole('button', { name: '应用到画布', exact: true }).click();
+    await expect(page.locator('.toast')).toContainText('已应用到画布');
+    await page.getByRole('button', { name: '画布', exact: true }).click();
+    await page.getByRole('button', { name: '保存', exact: true }).click();
+    await expect(page.locator('.toast')).toContainText('已保存');
+    expect(saved.value.data['1'].inputs.ckpt_name).toBe('other.safetensors');
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
+  test('工作流编辑器：坏 JSON 先在文本里修，再应用回画布', async ({ page }) => {
+    await page.route((url: URL) => url.pathname === '/api/workflows/file', (route: any) =>
+      route.fulfill({
+        json: {
+          path: 'E:/mock/bad.json', name: 'bad', folder: '', format: 'broken',
+          size: 20, mtime: 1700000000, data: null, raw: '{"nodes": [}', error: 'JSON 语法错误',
+        },
+      }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/object-info', (route: any) =>
+      route.fulfill({ json: { available: false, source: '', fetched_at: 0, nodes: {} } }));
+    await page.route((url: URL) => url.pathname === '/api/workflows/local', (route: any) =>
+      route.fulfill({ json: { dir: '', total: 0, groups: [], items: [] } }));
+
+    await page.goto('/workflows/edit?path=' + encodeURIComponent('E:/mock/bad.json'));
+    await expect(page.locator('.fmt-badge')).toHaveText('语法错误');
+    await expect(page.getByRole('button', { name: '画布', exact: true })).toBeDisabled();
+    await expect(page.locator('.jsonarea')).toHaveValue('{"nodes": [}');
+
+    await page.locator('.jsonarea').fill(JSON.stringify({ nodes: [{ id: 1, type: 'KSampler', pos: [40, 40], size: [210, 120], widgets_values: [] }], links: [], version: 0.4 }, null, 2));
+    await page.getByRole('button', { name: '应用到画布', exact: true }).click();
+    await expect(page.locator('.fmt-badge')).toHaveText('UI');
+    await page.getByRole('button', { name: '画布', exact: true }).click();
+    await expect(page.locator('.node')).toHaveCount(1);
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
+
 });

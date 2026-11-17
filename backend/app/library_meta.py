@@ -9,9 +9,14 @@
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
+import threading
+import time
 from pathlib import Path
 
+from .config import DATA_DIR
 from .family_rules import FAMILY_RULES
 from .weight_class import classify
 from .weight_meta import fmt_bytes, is_weight_file, pick_weight_file, read_weight
@@ -26,33 +31,97 @@ VRAM_FACTOR = {
 DEFAULT_VRAM_FACTOR = 1.6
 
 
-def _gpu_vram_mb() -> int | None:
-    """本机独显显存。探测有缓存，不会每次都跑 nvidia-smi。"""
-    try:
-        from .comfy.probe import probe_device
+# 一次探测要跑 nvidia-smi / CIM（实测 0.38 s）。列表接口对**每个模型**都会
+# 调一次显存，facets 又从头算一遍 —— 内存缓存挡住同一进程内的重复探测，
+# 磁盘缓存（var/data/gpu.json）挡住**重启后的第一次**：否则每次开服务都要
+# 先等半秒才出第一张卡。
+_VRAM_TTL = 3600.0
+_GPU_CACHE_PATH = DATA_DIR / "gpu.json"
+_vram_cache: dict[str, object] = {"at": 0.0, "snapshot": None}
+_vram_lock = threading.Lock()
 
-        report = probe_device()
-        gpu = report.primary_gpu
-        return gpu.vram_mb if gpu else None
-    except Exception:
-        # 探测失败不该拖垮整个列表
-        return None
+
+def _gpu_vram_mb() -> int | None:
+    """本机独显显存。走 gpu_snapshot() 的缓存，不是每个模型都探一次。"""
+    mb = int(gpu_snapshot().get("vramMb") or 0)
+    return mb or None
 
 
 def gpu_snapshot() -> dict:
     """本机独显快照 —— 权重压力标志的分母。
 
     前端要拿它算「这个模型占我显存百分之几」，所以给结构化数据而不是文本。
+    查找顺序：进程内缓存 → 本地文件缓存 → 真正探测。并发请求用锁挡住，
+    避免列表 / 分面 / gpu 三个接口同时各跑一次探测。
     """
-    try:
-        from .comfy.probe import probe_device
+    now = time.time()
+    cached = _vram_cache["snapshot"]
+    if cached is not None and now - float(_vram_cache["at"]) < _VRAM_TTL:
+        return cached  # type: ignore[return-value]
 
-        report = probe_device()
-        gpu = report.primary_gpu
+    with _vram_lock:
+        now = time.time()
+        cached = _vram_cache["snapshot"]
+        if cached is not None and now - float(_vram_cache["at"]) < _VRAM_TTL:
+            return cached  # type: ignore[return-value]
+
+        snap = _load_gpu_disk()
+        if snap is None:
+            snap = _probe_gpu_snapshot()
+            _save_gpu_disk(snap)
+        _vram_cache.update(at=now, snapshot=snap)
+        return snap
+
+
+def clear_gpu_snapshot() -> None:
+    """丢掉内存与磁盘快照，下次调用重新探测（测试 / 手动重新检测用）。"""
+    with _vram_lock:
+        _vram_cache.update(at=0.0, snapshot=None)
+    try:
+        _GPU_CACHE_PATH.unlink()
+    except OSError:
+        pass
+
+
+def _load_gpu_disk() -> dict | None:
+    try:
+        data = json.loads(_GPU_CACHE_PATH.read_text("utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    snap = data.get("snapshot")
+    if not isinstance(snap, dict):
+        return None
+    if time.time() - float(data.get("at") or 0) > _VRAM_TTL:
+        return None
+    return snap
+
+
+def _save_gpu_disk(snap: dict) -> None:
+    try:
+        _GPU_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = _GPU_CACHE_PATH.with_suffix(".tmp")
+        tmp.write_text(
+            json.dumps({"at": time.time(), "snapshot": snap}, ensure_ascii=False),
+            "utf-8",
+        )
+        tmp.replace(_GPU_CACHE_PATH)
+    except OSError:
+        pass  # 缓存写不进去不该让请求失败
+
+
+def _probe_gpu_snapshot() -> dict:
+    try:
+        # 只要显存分母，不跑完整设备报告（磁盘 / Python / 实例那圈要 0.3 s 以上）
+        from .comfy.probe import probe_primary_gpu
+
+        gpu = probe_primary_gpu()
     except Exception:
-        return {"name": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
+        # 探测失败不该拖垮整个列表
+        gpu = None
     if gpu is None:
-        return {"name": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
+        return {"name": "", "vendor": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
     mb = int(gpu.vram_mb or 0)
     return {
         "name": gpu.name or "",
@@ -122,34 +191,128 @@ def _vram_verdict(need_gb: float, vram_mb: int | None, has_weights: bool,
     return {"level": "err", "text": "装不下", "hint": f"超出 {need_gb - vram_gb:.1f} GB"}
 
 
+# ---- 模型文件事实的本地缓存 ------------------------------------------------
+# `describe_model` 每次都要 glob 权重文件 + 读 safetensors/gguf 头。3 个模型是
+# 毫秒级，几百个模型就是每次进页面都重新读一遍。这里把「文件事实 + 分类」落到
+# var/data/library_meta.json：键里带 local_path / name / tags / 目录体积 /
+# 权重文件的 mtime+size —— 文件一改、标签一改、目录一移，键就变，自然 miss。
+#
+# **显存结论不进缓存**：它依赖本机显卡，换卡后必须用当前 GPU 重新算。
+# 缓存的是「读文件读出来的事实」，不是「这个模型能不能跑」的结论。
+_META_TTL = 7 * 24 * 3600
+_META_MAX = 2000
+_META_CACHE_PATH = DATA_DIR / "library_meta.json"
+_meta_store: dict[str, dict] | None = None
+_meta_lock = threading.Lock()
+_meta_dirty = False
+
+
+def _weight_stamp(local_path: str) -> tuple[Path | None, str]:
+    """找主权重文件，并给出文件状态指纹。
+
+    只 glob 目录，不读文件头 —— 比 `read_weight()` 便宜一个数量级。
+    """
+    directory = Path(local_path) if local_path else None
+    if directory is None:
+        return None, "-"
+    try:
+        if directory.is_dir():
+            weight = pick_weight_file(directory)
+            if weight is None:
+                return None, "dir:none"
+            st = weight.stat()
+            return weight, f"w:{weight.name}:{st.st_mtime_ns}:{st.st_size}"
+        if directory.is_file():
+            st = directory.stat()
+            return directory, f"f:{st.st_mtime_ns}:{st.st_size}"
+    except OSError:
+        return None, "err"
+    return None, "missing"
+
+
+def _meta_key(local_path: str, name: str, tags: list[str], size_bytes: int, stamp: str) -> str:
+    raw = "\x1f".join([local_path, name, ",".join(tags), str(size_bytes), stamp])
+    return hashlib.sha1(raw.encode("utf-8")).hexdigest()
+
+
+def _load_meta() -> dict[str, dict]:
+    global _meta_store
+    if _meta_store is not None:
+        return _meta_store
+    try:
+        data = json.loads(_META_CACHE_PATH.read_text("utf-8"))
+        _meta_store = data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        _meta_store = {}
+    return _meta_store
+
+
+def _get_meta(key: str) -> dict | None:
+    with _meta_lock:
+        entry = _load_meta().get(key)
+    if not entry:
+        return None
+    if time.time() - float(entry.get("at") or 0) > _META_TTL:
+        return None
+    return entry
+
+
+def _put_meta(key: str, entry: dict) -> None:
+    global _meta_dirty
+    with _meta_lock:
+        store = _load_meta()
+        entry["at"] = time.time()
+        store[key] = entry
+        if len(store) > _META_MAX:
+            for old in sorted(store, key=lambda k: store[k].get("at") or 0)[: _META_MAX // 10]:
+                store.pop(old, None)
+        _meta_dirty = True
+
+
+def flush_meta_cache() -> None:
+    """把内存里的文件事实缓存落盘；列表 / 分面请求结束时各调一次。"""
+    global _meta_dirty
+    with _meta_lock:
+        if not _meta_dirty or _meta_store is None:
+            return
+        _meta_dirty = False
+        data = dict(_meta_store)
+    try:
+        _META_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        tmp = _META_CACHE_PATH.with_suffix(".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False), "utf-8")
+        tmp.replace(_META_CACHE_PATH)
+    except OSError:
+        pass  # 缓存写不进去不该让请求失败
+
+
 def describe_model(local_path: str, name: str = "", tags: list[str] | None = None,
                    size_bytes: int = 0) -> dict:
     """给一条模型记录补上规格、分类与显存结论。
 
     返回的键直接拼到 API 响应里。
     """
-    cls = classify(local_path or "", name or "", tags or [])
-
-    directory = Path(local_path) if local_path else None
-    info = None
-    reason = "none"
-    if directory is not None and directory.is_dir():
-        w = pick_weight_file(directory)
-        if w is not None:
-            info = read_weight(w)
+    tags = tags or []
+    weight, stamp = _weight_stamp(local_path or "")
+    key = _meta_key(local_path or "", name or "", tags, size_bytes or 0, stamp)
+    entry = _get_meta(key)
+    if entry is None:
+        info = None
+        reason = "none"
+        if weight is not None:
+            info = read_weight(weight)
             if info is not None:
                 reason = ""
-            elif is_weight_file(w):
+            elif is_weight_file(weight):
                 # 有权重文件但读不出规格 —— 老格式（.ckpt/.bin）或头部损坏。
                 # 跟「目录里根本没权重」是两回事，不能合并。
                 reason = "unreadable"
-            else:
-                reason = "none"
-        else:
-            reason = "none"
-    elif directory is not None and directory.is_file():
-        info = read_weight(directory)
-        reason = "" if info is not None else ("unreadable" if is_weight_file(directory) else "none")
+        cls = classify(local_path or "", name or "", tags)
+        entry = {"cls": cls, "info": info, "reason": reason}
+        _put_meta(key, entry)
+    cls = entry["cls"]
+    info = entry["info"]
+    reason = entry["reason"]
 
     is_demo = bool((info or {}).get("isDemo"))
     family = _family_of(name or "")

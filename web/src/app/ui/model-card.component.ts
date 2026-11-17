@@ -1,16 +1,8 @@
 import { Component, Input, output } from '@angular/core';
+import { sourceLabel, sourceShort } from '../core/source-links';
 import { SearchItem, fmtNum } from '../core/types';
 import { sourceTaskLabel } from '../core/task-labels';
 import { CoverPlateComponent } from './cover-plate.component';
-
-const SOURCE_LABELS: Record<string, string> = {
-  huggingface: 'Hugging Face',
-  modelscope: 'ModelScope',
-  civitai: 'Civitai',
-  demo: 'Demo',
-  github: 'GitHub',
-  templates: '官方模板',
-};
 
 /** 封面取图顺序，与后端 `covers.PREFERENCE` 保持一致 */
 const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
@@ -22,20 +14,6 @@ interface CardTag {
   title: string;
   href?: string;
 }
-
-/**
- * 卡片上的来源用短名。
- *
- * 「Hugging Face」占 92px，两枚来源再加类型就把 224px 的行塞满了，
- * 后面的标签连同 +N 一起被挤出可视区。短名（Hugging Face → HF）
- * 在卡片上足够辨识 —— 完整名在 title 里。
- */
-const SHORT_SOURCE: Record<string, string> = {
-  huggingface: 'HF',
-  modelscope: 'MS',
-  civitai: 'Civitai',
-  demo: 'Demo',
-};
 
 /**
  * 模型卡：一张海报，不是「封面 + 正文」两段。
@@ -289,16 +267,24 @@ export class ModelCardComponent {
    * 就会让子组件的 ngOnChanges 每帧触发（`meta` 被反复重置，图片加载失败时
    * 甚至会把失败的图重新挂回去形成死循环）。
    */
-  get plate(): { name: string; tags: string[]; image?: string } {
+  get plate(): { name: string; tags: string[]; href?: string; hrefLabel?: string; image?: string } {
     const p = this.primary;
     const shot = this.shot;
     const name = p?.name || '';
-    if (!this._plate || this._plate.name !== name || this._plate.image !== shot) {
-      this._plate = { name, tags: p?.tags || [], image: shot };
+    const href = p?.url || '';
+    const hrefLabel = p ? sourceShort(p.source) : '';
+    if (
+      !this._plate ||
+      this._plate.name !== name ||
+      this._plate.image !== shot ||
+      this._plate.href !== href ||
+      this._plate.hrefLabel !== hrefLabel
+    ) {
+      this._plate = { name, tags: p?.tags || [], href, hrefLabel, image: shot };
     }
     return this._plate;
   }
-  private _plate: { name: string; tags: string[]; image?: string } | null = null;
+  private _plate: { name: string; tags: string[]; href?: string; hrefLabel?: string; image?: string } | null = null;
 
   get authorText(): string {
     const authors = [...new Set(this.items.map((i) => i.author).filter((a) => !!a))];
@@ -332,8 +318,8 @@ export class ModelCardComponent {
     const task = this.taskLabel;
     if (task) out.push({ key: 'task', text: task, title: `类型：${task}` });
     for (const it of this.items) {
-      const full = this.labelOf(it.source);
-      const short = SHORT_SOURCE[it.source] || full;
+      const full = sourceLabel(it.source);
+      const short = sourceShort(it.source);
       out.push({
         key: 'src-' + it.source,
         text: short,
@@ -368,10 +354,6 @@ export class ModelCardComponent {
 
   get maxDownloads(): number {
     return Math.max(...this.items.map((i) => i.downloads || 0), 0);
-  }
-
-  labelOf(source: string): string {
-    return SOURCE_LABELS[source] || source;
   }
 
   fmtNum = fmtNum;

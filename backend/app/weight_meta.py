@@ -13,6 +13,7 @@ MemoryError 把进程带走 —— 那不是「解析失败」，是「进程没
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import struct
 from pathlib import Path
@@ -37,6 +38,26 @@ PRECISION_LABEL = {
 MAX_HEADER_BYTES = 100 * 1024 * 1024
 
 WEIGHT_SUFFIXES = (".safetensors", ".sft", ".gguf", ".ckpt", ".pt", ".pth", ".bin")
+
+
+def schema_hash(header: dict) -> str:
+    """safetensors 头的语义指纹：tensor 名 + dtype + shape。
+
+    用来判断两个 safetensors 是不是**同一份权重**：同一个模型重新导出、
+    或换了存储顺序，只要 tensor 结构一致就算匹配；`__metadata__` 和
+    `data_offsets`（由 shape 推出来）不参与，避免因为无关元数据不同而漏判。
+    """
+    schema = sorted(
+        (
+            name,
+            str(val.get("dtype") or ""),
+            tuple(int(x) for x in (val.get("shape") or [])),
+        )
+        for name, val in header.items()
+        if name != "__metadata__" and isinstance(val, dict)
+    )
+    blob = json.dumps(schema, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
 
 
 def safetensors_info(path: Path) -> dict | None:
@@ -110,6 +131,7 @@ def safetensors_info(path: Path) -> dict | None:
         "tensors": sum(dtypes.values()),
         "dtypes": dtypes,
         "mixed": mixed,
+        "schemaHash": schema_hash(header),
         "isDemo": str(meta.get("demo", "")).lower() == "true",
         "meta": meta,
     }

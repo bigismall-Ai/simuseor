@@ -108,6 +108,27 @@ export interface LibraryModel {
     hint: string;
   };
   needGb?: number;
+  /** 下载时的来源版本：HF 分支/commit、Civitai modelVersionId */
+  revision?: string;
+  /** 后端拼好的原站页面（优先于前端按 source + repo_id 推导） */
+  source_url?: string;
+}
+
+/** 筛选分面的一项：id + 显示名 + 条数 + 占用体积 */
+export interface LibraryFacet {
+  id: string;
+  label: string;
+  count: number;
+  sizeText: string;
+}
+
+/** `/library/facets` 的响应。分类现算，所以分面也由后端现算 */
+export interface LibraryFacets {
+  folder: LibraryFacet[];
+  task: LibraryFacet[];
+  source: LibraryFacet[];
+  allFolders: { id: string; label: string }[];
+  allTasks: { id: string; label: string }[];
 }
 
 export interface SearchItem {
@@ -167,6 +188,38 @@ export interface LocalWorkflow {
   cover?: string;
 }
 
+/** 编辑器读取的一整个工作流文件。data 为 null 表示 JSON 语法坏掉，只有 raw 可看。 */
+export interface WorkflowFile {
+  path: string;
+  name: string;
+  folder: string;
+  format: 'ui' | 'api' | 'broken';
+  size: number;
+  mtime: number;
+  data: Record<string, unknown> | null;
+  raw: string;
+  error: string;
+}
+
+export interface WorkflowSaveResult {
+  path: string;
+  name: string;
+  format: 'ui' | 'api';
+  size: number;
+  mtime: number;
+  backup: string;
+}
+
+/** /object_info：本机实例的节点定义，带磁盘缓存。 */
+export interface WorkflowObjectInfo {
+  available: boolean;
+  source: string;
+  fetched_at: number;
+  nodes: Record<string, unknown>;
+  cached?: boolean;
+  error?: string;
+}
+
 export interface WorkflowModelSlot {
   file: string;
   /** 加载它的节点类型，如 UNETLoader / VAELoader */
@@ -218,6 +271,21 @@ export function fmtSize(bytes: number): string {
     i++;
   }
   return i === 0 ? `${value}${units[i]}` : `${value.toFixed(2)} ${units[i]}`;
+}
+
+/**
+ * 二进制单位（1024）的体积格式。
+ *
+ * 模型库的占用与后端 `/library/facets` 必须同口径 —— 同一页里卡片写
+ * 12.08 GB、右栏写 11.25 GB，用户会以为哪个算错了。后端的 `fmt_bytes`
+ * 用的是 1024，这里跟它对齐。
+ */
+export function fmtBytes(bytes: number): string {
+  if (!bytes && bytes !== 0) return '-';
+  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+  if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${bytes} B`;
 }
 
 export function pct(done: number, total: number): number {

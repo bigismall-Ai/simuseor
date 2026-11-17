@@ -541,6 +541,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       this.errors = hit.errors;
       this.done = hit.done;
       this.page = hit.page;
+      // 关键：perSource 也要按来源分组回填。缓存里只有扁平的 items，
+      // 不回填的话点「加载更多」时 prev 不存在，下一页会直接覆盖第一页。
+      this.perSource.clear();
+      for (const item of this.rawItems) {
+        const group = this.perSource.get(item.source);
+        if (group) group.items.push(item);
+        else this.perSource.set(item.source, { items: [item], full: true, error: '' });
+      }
       this.rows = this.buildRows(this.rawItems);
       this.loading = false;
       this.fetchCovers(this.rows);

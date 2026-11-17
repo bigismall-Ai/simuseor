@@ -59,7 +59,7 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
 
       <div class="head">
         @if (meta.logo || meta.mark) {
-          <span class="brand">
+          <span class="brand" [class.has-dark]="!!meta.logoDark">
             @if (meta.logo) {
               <img
                 class="logo-light"
@@ -102,8 +102,20 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
           <span class="specs">{{ specLine }}</span>
         }
 
-        @if (meta.chip) {
-          <span class="chip">{{ meta.chip }}</span>
+        @if (model.href) {
+          <a
+            class="origin"
+            [href]="model.href"
+            target="_blank"
+            rel="noreferrer"
+            [title]="'打开 ' + (model.hrefLabel || '原站') + ' 原始页面'"
+          >
+            {{ model.hrefLabel }}
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M4.5 2.5H2.5v7h7v-2" />
+              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
+            </svg>
+          </a>
         }
       </div>
     </div>
@@ -250,13 +262,15 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
       .brand img {
         transform: scale(var(--logo-scale, 1));
       }
-      .brand .logo-dark {
+      /* 只有黑白标才备反白版。彩色 / 渐变资产（Qwen 紫、混元多色、MiniMax 渐变）
+         没有深色版：深色主题下必须继续显示浅色版，否则整个厂标会消失。 */
+      .brand.has-dark .logo-dark {
         display: none;
       }
-      :host-context([data-theme='dark']) .brand .logo-light {
+      :host-context([data-theme='dark']) .brand.has-dark .logo-light {
         display: none;
       }
-      :host-context([data-theme='dark']) .brand .logo-dark {
+      :host-context([data-theme='dark']) .brand.has-dark .logo-dark {
         display: block;
       }
 
@@ -291,7 +305,10 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
 
       /* 规格跟在同一行，用点隔开。旧版这三条各占一行高，加起来就是卡片高出来的那截 */
       .specs {
-        flex: none;
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font: 400 11px/1 'Cascadia Mono', Consolas, 'JetBrains Mono', monospace;
         color: var(--plate-ink);
         white-space: nowrap;
@@ -303,21 +320,47 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         opacity: 0.7;
       }
 
-      .chip {
+      /* 右上角：直接跳回模型原站。
+         格式角标（SAFE/GGUF）已删除 —— 信息量低，而且 SAFE 很容易被误读成
+         「安全 / SFW」。原站链接是这张卡真正需要的出口。 */
+      .origin {
         flex: none;
         margin-left: auto;
-        padding: 2px 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        height: 18px;
+        padding: 0 6px;
         border-radius: 4px;
-        background: color-mix(in oklab, var(--plate-mark) 52%, var(--plate-bg));
+        background: color-mix(in oklab, var(--plate-mark) 42%, var(--plate-bg));
         color: var(--plate-strong);
-        font: 400 10.5px/1.35 'Cascadia Mono', Consolas, 'JetBrains Mono', monospace;
+        font: 600 10px/1 'Cascadia Mono', Consolas, 'JetBrains Mono', monospace;
         letter-spacing: 0.04em;
+        text-decoration: none;
         white-space: nowrap;
+        transition: background 0.14s ease, color 0.14s ease;
       }
-      .plate.on-shot .chip {
+      .origin svg {
+        width: 9px;
+        height: 9px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .origin:hover {
+        background: color-mix(in oklab, var(--plate-mark) 62%, var(--plate-bg));
+        color: var(--plate-strong);
+      }
+      .plate.on-shot .origin {
         background: rgba(255, 255, 255, 0.18);
         color: #fff;
         backdrop-filter: blur(6px);
+      }
+      .plate.on-shot .origin:hover {
+        background: rgba(255, 255, 255, 0.28);
+        color: #fff;
       }
 
       /* ── 背景构图：5 种变体 ──────────────────────────────────────────
@@ -443,7 +486,7 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
       .plate.sz-row .scrim {
         display: none;
       }
-      .plate.sz-row .chip,
+      .plate.sz-row .origin,
       .plate.sz-row .specs {
         display: none;
       }
@@ -478,7 +521,7 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
       }
       .plate.sz-mini .label,
       .plate.sz-mini .specs,
-      .plate.sz-mini .chip {
+      .plate.sz-mini .origin {
         display: none;
       }
       .plate.sz-mini .brand {
@@ -740,7 +783,11 @@ export class CoverPlateComponent implements OnChanges, OnDestroy {
   }
 
   get aria(): string {
-    return [this.meta.code, ...this.meta.specs.map((s) => `${s.k}${s.v}`), this.meta.chip]
+    return [
+      this.meta.code,
+      ...this.meta.specs.map((s) => `${s.k}${s.v}`),
+      this.model.hrefLabel || '',
+    ]
       .filter(Boolean)
       .join(' ');
   }
@@ -749,7 +796,7 @@ export class CoverPlateComponent implements OnChanges, OnDestroy {
     // 父组件每次变更检测都会传一个新的对象字面量进来（`[model]="plate"`），
     // 只认引用的话 ngOnChanges 每帧都触发，`meta` 被重置 → 加载失败的图会
     // 被重新挂回去，形成「报错→重算→再报错」的死循环。按内容签名比对。
-    const sig = `${this.size}|${this.model?.name}|${this.model?.image}|${(this.model?.tags || []).join(',')}`;
+    const sig = `${this.size}|${this.model?.name}|${this.model?.image}|${(this.model?.tags || []).join(',')}|${this.model?.href || ''}`;
     if (sig === this.sig) return;
     this.sig = sig;
     this.meta = coverMeta(this.model);

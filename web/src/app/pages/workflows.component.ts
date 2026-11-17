@@ -253,7 +253,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
                   }
                   <button
                     class="lw-primary"
-                    [class.ghost]="actOf(it) === 'edit'"
                     (click)="onPrimary({ item: it, act: actOf(it) })"
                   >
                     {{ actLabel(it) }}
@@ -466,14 +465,19 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     @if (menuOf) {
       <div class="wf-menu-mask" (click)="closeMenu()"></div>
       <div class="wf-menu" role="menu" [style.left.px]="menuAt.x" [style.top.px]="menuAt.y">
+        <button role="menuitem" (click)="useWorkflow(menuOf)"
+                [disabled]="menuOf.format !== 'ui'"
+                [title]="menuOf.format === 'ui' ? '在 ComfyUI 画布中打开' : 'API / 损坏文件不能直接在画布中运行'">
+          使用工作流
+        </button>
+        @if (needsFix(menuOf)) {
+          <button role="menuitem" (click)="openDrawer(menuOf)">补齐依赖</button>
+        }
+        <span class="wf-menu-sep"></span>
         <button role="menuitem" (click)="openCoverManager(menuOf)">变更封面</button>
         <button role="menuitem" (click)="openRename(menuOf)">重命名</button>
         <button role="menuitem" (click)="openGroupSwitch(menuOf)">更换分组</button>
         <span class="wf-menu-sep"></span>
-        <button role="menuitem" (click)="openEditor(menuOf)"
-                [title]="menuOf.format === 'ui' ? '在 ComfyUI 画布中打开' : 'API / 损坏文件无法载入画布，将用默认程序打开'">
-          在画布中打开
-        </button>
         <button role="menuitem" (click)="reveal(menuOf); closeMenu()">打开文件夹</button>
         <button role="menuitem" class="danger" (click)="askDelete(menuOf)">删除</button>
       </div>
@@ -769,8 +773,9 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       color: var(--accent);
       box-shadow: none;
     }
-    /* 排序按钮独立于 chip 组，给它自己的边框与下拉层 */
-    .wf-sort-wrap { position: relative; z-index: 45; flex: none; }
+    /* 排序按钮独立于 chip 组，给它自己的边框与下拉层。
+       层级留在抽屉（40/41）之下：抽屉打开时它是模态的，任何页内浮层都不该压上去。 */
+    .wf-sort-wrap { position: relative; z-index: 30; flex: none; }
     .wf-sort-wrap > .wf-chip {
       height: 29px;
       border: 1px solid var(--border);
@@ -970,11 +975,11 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     .wf-menu-mask {
       position: fixed;
       inset: 0;
-      z-index: 44;
+      z-index: 31;
     }
     .wf-menu {
       position: fixed;
-      z-index: 45;
+      z-index: 32;
       min-width: 168px;
       padding: 4px;
       background: var(--panel);
@@ -1844,12 +1849,17 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.restorePrefs();
+    // 从模型库「查找适配工作流」跳过来：/workflows/discover?q=<模型名>。
+    // 发现页直接用这个关键词检索一次；之后的输入由页面自己维护。
+    const preset = this.route.snapshot.queryParamMap.get('q') || '';
+    if (preset) this.q = preset;
     // 两个路径共用同一个组件实例，切换时组件不会重建，所以视图由路由的 data 驱动
     this.route.data.subscribe((data) => {
       const next: 'mine' | 'discover' = data['tab'] === 'discover' ? 'discover' : 'mine';
       this.tab = next;
       if (next === 'discover') {
-        if (!this.items.length) this.load(1);
+        // 带关键词进来的必须重新检索；普通进入只在还没数据时加载
+        if (preset || !this.items.length) this.load(1);
       } else if (!this.local.length) {
         this.loadLocal();
       }
@@ -2025,20 +2035,21 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     if (m) parts.push(`缺 ${m} 模型`);
     if (p) parts.push(`${p} 节点包`);
     if (un) parts.push(`${un} 待确认`);
-    return { text: parts.join(' · '), tone: 'warn', tip: '点「补齐依赖」处理' };
+    return { text: parts.join(' · '), tone: 'warn', tip: '在「⋯」菜单里补齐依赖' };
   }
 
-  /** 四态 → 唯一动作，与卡片的映射表同源 */
-  actOf(it: LocalWorkflow): 'fix' | 'use' | 'edit' {
-    const state = this.stateOf(it);
-    if (state === 'broken' || state === 'api') return 'edit';
-    return state === 'missing' ? 'fix' : 'use';
+  /** 主按钮固定进编辑器；运行与补齐依赖在 ⋯ 菜单里。 */
+  actOf(_it: LocalWorkflow): 'fix' | 'use' | 'edit' {
+    return 'edit';
   }
 
-  actLabel(it: LocalWorkflow): string {
-    const act = this.actOf(it);
-    if (act === 'edit') return '用编辑器打开';
-    return act === 'fix' ? '补齐依赖' : '使用工作流';
+  actLabel(_it: LocalWorkflow): string {
+    return '编辑';
+  }
+
+  /** ⋯ 菜单里的「补齐依赖」只在真有缺件时出现 */
+  needsFix(it: LocalWorkflow): boolean {
+    return this.missingOf(it) > 0;
   }
 
   /** 列表里的 ⋯ 也要贴着按钮弹菜单，所以同样要点击坐标 */
@@ -2070,6 +2081,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
    * 工作流本身已经在 `--user-directory` 指向的共享目录里，画布左侧即可看到。
    */
   useWorkflow(it: LocalWorkflow): void {
+    this.closeMenu();
     this.notice = '正在准备 ComfyUI 实例…';
     this.api.useLocalWorkflow(it.path).subscribe({
       next: (res) => {
@@ -2086,21 +2098,14 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 用编辑器打开。
+   * 用内置编辑器打开。
    *
-   * UI 格式进画布（那才是能改节点连线的编辑器）；API 格式与语法错误的文件
-   * 画布根本载不进去，只能交给系统默认程序 —— 后者是唯一能真正修复坏 JSON 的路。
+   * UI / API / 坏 JSON 都进同一个编辑器：UI 与 API 走画布或 JSON，语法错误至少
+   * 能在 JSON 视图里修。以前 API 和坏文件只能交给系统默认程序，等于把用户赶出产品。
    */
   openEditor(it: LocalWorkflow): void {
     this.closeMenu();
-    if (it.format === 'ui') {
-      this.useWorkflow(it);
-      return;
-    }
-    this.api.openLocalWorkflow(it.path, 'edit').subscribe({
-      next: () => (this.notice = `已用默认程序打开「${it.name}」`),
-      error: (err) => (this.localError = errMsg(err, '打开文件失败')),
-    });
+    this.router.navigate(['/workflows/edit'], { queryParams: { path: it.path } });
   }
 
   onMore(ev: { item: LocalWorkflow; x: number; y: number }): void {
@@ -2108,7 +2113,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     // 贴边时往回收，别让菜单跑出视口
     this.menuAt = {
       x: Math.max(8, Math.min(ev.x - 168, window.innerWidth - 184)),
-      y: Math.max(8, Math.min(ev.y + 4, window.innerHeight - 214)),
+      y: Math.max(8, Math.min(ev.y + 4, window.innerHeight - 330)),
     };
   }
 
@@ -2194,6 +2199,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   /** 打开补齐依赖抽屉。焦点要跟着进去，否则键盘用户还得从页面顶部 Tab 过来 */
   openDrawer(it: LocalWorkflow): void {
+    this.closeMenu();
     this.drawerOf = it;
     setTimeout(() => focusFirst(this.drawerBox?.nativeElement));
   }

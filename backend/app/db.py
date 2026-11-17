@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime, timezone
 
 from .config import DB_PATH
+from .source_urls import source_page_url
 
 _lock = threading.Lock()
 _conn: sqlite3.Connection | None = None
@@ -51,6 +52,10 @@ CREATE TABLE IF NOT EXISTS library_models (
   size_bytes INTEGER DEFAULT 0,
   file_count INTEGER DEFAULT 0,
   tags TEXT DEFAULT '[]',
+  -- 下载时的来源版本：HF 分支/commit、Civitai modelVersionId
+  revision TEXT,
+  -- 后端拼好的原站页面（优先于前端按 source+repo_id 推导）
+  source_url TEXT,
   created_at TEXT
 );
 CREATE TABLE IF NOT EXISTS library_files (
@@ -85,7 +90,9 @@ def init_db() -> None:
         conn = get_conn()
         conn.executescript(SCHEMA)
         _migrate_library_columns(conn)
+        _ensure_library_columns(conn)
         _ensure_task_file_columns(conn)
+        _backfill_library_origin(conn)
         conn.commit()
 
 
@@ -120,6 +127,21 @@ def _migrate_library_columns(conn: sqlite3.Connection) -> None:
             continue
 
 
+def _ensure_library_columns(conn: sqlite3.Connection) -> None:
+    """给老库补上「来源版本」两列。新增列是 ADD COLUMN，不破坏已有数据。"""
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(library_models)")}
+    except sqlite3.Error:
+        return
+    for name in ("revision", "source_url"):
+        if name in cols:
+            continue
+        try:
+            conn.execute(f"ALTER TABLE library_models ADD COLUMN {name} TEXT")
+        except sqlite3.Error:
+            continue
+
+
 def _ensure_task_file_columns(conn: sqlite3.Connection) -> None:
     """给老库的 task_files 补上「每个文件自己的目录」两列。
 
@@ -137,6 +159,41 @@ def _ensure_task_file_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE task_files ADD COLUMN {name} TEXT")
         except sqlite3.Error:
             continue
+
+
+def _backfill_library_origin(conn: sqlite3.Connection) -> None:
+    """老库没有 source_url：从最近一条 completed 的下载任务补版本与原站页面。
+
+    只按 `repo_id` + `target_dir` 精确匹配，找不到任务（手工导入 / 任务已清理）
+    就保持空串 —— 不猜版本。已经填过的跳过，启动时只处理还没补的那批。
+    """
+    try:
+        rows = conn.execute(
+            "SELECT id, source, repo_id, local_path, source_url FROM library_models"
+        ).fetchall()
+    except sqlite3.Error:
+        return
+    for r in rows:
+        if r["source_url"] or not r["repo_id"]:
+            continue
+        if r["source"] in ("", "imported", "demo"):
+            continue
+        try:
+            task = conn.execute(
+                "SELECT revision FROM tasks"
+                " WHERE repo_id=? AND target_dir=? AND status='completed'"
+                " ORDER BY created_at DESC LIMIT 1",
+                (r["repo_id"], r["local_path"]),
+            ).fetchone()
+        except sqlite3.Error:
+            continue
+        revision = (task["revision"] if task else "") or ""
+        url = source_page_url(r["source"], r["repo_id"], revision)
+        if url:
+            conn.execute(
+                "UPDATE library_models SET revision=?, source_url=? WHERE id=?",
+                (revision, url, r["id"]),
+            )
 
 
 def query(sql: str, params: tuple = ()) -> list[dict]:

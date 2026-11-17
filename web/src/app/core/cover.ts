@@ -2,7 +2,7 @@
  * 兜底封面：由模型元信息生成「家族铭牌」。
  *
  * 三条原则（缺一条就会退回彩色雪花）：
- *  1. 只读稳定字段（name / tags / fileType / params）。下载量、点赞、更新时间一律不参与，
+ *  1. 只读稳定字段（name / tags / params）。下载量、点赞、更新时间一律不参与，
  *     否则同一张封面会随统计漂移，识别价值归零。
  *  2. 每个通道只绑一个字段，不做纯装饰：左上角标绑家族、大字绑家族码、
  *     规格行绑参数量与量化、右上角标绑文件形态。模型上千个，颜色只能标识「家族」，
@@ -263,26 +263,6 @@ export const FAMILIES: FamilySpec[] = [
   },
 ];
 
-/** 文件形态角标。它回答的是「下载下来是什么、放哪个目录」，比扩展名本身有用。 */
-const FORMAT_CHIP: Record<string, string> = {
-  gguf: 'GGUF',
-  safetensors: 'SAFE',
-  ckpt: 'CKPT',
-  zip: 'WF',
-};
-
-/**
- * 搜索结果的接口里没有 fileType，但仓库名几乎总会把它写进去
- * （`Flux.1-dev-GGUF`、`qwen2.5-7b-instruct-gguf`）。
- * 与其等后端补字段，不如从名字里取——取不到就不显示角标，不做猜测。
- */
-function inferFormat(name: string): string {
-  if (/gguf|ggml/i.test(name)) return 'gguf';
-  if (/safetensors/i.test(name)) return 'safetensors';
-  if (/\.ckpt|\bckpt\b/i.test(name)) return 'ckpt';
-  return '';
-}
-
 /**
  * 缩略图地址归一。
  *
@@ -337,8 +317,11 @@ const QUANT_IN_NAME = /\b(i?q\d+(?:[_-][a-z0-9]+)*|fp\d+|bf16|fp16|fp32|e4m3fn)\
 export interface CoverInput {
   name: string;
   tags?: string[];
-  fileType?: string;
   params?: string;
+  /** 原站页面（搜索结果主条目的 url），右上角直接跳过去 */
+  href?: string;
+  /** 原站短名：HF / MS / Civitai */
+  hrefLabel?: string;
   /**
    * 真实封面（Civitai 缩略图）。有图时图片铺满整块做背景，文本压在渐变蒙版上；
    * 没有就退回生成构图。HF / ModelScope 基本拿不到，所以生成那条路才是主线。
@@ -363,8 +346,6 @@ export interface CoverMeta {
   logoDark?: string;
   /** 官方资产的光学配平系数，缺省 1 */
   logoScale?: number;
-  /** 右上角标：文件形态 */
-  chip: string;
   /** 规格，0-2 条：参数、量化。取不到就不生成，不占位 */
   specs: CoverSpec[];
   /** 背景构图变体，0..MOTIF_COUNT-1，由 name 稳定哈希决定 */
@@ -414,7 +395,6 @@ export function coverMeta(model: CoverInput): CoverMeta {
     logo: family.logo,
     logoDark: family.logoDark,
     logoScale: family.logoScale,
-    chip: FORMAT_CHIP[model.fileType || inferFormat(model.name)] ?? '',
     specs,
     motif: motifOf(model.name),
     image: thumb(model.image),

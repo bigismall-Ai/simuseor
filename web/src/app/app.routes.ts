@@ -6,6 +6,7 @@ import { LibraryComponent } from './pages/library.component';
 import { NodeLibraryComponent } from './pages/node-library.component';
 import { NodesComponent } from './pages/nodes.component';
 import { SettingsComponent } from './pages/settings.component';
+import { WorkflowEditorComponent } from './pages/workflow-editor.component';
 import { WorkflowsComponent } from './pages/workflows.component';
 
 /**
@@ -22,6 +23,8 @@ export const routes: Routes = [
   // 工作流：资产页与发现页共用一个组件，靠路由 data 决定落哪一段
   { path: 'workflows', component: WorkflowsComponent, data: { tab: 'mine' } },
   { path: 'workflows/discover', component: WorkflowsComponent, data: { tab: 'discover' } },
+  // 编辑器是全屏工作区：画布 / UI JSON / API 三视图，保存写回共享目录
+  { path: 'workflows/edit', component: WorkflowEditorComponent },
 
   // 模型：/models 是模型库（已落盘的），/models/discover 是发现
   { path: 'models', component: LibraryComponent },

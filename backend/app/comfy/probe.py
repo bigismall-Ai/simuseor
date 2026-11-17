@@ -55,11 +55,7 @@ def probe_device() -> DeviceReport:
     except Exception as exc:  # noqa: BLE001 - 单项失败不中断
         ctx.warnings.append(f"GPU 探测失败: {exc}")
 
-    # 独显优先、未知厂商（虚拟显示器等）最后
-    gpus.sort(key=lambda gpu: (not gpu.is_discrete, gpu.vendor == "unknown"))
-    primary = next((gpu for gpu in gpus if gpu.is_discrete), None)
-    if primary is None:
-        primary = next((gpu for gpu in gpus if gpu.vendor != "unknown"), gpus[0] if gpus else None)
+    primary = _pick_primary(gpus)
 
     os_version, os_build = _guard(ctx, "操作系统版本", lambda: _describe_os(os_name), ("", ""))
     pythons = _guard(ctx, "Python", lambda: _collect_pythons(ctx), [])
@@ -86,6 +82,29 @@ def probe_device() -> DeviceReport:
         raw=dict(ctx.raw),
         probed_at=datetime.now().astimezone().isoformat(timespec="seconds"),
     )
+
+
+def _pick_primary(gpus: list[GpuInfo]) -> GpuInfo | None:
+    """独显优先、未知厂商（虚拟显示器等）最后。"""
+    gpus.sort(key=lambda gpu: (not gpu.is_discrete, gpu.vendor == "unknown"))
+    primary = next((gpu for gpu in gpus if gpu.is_discrete), None)
+    if primary is None:
+        primary = next((gpu for gpu in gpus if gpu.vendor != "unknown"), gpus[0] if gpus else None)
+    return primary
+
+
+def probe_primary_gpu() -> GpuInfo | None:
+    """只探测主显卡，不跑磁盘 / Python / 实例 / 内存那一圈。
+
+    模型库只需要显存分母。完整 `probe_device()` 实测 0.72 s，GPU 单项 0.38 s ——
+    省掉的这半秒就是模型库首屏冷启动的可见延迟。主卡选择与 `probe_device()`
+    共用 `_pick_primary()`，不会出现两套「哪张是主卡」的判定。
+    """
+    try:
+        gpus = GPU_PROBES[detect_os()]().probe(ProbeContext())
+    except Exception:  # noqa: BLE001 - 探测失败按无独显处理
+        return None
+    return _pick_primary(gpus)
 
 
 def detect_os() -> str:

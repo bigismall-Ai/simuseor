@@ -1,6 +1,6 @@
 # Model Downloader
 
-AI 模型下载与本地管理工具：**aria2 为下载内核**，Rodel 式下载体验（文件勾选 / 进度 / 断点续传 / 每源配置）+ AbyssBeacon 式本地模型库（搜索 / 标签 / 收藏 / 评审），通过 **Angular Web UI** 提供可视化交互。
+AI 模型下载与本地管理工具：**aria2 为下载内核**，Rodel 式下载体验（文件勾选 / 进度 / 断点续传 / 每源配置）+ AbyssBeacon 式本地模型库（厂牌海报卡 / 多维筛选 / 显存压力），通过 **Angular Web UI** 提供可视化交互。
 
 支持下载源：**Hugging Face**（含 hf-mirror 镜像）、**ModelScope**、**Civitai**（支持「完整目录 / CivitAI Red 可见性」开关）。另有测试专用的 **Demo** 源（仅 URL 带 `?demo=1` 时可见，正常界面永远不显示）。
 
@@ -20,7 +20,8 @@ AI 模型下载与本地管理工具：**aria2 为下载内核**，Rodel 式下�
 - **每源代理独立控制**：设置页可对每个下载源单独 开启 / 禁用 / 修改 代理地址，并可一键测试「代理 vs 直连」连通性
 - **断点续传**：aria2 `.aria2` 进度文件，同参数重跑即续传
 - **任务管理**：暂停 / 继续 / 取消，实时进度与每文件明细（含实际命中的站点）
-- **本地模型库**（AbyssBeacon 式）：下载完成自动入库；支持关键词搜索、来源/评审过滤、标签、收藏、打开目录、扫描导入已有模型目录
+- **本地模型库**（AbyssBeacon 式）：下载完成自动入库；三栏布局（导航 / 海报卡流 / 筛选栏），支持关键词搜索、按存放类型 / 任务类型 / 来源多选筛选、名称 / 入库时间 / 类别 / 大小排序、显存压力提示，以及扫描导入已有模型目录
+- **工作流编辑器**：全屏三视图（流水线画布 / UI JSON / API），支持改参数、连断线、按节点库增删节点、自动排版与结构检查；保存前校验并自动留 `.bak`，语法坏掉的文件也能在文本视图里修
 - **离线 Demo 源**：无网络也可完整走通 解析 → 勾选 → 下载 → 入库 流程。仅当 URL 带 **`?demo=1`** 时在界面出现（下载页/发现页/库筛选/设置卡片），如 `/models/discover?demo=1`；该开关只存在于 URL、不写配置，正常界面永远看不到 Demo。Playwright 测试依赖它保证可重复
 - **CivitAI Red 可见性**：civitai 源可开启「完整目录」（API 带 `nsfw=true`，对应 civitai.red 前门的完整目录；civitai.com 仅 SFW）。注意 `browsingLevel` 参数服务端校验有缺陷不可用；18+，部分地区依法受限
 
@@ -108,7 +109,9 @@ cd tests && npx playwright show-report                        # 查看报告
 | POST | `/api/tasks` | 创建下载任务（files 勾选、strategy、save_dir） |
 | GET | `/api/tasks` | 任务列表（含每文件进度） |
 | POST | `/api/tasks/{id}/pause｜resume｜cancel` | 任务控制 |
-| GET/PATCH/DELETE | `/api/library[/{id}]` | 本地模型库查询/更新（标签/收藏/评审）/删除 |
+| GET/PATCH/DELETE | `/api/library[/{id}]` | 本地模型库查询/删除（PATCH 可改标签） |
+| GET | `/api/library/facets` | 筛选分面：存放类型 / 任务类型 / 来源，各带条数与占用体积 |
+| GET | `/api/library/gpu` | 本机独显显存（显存压力条的分母） |
 | POST | `/api/library/scan` | 扫描目录入库（每个子文件夹 = 一个模型） |
 | POST | `/api/library/{id}/open` | 打开模型所在目录 |
 | POST | `/api/proxy/test` | 测试代理与直连连通性 |
