@@ -39,6 +39,23 @@ interface CardTag {
       <div class="card-body">
         <h2 class="card-name" [title]="primary?.id">{{ primary?.name }}</h2>
 
+        <!-- 下载量：独立一行，在模型名之下、标签之上。
+             为什么放在这里（四站实测 Civitai / Comfy / HF / ModelScope 的结论）：
+             - 下载量是**唯一**能证明「有人跑通过」的硬信号，社交指标（点赞、评论、
+               点数）都能排最后，它不行。
+             - 之前它跟「下载」按钮并排、11px 灰字靠右下，在 4 列网格里几乎读不到 ——
+               而排序功能已经支持「按下载量」，**排序依据与视觉权重不一致是自相矛盾**。
+             - 位置取「名之下」而不是「图之上」：Civitai 与 HF 的阅读动线都是
+               「名 → 量」，放名之上会把动线倒过来，让人先读量再读名。
+             - 也不放铭牌行左上角：那一行右侧已被「原站链接」占（cover-plate 的
+               .origin），塞进去两者会挤，且身份信息与热度信息混排。
+             右边的细线是分隔线不是装饰：它把这行和下面的分类标签分开，
+             让「热度」独立于「分类」成层。 -->
+        <div class="card-dl" title="下载量">
+          <span class="card-dl-num">↓ {{ fmtNum(maxDownloads) }}</span>
+          <span class="card-dl-rule"></span>
+        </div>
+
         <!-- 分类标签：类型 / 来源 / 作者。
              规格跟 comfy.org Hub 模型卡一致 —— 一排等权重胶囊，
              分类信息用文字说明，权重信息（下载量）另行一路。
@@ -67,7 +84,6 @@ interface CardTag {
           <button class="primary btn-xs" (click)="download.emit()" data-testid="card-download">
             下载
           </button>
-          <span class="card-stat" title="下载量">↓ {{ fmtNum(maxDownloads) }}</span>
           @if (inLibrary) {
             <span class="in-lib">已在库</span>
           }
@@ -201,13 +217,29 @@ interface CardTag {
       color: #fff;
     }
 
-    /* 下载量：权重信息，单独一路，不跟分类标签混在一行 */
-    .card-stat {
+    /* 下载量：独立成行，在模型名之下、标签之上。
+       独立成行是刻意的 —— 它是「热度」层的唯一信息，
+       跟「分类」胶囊和「动作」按钮分开，扫读时能横向比较。 */
+    .card-dl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .card-dl-num {
       flex: none;
-      margin-left: auto;
       font-variant-numeric: tabular-nums;
       font-size: 11px;
+      font-weight: 600;
       color: var(--muted);
+    }
+    /* 分隔线不是装饰：这行是「热度」，下面那行是「分类」，
+       视觉上必须断开，否则两行会被读成同一组信息。 */
+    .card-dl-rule {
+      flex: 1 1 auto;
+      min-width: 8px;
+      height: 1px;
+      background: var(--border);
     }
 
     .card-actions {
@@ -227,7 +259,8 @@ interface CardTag {
       color: #fff;
       text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
     }
-    .on-shot .card-stat { color: rgb(255 255 255 / 0.66); }
+    .on-shot .card-dl-num { color: rgb(255 255 255 / 0.8); }
+    .on-shot .card-dl-rule { background: rgb(255 255 255 / 0.28); }
   `,
 })
 export class ModelCardComponent {
