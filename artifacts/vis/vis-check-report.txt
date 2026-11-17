@@ -1,0 +1,327 @@
+====================================================================================================
+ SiMuseor VIS · Phase 3 只读校验报告  (vis-check.mjs)
+ 生成时间: 2026-11-13T07:57:49.316Z
+ 项目根  : E:/Projects/model-downloader
+ 只读    : 不写任何项目文件，仅输出 stdout
+====================================================================================================
+
+[0] 扫描范围
+    styles.css : web/src/styles.css  (1641 行)
+    app/**/*.ts: 27 个文件
+    vis-tokens.css: artifacts/vis/vis-tokens.css  (232 行)
+    口径: 先剥离 /*...*/ 注释（保留换行以维持行号），再按正则/规则块扫描。
+
+----------------------------------------------------------------------------------------------------
+[1] 现状基线扫描：web/src/styles.css + web/src/app/**/*.ts
+    说明：以下 FAIL 是【现状真实值】。Phase1 §8 / Phase2 §0.1 已声明 VIS 是目标态，
+          这些命中代表 M1/M2 待修项，不是脚本错误、也不是本轮交付物缺陷。
+    上游口径：Phase1 v1.1 (620 行) / Phase2 v1.1 (888 行)；§8 冲突表共 15 项
+          （v1.0 为 13 项，v1.1 新增 M/N；早期「12 项」为笔误），全部「本轮不执行」；
+          M（3 处 --accent 白字填充）/ N（21 处 --faint 文本）为 Phase 3 立即项，与 LOGO 冻结解耦。
+    【主理人裁决 · 方案 A】button.primary:hover 归入 §8-M【适用范围补充】，【不】新增第 16 项，
+          §8 冲突表仍 15 项。background 保持 var(--primary)（不跟 --primary-hover），
+          border-color 改 var(--accent) 作 1px 装饰描边；零 token 改动、双主题白字 6.29:1。
+          M 项描述扩为「不达 AA 的实心填充承载白字（--accent / --accent-hover / --primary-hover）」。
+    v1.1 §7.3 边界：裁决 G 只归一「文字/描边型 --accent」，两套实心填充分开处理，
+          1.3 / 1.3b 只检主 UI 的 CSS 规则，【不】对 lab-theme.ts 的深字方案报 FAIL（另见 1.10）。
+    30 处组件 scoped 盲区处置（ux-designer / visual-architect 裁定）：字重全量 26 处纳入 M1；
+          --faint 全量 39 处文本引用纳入 M1；圆角 lab-primeng:344 10px→12px（§8-D）；
+          cover-plate 3 处「适用域外 / 保持」不收敛，不作第 16 项。
+----------------------------------------------------------------------------------------------------
+    1.1 非白名单 font-weight (550/620/640/650/660/680) -> 26 处 = styles.css 17 + 组件 scoped 9
+      web/src/styles.css:204                               font-weight: 650
+      web/src/styles.css:529                               font-weight: 660
+      web/src/styles.css:563                               font-weight: 640
+      web/src/styles.css:592                               font-weight: 550
+      web/src/styles.css:629                               font-weight: 550
+      web/src/styles.css:695                               font-weight: 550
+      web/src/styles.css:741                               font-weight: 550
+      web/src/styles.css:764                               font-weight: 550
+      web/src/styles.css:970                               font-weight: 620
+      web/src/styles.css:1009                              font-weight: 620
+      web/src/styles.css:1106                              font: 550
+      web/src/styles.css:1125                              font-weight: 650
+      web/src/styles.css:1134                              font-weight: 640
+      web/src/styles.css:1148                              font-weight: 620
+      web/src/styles.css:1385                              font-weight: 680
+      web/src/styles.css:1401                              font-weight: 650
+      web/src/styles.css:1437                              font-weight: 620
+      web/src/app/lab/lab-primeng.component.ts:144         font-weight: 650
+      web/src/app/pages/downloads.component.ts:223         font-weight: 620
+      web/src/app/pages/library.component.ts:184           font: 620
+      web/src/app/pages/node-library.component.ts:218      font-weight: 620
+      web/src/app/pages/node-library.component.ts:322      font-weight: 550
+      web/src/app/pages/nodes.component.ts:259             font-weight: 620
+      web/src/app/pages/nodes.component.ts:279             font-weight: 620
+      web/src/app/pages/workflows.component.ts:368         font-weight: 620
+      web/src/app/ui/model-card.component.ts:145           font-weight: 620
+      白名单 400/500/600/700；550->500，620/640/650/660/680->600（Phase1 §4.2）
+      判定: [PASS] styles.css 内 17 处 = Phase1 §4.2 登记 17 处
+      [DISCOVERY] 组件 scoped 内 9 处为 Phase1/2 未审到的同类项，建议并入 M1 补充批次（不推翻 17 处登记值）
+    1.2 color: var(--faint|--placeholder) 文本用法 -> 39 处 = styles.css 22（--faint 21 / --placeholder 1） + 组件 scoped 17
+      web/src/styles.css:214                               color: var(--faint)
+      web/src/styles.css:226                               color: var(--faint)
+      web/src/styles.css:270                               color: var(--faint)
+      web/src/styles.css:380                               color: var(--faint)
+      web/src/styles.css:406                               color: var(--faint)
+      web/src/styles.css:458                               color: var(--faint)
+      web/src/styles.css:462                               color: var(--faint)
+      web/src/styles.css:524                               color: var(--faint)
+      web/src/styles.css:653                               color: var(--placeholder)
+      web/src/styles.css:786                               color: var(--faint)
+      web/src/styles.css:1111                              color: var(--faint)
+      web/src/styles.css:1128                              color: var(--faint)
+      web/src/styles.css:1140                              color: var(--faint)
+      web/src/styles.css:1153                              color: var(--faint)
+      web/src/styles.css:1163                              color: var(--faint)
+      web/src/styles.css:1167                              color: var(--faint)
+      web/src/styles.css:1211                              color: var(--faint)
+      web/src/styles.css:1294                              color: var(--faint)
+      web/src/styles.css:1391                              color: var(--faint)
+      web/src/styles.css:1432                              color: var(--faint)
+      web/src/styles.css:1465                              color: var(--faint)
+      web/src/styles.css:1508                              color: var(--faint)
+      web/src/app/pages/discover.component.ts:362          color: var(--faint)
+      web/src/app/pages/downloads.component.ts:254         color: var(--faint)
+      web/src/app/pages/library.component.ts:181           color: var(--faint)
+      web/src/app/pages/node-library.component.ts:252      color: var(--faint)
+      web/src/app/pages/node-library.component.ts:299      color: var(--faint)
+      web/src/app/pages/node-library.component.ts:319      color: var(--faint)
+      web/src/app/pages/node-library.component.ts:333      color: var(--faint)
+      web/src/app/pages/node-library.component.ts:335      color: var(--faint)
+      web/src/app/pages/nodes.component.ts:216             color: var(--faint)
+      web/src/app/pages/nodes.component.ts:265             color: var(--faint)
+      web/src/app/pages/nodes.component.ts:335             color: var(--faint)
+      web/src/app/pages/nodes.component.ts:366             color: var(--faint)
+      web/src/app/pages/workflows.component.ts:244         color: var(--faint)
+      web/src/app/pages/workflows.component.ts:263         color: var(--faint)
+      web/src/app/pages/workflows.component.ts:297         color: var(--faint)
+      web/src/app/pages/workflows.component.ts:424         color: var(--faint)
+      web/src/app/pages/workflows.component.ts:431         color: var(--faint)
+      全量 var(--faint|--placeholder) 引用: 41 处；差值 2 处为 background/border 等非文本装饰引用（§3.3 允许）
+      处置: 不改 token 值，只把文本引用迁到 --muted / --text-2；::placeholder 文本必须保留（E2E :54,:92）
+      判定: [PASS] styles.css 内 21 + 1 = Phase2 §3.3 登记值
+      [DISCOVERY] 组件 scoped 内 17 处同样为 --faint 文本，Phase2 §3.3 未列；建议并入 M1 补充批次（不推翻 21 处清单）
+    1.3 background: var(--accent*) 且同规则含 color: var(--on-primary)
+        -> 3 处（Phase1 §8-M / Phase2 §2.10-3 登记 3 处）
+        web/src/styles.css:737                             .filter-chip.active                background: var(--accent); border-color: var(--accent); color: var(--o
+        web/src/styles.css:743                             .filter-chip.active:hover          background: var(--accent-hover); border-color: var(--accent-hover); co
+        web/src/styles.css:1469                            .step-row.active .step-dot         background: var(--accent); color: var(--on-primary);
+        处置: 三处填充改 var(--primary)（白字 6.29:1 双主题一致）；--accent 深色 #a5b4fc 白字仅 1.99:1 FAIL
+        检测口径（Phase1 v1.1 §7.3 / team-lead 指定）: 本项【只】匹配主 UI 的 CSS 规则块
+          （同规则 background:var(--accent*) + color:var(--on-primary)）。lab-theme.ts 是 TS 对象，
+          其 dark primary = 亮靛紫底 + contrastColor {primary.950} 深字，属另一条合规路线，
+          【不参与本项检测、不报 FAIL】；该路线由 1.10 做正向验收，由 §2 对比度表做数值复核。
+        segmented button.active（--panel 底 + --accent 文字）合规，不改、不计入。
+        判定: [PASS] 与登记的 3 处一致
+    1.3b 白字实心填充通用枚举（修复 1.3 只匹配 --accent* 的漏检盲区）
+        规则 @行                                      填充变量           浅        深        判定
+        button.primary @602                           --primary          6.29:1    6.29:1    [PASS]
+        button.primary:hover @608                     --primary-hover    7.90:1    4.47:1    [FAIL 现状·M1-d 待修]
+        .filter-chip.active @737                      --accent           6.29:1    1.99:1    [FAIL 现状·M1-d 待修]
+        .filter-chip.active:hover @743                --accent-hover     7.90:1    1.49:1    [FAIL 现状·M1-d 待修]
+        .step-row.active .step-dot @1469              --accent           6.29:1    1.99:1    [FAIL 现状·M1-d 待修]
+        -> 5 条白字实心填充规则；<4.5 不达 AA = 4 条（全部为【现状违规】，M1-d 待修，非脚本或交付物缺陷）
+        M 项描述（ux-designer / visual-architect 一致）：不达 AA 的实心填充承载白字
+          （--accent / --accent-hover / --primary-hover）；§8 仍 15 项，【不】新增第 16 项。
+        边界: lab-theme.ts 已显式跳过；其「亮靛紫底 + contrastColor 深字」由 1.10 正向验收，不报 FAIL。
+        判定: [PASS] 通用枚举已覆盖 --primary-hover 漏检盲区（button.primary:hover 深色 4.47:1 FAIL）
+    1.4 filter: invert() -> 0 处（硬约束：禁止，Phase1 §2.4 / cover.ts:43）
+      判定: [PASS] 全仓零 invert，反白走双份 SVG + :host-context
+    1.5 brand-wordmark 字面（项目源码） -> 0 个
+        vis-tokens.css 注释内提及: 10 次（接入片段参考，不计实例）
+        目标态（M2 后）应恰好 1 个实例，且是 .sidebar > .brand 的子元素（Phase2 §1.1）
+        判定: [PASS] 现状 0 = 占位期尚未落地，符合本轮零落地
+    1.6 圆角中间档 border-radius: 6/9/4/10px -> 9 处 = styles.css 5 + 组件 scoped 4
+      web/src/styles.css:191                               border-radius: 9px
+      web/src/styles.css:444                               border-radius: 4px
+      web/src/styles.css:621                               border-radius: 6px
+      web/src/styles.css:882                               border-radius: 4px
+      web/src/styles.css:1450                              border-radius: 6px
+      web/src/app/lab/lab-primeng.component.ts:344         border-radius: 10px
+      web/src/app/ui/cover-plate.component.ts:128          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:268          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:310          border-radius: 4px
+      Phase1 §6.4 待收敛：.brand-mark 9px(随 C 删除) / .btn-xs 6px / .tp-swatch 4px / .skel-line 4px / .step-row 6px
+      web/src/styles.css                         登记例外: 16px x1 / 999px x7（弹层与胶囊，Phase1 §6.4）
+      web/src/app/pages/nodes.component.ts       登记例外: 16px x0 / 999px x1（弹层与胶囊，Phase1 §6.4）
+      判定: [PASS] styles.css 内 5 处 = Phase1 §6.4 登记 5 处
+      [DISCOVERY] 组件 scoped 内 4 处（cover-plate / lab-primeng）未列入 §6.4；主理人裁决 3 已定：cover-plate 3 处定性「适用域外」（独立图形子系统，圆角三档规则不适用），不收敛、不登记第三类例外；lab-primeng 1 处并入 M1
+    1.7 prefers-reduced-motion 规则 -> 1 处（Phase2 §3.8：全仓仅 model-card.component.ts:119-123 一处）
+      web/src/app/ui/model-card.component.ts:119           prefers-reduced-motion: reduce
+      判定: [WARN] 目标态需全局 @media reduce（P3-7）：7 个动画停止，spinner 降级为静态 + role=status 文字
+    1.8 @font-face（项目源码） -> 0 条
+        vis-tokens.css 目标态声明: 2 条（Barlow 400 / Inter 100 900）
+        判定: [INFO] 源码 0 条 = 基线字体【尚未生效】，落地前不得宣称生效（Phase1 冲突 F）
+    1.9a stroke-width: 1.6（-> 1.5，Phase1 §5.3） -> 2 处
+      web/src/styles.css:250                               stroke-width: 1.6
+      web/src/styles.css:370                               stroke-width: 1.6
+    1.9b 源码引用新增 token: --brand-* 0 / --border-control 0 / --radius-lg 0（应全为 0 = 本轮零落地）
+      判定: [PASS] 零落地证据
+    1.10 lab-theme.ts 裁决 G 边界（Phase1 v1.1 §7.3 / Phase2 §7.2 新增验收项）
+        [INFO] dark primary.color 当前 = {primary.400}（现状）；裁决 G 只改这一行色值，不牵动 contrastColor
+        [PASS] dark.primary.contrastColor 保持 {primary.950} 深字      
+        [PASS] dark 块未被误改成白字 contrastColor（绝不改白字）       
+        [PASS] light.primary.contrastColor #ffffff 为合规浅色方案（不判 FAIL）
+        [PASS] dialog.root.borderRadius 保持 16px（Phase1 §6.4 例外 1）
+        [PASS] focusRing 宽度 2px / offset 2px 与 styles.css:142 一致  
+        独立复算: 白字 on indigo 400 #818cf8 = 2.98:1 FAIL；深字 #1e1b4b on 400 = 5.36:1 / on 300 #a5b4fc = 8.02:1 -> 两套填充路线各自合规
+        口径: 1.3 只检主 UI 的 --accent 白字填充，【不】对 lab 深字方案报 FAIL。
+    1.11 --primary-hover 承载白字填充（方案 A 静态检测；M 项适用范围补充，不新开第 16 项）
+        -> 1 处规则（视觉架构师登记：1 处 button.primary:hover）
+        web/src/styles.css:608                     button.primary:hover
+        全仓 --primary-hover 出现 4 次: :47 浅定义 #4338ca / :103 深定义 #6366f1 / :609 background / :610 border-color
+        [INFO] 浅 #4338ca + 白字 = 7.90:1 PASS；深 #6366f1 + 白字 = 4.47:1 FAIL（差 0.03 不达 AA）-> 仅深色主题出问题
+        口径: 属 §8-M 的【未列举实例】；【不】计入 §1.3 的 3 处 --accent 登记值、
+              【不】新增第 16 项冲突、15 项计数不变；token 值浅/深保持原样，只改使用位置（同 N 项治理范式）。
+        处置: 并入 M1-d，采纳【主理人裁决 · 方案 A】: background 保持 var(--primary) + 白字，
+              仅以 border-color:var(--accent) 作 1px 装饰描边；不改任何 token 值；
+              button.primary:disabled:hover (:619) 已保持 --primary、button:disabled:hover (:617) 不动；
+              静止态 :606 的 1px 内高光保留（Phase1 §6.6 已允许）；M1 后本项应归零。
+        正向验收: 深色 hover 不改用 --primary-hover，白字保持 6.29:1 -> §2 第 27 组 PASS；
+              现状 4.47:1 违规由 §1.3b 通用枚举持续覆盖，落地后自动归零（防止改回 --primary-hover）。
+        [PASS] --primary-hover token 值浅/深保持原样（零覆盖 / 零 token 改动）
+        [新增发现·待主理人复核] border-color:var(--accent) 装饰描边实算：
+          浅色 #4f46e5 对底 #4f46e5 = 1.00:1（同色不可见）；
+          深色 #a5b4fc 对底 #4f46e5 = 3.15:1（>=3:1 达标）。
+          A′ 备选：--accent-hover 深 #c7d2fe = 4.22:1 / 浅 #4338ca = 1.26:1（浅色不达 3:1，须按主题分开）。
+          本脚本按【方案 A】输出、不擅自切换 A′；双主题两条若都验则组数 27→28，请主理人定夺。
+
+----------------------------------------------------------------------------------------------------
+[2] 关键对比度实算（WCAG 2.x：sRGB 线性化 -> L=0.2126R+0.7152G+0.0722B -> (L1+.05)/(L2+.05)）
+----------------------------------------------------------------------------------------------------
+    主题       前景                               背景                           实算      阈值    判定    
+    ------------------------------------------------------------------------------------------------
+    浅色 UI    --text #18181b                     --panel #ffffff                17.72:1   4.5     PASS    
+      正文，达标
+    浅色 UI    --text-2 #3f3f46                   #ffffff                        10.44:1   4.5     PASS    
+      正文次级
+    浅色 UI    --muted #71717a                    #ffffff                        4.83:1    4.5     PASS    
+      正文勉强达标 4.83
+    浅色 UI    --faint #a1a1aa                    #ffffff                        2.56:1    4.5     FAIL    
+      【禁止】不得承载文本 §3.5-9
+    浅色 UI    --placeholder #a1a1aa              --input-bg #ffffff             2.56:1    4.5     FAIL    
+      【禁止】占位符改 --muted，但文本保留
+    浅色 UI    --accent #4f46e5                   #ffffff                        6.29:1    4.5     PASS    
+      文字/图形/焦点实线
+    浅色 UI    --on-primary #ffffff               --primary #4f46e5              6.29:1    4.5     PASS    
+      【硬约束】实心按钮，双主题一致
+    浅色 UI    --border #e4e4e7                   #ffffff                        1.27:1    3.0     FAIL    
+      【禁止】不可作控件边界 1.4.11
+    浅色 UI    --border-control #8b8b94           #ffffff                        3.38:1    3.0     PASS    
+      【新增】非文本控件边界，实算 3.38
+    浅色 UI    --border-control #8b8b94           --bg #f5f5f6                   3.10:1    3.0     PASS    
+      【新增】实算 3.10
+    深色 UI    --text #ededf0                     --panel #141417                15.74:1   4.5     PASS    
+      正文
+    深色 UI    --text-2 #d4d4d8                   --panel #141417                12.44:1   4.5     PASS    
+      正文次级
+    深色 UI    --muted #8b8b94                    --panel #141417                5.44:1    4.5     PASS    
+      所有深色表面达标
+    深色 UI    --faint #5f5f68                    --panel #141417                2.91:1    4.5     FAIL    
+      【禁止】不得承载文本
+    深色 UI    --accent #a5b4fc                   --panel #141417                9.22:1    4.5     PASS    
+      文字/图形色（300 档）
+    深色 UI    --on-primary #ffffff               --primary #4f46e5              6.29:1    4.5     PASS    
+      【硬约束】深色 --primary 保持 600 不翻
+    深色 UI    --on-primary #ffffff               --accent #a5b4fc               1.99:1    4.5     FAIL    
+      【禁止组合】错误用法 FAIL
+    深色 UI    --on-primary #ffffff               --accent-hover #c7d2fe         1.49:1    4.5     FAIL    
+      【禁止组合】更差 FAIL
+    深色 UI    --on-primary #ffffff               button.primary:hover(方案A)→--primary #4f46e5 6.29:1    4.5     PASS    
+      【方案 A 正向验收】深色 hover 不改用 --primary-hover(#6366f1 4.47:1 FAIL，见 1.3b/1.11)；白字 6.29:1 PASS，双主题一致、零 token 改动
+    深色 UI    --border-control #8b8b94           --panel #141417                5.44:1    3.0     PASS    
+      【新增】实算 5.44
+    lab 边界   --on-primary #ffffff               indigo 400 #818cf8             2.98:1    4.5     FAIL    
+      【禁止组合】白字 on 400 FAIL；不得把 lab primary 改白字
+    lab 边界   contrastColor #1e1b4b              indigo 400 #818cf8             5.36:1    4.5     PASS    
+      【合规路线】lab 亮底 + 深字，实算 5.36；1.3 不对此报 FAIL
+    lab 边界   contrastColor #1e1b4b              indigo 300 #a5b4fc             8.02:1    4.5     PASS    
+      【合规路线】M1-g 归一后目标，实算 8.02；contrastColor 保持不变
+    品牌层     --brand-ink #1b1b1e                --brand-paper #f8f6f1          15.91:1   4.5     PASS    
+      字标，实算 15.91
+    品牌层     --brand-muted #6d6a64              --brand-paper #f8f6f1          4.99:1    4.5     PASS    
+      辅助文字，实算 4.99
+    品牌层     --brand-ink-reverse #f1ede4        --brand-paper-reverse #15151a  15.57:1   4.5     PASS    
+      反白，实算 15.57
+    品牌层     --brand-line #dedbd3               --brand-paper #f8f6f1          1.28:1    n/a     INFO    
+      仅 1px 装饰细线，非文本（豁免）
+
+    小计: PASS 19 / FAIL 7 / INFO 1（共 27 组，>= 任务要求的 10 组）
+    FAIL 说明: 7 个 FAIL 全部为 Phase2 §3.2 已登记的【现状违规 / 禁止组合】（ux-designer 核实口径），
+      代表 M1（--faint 引用、--accent 白字填充）与 M2（--border-control 落地）待修项；品牌层六枚全部达标，
+      印证「不达标集中在使用位置，不是色板」—— 因此修正不改任何 token 色值。
+      「lab 边界」组的 1 个 FAIL 是【禁止组合示例】（白字 on indigo 400），不是 lab 现状违规：
+      lab 现状为「亮靛紫底 + #1e1b4b 深字」，同组另 2 行实算 PASS，由 1.10 做正向验收。
+      两套实心填充路线各自合规、字色相反，不得拉齐成同一个白字方案（Phase1 v1.1 §7.3）。
+      【主理人裁决方案 A】第 27 组为正向验收 PASS：深色 button.primary:hover 不改用
+      --primary-hover(#6366f1 4.47:1 FAIL)，白字保持 --primary 6.29:1。该现状违规改由
+      §1.3b 通用枚举 + §1.11 静态检测持续覆盖，因此 §2 的 FAIL 保持 7、不登记第 8 个；
+      不新增第 16 项冲突、不改任何 token 色值（M 项适用范围补充）。
+
+----------------------------------------------------------------------------------------------------
+[3] 交付物校验：vis-tokens.css 零覆盖（允许新增，禁止重名赋值）
+----------------------------------------------------------------------------------------------------
+    web/src/styles.css 已有 --* 变量: 39 个（:root:17-74 / dark:77-122，去重）
+    vis-tokens.css 赋值 --* 变量  : 18 个
+    重名赋值（必须为空）          : 0 个 
+    判定: [PASS]  ZERO-OVERRIDE / 零覆盖承诺
+
+    新增变量清单（18 个，附浅/深取值）：
+    变量名                        浅色值                        深色值                        来源
+    --border-control              #8b8b94                       #8b8b94                       Phase2 §2.10-11
+    --brand-clear-space           10px                          （继承浅值）                  Phase1 §2/§3
+    --brand-fg                    var(--brand-ink)              var(--brand-ink-reverse)      Phase1 §2/§3
+    --brand-icon-dark             none                          （继承浅值）                  Phase1 §2/§3
+    --brand-icon-light            none                          （继承浅值）                  Phase1 §2/§3
+    --brand-icon-min              32px                          （继承浅值）                  Phase1 §2/§3
+    --brand-ink                   #1b1b1e                       （继承浅值）                  Phase1 §2/§3
+    --brand-ink-reverse           #f1ede4                       （继承浅值）                  Phase1 §2/§3
+    --brand-line                  #dedbd3                       （继承浅值）                  Phase1 §2/§3
+    --brand-logo-dark             none                          （继承浅值）                  Phase1 §2/§3
+    --brand-logo-light            none                          （继承浅值）                  Phase1 §2/§3
+    --brand-min-width             120px                         （继承浅值）                  Phase1 §2/§3
+    --brand-muted                 #6d6a64                       （继承浅值）                  Phase1 §2/§3
+    --brand-paper                 #f8f6f1                       （继承浅值）                  Phase1 §2/§3
+    --brand-paper-reverse         #15151a                       （继承浅值）                  Phase1 §2/§3
+    --brand-rule                  var(--brand-line)             var(--brand-line)             Phase1 §2/§3
+    --brand-surface               var(--brand-paper)            var(--brand-paper-reverse)    Phase1 §2/§3
+    --radius-lg                   16px                          （继承浅值）                  Phase1 §6.4
+
+    vis-tokens.css 自身完整性自检：
+      [PASS] CSS 注释配对                                        open=37 close=37
+      [PASS] @font-face 恰好 2 条                                2 条
+      [PASS] Barlow 仅声明 font-weight:400                       
+      [PASS] Inter 声明 font-weight:100 900                      
+      [PASS] 两条均 font-display:swap                            2 处
+      [PASS] 四个 URL 变量占位期均为 none（无字形）              
+      [PASS] 三个标识常量存在                                    --brand-min-width=120px / --brand-icon-min=32px
+      [PASS] 生效 CSS 不含组件实现规则（只有 @font-face + :root）
+      [PASS] 生效 CSS 无 filter:invert()                         
+      [PASS] 生效 CSS 无实验稿字形/月桂引用                      
+
+    注：接入片段（.brand-wordmark / :host-context 反白切换）全部写在注释中，
+        本文件生效 CSS 仅 2 条 @font-face + :root / :root[data-theme=dark] 两个变量块，
+        因此不会被误当成已落地的组件实现。
+
+====================================================================================================
+[4] SUMMARY
+====================================================================================================
+  交付物校验（零覆盖 / token 文件自检）: 全部 PASS
+  基线计数一致性（styles.css 对 Phase1/2 登记值）: 全部吻合（17 字重 / 21+1 faint / 5 圆角 / 3 白字填充）
+  组件 scoped 审计盲区（DISCOVERY，不推翻登记值）: 字重 +9 / --faint 文本 +17 /
+     圆角中间档 +4，共 30 处同类项，Phase1/2 未审；建议并入 M1 补充批次
+  其它现状: filter:invert 0 / brand-wordmark 0 / reduced-motion 仅 1 处 /
+     @font-face 0 条（基线字体未生效）/ 源码引用新增 token 0（零落地）
+  对比度实算: PASS 19 / FAIL 7 / INFO 1（共 27 组）
+  裁决 G 边界（v1.1 §7.3）: 1.10 正向验收 lab 深字方案全部 PASS；1.3 未对其报 FAIL；
+     白字 on indigo 400 = 2.98:1 列为「禁止组合」示例，与主 UI --primary 白字 6.29:1 分开。
+  上游口径: Phase1 v1.1 / Phase2 v1.1；§8 冲突表 15 项（v1.0 13 项 + M/N），
+     M/N 为 Phase 3 立即项，与 LOGO 冻结解耦，并入 M1（P3-5/P3-6），不新开任务。
+
+  本轮边界: 零落地、零 E2E 改动、零实验稿字形。本脚本只读，未写任何项目文件。
+  M0 后重跑本脚本，1.x 的 FAIL 计数应逐批下降；M3（LOGO 冻结）不改变本脚本判定口径。
+
+  退出码约定: 0=全通过 / 1=仅现状基线 FAIL（预期） / 2=交付物校验失败
+====================================================================================================
+  EXIT CODE = 1

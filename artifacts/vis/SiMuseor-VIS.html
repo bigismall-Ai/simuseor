@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiMuseor · VIS 视觉识别系统 v2.0</title>
+<style>
+/* ============================================================
+   SiMuseor VIS 手册样式
+   本手册是「品牌展示面」，用品牌层纸墨；产品 UI 仍用 zinc 中性阶。
+   所有色值来自 VIS §3，圆角只用 12 / 8 / 5（弹层例外 16 不在本页使用）。
+   ============================================================ */
+:root{
+  --paper:#f8f6f1; --ink:#1b1b1e; --line:#dedbd3; --muted:#6d6a64;
+  --reverse:#15151a; --reverse-ink:#f1ede4;
+  --ui-bg:#f5f5f6; --ui-panel:#ffffff; --ui-border:#e4e4e7; --ui-text:#18181b; --ui-muted:#71717a;
+  --accent:#4f46e5; --accent-soft:#eef2ff; --accent-line:#c7d2fe;
+  --primary:#4f46e5; --on-primary:#ffffff;
+  --ok:#15803d; --ok-soft:#f0fdf4; --warn:#b45309; --warn-soft:#fffbeb;
+  --err:#b91c1c; --err-soft:#fef2f2;
+  --radius:12px; --radius-sm:8px; --radius-xs:5px;
+  --sans:"Inter","Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:13.5px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+code,kbd{font-family:var(--mono);font-size:.92em}
+code{background:#efede7;padding:1px 5px;border-radius:var(--radius-xs)}
+kbd{border:1px solid var(--line);border-bottom-width:2px;padding:0 5px;border-radius:var(--radius-xs);background:#fff}
+
+/* 布局 */
+.wrap{display:grid;grid-template-columns:236px minmax(0,1fr);max-width:1400px;margin:0 auto}
+.toc{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);padding:34px 18px 48px 26px;background:#fbfaf6}
+.toc .tc-brand{font-size:17px;letter-spacing:.028em;font-weight:600;margin-bottom:2px}
+.toc .tc-sub{font-size:10px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:26px}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:sec}
+.toc li{counter-increment:sec;margin:1px 0}
+.toc a{display:block;padding:5px 9px;border-left:2px solid transparent;color:var(--muted);font-size:12.5px;border-radius:0 var(--radius-xs) var(--radius-xs) 0}
+.toc a::before{content:counter(sec,decimal-leading-zero);display:inline-block;width:28px;color:#a9a49a;font-family:var(--mono);font-size:10px}
+.toc a:hover{background:#f1efe8;color:var(--ink)}
+.toc a.on{border-left-color:var(--accent);color:var(--accent);background:#f2f0e9}
+.toc .tc-foot{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted);line-height:1.7}
+.main{padding:56px 60px 120px;min-width:0;max-width:1080px}
+
+/* 卷首 */
+.masthead{border-bottom:1px solid var(--line);padding-bottom:34px;margin-bottom:40px}
+.kicker{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:38px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:14px 0 8px}
+.lede{font-size:15px;color:#4c4943;max-width:720px;margin:0 0 24px}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+.meta div{padding:12px 16px;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta dt{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.meta dd{margin:0;font-size:12.5px;font-weight:600}
+.notice{border-left:2px solid var(--warn);background:#fbf7ec;padding:14px 18px;margin:22px 0 0;font-size:12.5px;color:#5a4a2c;border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.notice strong{font-weight:600}
+.notice.ink{border-left-color:var(--ink);background:#f1efe8;color:#3d3a35}
+
+/* 章节 */
+section{margin:0 0 62px;scroll-margin-top:20px}
+h2{font-size:22px;letter-spacing:-.02em;font-weight:600;margin:0 0 6px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+h2 .num{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;display:block;margin-bottom:8px;letter-spacing:.09em}
+h3{font-size:14px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h4{font-size:12.5px;font-weight:600;margin:20px 0 8px;color:#3d3a35}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:20px}
+li{margin:4px 0}
+small,.small{font-size:11.5px;color:var(--muted)}
+
+/* 表格 */
+table{width:100%;border-collapse:separate;border-spacing:0;margin:14px 0;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden}
+th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);background:#f4f2ec;padding:9px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid #eeece5;vertical-align:top;line-height:1.55}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+.nowrap{white-space:nowrap}
+
+/* 色板 */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;margin:16px 0}
+.sw{border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:#fff}
+.sw .chip{height:62px;border-bottom:1px solid var(--line)}
+.sw .body{padding:9px 11px 11px}
+.sw b{display:block;font-size:12px;font-weight:600}
+.sw .hex{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.sw .var{font-family:var(--mono);font-size:10px;color:#8a857b;margin-top:5px;word-break:break-all}
+.sw .note{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* 卡片 / 网格 */
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.cols-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px 18px}
+.card h4{margin:0 0 8px}
+.card p{margin:6px 0;font-size:12px;color:#4c4943}
+.card .tag{display:inline-block;font-size:10px;letter-spacing:.06em;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);margin-bottom:8px}
+
+/* 状态标签 */
+.ok{color:var(--ok);font-weight:600}.bad{color:var(--err);font-weight:600}.warnc{color:var(--warn);font-weight:600}
+.pill{display:inline-block;font-size:10px;font-weight:600;border-radius:999px;padding:1px 8px;line-height:17px;white-space:nowrap}
+.pill.lock{background:#e9efe6;color:#2f6b3b}
+.pill.wip{background:#fbf1dd;color:#8a6a2f}
+.pill.no{background:#f6e9e9;color:#9b2c2c}
+.pill.neutral{background:#efede7;color:var(--muted)}
+.pill.v2{background:#fbeaf0;color:#993556}
+
+/* 基线字形展示 */
+.mark-stage{border:1px solid var(--line);border-radius:var(--radius);padding:34px 30px;background:#fff;margin:14px 0;text-align:center}
+.mark-stage.dark{background:var(--reverse);border-color:var(--reverse)}
+.mark-stage img{display:block;width:100%;max-width:620px;height:auto;margin:0 auto}
+.mark-stage .cap{font-size:10.5px;color:var(--muted);margin-top:16px;letter-spacing:.04em}
+.mark-stage.dark .cap{color:#8d887e}
+
+/* 组件示例 */
+.demo{border:1px solid var(--line);border-radius:var(--radius);background:var(--ui-bg);padding:18px;margin:14px 0}
+.demo-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.demo-label{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ui-muted);width:92px;flex:none}
+.d-btn{height:32px;padding:0 13px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-panel);color:#3f3f46;font:500 12.5px var(--sans);cursor:pointer}
+.d-btn:hover{background:#f4f4f5;border-color:#d4d4d8;color:var(--ui-text)}
+.d-btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.d-btn.ghost{border-color:transparent;background:transparent;color:var(--accent)}
+.d-btn:disabled{opacity:.45;cursor:not-allowed}
+.d-btn:focus-visible,.d-input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.d-input{height:32px;padding:0 10px;border:1px solid #8b8b94;border-radius:8px;background:#fff;color:var(--ui-text);font:12.5px var(--sans);min-width:210px}
+.d-chip{height:26px;padding:0 10px;border:1px solid var(--ui-border);border-radius:999px;background:#fff;font:500 11.5px var(--sans);color:var(--ui-muted);display:inline-flex;align-items:center}
+.d-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.d-badge{border-radius:999px;padding:1px 8px;font:600 11px/18px var(--sans);background:#f4f4f5;color:#52525b}
+.d-badge.blue{background:var(--accent-soft);color:var(--accent)}
+.d-badge.red{background:var(--err-soft);color:var(--err)}
+.d-card{width:210px;border-radius:12px;background:#fff;padding:14px;position:relative}
+.d-card::after{content:"";position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 1px var(--ui-border);pointer-events:none}
+.d-card:hover{background:#fafafa}
+.d-card b{font-size:13px;font-weight:600;display:block}
+.d-card span{font-size:11.5px;color:var(--ui-muted)}
+
+/* 代码块 */
+pre{background:#f2f0ea;border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;overflow-x:auto;font:11.5px/1.7 var(--mono);margin:12px 0;color:#3d3a35}
+pre .c{color:#8a857b}
+
+/* 验收清单 */
+.checklist{list-style:none;padding:0;margin:12px 0}
+.checklist li{padding:7px 0 7px 26px;position:relative;border-bottom:1px solid #eeece5;font-size:12px}
+.checklist li:last-child{border-bottom:0}
+.checklist li::before{content:"";position:absolute;left:2px;top:11px;width:12px;height:12px;border:1px solid #b9b3a7;border-radius:3px;background:#fff}
+.checklist li.hit::before{content:"✓";border-color:var(--ok);color:var(--ok);font-size:10px;line-height:11px;text-align:center;background:var(--ok-soft)}
+
+/* 页脚 */
+footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-size:11px;color:var(--muted);line-height:1.8}
+.hr{height:1px;background:var(--line);margin:26px 0;border:0}
+.toolbar{position:fixed;right:22px;bottom:22px;display:flex;gap:8px}
+.toolbar button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:7px 14px;font:500 11.5px var(--sans);cursor:pointer;box-shadow:0 2px 8px rgb(24 24 27 / .06)}
+.toolbar button:hover{border-color:var(--ink)}
+
+@media (max-width:960px){
+  .wrap{grid-template-columns:1fr}
+  .toc{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:20px 22px}
+  .toc ol{display:flex;flex-wrap:wrap;gap:2px}
+  .toc a{padding:4px 8px}
+  .toc a::before{display:none}
+  .toc .tc-foot{display:none}
+  .main{padding:34px 24px 80px}
+  .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meta div:nth-child(2){border-right:0}
+  .meta div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .cols,.cols-3{grid-template-columns:1fr}
+}
+@media print{
+  .toc,.toolbar{display:none}
+  .wrap{display:block;max-width:none}
+  .main{padding:0;max-width:none}
+  body{background:#fff;font-size:11px}
+  section{page-break-inside:avoid;margin-bottom:30px}
+  h2{font-size:16px}
+  .mark-stage,.card,table,pre{page-break-inside:avoid}
+  a{color:inherit}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="目录">
+  <div class="tc-brand">SiMuseor</div>
+  <div class="tc-sub">Visual Identity System · v2.0</div>
+  <ol>
+    <li><a href="#s0">卷首 · 状态声明</a></li>
+    <li><a href="#s1">品牌内核</a></li>
+    <li><a href="#s2">标识系统</a></li>
+    <li><a href="#s3">色彩系统</a></li>
+    <li><a href="#s4">字体系统</a></li>
+    <li><a href="#s5">图形与意象</a></li>
+    <li><a href="#s6">版式与空间</a></li>
+    <li><a href="#s7">应用系统</a></li>
+    <li><a href="#s8">工程落地</a></li>
+    <li><a href="#s9">验收与治理</a></li>
+    <li><a href="#s10">附录 · 迭代档案</a></li>
+  </ol>
+  <div class="tc-foot">
+    编制：UI 设计全栈专家团<br>
+    视觉 / 体验 / 前端工程 · 主理人汇编<br>
+    2026-11-13 · 目标态规范，非已落地状态
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ============ 0 卷首 ============ -->
+<section id="s0">
+  <div class="masthead">
+    <div class="kicker">SiMuseor / Visual Identity System</div>
+    <h1>视觉识别系统</h1>
+    <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
+    <dl class="meta">
+      <div><dt>版本</dt><dd>v2.0 · 2026-11-13</dd></div>
+      <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
+      <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
+      <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
+    </dl>
+    <p class="notice"><strong>标识状态警示：</strong>LOGO 仍在迭代。已锁定的只有「Barlow Condensed <strong>Regular 400</strong> / 混合大小写 <code>SiMuseor</code> / 字距 <code>.028em</code>」这一基线。字形手术、负形或正形月桂、独立图标、横竖版、最终色彩稿<strong>全部未冻结</strong>。<code>design-options</code> 六方向、第二轮 <code>r2-*</code> 八方向、Cormorant <code>preview.html</code>、<code>smallcaps</code>、<code>designkit-artifacts/</code> 提案（含文件名带「终稿」的）<strong>一律为实验稿或已否方向，不得作为主标</strong>。本手册第 1、3、4、5、6、7、8 章均不依赖未定字形。</p>
+    <p class="notice ink"><strong>阅读约定：</strong>〔现〕＝代码里此刻真实跑着的状态；〔目〕＝本 VIS 的目标态，由工程阶段排期落地；〔冻〕＝必须等 LOGO 冻结后才能执行。§8 冲突裁决表 <strong>15 项全部标注「本轮不执行」</strong>，它们是待办清单，不是现状说明。</p>
+  </div>
+
+  <h3>本套 VIS 解决了什么</h3>
+  <div class="cols-3">
+    <div class="card"><span class="tag">冲突 A</span><h4>两套颜色各说各话</h4><p>品牌稿是暖纸墨黑，产品 UI 是中性灰 + 靛紫。裁决为<strong>分层双轨</strong>：靛紫保留为交互色，纸墨收敛为品牌层，产品 UI 零覆盖。</p></div>
+    <div class="card"><span class="tag">冲突 B / C</span><h4>品牌与产品脱节</h4><p>字标是 Barlow Condensed 400，正文是 Inter / 雅黑加六级近似字重；侧栏还挂着「MD / Model Downloader / Local Studio」。裁决为<strong>两层字体角色 + 四档字重 + 占位期替换</strong>。</p></div>
+    <div class="card"><span class="tag">冲突 F / M / N</span><h4>规范没真正生效</h4><p>全仓无 <code>@font-face</code>，基线字体从未加载；<code>--faint</code> 作文本仅 2.56:1；深色下 <code>--accent</code> 配白字仅 1.99:1。裁决为<strong>补字体文件 + 只改使用位置，不改色值</strong>。</p></div>
+  </div>
+  <p class="small">依据资产：<code>web/src/styles.css</code>（1641 行）、<code>app.component.ts</code>、<code>lab/lab-theme.ts</code>、<code>theme.service.ts</code>、<code>index.html</code>、<code>ui/*</code> 组件、<code>logo-vector/</code>、<code>designkit-artifacts/</code>、<code>tests/e2e/app.spec.ts</code>（828 行）。所有数值均标注了对应变量、选择器或行号，详见三份阶段规范。</p>
+</section>
+
+<!-- ============ 1 品牌内核 ============ -->
+<section id="s1">
+  <h2><span class="num">01 / BRAND CORE</span>品牌内核</h2>
+
+  <h3>1.1 命名与定位</h3>
+  <table>
+    <tr><th style="width:130px">项</th><th>规范</th></tr>
+    <tr><td>品牌名</td><td><strong>SiMuseor</strong>（内嵌 <code>muse</code> / 缪斯）。唯一书写形式，大小写固定 <code>S-i-M-u-s-e-o-r</code>；禁 <code>SIMUSEOR</code> / <code>Simuseor</code> / <code>Si Museor</code>。中文名 <strong>司梦</strong>（司 = 掌管、主导；梦 = 梦境、想象）。</td></tr>
+    <tr><td>产品定位</td><td><strong>剧集（电影）AI 导演台</strong>。核心工作流是 <strong>剧本 → 分镜 → 镜头 → 成片</strong> —— 把想象变成成片。工作流是最大资产，「查 + 下载」是基础建设。</td></tr>
+    <tr><td>标识构成</td><td><strong>两层</strong>：<strong>字标是主视觉</strong>，<strong>蝉形是辅助图形</strong>（低多边形几何分面，品红→橙）。两者共存构成「组合标」；蝉形单独出现当前<strong>仅限 favicon</strong>。详见 <a href="#s2">§2.0</a>。</td></tr>
+    <tr><td>对外禁止</td><td><code>Model Downloader</code>、<code>下载器</code>、<code>Local Studio</code> 作为品牌自称；仓库名 <code>model-downloader</code> 仅作工程标识，不进 UI 文案。</td></tr>
+    <tr><td>保留不动</td><td>导航「下载任务」、路由 <code>/downloads</code>、存储键 <code>md-*</code>、测试标题 <code>test.describe('Model Downloader Web UI')</code> —— 功能名 / 工程名 / 测试元数据，不在更名范围。</td></tr>
+  </table>
+  <p class="small"><strong>语义注记</strong>：蝉形与品牌名是<strong>两个独立命题</strong>。蝉形不是「梦」的图解 —— 它承载的是<strong>蜕变 / 再生 / 正在发生</strong>；品牌名承载的是<strong>尚未成形的想象</strong>。两者在「导演台把想象推进成成片」这条链上相遇，但不互相定义。</p>
+
+  <h3>1.2 调性（可验收，不是形容词）</h3>
+  <table>
+    <tr><th style="width:110px">维度</th><th style="width:220px">取值</th><th>可验收判据</th></tr>
+    <tr><td>气质</td><td>克制收敛、艺术书卷气</td><td>单屏交互强调色面积 ≤ 5%；无渐变铺底、无发光</td></tr>
+    <tr><td>字形密度</td><td>压缩窄体 + 紧字距 + 大留白</td><td>字标字距 <code>.028em</code>；容器上限 1240px、内边距 26/28px</td></tr>
+    <tr><td>层次手段</td><td>明度与边框，不靠字重与阴影</td><td>字重只用 4 档；卡片默认无阴影</td></tr>
+    <tr><td>意象</td><td><strong>蝉形（辅助图形）</strong>—— 蜕变 / 再生 / 缪斯之声</td><td><strong>不进入字标内部</strong>；只作并列辅助图形与 favicon；不溢出、不对称排布</td></tr>
+  </table>
+  <p class="small"><strong>定位变更带来的调性影响</strong>：导演台天然要求<strong>精密、克制、有审美、有镜头感</strong> —— 这让「克制收敛、艺术书卷气」在「剧集 AI 导演台」语境下<strong>比旧语境更成立</strong>。侧栏是唯一常驻位，一个高饱和图形全屏常驻会与「精密工具」的调性打架，所以蝉形<strong>必须</strong>压到辅助位，让「司梦」这个名字读出来，而不是让一只虫抢戏。</p>
+
+  <h3>1.3 五条设计原则</h3>
+  <ol>
+    <li><strong>强调色只给「可点的、当前选中的」。</strong><code>--accent</code> / <code>--primary</code> 只允许出现在激活导航、主按钮、聚焦环、选中态、进度与链接 hover。<em>避免</em>：正文、静态图标、普通边框、标题、装饰色块。</li>
+    <li><strong>边框优先于阴影。</strong>分层一律 <code>1px solid var(--border)</code>；阴影只给真正浮起的元素（弹层、主题菜单、吸底条）。<em>避免</em>：hover 靠加阴影抬升。</li>
+    <li><strong>圆角只有三档</strong> <code>12 / 8 / 5</code>，对应 <code>--radius / --radius-sm / --radius-xs</code>。弹层 16px 与胶囊 999px 是登记过的两类例外，不是新档。</li>
+    <li><strong>层次靠明度与留白，不靠加粗。</strong>字标严格 400；正文只用 <code>400 / 500 / 600 / 700</code>。<em>避免</em>：Bodoni/Didot 式极端粗细对比、给标题堆 <code>620/640/650/660/680</code> 六级近似字重、把 Medium 500 当「强调」。</li>
+    <li><strong>装饰只做「减」，不做「加」。</strong>刀口、负形、发丝线、单点优于贴图形、加徽章、加光效。<em>避免</em>：对称月桂环、盾形徽章、放射星芒、渐变字、字标投影。</li>
+  </ol>
+
+  <h3>1.4 参照站的取舍</h3>
+  <p>参照站实测 CSS 是「压缩窄体 + 全大写 + 紧字距 + 中等字重 + 大留白」。<strong>只采纳三项</strong>：压缩窄体、紧字距、大留白。不采纳全大写（混合大小写是锁定基线，且全大写后 M 不再是唯一大写，月桂失去视觉锚点）；不采纳中等字重（窄体本身的密度已提供重量感，且用户反感加粗）；Rules Gothic 是商业字体，不可取用。<strong>本 VIS 不重开字体选型。</strong></p>
+
+  <h3>1.5 Do / Don't</h3>
+  <div class="cols">
+    <div class="card"><span class="tag">DO</span><p>用 1px 线分区；用 <code>--muted</code> / <code>--text-2</code> 降层级；用 <code>tabular-nums</code> 排数字；用双份资产做反白；把 SiMuseor 只放在品牌槽位；保留大留白。</p></div>
+    <div class="card"><span class="tag">DON'T</span><p>把任一实验稿称为「终稿」；把暖纸色铺进 <code>--panel</code>；用 <code>filter:invert()</code> 反白；把标识放大做水印；拉伸 / 改字重 / 改字距 / 加阴影 / 加渐变；把旧「MD」方块与新字标并置。</p></div>
+  </div>
+</section>
+
+<!-- ============ 2 标识系统 ============ -->
+<section id="s2">
+  <h2><span class="num">02 / IDENTITY</span>标识系统</h2>
+  <p class="notice"><strong>本章是唯一处理字形的章节。</strong>v2.0 起，蝉形辅助图形已定案（见 <a href="#s2-0">§2.0</a>），字形手术与月桂仍未冻结。冻结只影响 §2 与 §9（待定项），§1 / §3 / §4 / §5 / §6 / §7 / §8 不受影响。</p>
+
+  <h3 id="s2-0">2.0 辅助图形层 —— 蝉形 <span class="pill lock">LOCKED</span> <span class="pill v2">v2.0 新增</span></h3>
+  <p>用户已交付三帧成品 JPG（1536×1536 白底）。本节定义它如何进入标识体系。<strong>全部实测数字以 <code>_cicada-measurements.md</code> 为唯一基准</strong>（6 章），本节不重复推导。</p>
+
+  <div class="cols">
+    <div class="card">
+      <span class="tag">字标 · 主视觉</span>
+      <p style="margin:0"><strong>SiMuseor</strong><br>Barlow Condensed Regular 400<br>20px · cap-height 14.00px<br>墨迹宽 62.92px</p>
+    </div>
+    <div class="card">
+      <span class="tag">蝉形 · 辅助图形</span>
+      <p style="margin:0"><strong>MAX 帧</strong><br>低多边形几何分面 · 品红→橙<br>侧栏 56×26px<br>视觉总宽 128.9px</p>
+    </div>
+  </div>
+
+  <h4>2.0.1 三帧与分工</h4>
+  <table>
+    <tr><th style="width:70px">帧</th><th style="width:130px">形态</th><th>用途</th><th style="width:130px">本版接入</th></tr>
+    <tr><td><strong>MIN</strong></td><td>竖直收拢</td><td>展翅动画起始帧（未来）</td><td>❌ 资产库储备</td></tr>
+    <tr><td><strong>MID</strong></td><td>半展</td><td>展翅动画中间帧（未来）</td><td>❌ 资产库储备</td></tr>
+    <tr><td><strong>MAX</strong></td><td>全展 · 横向双翅</td><td><strong>favicon + 侧栏组合标</strong></td><td>✅ 唯一接入帧</td></tr>
+  </table>
+  <p class="small">MIN <strong>永久否决</strong>作为静态组合标：实测 19.7px 高时<strong>仅 9px 宽</strong>，读作竖直色条，不是图形。本版<strong>不上展翅动效</strong> —— 三帧未归一化（头顶线 y = 271 / 349 / 461，Δ 78–190px），直接接会跳变。</p>
+
+  <h4>2.0.2 组合标（侧栏品牌位）</h4>
+  <table>
+    <tr><th style="width:150px">项</th><th>值</th></tr>
+    <tr><td>蝉形</td><td><strong>MAX 56×26px</strong>（等比，宽高比 2.1693）</td></tr>
+    <tr><td>图–字间距</td><td><strong>10px</strong>（复用 <code>.brand</code> 既有 <code>gap</code>，不新增间距口径）</td></tr>
+    <tr><td>字标</td><td>Barlow Condensed Regular 400 / 20px / cap-height <strong>14.00px</strong> / 墨迹宽 <strong>62.92px</strong></td></tr>
+    <tr><td>视觉总宽</td><td><strong>128.9px</strong>　·　占位宽 <strong>156px</strong>（字标槽 90px）</td></tr>
+    <tr><td>侧栏品牌位可用宽</td><td><strong>200px</strong>（<code>236 − 12×2 − 6×2</code>）　·　视觉余量 71.1px / 占位余量 44px</td></tr>
+    <tr><td>对齐</td><td>蝉形<strong>腹部尖端 ≡ 字标 baseline</strong>（地脚线对齐，非垂直居中）</td></tr>
+    <tr><td>排布</td><td>蝉形在左、字标在右（横版）</td></tr>
+  </table>
+  <div class="mark-stage">
+    <img src="assets/cicada-preview/lockup-vec-1x-light.png" alt="SiMuseor 组合标：低多边形蝉形在左，SiMuseor 字标在右，真实像素比例">
+    <div class="cap">组合标 1:1 真实像素　—　蝉形 56×26px + 10px gap + 字标 62.92px 墨迹。蝉形与字标<strong>地脚线对齐</strong></div>
+  </div>
+  <p class="small"><strong>辅助地位的量化保证</strong>：蝉形宽 <strong>56px &lt; 字标墨迹宽 62.92px</strong>（余量 11.0%）。<strong>蝉形上调至 ≥63px 即击穿</strong>，必须同步下调。§2.0.2 的尺寸不是审美偏好，是<strong>有阈值的约束</strong>。</p>
+
+  <h4>2.0.3 三层尺寸策略</h4>
+  <p>接缝线（白色发丝）在源图里原生宽 1px（相对 1397px 主体），渲染后：<strong>64px → 0.046px / 256px → 0.183px / 1024px → 0.733px</strong>。<strong>可见阈值是 ~1024px，不是 64px。</strong></p>
+  <table>
+    <tr><th style="width:80px">层</th><th style="width:130px">尺寸区间</th><th>处置</th></tr>
+    <tr><td><strong>L1</strong></td><td>≥ 1024px</td><td>保留原生发丝接缝</td></tr>
+    <tr><td><strong>L2</strong></td><td>64 – 1024px</td><td>接缝必然消失 → 改由<strong>面片色差</strong>承载识别；若要保留线感必须<strong>另出「加粗接缝」独立资产</strong>，不得用参数硬凑同一份 SVG</td></tr>
+    <tr><td><strong>L3</strong></td><td>16 – 64px</td><td><strong>独立重画简化版</strong>（5 档量化色带 + 深紫描边 <code>#2a0a2e</code> + 面片间隙 ≥1px），<strong>不缩放 MAX 帧</strong></td></tr>
+  </table>
+
+  <h4>2.0.4 favicon</h4>
+  <p>MAX 帧 + <strong>fill</strong>（长边铺满方画布）—— 16px 下唯一保住「横向双翅 + 中央身体」可辨性的方案。<strong>必须自带底色</strong>。L3 简化版从<strong>矢量 MAX 帧</strong>派生（不是位图降采样）：64 个面片按 plum→orange 投影<strong>量化为 5 档色带</strong>，叠深紫描边与白色接缝网。</p>
+  <table>
+    <tr><th style="width:150px">产物</th><th>路径</th></tr>
+    <tr><td>可缩放 SVG</td><td><code>assets/cicada/svg/favicon.svg</code></td></tr>
+    <tr><td>PNG 三档</td><td><code>assets/cicada/png/favicon-{16,32,48}.png</code></td></tr>
+    <tr><td>ICO 三档</td><td><code>assets/cicada/ico/favicon.ico</code>（16 / 32 / 48）</td></tr>
+  </table>
+
+  <h4>2.0.5 深色主题</h4>
+  <p><strong>禁止</strong>「白线换深线」：深紫接缝 <code>#2a0a2e</code> 对深底 <code>#15151a</code> 对比度仅 <strong>1.02:1</strong>，完全不可见。</p>
+  <table>
+    <tr><th style="width:150px">方案</th><th style="width:170px">最暗面片 vs <code>#15151a</code></th><th>判定</th></tr>
+    <tr><td><strong>A 提亮</strong>（定案）</td><td><strong>3.00:1</strong> ✅</td><td>保色相保饱和、只抬明度 → <strong>完整保留低多边形面片特征</strong></td></tr>
+    <tr><td>B 暗剪影 + 白骨架</td><td>1.24:1（剪影本体不可见）</td><td>低多边形感变成线框；56×26px 下白线仅 0.05px，<strong>组合标尺寸不可用</strong>，仅作 ≥512px 展示层备选</td></tr>
+    <tr><td>C 单色反白</td><td>15.57:1</td><td>❌ 丢失全部面片特征</td></tr>
+  </table>
+  <p class="small">实现要点：<strong>不可</strong>用「<code>max(channel, floor)</code> 抬亮」—— 那会把深紫推成不自然的灰紫。必须在 <strong>HSL 空间保色相保饱和、只抬明度</strong>，逐档验证对比度直到 ≥3:1。本项目实测仅最暗的 8 个面片需抬升（占主体 5.8%），主色阶原样保留。</p>
+
+  <h4>2.0.6 禁用</h4>
+  <ul>
+    <li>提取蝉形做纹样 / 平铺 / 水印 / loading / 家族色编码</li>
+    <li>对称蝉形环 / 盾形徽章 / 放射星芒（通用反徽章条款）</li>
+    <li>非等比拉伸 · 改色阶 · 在深底用原色资产</li>
+    <li>单独出现在 favicon 以外的产品位</li>
+    <li>把「梦」与「蝉」强行等同（语言不重叠，会造成「名字被图形吃掉」的反向风险）</li>
+  </ul>
+
+  <h4>2.0.7 语义自洽性</h4>
+  <table>
+    <tr><th style="width:150px">层</th><th>依据</th></tr>
+    <tr><td>古典神话</td><td>柏拉图《斐德若》258e–259a「缪斯将人化为蝉，命其向缪斯报告谁敬奉哪位缪斯」—— 蝉是<strong>缪斯的信使</strong></td></tr>
+    <tr><td><strong>生产周期</strong>（最强）</td><td>蝉的周期 —— 地下数年（剧本打磨 / 设定 / 分场）→ 破土（定稿进制作）→ 蜕壳（分镜 / 预演 / 粗剪→精剪）→ 羽化（成片）→ 居高而鸣（上线 / 发行 / 展映）。<strong>旧语境只能映射到「迭代 / 再生成」这个通例；新语境映射到一部剧集从开发到上线的完整周期 —— 影视专属。</strong></td></tr>
+    <tr><td>中国语境</td><td>虞世南「居高声自远，非是藉秋风」—— 在影视语境下由「孤高不群 × 热闹批量生产」的摩擦，改判为<strong>「作者把自己的作品抬到高处让它被听见」的正解</strong></td></tr>
+  </table>
+  <p class="small">品牌叙事应站在「<strong>工具替你扛下系统性的部分，你的想象不被流程压扁</strong>」这一侧。</p>
+
+  <h3>2.1 已锁定基线 <span class="pill lock">LOCKED</span></h3>
+  <table>
+    <tr><th style="width:110px">项</th><th>值</th><th style="width:210px">依据</th></tr>
+    <tr><td>字体</td><td>Barlow Condensed <strong>Regular 400</strong></td><td>用户附注 / <code>design-options.html:62</code></td></tr>
+    <tr><td>字样</td><td>混合大小写 <code>SiMuseor</code></td><td>同上</td></tr>
+    <tr><td>字距</td><td><code>.028em</code></td><td>同上</td></tr>
+    <tr><td>字重</td><td>仅 400，禁 300 / 500 / 600 / 700</td><td>「不换字体、不调字重」</td></tr>
+    <tr><td>交付形态</td><td>纯路径 SVG，不依赖字体文件</td><td><code>preview.html:160</code></td></tr>
+  </table>
+  <div class="mark-stage">
+    <img src="assets/baseline-light.svg" alt="SiMuseor 基线字形（Barlow Condensed Regular 400）">
+    <div class="cap">基线字形 · 浅底单色稿　—　这是「已锁定基线」的可视化，<strong>不是最终 LOGO</strong>；字形手术与月桂尚未冻结</div>
+  </div>
+  <div class="mark-stage dark">
+    <img src="assets/baseline-reverse.svg" alt="SiMuseor 基线字形反白稿">
+    <div class="cap">反白稿 · 底 <code>#15151a</code> / 字标 <code>#f1ede4</code> 暖白（非纯白）　—　必须走独立资产，禁止 <code>filter:invert()</code></div>
+  </div>
+
+  <h3>2.2 待冻结项 <span class="pill wip">WIP</span></h3>
+  <table>
+    <tr><th style="width:36px">#</th><th>待定内容</th><th>候选 / 现状</th></tr>
+    <tr><td>1</td><td>字形手术最终方案</td><td><code>00 / A 断笔 / B 连字 / C 分节 / D 负形月桂 / E 菱点 / F 铭牌细线</code>，或 <code>D+A</code>；推荐非定案</td></tr>
+    <tr><td>2</td><td>第二轮八方向去向</td><td><code>O1 / W1 / W2 / S1 / M1 / L1 / E1</code>；<strong>L1 是 M 内正形月桂，与 D 的负形月桂是两条路线，须先裁路线</strong>；W1/W2 试过加重字重，与用户偏好相悖，建议降权</td></tr>
+    <tr><td>3</td><td>月桂几何</td><td>叶数 6 或 8、咬口深度、枝干弧度、顶端距 M 肩线 ≥ 字高 10%</td></tr>
+    <tr><td>4</td><td>独立图标</td><td>是否「M 单体 + 月桂」；32 / 64 / 128 各尺寸的删减规则</td></tr>
+    <tr><td>5</td><td>横 / 竖版组合</td><td>字标 + 中英副行；占位期只用横版</td></tr>
+    <tr><td>6</td><td>最终色彩稿</td><td>纸墨是否微调、是否另出「单色靛紫标」</td></tr>
+    <tr><td>7</td><td>安全区 / 最小尺寸实测值</td><td>占位期 <code>1X / 120px / 32px / &lt;20px 去月桂</code></td></tr>
+    <tr><td>8</td><td>smallcaps 是否采纳</td><td>当前倾向不采纳，维持混合大小写</td></tr>
+  </table>
+
+  <h3>2.3 安全区与最小尺寸（占位期约束，冻结后实测复核）</h3>
+  <div class="cols-3">
+    <div class="card"><h4>安全区 1X</h4><p><code>X</code> = 字标大写 S 的 cap-height；四周净空 ≥ 1X，实用近似 ≥ 字标总高的 0.5 倍。</p></div>
+    <div class="card"><h4>组合标 ≥ 120px</h4><p>侧栏可用宽 <strong>200px</strong>（<code>236 − 12×2 − 6×2</code>，<strong>v2.0 更正 v1.0 的 190px</strong> —— v1.0 漏算 <code>.brand</code> 的 6px 双内边距）；120px 语义明确为<strong>「组合标最小视觉总宽」</strong>。</p></div>
+    <div class="card"><h4>蝉形 ≥ 16px</h4><p>独立蝉形最小 16px（低于此不可辨）；蝉形<strong>仅 favicon 单独使用</strong>。封面铭牌 20px 槽位放的是第三方家族标，不是本标识。</p></div>
+  </div>
+  <p class="small"><strong>v2.0 尺寸分层</strong>：蝉形有四档最小尺寸 —— <strong>L-a 组合标</strong> 视觉总宽 ≥120px / <strong>L-b 蝉形单用</strong> ≥16px / <strong>L-c 字标单用</strong> ≥20px / <strong>L-d 独立图标</strong> ≥32px。四档是<strong>耦合</strong>关系：蝉形只在 L-a 出现，L-b 以下蝉形必须退场。</p>
+
+  <h3>2.4 单色 · 反白 · 禁用</h3>
+  <div class="cols">
+    <div class="card">
+      <h4>单色与反白</h4>
+      <p>浅底字标 <code>--brand-ink #1b1b1e</code>；深底字标 <code>--brand-ink-reverse #f1ede4</code>（暖白）。允许纯黑 / 纯白用于盖章、单色印刷、烫印。反白底 <code>#15151a</code>。</p>
+      <p>反白必须用<strong>独立 SVG 资产 + 明暗切换</strong>（参照 <code>cover-plate.component.ts:256-261</code> 的 <code>.logo-light/.logo-dark</code>），禁止 CSS 滤镜反转。品牌层不借交互靛紫，除非冻结时正式另出「单色靛紫标」并登记。</p>
+    </div>
+    <div class="card">
+      <h4>九条禁用</h4>
+      <p class="small">① 拉伸 / 压缩 / 改 <code>.028em</code> / 改 400 字重　② 旋转 / 镜像 / 斜切　③ 投影 / 发光 / 渐变 / 描边 / 内阴影　④ 压在照片上而不垫白底槽　⑤ 放大做水印 / 平铺 / 单独提取月桂　⑥ &lt;120px 用含月桂完整字标　⑦ 用 <code>filter:invert()</code>　⑧ 与「MD」方块 / 旧称并置　⑨ 采用任一实验稿作主标</p>
+    </div>
+  </div>
+
+  <h3>2.5 占位规范（〔目〕冻结前可立即落地）</h3>
+  <p>侧栏品牌位删掉 <code>.brand-mark</code> 渐变方块与旧称，改用<strong>组合标</strong>：<strong>蝉形（占 <code>.brand-mark</code> 槽）+ 字标（占 <code>.brand-text</code> 竖列）+ 中文副行</strong>。全站 <code>.brand-wordmark</code> <strong>有且仅有 1 个实例</strong>：</p>
+  <pre><span class="c">&lt;!-- app.component.ts:25-31 --&gt;</span>
+&lt;div class="brand"&gt;
+  &lt;img class="brand-mark" src="assets/cicada/svg/cicada-max.svg"
+       width="56" height="26" alt="" aria-hidden="true"&gt;
+  &lt;span class="brand-text"&gt;
+    &lt;span class="brand-wordmark" lang="en" aria-label="SiMuseor"&gt;SiMuseor&lt;/span&gt;
+    &lt;small class="brand-sub"&gt;剧集导演台&lt;/small&gt;
+  &lt;/span&gt;
+&lt;/div&gt;
+
+<span class="c">/* 关键数值 */</span>
+.brand           { align-items: baseline; }        <span class="c">/* 地脚线对齐 */</span>
+.brand-mark      { width:56px; height:26px; flex:none; }   <span class="c">/* MAX 蝉形 */</span>
+.brand-wordmark  { font-family:"Barlow Condensed","Segoe UI",sans-serif;
+  font-weight:400; letter-spacing:.028em; font-size:20px; line-height:1.1;
+  color:var(--text); min-width:90px; white-space:nowrap; flex:none; }
+.brand-sub       { font-size:10px; font-weight:500; letter-spacing:0;
+  color:var(--muted); text-transform:none; }</pre>
+  <p class="small"><strong>v2.0 三处改写</strong>：① <code>.brand-wordmark</code> 的 <code>min-width</code> <strong>120px → 90px</strong>（组合标占位宽 56 + 10 + 90 = 156px ≤ 200px）；② <code>.brand-mark</code> 从 30×30 渐变方块改为 <strong>56×26 的蝉形 <code>&lt;img&gt;</code></strong>；③ <code>.brand</code> 的 <code>align-items</code> 由 <code>center</code> 改为 <strong><code>baseline</code></strong>（蝉形腹部尖端 ≡ 字标 baseline）。<strong>副行文案由「创作工作台」改为「剧集导演台」</strong> —— 旧文案沿用的是已作废的定位。</p>
+  <p class="small"><strong>可访问名安全</strong>：蝉形是<strong>纯装饰</strong>，必须 <code>alt=""</code> + <code>aria-hidden="true"</code>；可访问名<strong>只由</strong>字标的 <code>aria-label="SiMuseor"</code> 承载。严禁给 <code>.brand</code> 容器加 <code>role="group"</code> / <code>aria-label</code>（会导致品牌名播报两次）。</p>
+  <p class="small"><strong>窄屏断点风险（必须同步处理）</strong>：<code>styles.css:1616</code> 现有 <code>.brand-text{display:none}</code> 会把<strong>整个文字列连字标一起隐藏</strong>。v2.0 须改为 <code>.brand-sub{display:none}</code>，保留横版字标（符合 v1.0 §10 裁决「全断点横版字标」）。</p>
+
+  <h3>2.6 安全替换协议 —— 冻结只改 3 处</h3>
+  <table>
+    <tr><th style="width:36px">#</th><th style="width:120px">改动点</th><th>内容</th></tr>
+    <tr><td>1</td><td>资产</td><td><code>simuseor-{light,dark,mono-light,mono-dark}.svg</code> + <code>icon-{32,64,128}.svg/png</code> + 实测安全区 X / 最小宽 / 尺寸 / 色彩稿 HEX</td></tr>
+    <tr><td>2</td><td>URL 变量</td><td><code>--brand-logo-light/dark</code>、<code>--brand-icon-light/dark</code> 四个变量由 <code>none</code> 填成资产路径；明暗切换复用 <code>:host-context([data-theme='dark'])</code>，禁止第二处手写 <code>&lt;img&gt;</code></td></tr>
+    <tr><td>3</td><td>三个常量</td><td><code>--brand-clear-space</code>、<code>--brand-min-width:120px</code>、<code>--brand-icon-min:32px</code> 按实测值覆盖</td></tr>
+  </table>
+  <p><strong>不动</strong>布局、颜色 token、字号、类名、DOM 节点数量。<code>&lt;title&gt;</code> 改 <code>SiMuseor</code>；占位期 favicon 用 <code>href="data:,"</code> 空图标（不含任何字形），冻结后换 <code>brand/icon-32.svg</code> 并让 <code>ThemeService.sync()</code> 同步 href。</p>
+  <p class="notice ink"><strong>主理人裁决 · 窄屏字标统一：</strong>字标在<strong>所有断点</strong>都是横版（占位期纯文字 / 冻结后同一元素换 SVG 字标），<code>≤900px</code> 只隐藏中文副行 <code>.brand-sub</code>，<strong>不设 30×30 图标的互斥布局分支</strong>；独立图标仅用于 favicon 与未来紧凑场景。理由：① 严格守住「冻结只改 3 处」这一治理承诺；② §2.7 已明确侧栏用横版字标；③ 两条互斥 CSS 规则无法靠「只填 URL」切换，物理上做不到；④ LOGO 未冻结，不值得为未定分支增加布局复杂度。阶段文档中 §2.5 / §4.4 / §8-K 关于「冻结后 900px 换 30×30 图标」的表述<strong>以此裁决为准</strong>。</p>
+
+  <h3>2.7 冻结流程</h3>
+  <table>
+    <tr><th style="width:36px">步</th><th style="width:150px">谁确认</th><th>产出</th></tr>
+    <tr><td>①</td><td>品牌主理人</td><td>汇总六方向 + 第二轮八方向，<strong>先裁定「负形 D / 正形 L1」路线</strong> → 1 个候选方向</td></tr>
+    <tr><td>②</td><td><strong>用户</strong></td><td>确认最终字形（含是否 D+A、叶数、横竖版）→ 冻结签字</td></tr>
+    <tr><td>③</td><td>主理人 / 设计</td><td>出冻结包（资产 + 实测值 + 色彩稿）</td></tr>
+    <tr><td>④</td><td>前端</td><td>按 §2.6 只改 3 处，补 favicon 与 <code>&lt;title&gt;</code></td></tr>
+    <tr><td>⑤</td><td>主理人</td><td>回写 VIS：§2 全节、§3（若纸墨微调）、§5.1（月桂实测）、§7.2、§8（C/I/K 标完成）、§9 关闭待定项并升版号</td></tr>
+  </table>
+</section>
+
+<!-- ============ 3 色彩系统 ============ -->
+<section id="s3">
+  <h2><span class="num">03 / COLOR</span>色彩系统</h2>
+
+  <h3>3.1 裁决 A —— 分层双轨，不全站换色</h3>
+  <div class="cols">
+    <div class="card"><span class="tag">品牌层 BRAND</span><h4>纸墨，只进展示面</h4><p>LOGO 资产、关于页 / 启动页 / 分享卡、VIS 手册、品牌落款。新增 <code>--brand-*</code> 六枚，<strong>不进高频 UI</strong>，不设交互色。</p></div>
+    <div class="card"><span class="tag">产品层 UI</span><h4>zinc 中性 + indigo 交互色</h4><p>全站界面继续用现有 <code>:root</code> 与 <code>:root[data-theme="dark"]</code> 两套 token，<strong>原样保留、零覆盖、零回归</strong>。</p></div>
+  </div>
+  <p class="small">四条理由：① 靛紫承担「可点 / 选中」的<strong>功能语义</strong>，换成墨黑等于抹掉交互信号；② 暖纸带黄调，并置会拉低靛紫纯度（<code>styles.css:20</code> 自己写了「带蓝的底会让靛紫主色糊在一起」）；③ 书卷气由标识、窄体、留白承载，把工作台染成暖纸属于设计过度；④ 全站换色要重算近 60 个 token、9 家族色 × 明暗两套与大量 <code>color-mix()</code>，且会破坏已校准的暗色层级。</p>
+  <p class="notice ink">副裁决：两份品牌稿纸色不一致（<code>preview.html</code> 的 <code>#f8f6f1 / #dedbd3 / #6d6a64</code> 与 <code>design-options.html</code> 的 <code>#faf8f3 / #e4e0d6 / #7d786e</code>），<strong>统一取 <code>preview.html</code> 一组</strong>，后者降级为预览页专用底色。<code>--brand-ink #1b1b1e</code> 与 UI <code>--text #18181b</code> 明度差 &lt; 2%，但不合并、不互相引用。</p>
+
+  <h3>3.2 品牌层 · 纸墨六枚</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#f8f6f1"></div><div class="body"><b>纸（浅）</b><div class="hex">#f8f6f1</div><div class="var">--brand-paper</div><div class="note">品牌展示面底；禁作 --bg / --panel</div></div></div>
+    <div class="sw"><div class="chip" style="background:#1b1b1e"></div><div class="body"><b>墨</b><div class="hex">#1b1b1e</div><div class="var">--brand-ink</div><div class="note">字标与品牌文字（浅底）</div></div></div>
+    <div class="sw"><div class="chip" style="background:#dedbd3"></div><div class="body"><b>线</b><div class="hex">#dedbd3</div><div class="var">--brand-line</div><div class="note">1px 发丝线，仅装饰</div></div></div>
+    <div class="sw"><div class="chip" style="background:#6d6a64"></div><div class="body"><b>弱字</b><div class="hex">#6d6a64</div><div class="var">--brand-muted</div><div class="note">品牌面辅助文字，4.99:1</div></div></div>
+    <div class="sw"><div class="chip" style="background:#15151a"></div><div class="body"><b>纸（深 / 反白）</b><div class="hex">#15151a</div><div class="var">--brand-paper-reverse</div><div class="note">反白底</div></div></div>
+    <div class="sw"><div class="chip" style="background:#f1ede4"></div><div class="body"><b>墨（反白）</b><div class="hex">#f1ede4</div><div class="var">--brand-ink-reverse</div><div class="note">暖白，非纯白；15.57:1</div></div></div>
+  </div>
+
+  <h3>3.3 产品层 · 中性阶与交互色</h3>
+  <table>
+    <tr><th style="width:120px">通道</th><th>浅色</th><th>深色</th><th>用途</th></tr>
+    <tr><td>表面四层</td><td><code>#f5f5f6 → #fff → #fafafa → #f4f4f5</code></td><td><code>#0b0b0d → #141417 → #1a1a1e → #202025</code></td><td>保留 4 层阶差，深色底不用纯黑</td></tr>
+    <tr><td>文字四档</td><td><code>#18181b / #3f3f46 / #71717a / #a1a1aa</code></td><td><code>#ededf0 / #d4d4d8 / #8b8b94 / #5f5f68</code></td><td>一一对应，不增不减</td></tr>
+    <tr><td>线三档</td><td><code>#e4e4e7 / #f0f0f1 / #d4d4d8</code></td><td><code>#26262b / #1e1e22 / #34343a</code></td><td>深色下「强」档比默认更亮（与浅色相反）</td></tr>
+    <tr><td>交互色（文字型）</td><td><code>--accent #4f46e5</code>（indigo 600）</td><td><code>--accent #a5b4fc</code>（indigo 300）</td><td>不翻色相，翻明度档</td></tr>
+    <tr><td>交互色（填充型）</td><td colspan="2"><code>--primary #4f46e5</code> 双主题都不翻 + <code>--on-primary #fff</code></td><td>实心按钮 / 选中 chip，6.29:1</td></tr>
+    <tr><td>语义色 fg</td><td><code>#15803d / #b45309 / #b91c1c</code></td><td><code>#4ade80 / #fbbf24 / #f87171</code></td><td>浅底用深档、深底用亮档；不用 500 荧光档</td></tr>
+    <tr><td>语义色 soft</td><td>实色 <code>#f0fdf4 / #fffbeb / #fef2f2</code></td><td><code>rgb(… / .12)</code> 半透明</td><td>深色下实色 soft 会成荧光块</td></tr>
+    <tr><td>新增控件边界</td><td colspan="2"><code>--border-control #8b8b94</code>（浅 3.38:1 / 深 5.44:1）</td><td>仅 input / select / textarea / .radio-row 静止边框，不覆盖 <code>--border</code></td></tr>
+  </table>
+
+  <h3>3.4 使用比例与禁止组合</h3>
+  <div class="cols">
+    <div class="card"><h4>配额</h4><p><strong>产品 UI 单屏</strong>：中性表面 + 文字 ≥ 85%，边框 / 结构线约 10%，交互强调色 <strong>≤ 5%</strong> 且实心靛紫块 <strong>≤ 2 处 / 屏</strong>，语义色 ≤ 3%（仅状态出现时）。</p><p><strong>品牌展示面</strong>：暖纸底 ≥ 75%，线 / 装饰 ≤ 5%，墨黑字标与文字 ≤ 20%，语义色 0。</p></div>
+    <div class="card"><h4>禁止组合（摘）</h4><p class="small">墨黑字标压靛紫底；<code>--brand-paper</code> 作 UI 表面；<code>--accent</code> 用于正文 / 静态图标 / 标题；语义色 500 档作前景；深色下用浅色实色 soft；大面积渐变铺底；品牌暖白与 UI 冷白混用于同一文本块；<strong><code>--accent</code> 作白字填充</strong>。</p></div>
+  </div>
+
+  <h3>3.5 对比度红线（WCAG 实算，双主题）</h3>
+  <table>
+    <tr><th>色对</th><th style="width:90px">比值</th><th style="width:76px">判定</th><th>处置</th></tr>
+    <tr><td><code>--faint #a1a1aa</code> on <code>#fff</code></td><td>2.56:1</td><td class="bad">FAIL</td><td rowspan="2">禁止承载文本（登记 21 处引用迁到 <code>--muted</code> / <code>--text-2</code>；<strong>落地须按全量 39 处</strong>，见 §8.2 补遗）；只作装饰线 / 非信息图形；<code>::placeholder</code> 保留文本只换色</td></tr>
+    <tr><td>深色 <code>--faint #5f5f68</code> on <code>#141417</code></td><td>2.91:1</td><td class="bad">FAIL</td></tr>
+    <tr><td><code>--accent #a5b4fc</code> + 白字</td><td>1.99:1</td><td class="bad">FAIL</td><td rowspan="3">实心填充一律 <code>--primary</code>；改 <code>.filter-chip.active</code>(:737) / <code>:active:hover</code>(:743) / <code>.step-row.active .step-dot</code>(:1469)（这 3 处 + 下行 <code>button.primary:hover</code> = §9.2 M 行共 <strong>4 处</strong>）</td></tr>
+    <tr><td><code>--accent-hover #c7d2fe</code> + 白字</td><td>1.49:1</td><td class="bad">FAIL</td></tr>
+    <tr><td>indigo 400 <code>#818cf8</code> + 白字</td><td>2.98:1</td><td class="bad">FAIL</td></tr>
+    <tr><td><code>--primary #4f46e5</code> + 白字</td><td>6.29:1</td><td class="ok">PASS</td><td>双主题一致；「深色 <code>--primary</code> 不翻」由此成为<strong>硬约束</strong></td></tr>
+    <tr><td><code>--primary-hover #6366f1</code>（深色）+ 白字</td><td>4.47:1</td><td class="bad">FAIL</td><td>主按钮 hover 不得跟 <code>--primary-hover</code>；保持 <code>--primary</code> 底 + 白字，仅以 <code>border-color:var(--accent)</code> 作 1px 装饰描边（§8.5 裁决 5）</td></tr>
+    <tr><td><code>--border #e4e4e7</code> on <code>#fff</code>（1.4.11 需 3:1）</td><td>1.27:1</td><td class="bad">FAIL</td><td>新增 <code>--border-control #8b8b94</code>（3.38:1 / 5.44:1），不改 <code>--border</code></td></tr>
+    <tr><td><code>--muted #71717a</code> on <code>#fff</code></td><td>4.83:1</td><td class="ok">PASS</td><td>仅可用于 <code>--panel / --panel-2</code>；落在 <code>--bg</code>(4.44) / <code>--panel-3</code>(4.40) 上的小字改 <code>--text-2</code></td></tr>
+    <tr><td>品牌 <code>#1b1b1e</code> on <code>#f8f6f1</code> / 反白 <code>#f1ede4</code> on <code>#15151a</code></td><td>15.91 / 15.57:1</td><td class="ok">PASS</td><td>品牌层全部达标；不达标集中在 UI 层的<strong>使用位置</strong></td></tr>
+    <tr><td>lab 深字 <code>#1e1b4b</code> on 400 / 300 亮底</td><td>5.36 / 8.02:1</td><td class="ok">PASS</td><td><strong>两套实心填充分开处理</strong>：主 UI = 600 底 + 白字；lab 实验区 = 亮底 + 深字，归一到 <code>{primary.300}</code> 时只改色值、不动 <code>contrastColor</code></td></tr>
+  </table>
+  <p class="small">结论：以上修正<strong>不改任何 token 值</strong>，只改使用位置与新增变量，因此守住裁决 A「零覆盖、零回归」。焦点实线 <code>2px solid var(--accent)</code> 实测浅 5.62–6.29:1、深 8.14–9.86:1，满足 1.4.11 / 2.4.7 / 2.4.13。</p>
+
+  <h3>3.6 明暗映射原则</h3>
+  <p>唯一入口 <code>data-theme</code>（<code>ThemeService.sync()</code> 写 <code>document.documentElement</code>），组件内用 <code>:host-context([data-theme='dark'])</code>。映射不是逐一取反，而是<strong>保持相对层级</strong>：表面保留 4 层阶差、文字四档一一对应、深色「强线」比默认更亮、文字型强调翻明度档而填充型不翻、语义 soft 改半透明、阴影 α 增大、封面构图统一压一档 <code>opacity:.66</code>。禁止第二套主题开关，禁止 <code>filter:invert()</code>。</p>
+</section>
+
+<!-- ============ 4 字体系统 ============ -->
+<section id="s4">
+  <h2><span class="num">04 / TYPOGRAPHY</span>字体系统</h2>
+
+  <h3>4.1 两层角色，绝不混用</h3>
+  <table>
+    <tr><th style="width:120px">角色</th><th>字体栈</th><th style="width:110px">字重</th><th>范围</th></tr>
+    <tr><td>品牌展示字</td><td><code>"Barlow Condensed","Segoe UI",sans-serif</code></td><td><strong>仅 400</strong> / <code>.028em</code></td><td>字标 <code>.brand-wordmark</code>、品牌级大字；<strong>不用于中文</strong></td></tr>
+    <tr><td>西文 + 中文正文</td><td><code>"Inter","Segoe UI","Microsoft YaHei",system-ui,sans-serif</code></td><td>400 / 500 / 600 / 700</td><td>全站 UI（沿用 <code>styles.css:131</code>，不改字体栈）</td></tr>
+    <tr><td>等宽 / 数字</td><td><code>"Cascadia Mono",Consolas,ui-monospace,monospace</code></td><td>400 / 500 / 600</td><td><code>.mono</code>、所有量化读数</td></tr>
+  </table>
+  <p class="small">中英混排不显式切换字体（按 glyph 自动 fallback）；同一行共享 <code>font-size / font-weight / line-height</code>；负字距只施加于纯拉丁串，<strong>含中文的串一律 <code>letter-spacing:0</code></strong>。所有量化读数强制 <code>font-variant-numeric:tabular-nums</code>。</p>
+
+  <h3>4.2 字重白名单与字距四档</h3>
+  <p><strong>白名单 <code>400 / 500 / 600 / 700</code></strong>。理由：Segoe UI / 微软雅黑不是可变字体，没有 550 / 620 / 660 这些轴，浏览器会就近取整或合成加粗，导致中英混排同声明却粗细不一致；且五级近似字重在 13px 下肉眼无差别，正是 <code>styles.css:29</code> 自己反对的「看起来一样但代码里不同」。归并规则：<code>550 → 500</code>、<code>620 / 640 / 650 / 660 / 680 → 600</code>。字距只留 <code>-.02em</code>（大标题）、<code>-.01em</code>（小标题）、<code>0</code>（正文 / 中文）、<code>+.09em</code>（kicker）、<code>+.028em</code>（字标锁定）。</p>
+
+  <h3>4.3 字号阶梯</h3>
+  <table>
+    <tr><th style="width:130px">级别</th><th style="width:60px">px</th><th style="width:60px">字重</th><th style="width:60px">行高</th><th style="width:90px">字距</th><th>用途</th></tr>
+    <tr><td>DISPLAY（品牌层）</td><td>40</td><td>400</td><td>1.1</td><td>.028em</td><td>品牌展示面大字，Barlow，仅品牌层</td></tr>
+    <tr><td>D1 页面主标题</td><td>22</td><td>600</td><td>1.2</td><td>-.02em</td><td><code>.page-heading h1</code>（现状 660 / -.022em）</td></tr>
+    <tr><td>D2 展示标题</td><td>16</td><td>600</td><td>1.35</td><td>-.01em</td><td><code>.hero-title</code></td></tr>
+    <tr><td>H 面板标题</td><td>14</td><td>600</td><td>1.4</td><td>-.01em</td><td><code>.panel-heading h2</code>、弹层标题</td></tr>
+    <tr><td>H3 卡片标题</td><td>13</td><td>600</td><td>1.4</td><td>0</td><td><code>.task .title</code>、<code>.mc-title</code></td></tr>
+    <tr><td>B 正文基准</td><td>13.5</td><td>400</td><td>1.55</td><td>0</td><td><code>body</code></td></tr>
+    <tr><td>B2 控件 / 次级</td><td>12.5</td><td>500</td><td>1.5</td><td>0</td><td>button、input、<code>.nav-item</code></td></tr>
+    <tr><td>L 标签 / 辅助</td><td>11.5</td><td>500</td><td>1.45</td><td>0</td><td><code>.field label</code>、<code>.mono</code>、<code>.badge</code></td></tr>
+    <tr><td>C 角标 / kicker</td><td>10</td><td>600</td><td>1.4</td><td>+.09em</td><td><code>.page-kicker</code>、组标签、表头（拉丁大写）</td></tr>
+    <tr><td>NUM 数据读数</td><td>15</td><td>600</td><td>1.2</td><td>0</td><td><code>.spec-value</code> 等，强制 tabular-nums</td></tr>
+    <tr><td>XS 极小</td><td>9.5</td><td>500</td><td>1.3</td><td>+.02em</td><td>允许保留，不鼓励新增</td></tr>
+  </table>
+  <p class="small">现状 <code>27/22/21/16/15/14.5/14/13.5/13/12.5/12/11.5/11/10.5/10/9.5</code> 收敛后可归到上表；<code>14.5 / 12 / 11 / 10.5</code> 作为相邻辅助值允许存在，但不再新增中间字号。</p>
+
+  <h3>4.4 落地缺口：基线字体其实还没生效 <span class="pill no">现状</span></h3>
+  <p>全仓 <code>web/src/**</code> <strong>无 <code>@font-face</code></strong>、<code>web/public/</code> 无字体文件；<code>BarlowCondensed.ttf</code> / <code>Inter.ttf</code> 只躺在 <code>logo-vector/fonts/</code>。即现状「Inter / Barlow Condensed」全部回退到 Segoe UI / 微软雅黑，<strong>字标基线字体在产品里根本没生效</strong>。工程阶段补法：转 woff2 进 <code>web/public/fonts/</code> + 两条 <code>@font-face</code>（<code>font-display:swap</code>；Barlow 只声明 400、Inter 声明 100 900），<strong>仅对品牌类声明 Barlow</strong>；补齐后用截图实测 <code>.028em</code> 与「缩小等效 190px」一致性。在此之前不得宣称基线字体已生效。</p>
+</section>
+
+<!-- ============ 5 图形与意象 ============ -->
+<section id="s5">
+  <h2><span class="num">05 / GRAPHICS</span>图形与意象</h2>
+
+  <h3>5.1 月桂 —— 从品牌标志层移除，归位作品层 <span class="pill v2">v2.0 改判</span></h3>
+  <p>用户 2026-11-13 拍板新定位后，月桂的归属被重新裁决。<strong>结论：月桂从 VIS 的「品牌标志层」正式母题体系移除 → 重新归位为「作品层荣誉母题」。</strong></p>
+  <table>
+    <tr><th style="width:150px">层</th><th style="width:120px">月桂</th><th>蝉形</th></tr>
+    <tr><td><strong>品牌标志层</strong>（主标 / 辅助图形层 / favicon / 字标内部）</td><td class="bad">❌ 不进入</td><td class="ok">✅ 独占</td></tr>
+    <tr><td><strong>作品层</strong>（将来「本片获奖 / 入选 XX」标记）</td><td class="ok">✅ 保留为该层母题</td><td>—</td></tr>
+    <tr><td><strong>字形手术实验池</strong></td><td class="bad">❌ 移出</td><td>—</td></tr>
+  </table>
+  <p><strong>正面回应「电影奖项 = 月桂」这一反驳</strong>：该反驳<strong>成立</strong> —— 影视语境里月桂确实比蝉更贴品牌，但它<strong>不构成品牌标志层的正确归属</strong>。四条理由：</p>
+  <ol>
+    <li><strong>月桂回答「作品得了什么奖」，导演台回答「作品怎么被做出来」</strong> —— 把工具的标志做成奖杯 = 用结果冒充工序。导演台是所有剧集的前置工序，是车间不是颁奖礼。</li>
+    <li><strong>行业惯例本身就支持这个分层</strong> —— 电影行业里导演台 / 制片软件从不用月桂做标志，月桂只出现在<strong>海报底部的获奖标识</strong>上。月桂在电影工业中的既有位置，恰恰就是「作品层的荣誉印记」。</li>
+    <li><strong>虚假承诺风险</strong> —— 品牌标志 = 月桂，等于暗示「用司梦导出的片子能拿奖」。工具不能替作品领奖。</li>
+    <li><strong>时态必须与品牌名同层</strong> —— 「司梦」指向<strong>尚未成形的想象</strong>，蝉的羽化是<strong>正在发生</strong>，月桂是<strong>已经发生并被授予</strong>。</li>
+  </ol>
+  <p class="small"><strong>为何「M 内嵌月桂」要从实验池移出</strong>（而非仅降级）：两个图形母题共处一个标志 = 稀释；「藏在 M 内」是字标内部方案，与「蝉形在左并列」不兼容；且其<strong>价值基础（荣誉语义）在品牌层已被论证为层级错配</strong> —— 价值基础错位的方案不该继续占实验池名额。<strong>字形手术其余方向（design-options 六方向、_r2_strip 八方向）保持开放、不受影响。</strong></p>
+  <p class="small"><strong>不变的禁止方向</strong>：禁止提取做纹样 / 平铺 / 水印 / loading / 家族色编码；禁止对称月桂环、盾形徽章、放射星芒（通用反徽章条款，与意象更替无关）。</p>
+
+  <h3>5.2 封面铭牌 —— 保留不改</h3>
+  <p><code>app-cover-plate</code> 的 <strong>5 种构图</strong>（<code>mo-0</code> 出血圆 / <code>mo-1</code> 斜纹 / <code>mo-2</code> 同心环 / <code>mo-3</code> 点阵 / <code>mo-4</code> 双光斑）与 <strong>9 家族色 × 明暗两套</strong> 全部保留原值：它们编码的是「模型家族」，不是品牌色，不参与本 VIS 色板裁决。11px 单行内容（厂牌名·参数·量化 + 右端形态角标）不得回升。<strong>SiMuseor 标识不进入铭牌</strong> —— 20px 槽位放的是第三方家族标，遵守「固定槽位、不改色、不拉伸、不加阴影、不放大做背景、深色用独立反白资产」的指称性使用规则。注意铭牌内的 <code>.brand</code> 与外壳 <code>.brand</code> 同名不同物（组件 scoped），不重命名、不互注标识变量。</p>
+
+  <h3>5.3 图标与几何母题</h3>
+  <div class="cols">
+    <div class="card"><h4>图标网格</h4><p><code>viewBox="0 0 16 16"</code>；主线宽 <strong>1.5px</strong>（现状 1.6 → 统一），强调 1.8px / 铭牌自绘 2.4px；<code>stroke-linecap/linejoin:round</code>、<code>fill:none</code>；进度环 <code>stroke-width:8</code>。禁止同图标内 fill / stroke 混搭与投影。</p></div>
+    <div class="card"><h4>母题</h4><p>1px 发丝线、V 形内腔、菱形单点、刀口 / 断笔；圆 / 环 / 点阵仅用于封面构图。统一表述为「活字、钢印、书籍装帧与编辑式排版」，<strong>不是</strong>徽章 / 盾形 / 对称月桂环 / 科技光效。</p></div>
+  </div>
+  <p class="small"><code>↗</code> 来源入口是新标签页外链的唯一提示，不可省；收敛为 <code>&lt;span class="arrow" aria-hidden="true"&gt;↗&lt;/span&gt;</code> + 宿主 <code>title</code>，不得作为裸文本被读屏念出，也不得改成品牌装饰。</p>
+</section>
+
+<!-- ============ 6 版式与空间 ============ -->
+<section id="s6">
+  <h2><span class="num">06 / LAYOUT</span>版式与空间</h2>
+
+  <h3>6.1 间距与栅格</h3>
+  <p><strong>4px 基准</strong>：<code>2 / 4 / 6 / 8 / 10 / 12 / 14 / 16 / 20 / 24 / 32</code>。避免新增 <code>5 / 7 / 9 / 11 / 13 / 18 / 22</code> 等零散值；现状 <code>26 / 28 / 18</code>（容器内边距、面板内边距）登记为白名单，保留但不扩散。</p>
+  <table>
+    <tr><th style="width:150px">项</th><th>值</th><th style="width:230px">定位</th></tr>
+    <tr><td>侧栏宽</td><td><code>--sidebar-w: 236px</code></td><td><code>styles.css:73</code></td></tr>
+    <tr><td>内容上限</td><td><code>.container max-width:1240px; padding:26px 28px 72px</code></td><td><code>:176</code>；≤900 改 <code>18px 16px 56px</code></td></tr>
+    <tr><td>卡片网格</td><td><code>repeat(auto-fill,minmax(250px,1fr)); gap:14px</code></td><td><code>.grid:502</code></td></tr>
+    <tr><td>环境 / 设置 / 安装</td><td><code>minmax(0,1fr) 320px</code> / <code>3fr 7fr</code> / <code>46fr 54fr</code></td><td>两栏布局，gap 14 / 14 / 18</td></tr>
+    <tr><td>响应式断点</td><td><code>1040 / 900 / 860px</code></td><td><code>:1589 / :1599 / :1632</code>；预览页的 760px 不进产品</td></tr>
+    <tr><td>z-index</td><td>铭牌内部 0/1/2 · 吸底条 5 · 侧栏 20 · 主题菜单 40 · 弹层 100</td><td>新增浮层不得插入中间值</td></tr>
+  </table>
+
+  <h3>6.2 圆角三档 + 两类登记例外</h3>
+  <div class="cols-3">
+    <div class="card"><h4>12px · <code>--radius</code></h4><p>面板、模型卡、任务条、吸底条、主题菜单</p></div>
+    <div class="card"><h4>8px · <code>--radius-sm</code></h4><p>按钮、输入、导航项、notice、实例行</p></div>
+    <div class="card"><h4>5px · <code>--radius-xs</code></h4><p>chip、badge、端口 chip、骨架</p></div>
+  </div>
+  <p class="small"><strong>例外 1</strong>：弹层 16px（<code>.modal</code> 与 PrimeNG dialog），登记为第 4 档 <code>--radius-lg</code>，仅限弹层。<strong>例外 2</strong>：胶囊 999px 属「全圆角语义」，不算违反三档。待收敛：现存 <code>9px</code>（旧方块，随删除）、<code>6px</code>（<code>.btn-xs</code> / <code>.step-row</code>）、<code>4px</code>（<code>.tp-swatch</code> / <code>.skel-line</code>）、<code>lab-theme</code> 的 <code>3/6/10</code>。</p>
+  <p class="small"><strong>适用域外声明（§8.5 裁决 3）：</strong>封面铭牌 <code>app-cover-plate</code> 的 3 处圆角（<code>:128 / :268 / :310</code>）属<strong>独立图形子系统</strong>（§5.1 的 5 构图 / 9 家族色 / 11px 单行内容），不是产品 UI 控件或面板 —— 圆角三档规则<strong>不适用于该域</strong>。因此这 3 处是「适用域外」，<strong>不收敛、不登记为第三类例外、不列待办</strong>；校验脚本命中时按域外忽略，不计入中间档违规数。§6.4 的组件状态示例同样不含铭牌内部几何。</p>
+
+  <h3>6.3 边框优先规则</h3>
+  <p>分层 <code>1px solid var(--border)</code>，次级 <code>--border-soft</code>，强 <code>--border-strong</code>。阴影只允许弹层、主题菜单、吸底条与主按钮的 1px 内高光。<strong>hover 只动 <code>border-color</code> / <code>background</code>，不加阴影与位移</strong>。待收敛共 <strong>3 处</strong>：<code>.task:hover</code>（<code>:958-961</code>）、<code>.segmented button.active</code>（<code>:722</code>）、<code>md-model-card .card:hover</code>（组件 scoped，<code>model-card.component.ts:109-117</code>，Phase 1 初版未审到）。禁用态 <code>opacity:.45</code>，不加灰底。</p>
+
+  <h3>6.4 组件视觉状态示例</h3>
+  <p class="small">以下为规范态的小样（非产品截图）。注意主按钮与选中 chip 用的是 <code>--primary</code> 实心填充 + 白字，不是 <code>--accent</code>。</p>
+  <div class="demo">
+    <div class="demo-row"><span class="demo-label">按钮</span><button class="d-btn">默认</button><button class="d-btn primary">主操作</button><button class="d-btn ghost">文字按钮</button><button class="d-btn" disabled>禁用</button></div>
+    <div class="demo-row"><span class="demo-label">输入</span><input class="d-input" placeholder="搜索模型关键词，如 qwen / lora / flux" aria-label="搜索模型"></div>
+    <div class="demo-row"><span class="demo-label">chip</span><span class="d-chip">全部</span><span class="d-chip active">已选中</span></div>
+    <div class="demo-row"><span class="demo-label">徽章</span><span class="d-badge">未安装</span><span class="d-badge blue">已安装</span><span class="d-badge red">错误</span></div>
+    <div class="demo-row"><span class="demo-label">卡片</span><div class="d-card"><b>flux1-dev.sft</b><span>checkpoints · 11.9 GB</span></div></div>
+  </div>
+  <p class="small">状态字典（8 态）：默认 / hover / focus-visible / active·selected / disabled / loading / error / empty。<code>:focus-visible</code> 的 2px 实线是<strong>唯一合规焦点指示器</strong>；表单 <code>:focus</code> 的 3px 软环是装饰性，两者作用于不同伪类与几何层，可叠加但不得互相替代。</p>
+  <p class="small"><strong>hover 明规则（§8.5 裁决 5）：</strong><code>button.primary:hover</code> 与 <code>.filter-chip.active:hover</code> 一律<strong>保持 <code>background:var(--primary)</code></strong> + <code>--on-primary</code> 白字（6.29:1），仅以 <code>border-color:var(--accent)</code> 作 1px 装饰描边（深色 <code>#a5b4fc</code> on <code>#4f46e5</code> = 3.15:1 ≥ 3:1，满足 1.4.11）。<strong>不得</strong>改用 <code>--primary-hover #6366f1</code>（白字 4.47:1，差 0.03 不达 AA）或 <code>--accent-hover #c7d2fe</code>（白字 1.49:1）；hover 不加阴影、不加位移，符合「边框优先」（§6.3）。</p>
+</section>
+
+<!-- ============ 7 应用系统 ============ -->
+<section id="s7">
+  <h2><span class="num">07 / APPLICATION</span>应用系统</h2>
+
+  <h3>7.1 品牌落位地图（10 处）</h3>
+  <table>
+    <tr><th style="width:150px">位置</th><th style="width:90px">允许?</th><th>规则</th></tr>
+    <tr><td>侧栏品牌位 <code>.brand</code></td><td class="ok">✅ 唯一常驻位</td><td><strong>v2.0：组合标</strong> —— 蝉形 MAX 56×26px（占 <code>.brand-mark</code> 槽）+ 10px gap + 字标（占 <code>.brand-text</code> 竖列）+ 中文副行。蝉形地脚线对齐字标 baseline</td></tr>
+    <tr><td><code>&lt;title&gt;</code></td><td class="ok">✅ 必须</td><td>〔现〕<code>Model Downloader</code> → 〔目〕<code>SiMuseor</code>；E2E 无 <code>toHaveTitle</code> 断言，安全</td></tr>
+    <tr><td>favicon</td><td class="ok">✅ <strong>蝉形唯一单独出现位</strong></td><td>〔目〕<code>href="data:,"</code> 仅消除 404，<strong>不含任何字形</strong>；〔冻〕换 <strong>L3 简化版</strong>（5 档量化色带 + 深紫描边 + 白色接缝网，<strong>自带底色</strong>），16/32/48 三档 ICO + SVG</td></tr>
+    <tr><td>页头 <code>ui-page-header</code></td><td class="bad">❌ 禁止</td><td>保持 <code>&lt;h1&gt;</code> 单页唯一；不得加品牌徽章（会破坏 E2E 首个 <code>ui-badge</code> 断言）</td></tr>
+    <tr><td>空状态 / 弹层 / 错误态</td><td class="bad">❌ 禁止</td><td>保持功能文案；<code>.empty-icon</code> 加 <code>aria-hidden</code>；错误用 <code>role="alert"</code>，不用品牌色做插画</td></tr>
+    <tr><td>封面铭牌</td><td class="bad">❌ 硬禁止</td><td>20px 槽位是第三方家族标；SiMuseor 不进铭牌</td></tr>
+    <tr><td><strong>蝉形 · 其他一切位置</strong></td><td class="bad">❌ 硬禁止</td><td>蝉形<strong>只出现在 favicon 与侧栏组合标</strong>两处。页头 / 空状态 / 弹层 / 错误态 / 卡片角标 / 移动端顶栏 / 打印物 / 关于页 —— 蝉形与字标<strong>都不许进</strong>（v2.0 不扩大落位面）</td></tr>
+    <tr><td>关于 / 设置（〔目〕新增）</td><td class="warnc">⚠️ 允许一次</td><td>用品牌层纸墨、<code>role="group"</code> + 一个 <code>h2</code>；不做通栏 banner / 渐变 / notice；字标仍引用同一 <code>.brand-wordmark</code></td></tr>
+    <tr><td>分享卡 / 导出（〔冻〕）</td><td class="ok">✅ 品牌展示面</td><td>暖纸底 + 墨黑字标 + 暖白反白资产；不进高频 UI 流，不用交互靛紫</td></tr>
+  </table>
+
+  <h3>7.2 状态必须可被程序读出</h3>
+  <p>任何「选中 / 展开 / 加载 / 错误 / 禁用」不得只靠颜色或阴影表达：颜色变化必须配 <code>aria-*</code>、<code>role</code>、可见文案或边框宽度变化之一。关键补齐：<code>.nav-item.active</code> 加 <code>aria-current="page"</code>；chip / segmented 加 <code>aria-pressed</code> / <code>aria-checked</code>；<code>.instance-row.installing</code> 补 <code>role="button" tabindex="0"</code> + Enter/Space（现状仅 <code>(click)</code>，键盘不可达）；弹层 <code>role="dialog" aria-modal aria-labelledby</code> + 焦点陷阱 + 关闭后焦点归还，三者必须一起做；进度环 <code>role="progressbar"</code> 只在阶段变化播报一次，<strong>不给每秒刷新的 % 数字加 <code>aria-live</code></strong>。</p>
+
+  <h3>7.3 无障碍要点（WCAG 2.2 AA）</h3>
+  <div class="cols">
+    <div class="card"><h4>键盘与焦点</h4><p class="small">2px 实线焦点 ≥3:1；<code>outline-offset:2px</code>；不得 <code>outline:none</code> 无替代。Esc 按 z-index 关最顶层并归还焦点。<code>T</code> 键补 <code>isComposing</code> / <code>keyCode 229</code> / <code>repeat</code> / <code>defaultPrevented</code> 守卫，并提供可关闭开关（2.1.4）。方向键在 segmented / 主题选项 / 导航子项用 roving tabindex。<code>scroll-padding-bottom:80px</code> 防吸底条遮挡焦点（2.4.11）。</p></div>
+    <div class="card"><h4>结构 / 动效 / 尺寸</h4><p class="small"><code>ui-field</code> 补 <code>&lt;label for&gt;</code> / <code>id</code>（保留 <code>#comfy-tag</code>）；<code>&lt;table&gt;</code> 保持隐式 table role，<code>th</code> 补 <code>scope="col"</code>；全局 <code>prefers-reduced-motion</code>（现状仅 1 处），spinner 降为静态环 + <code>role="status"</code> 文字而非凭空消失；触摸目标 ≥ 24×24，≤900 建议 ≥ 40px；装饰图标 <code>aria-hidden="true"</code>。</p></div>
+  </div>
+
+  <h3>7.4 响应式三断点</h3>
+  <table>
+    <tr><th style="width:110px">断点</th><th>品牌位与布局关键行为</th></tr>
+    <tr><td><strong>&gt; 1040px</strong></td><td>字标 + 副行全显（120–190px）；236px 竖侧栏；<code>.env-layout 1fr/320px</code>、<code>.settings-cols 3fr/7fr</code></td></tr>
+    <tr><td><strong>≤ 1040px</strong></td><td>品牌位不变；双栏改单列，实例仍最前；DOM 顺序（环境→实例）与视觉顺序（实例→环境）错位是已接受决策，保持不动但补 landmark</td></tr>
+    <tr><td><strong>≤ 900px</strong></td><td><strong>隐藏 <code>.brand-sub</code>、保留 <code>.brand-wordmark</code></strong>（替换 <code>styles.css:1616</code> 的 <code>.brand-text{display:none}</code>）；侧栏横向条、<code>overflow:visible</code> 必须保留否则主题菜单被裁；组标签改 <code>.visually-hidden</code> 而非 <code>display:none</code>；冻结后仍是横版字标（同一元素换 SVG 资产），深色用独立反白资产，不设图标互斥分支</td></tr>
+    <tr><td><strong>≤ 860px</strong></td><td>同 900；安装弹层单列、日志移到下方、进度环 124→100px；320px 下除表格 / 日志外无横向滚动（1.4.10）</td></tr>
+  </table>
+
+  <h3>7.5 文案与命名</h3>
+  <div class="cols">
+    <div class="card"><h4>规则</h4><p class="small">中文用全角标点；短标签 / 按钮不加句号；省略号用 <code>…</code>（U+2026）；品牌名混合大小写、<code>.028em</code>、字重 400，不得全大写 / 加粗；中文 kicker 禁 uppercase、<code>letter-spacing:0</code>；数据读数保留可见文本（<code>86%</code> / <code>734.00 MB</code> 等被 E2E 依赖）。</p></div>
+    <div class="card"><h4>错误文案公式</h4><p class="small"><code>发生了什么 + 为什么（可选） + 下一步动词</code>，≤30 字，不堆版本号 / 绝对路径 / 命令细节。例：「删除失败：目录被占用，关闭占用程序后重试」。不堆解释文案：页头 hint ≤ 1 句 / ≤40 字，每屏解释性文案块 ≤ 2 处；<code>.env-note</code> / <code>.panel-lead</code> 类整块解释先删，逐页评估 hint，不要一次全删。</p></div>
+  </div>
+
+  <h3>7.6 E2E 保护清单（不得改动）</h3>
+  <p class="small">实测口径：<code>.nav &gt; a[href="/models"]</code>（<strong>不是 /library</strong>）、<code>test.describe('Model Downloader Web UI')</code> 保留、首个 <code>ui-badge</code> 必须是环境卡徽章、「安装实例」全页唯一、<code>data-testid</code> 全清单、placeholder 文本、5 条负向断言（<code>三项一次装到</code> / <code>.panel-lead</code> / <code>待检测</code> / <code>这台电脑可以启用显卡加速|安装后即可使用</code> / <code>重新检测</code> 均 count 0）。测试里没有字面 <code>getByRole('模型')</code>，但 Playwright <code>name</code> 是子串匹配，<strong>禁止新增任何可访问名含「模型 / 安装 / 下载任务 / 设置」的元素</strong>，也禁止给现有元素加覆盖性 <code>aria-label</code>。</p>
+</section>
+
+<!-- ============ 8 工程落地 ============ -->
+<section id="s8">
+  <h2><span class="num">08 / ENGINEERING</span>工程落地</h2>
+  <p class="notice"><strong>本章是目标态排期，本轮零落地。</strong>未修改 <code>web/src/</code>、<code>tests/</code>、<code>angular.json</code> 与 <code>web/public/</code> 下任何文件。完整方案见 <code>_phase3-engineering.md</code>。</p>
+
+  <h3>8.1 独立 token 层 <code>vis-tokens.css</code></h3>
+  <p>231 行，<strong>零覆盖承诺</strong>：不重新赋值 <code>styles.css:17-74 / :77-122</code> 中任何已有 <code>--*</code> 变量，只新增 18 个名字。建议 M0 在 <code>angular.json</code> 的 <code>styles</code> 数组最末追加（排在 <code>tailwind.css</code>、<code>styles.css</code> 之后，不参与覆盖关系，也不写 <code>@layer</code> 以免与 Tailwind v4 层序歧义）。</p>
+  <div class="cols-3">
+    <div class="card"><h4>品牌层</h4><p class="small"><code>--brand-*</code> 六枚 + <code>--brand-surface / -fg / -rule</code> 语义别名（深色指向反白组）</p></div>
+    <div class="card"><h4>修正与例外</h4><p class="small"><code>--border-control #8b8b94</code>（浅 3.38:1 / 深 5.44:1）、<code>--radius-lg:16px</code>（仅弹层）</p></div>
+    <div class="card"><h4>标识接口</h4><p class="small">四个 URL 变量占位期一律 <code>none</code>（无字形）；三个常量 <code>--brand-clear-space:10px</code> / <code>--brand-min-width:120px</code> / <code>--brand-icon-min:32px</code></p></div>
+  </div>
+  <p class="small">两条 <code>@font-face</code>：Barlow 仅 <code>400</code>、Inter <code>100 900</code>，均 <code>font-display:swap</code>，指向 <code>/fonts/*.woff2</code>。文件未落地时浏览器忽略声明、正文继续走系统回退栈，<strong>零渲染回归</strong>；接入片段全部写在注释里，生效 CSS 只有两条 @font-face + 两个 <code>:root</code> 块，不会被误当成已落地的组件实现。</p>
+  <p class="small"><strong>零覆盖硬指标（脚本实测）：</strong><code>styles.css</code> 现有赋值变量 <strong>39</strong> 个 / <code>vis-tokens.css</code> 新增 <strong>18</strong> 个 / 交集 <strong>0</strong> → PASS。品牌层六枚采用「固定 HEX + 语义别名做深色反白映射」而非整体换色 —— 符合 §2.4 / §7.2「反白靠双份 SVG 资产，不是 CSS 取色」，主理人认可，不改。</p>
+  <p class="small"><strong>字体性能：</strong><code>logo-vector/fonts/*.ttf</code> 经 <code>pyftsubset --flavor=woff2 --unicodes=U+0020-007E</code> 子集化后写入 <code>web/public/fonts/</code>（Barlow 102KB → 约 14KB）；<code>font-display:swap</code> 避免 FOIT；<strong>仅品牌类声明 Barlow</strong>，正文不引入新的网络字体；<code>preload</code> 只给 Barlow 一个（约 14KB，收益大于成本），Inter 不 preload；<code>M0 只落 Barlow 一个 woff2</code>（见 §8.5 裁决 2）。<br>
+  <strong>构建规避：</strong>Tailwind v4 只引 <code>theme.css + utilities.css</code>、不引 preflight，<code>angular.json</code> 里排在 <code>styles.css</code> 之前，本层排最末；组件类名必须加 2–3 字母前缀（历史事故：Tailwind 工具类命中了 <code>.ring</code> / <code>.grid</code> / <code>.m-2</code>）。PrimeNG Aura preset <strong>不会自继承</strong> <code>--brand-*</code>，需在 <code>semantic.colorScheme.light/dark</code> 组件段显式映射；归一 <code>{primary.400}→{primary.300}</code> 时<strong>只改色值、不动 <code>contrastColor</code> 深字</strong>；<code>borderRadius 3/6/10 → 5/8/12</code>、<code>dialog 16</code> 保留。</p>
+
+  <h3>8.2 只读校验脚本 <code>vis-check.mjs</code> —— 主理人独立实跑</h3>
+  <p>Node ≥ 18、无第三方依赖，只调用 <code>readFileSync / readdirSync</code>，不写任何项目文件。退出码：<code>0</code> 全通过 / <code>1</code> 仅现状基线 FAIL（预期）/ <code>2</code> 交付物校验失败（零覆盖被破坏）。完整报告存 <code>vis-check-report.txt</code>。</p>
+  <table>
+    <tr><th style="width:230px">检查项</th><th>实跑结果</th></tr>
+    <tr><td>交付物校验（零覆盖 / token 自检）</td><td class="ok">全部 PASS —— 新增 18 个变量与现有 <code>:root</code> 交集为空；@font-face 恰好 2 条；4 个 URL 变量均 <code>none</code>；生效 CSS 无组件实现、无 <code>filter:invert()</code>、无实验稿字形</td></tr>
+    <tr><td>字重白名单违规</td><td class="bad"><strong>全量 26 处</strong> = <code>styles.css</code> 17 + 组件 scoped 9（Phase 1/2 未审到的盲区，并入 M1 补充批次）</td></tr>
+    <tr><td><code>--faint</code> 文本用法</td><td class="bad"><strong>全量 39 处</strong> = <code>styles.css</code> 22 + 组件 scoped 17（§8-N 登记的 21+1 只是全局样式表部分；非文本装饰引用按 §3.3 保留）</td></tr>
+    <tr><td>圆角中间档 / 交互亮色白字填充</td><td class="bad">5 处 / 4 处；其中圆角 3 处属 <code>cover-plate</code> 适用域外（§6.2，不收敛），第 4 处白字填充为 <code>button.primary:hover</code>（§8.5 裁决 5），与登记值吻合</td></tr>
+    <tr><td><code>@font-face</code> / 源码引用新增 token</td><td class="bad">0 条 / 0 处 —— 印证基线字体未生效、本轮零落地</td></tr>
+    <tr><td><code>filter:invert()</code> / <code>.brand-wordmark</code> / reduced-motion</td><td>0 / 0 / 仅 1 处（<code>model-card.component.ts</code>，作全仓范本）</td></tr>
+    <tr><td>对比度实算</td><td><strong>PASS 18 / FAIL 8 / INFO 1（共 27 组）</strong>。8 个 FAIL = 6 个已登记现状违规 + 1 个「白字 on indigo 400 = 2.98:1」禁止组合示例 + 1 个 <code>button.primary:hover</code> 走 <code>--primary-hover</code> 的 4.47:1（§8-M 未列举实例，已纳入 M1-d）；INFO 1 组是 lab 深字方案说明，不是缺陷</td></tr>
+    <tr><td>裁决 G 边界正向验收</td><td class="ok">5 项全部 PASS —— <code>lab-theme.ts:72 contrastColor</code> 深字方案未被误报为 FAIL</td></tr>
+    <tr><td>退出码</td><td><code>1</code>（预期：现状基线违规，非脚本或交付物缺陷）</td></tr>
+  </table>
+  <p class="small"><strong>发现的审计盲区（全量口径）：</strong>组件 scoped 样式里还有字重 +9、<code>--faint</code> 文本 +17、圆角中间档 +4，共 30 处同类项，Phase 1/2 只审了全局 <code>styles.css</code>。因此落地时须按<strong>全量</strong>清点：字重 <strong>26 处</strong>（<code>styles.css</code> 17 + scoped 9）、<code>--faint</code> 文本用法 <strong>39 处</strong>（<code>styles.css</code> 22 + scoped 17，其中非文本装饰引用按 §3.3 保留）。§8-N 登记的 21 处只是全局样式表部分，<strong>只改 21 处会让「<code>--faint</code> 永不承载文本」无法真正成立</strong>。这是审计盲区补遗，不推翻任何登记值，不新增 §8 第 16 项；其中 <code>cover-plate</code> 的 3 处圆角按 §6.2 / §8.5 裁决 3 定性为「适用域外」，不计入收敛范围。</p>
+  <p class="small"><strong>报告口径：</strong><code>EXIT 1</code> 与 8 个对比度 FAIL 都是<strong>现状基线的真实违规</strong>，不是脚本或交付物缺陷；「交付物校验（零覆盖 / token 自检）」与「裁决 G 边界 5 项正向验收」全部 PASS。M0 后重跑本脚本，1.x 的 FAIL 计数应逐批下降。</p>
+
+  <h3>8.3 四阶段迁移（M0–M3）</h3>
+  <table>
+    <tr><th style="width:70px">阶段</th><th style="width:190px">范围</th><th>要点</th></tr>
+    <tr><td><strong>M0</strong></td><td>零风险新增</td><td>接入 <code>vis-tokens.css</code>、转 woff2 + 两条 @font-face、<code>&lt;title&gt;→SiMuseor</code>、<code>data:</code> 空 favicon、侧栏品牌位占位替换</td></tr>
+    <tr><td><strong>M1</strong></td><td>机械替换</td><td><strong>全量</strong> 26 处字重（全局 17 + scoped 9）、6 处圆角（<code>cover-plate</code> 3 处适用域外不动）、3 处 hover 阴影 / 位移、<strong>4 处</strong>交互亮色白字填充（原 3 处 + <code>button.primary:hover</code>）、<strong>全量</strong> 39 处 <code>--faint</code> 文本引用（全局 22 + scoped 17）、<code>1.6→1.5</code> 线宽、<code>lab-theme</code> 归一（<strong>只改色值、不动 contrastColor 深字</strong>）；<code>.filter-chip.active:hover</code> 保守取与 active 完全一致，<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> 仅改 <code>border-color:var(--accent)</code>（不用 <code>--accent-hover</code> 1.49:1，也不用 <code>--primary-hover #6366f1</code> 4.47:1 临界），并入 M1-d 与脚本 1.11</td></tr>
+    <tr><td><strong>M2</strong></td><td>体验与 a11y</td><td><code>aria-*</code> / <code>role</code> 批次、全局 reduced-motion、<code>scroll-padding-bottom</code>、900px 品牌位（仅隐藏副行、保留横版字标）、焦点陷阱 / Esc / <code>T</code> 键守卫、<code>↗</code> 三处包裹</td></tr>
+    <tr><td><strong>M3</strong></td><td><strong>依赖 LOGO 冻结</strong></td><td>按 §2.6 只改 3 处接入冻结资产、favicon 换正式图标、回写 VIS 升版号</td></tr>
+  </table>
+  <p class="small">M0–M2 与 LOGO 冻结解耦，可立即排期；每阶段附具体文件 + 行号 + 改动前后字符串 + 验证命令 + E2E 回归范围，详见 <code>_phase3-engineering.md</code>。字体性能：ttf → woff2 子集化、<code>font-display:swap</code>、只给品牌类声明 Barlow、按首屏取舍是否 preload。Tailwind v4 只引 theme + utilities、不引 preflight，且组件类名须加 2–3 字母前缀避免工具类命中。</p>
+
+  <h3>8.4 交付物索引</h3>
+  <table>
+    <tr><th style="width:250px">文件</th><th>用途</th></tr>
+    <tr><td><code>SiMuseor-VIS.html</code></td><td>本手册（可预览、可打印）</td></tr>
+    <tr><td><code>SiMuseor-VIS.md</code></td><td>规范正文（版本管理 / 引用 / 复制）</td></tr>
+    <tr><td><code>vis-tokens.css</code></td><td>独立 token 层，M0 可直接追加</td></tr>
+    <tr><td><code>vis-check.mjs</code> / <code>vis-check-report.txt</code></td><td>只读校验脚本 / 主理人实跑报告</td></tr>
+    <tr><td><code>_phase1-visual.md</code>（v1.1 / 620 行）</td><td>基础系统规范全文</td></tr>
+    <tr><td><code>_phase2-experience.md</code>（888 行 / 61 条验收项）</td><td>应用与体验规范全文</td></tr>
+    <tr><td><code>_phase3-engineering.md</code>（871 行 / 11 章）</td><td>工程落地方案全文（token 表、M0–M3、字体、构建冲突规避、E2E 回归矩阵）</td></tr>
+    <tr><td><code>assets/baseline-{light,reverse}.svg</code></td><td>已锁定基线的字形可视化（非终稿 LOGO）</td></tr>
+    <tr><td><code>assets/cicada/svg/cicada-{min,mid,max}.svg</code></td><td>蝉形三帧矢量（L1 大尺寸，64 / 50 / 27 面片，保留原生发丝接缝）</td></tr>
+    <tr><td><code>assets/cicada/svg/cicada-*-{mono,dark}.svg</code></td><td>单色剪影版 / 深底版（方案 A：保色相提明度至 ≥3:1）</td></tr>
+    <tr><td><strong>SVG 可编辑性结构</strong></td><td>每个面片 = 一条带语义 id 的 <code>&lt;path&gt;</code>（<code>wings-left-01</code> 等），按解剖区域分 <code>&lt;g&gt;</code>（wings-left / wings-right / body / antennae / legs），<strong>纯色填充、零渐变</strong>，白色接缝网为独立 <code>id="seam-base"</code>。改单个面片 = 改它的 <code>fill</code>；深色版同构同 id</td></tr>
+    <tr><td><code>assets/cicada/svg/favicon.svg</code></td><td><strong>L3 favicon 简化版</strong>（5 档量化色带 + 深紫描边 + 白色接缝网，<strong>自带底色</strong>）</td></tr>
+    <tr><td><code>assets/cicada/png/</code> · <code>ico/</code></td><td>多尺寸 PNG（16–1024）+ ICO（16/32/48）</td></tr>
+    <tr><td><code>assets/cicada/vectorize.py</code> · <code>make_favicon_l3.py</code></td><td>可复现的矢量化管线与 favicon 生成脚本</td></tr>
+    <tr><td><code>_cicada-measurements.md</code>（9 章）</td><td><strong>蝉形资产的唯一实测基准</strong>（几何 / 色彩 / 接缝 / 可辨性 / 矢量化成果）</td></tr>
+    <tr><td><code>_phase1-logo-v2.md</code> · <code>_phase2-cicada.md</code></td><td>标识体系 v2.0 规范 / 蝉形应用与体验规范</td></tr>
+  </table>
+
+  <h3>8.5 主理人裁决记录（v1.0 收口）</h3>
+  <table>
+    <tr><th style="width:36px">#</th><th style="width:170px">议题</th><th>裁决</th></tr>
+    <tr><td>1</td><td>900px 图标分支与「冻结只改 3 处」矛盾</td><td><strong>采用「全断点横版字标」</strong>：占位期文字 / 冻结后同一元素换 SVG 字标，≤900 只隐藏中文副行；30×30 图标仅用于 favicon 与未来紧凑场景，<strong>不设互斥 CSS 分支</strong>。理由见 §2.6 的裁决框。阶段文档 §2.5 / §4.4 / §8-K 的旧表述以本裁决为准。</td></tr>
+    <tr><td>2</td><td>加载 Inter 是否会改变正文观感</td><td><strong>M0 只落 Barlow 一个 woff2</strong>；Inter 的 <code>@font-face</code> 保留为预留声明但不放 woff2 文件（缺文件时声明被忽略，正文继续走系统回退栈，零渲染回归）。理由：VIS 规范阶段不引入正文观感变化，Phase1 §4.1 已定「沿用现有字体栈」，且用户反感设计过度。将来若统一到 Inter，须单独排期 + 截图回归。</td></tr>
+    <tr><td>3</td><td>组件 scoped 30 处审计盲区</td><td><strong>按全量口径写入手册补遗，Phase 1 / Phase 2 双文档冻结不动</strong>：字重（全局 17 + scoped 9 = <strong>26 处</strong>）、<code>--faint</code> 文本（全局 22 + scoped 17 = <strong>39 处</strong>，非文本装饰引用按 §3.3 保留）均为纯机械替换、零布局影响，并入 M1 补充批次；圆角中间档 4 处中，<code>cover-plate</code> 的 3 处（<code>:128 / :268 / :310</code>）定性为<strong>「适用域外」</strong> —— 封面铭牌是独立图形子系统，不属于产品 UI 控件 / 面板圆角体系（见 §6.2），<strong>不收敛、不登记为第三类例外、不列待确认项</strong>；其余 1 处并入 M1。</td></tr>
+    <tr><td>4</td><td>品牌层六枚 <code>--brand-*</code> 的深色映射</td><td><strong>认可不改</strong>：固定 HEX + <code>--brand-surface/-fg/-rule</code> 语义别名做深色反白映射，符合 §2.4 / §7.2「反白靠双份 SVG 资产，不是 CSS 取色」；<code>vis-check.mjs</code> 的零覆盖校验已 PASS（39 / 18 / 0）。</td></tr>
+    <tr><td>5</td><td>深色主按钮 hover <code>--primary-hover</code> 4.47:1 不达 AA</td><td><strong>采纳方案 A</strong>：<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + <code>--on-primary</code> 白字，仅以 <code>border-color:var(--accent)</code> 作 1px 装饰描边（3.15:1 ≥ 3:1，语义贴合交互色，优于 <code>--accent-hover</code> 的 4.22:1 但后者语义不符）。<strong>不改任何 token 值、不新增第 16 项冲突</strong>；并入 M1-d 与脚本 1.11，Phase 1 §6.6 按钮行同步，双主题维持 6.29:1。明规则见 §6.4，红线见 §3.5。</td></tr>
+  </table>
+  <p class="notice"><strong>仍需用户 / 品牌主理人拍板的两件事：</strong>① <strong>LOGO 冻结</strong> —— 先裁「负形 D / 正形 L1」路线，再定字形、叶数、横竖版（这是 M3 的唯一门禁）；② 将来是否把正文统一到 Inter（须单独排期 + 截图回归）。<code>cover-plate</code> 3 处圆角已按裁决 3 定性为「适用域外」，<strong>不再是待拍板项</strong>。<strong>本 VIS 的 M0–M2 不需要等这两件事</strong>，可立即排期。</p>
+</section>
+
+<!-- ============ 9 验收与治理 ============ -->
+<section id="s9">
+  <h2><span class="num">09 / GOVERNANCE</span>验收与治理</h2>
+
+  <h3>9.1 验收清单（61 条正式项 + 1 条主理人补遗 = 62 条口径，分组摘录）</h3>
+  <p class="small">完整 <strong>61 条正式项</strong>见 <code>_phase2-experience.md §7</code>（v1.1 冻结，不再追加附录）；另有 <strong>1 条主理人补遗</strong>（下方末条，深色主按钮 hover）只写在本手册，用于闭环 §8.5 裁决 5，<strong>不改冻结文档</strong>。校验方式分 <code>CSS</code>（变量 / 计算样式断言）、<code>DOM</code>（属性 / 结构）、<code>E2E</code>（现有 Playwright）、<code>A11Y</code>（axe / 读屏）、<code>人工</code>（截图）。</p>
+  <ul class="checklist">
+    <li>〔目〕全站 <code>.brand-wordmark</code> 恰好 1 个实例，且 <code>app-cover-plate .brand</code> 内无该元素（DOM）</li>
+    <li>〔目〕侧栏无 <code>.brand-mark</code> / <code>Model Downloader</code> / <code>Local Studio</code>；<code>&lt;title&gt; === SiMuseor</code>（DOM）</li>
+    <li>〔目〕占位期 favicon 为 <code>data:,</code> 且不含任何字形引用；产品 UI 无任何实验稿资产引用（DOM + 人工）</li>
+    <li>〔目〕UI 两套 <code>:root</code> 零覆盖；无暖纸色进入 <code>--bg / --panel / --input-bg</code>（CSS）</li>
+    <li>〔目〕任何 <code>background:var(--accent)</code> 元素内无 <code>--on-primary</code> 白字；深色 <code>--primary</code> 保持 <code>#4f46e5</code>（CSS）</li>
+    <li>〔目〕<code>--faint</code> / <code>--placeholder</code> 不再出现在 <code>color:</code> 声明里；<code>::placeholder</code> 元素与文本仍存在（CSS + E2E）</li>
+    <li>〔目〕全站 <code>font-weight</code> 仅 <code>400/500/600/700</code>；中文 <code>letter-spacing:0</code>；读数有 <code>tabular-nums</code>（CSS）</li>
+    <li>〔目〕hover 只动 <code>border-color</code> / <code>background</code>；3 处阴影与位移已移除（CSS）</li>
+    <li>〔目〕全局 <code>:focus-visible</code> 为 2px 实线且未被 <code>outline:none</code> 覆盖；软环不作唯一指示器（CSS + A11Y）</li>
+    <li>〔目〕所有持久选中态有 <code>aria-current</code> / <code>aria-pressed</code> / <code>aria-checked</code> / <code>aria-selected</code> 之一（DOM）</li>
+    <li>〔目〕全局 <code>prefers-reduced-motion</code> 生效，7 个动画停止但 spinner 降级为静态 + 文字（CSS + 人工）</li>
+    <li>〔目〕<code>styles.css:1616</code> 已替换为 <code>.brand-sub{display:none}</code>，字标在 ≤900 可见且 <code>min-width:120px</code>（CSS）</li>
+    <li>〔目〕<code>lab-theme.ts:72</code> 的 <code>contrastColor</code> 仍为深字、未被改白字（DOM）</li>
+    <li>〔目〕E2E 文案白名单零改动，全套 <code>tests/e2e/app.spec.ts</code> 绿（E2E）</li>
+    <li>〔冻〕冻结包 5 类资产齐全，仅 4 个 URL 变量与 3 个常量被改；900px 下横版字标可见且深色反白资产存在（DOM + 人工）</li>
+    <li>〔目〕<strong>主理人补遗（第 62 条）</strong>：<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + 白字，仅改 <code>border-color:var(--accent)</code>；不出现 <code>--primary-hover</code> / <code>--accent-hover</code> 作白字底、不加阴影与位移，双主题文字对比度 ≥ 4.5:1、描边 ≥ 3:1（CSS + A11Y）</li>
+  </ul>
+  <p class="small"><strong>v2.0 新增第 63 条起</strong>（蝉形辅助图形，详见 <code>_phase2-cicada.md</code> §11）：</p>
+  <ul>
+    <li>〔目〕<strong>63</strong> 组合标占位宽 ≤ 200px：蝉形 56px + gap 10px + 字标槽 90px = <strong>156px</strong>；<code>.brand</code> 的 <code>scrollWidth ≤ clientWidth</code>（CSS）</li>
+    <li>〔目〕<strong>64</strong> 视觉总宽 <strong>128.9px ≥ 120px</strong>（组合标最小视觉总宽）（人工）</li>
+    <li>〔目〕<strong>65</strong> <strong>蝉形宽 56px &lt; 字标墨迹宽 62.92px</strong>（余量 11.0%）；蝉形上调至 ≥63px 即判 FAIL（人工）</li>
+    <li>〔目〕<strong>66</strong> 蝉形与字标<strong>地脚线对齐</strong>，偏差 ≤1px（<code>align-items: baseline</code>，禁 <code>center</code>）（CSS + 人工）</li>
+    <li>〔目〕<strong>67</strong> favicon 16px 可辨：主体高 ≥10px、宽高比 ≥0.71；<strong>L3 简化版独立重画，未由 MAX 帧缩放得到</strong>（PNG + 人工）</li>
+    <li>〔目〕<strong>68</strong> favicon <strong>自带底色</strong>，不依赖页面背景；ICO 含 16/32/48 三档（DOM + 人工）</li>
+    <li>〔目〕<strong>69</strong> 蝉形 <code>alt=""</code> + <code>aria-hidden="true"</code>；可访问名<strong>只由</strong>字标 <code>aria-label</code> 承载；<code>.brand</code> 无 <code>role="group"</code> / <code>aria-label</code>（DOM + A11Y）</li>
+    <li>〔目〕<strong>70</strong> 深色版最暗面片对 <code>#15151a</code> 对比度 <strong>≥ 3:1</strong>（实测 3.00:1）；<strong>禁止</strong>「白线换深线」（1.02:1）（SVG + A11Y）</li>
+    <li>〔目〕<strong>71</strong> 接缝线三层策略落地：L1 ≥1024px 保留原生接缝；L2 64–1024px 由面片色差承载；L3 16–64px 为独立重画资产（SVG + 人工）</li>
+    <li>〔目〕<strong>72</strong> 蝉形<strong>仅出现在 favicon 与侧栏组合标</strong>两处；页头 / 空状态 / 弹层 / 错误态 / 封面铭牌 / 卡片角标 / 移动端顶栏 / 打印物 / 关于页<strong>零出现</strong>（DOM + E2E）</li>
+    <li>〔目〕<strong>73</strong> 窄屏 ≤900px 时字标<strong>可见</strong>：<code>.brand-text{display:none}</code> 已改为 <code>.brand-sub{display:none}</code>，蝉形仍显示（CSS + E2E）</li>
+    <li>〔目〕<strong>74</strong> <code>.brand-wordmark</code> 的 <code>min-width</code> = <strong>90px</strong>（非 120px）；全站恰好 1 个实例（CSS）</li>
+    <li>〔目〕<strong>75</strong> 侧栏副行文案为「剧集导演台」，非「创作工作台」（旧定位已作废）（DOM）</li>
+    <li>〔目〕<strong>76</strong> <strong>一键回退</strong>：<code>html[data-cicada="off"]</code> 时蝉形隐藏、组合标退回纯文字字标，布局不塌（DOM + 人工演练）</li>
+    <li>〔目〕<strong>77</strong> MIN / MID 帧<strong>不在任何产品位出现</strong>，仅存在资产库（DOM + 人工）</li>
+    <li>〔目〕<strong>78</strong> 蝉形 SVG 为<strong>纯路径</strong>（无 <code>&lt;image&gt;</code> / 无 <code>mask</code>）；深色版为<strong>独立资产</strong>，非 CSS 取色（SVG）</li>
+  </ul>
+
+  <h3>9.2 冲突裁决表 —— 15 项全部「本轮不执行」</h3>
+  <table>
+    <tr><th style="width:40px">#</th><th style="width:190px">冲突</th><th>裁决</th><th style="width:110px">状态</th></tr>
+    <tr><td>A</td><td>暖纸墨黑 vs zinc+靛紫</td><td>分层双轨，UI 两套 <code>:root</code> 原样保留</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>A′</td><td>两份品牌稿纸色不一致</td><td>统一取 <code>preview.html</code> 一组</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>B</td><td>字体两层 + 非标字重</td><td>白名单 4 档；<strong>全量口径 26 处</strong>（<code>styles.css</code> 17 + 组件 scoped 9，见 §8.2 补遗）归并；中文 letter-spacing:0</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>C</td><td>侧栏旧品牌</td><td>占位替换，冻结后按 §2.6 换 SVG 双资产</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>D</td><td>圆角三档 vs 中间档</td><td>12/8/5 + 弹层 16 + 胶囊 999；收敛 6/9/4</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>E</td><td>边框优先 vs hover 阴影</td><td>3 处待收敛（含 <code>model-card</code> scoped）</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>F</td><td>品牌字体根本没加载</td><td>woff2 + 2 条 <code>@font-face</code>，仅品牌类声明</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>G</td><td>深色主色 300 vs 400</td><td><code>lab-theme</code> 归一 <code>{primary.300}</code>，<strong>只改色值不动深字</strong></td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>H</td><td>参照站全大写 / 中等字重</td><td>只采纳压缩窄体 + 紧字距 + 大留白</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>I</td><td>无 favicon / title 旧称</td><td><code>data:</code> 空图标起步；冻结后换正式图标</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>J</td><td>r2 八方向 / designkit「终稿」</td><td>全部标注迭代中 / 已否，文件名不作数</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>K</td><td>900px 隐藏品牌文字</td><td>隐藏 <code>.brand-sub</code>、保留横版字标；不设 30×30 图标互斥分支</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>L</td><td>对外「下载器」措辞</td><td>自称统一 SiMuseor，功能名保留</td><td><span class="pill neutral">否</span></td></tr>
+    <tr><td>M</td><td>交互亮色作白字填充</td><td>适用范围扩为 <code>--accent</code> / <code>--accent-hover</code> / <code>--primary-hover</code>；<strong>共 4 处</strong>（原 3 处 + <code>button.primary:hover</code>）统一改 <code>--primary</code> 底 / 保持底色仅改描边；<strong>不改任何 token 值</strong>（§8.5 裁决 5）</td><td><span class="pill wip">P3 立即项</span></td></tr>
+    <tr><td>N</td><td><code>--faint</code> 承载文本</td><td><strong>全量口径 39 处</strong>（<code>styles.css</code> 22 + 组件 scoped 17）使用位置迁移；非文本装饰引用按 §3.3 保留；不改色值</td><td><span class="pill wip">P3 立即项</span></td></tr>
+  </table>
+  <p class="small">计数更正：早期回传的「12 项」是笔误；v1.0 实为 13 项（A–L 含 A′），v1.1 新增 M / N 后为 <strong>15 项</strong>。M / N 由 WCAG 实算派生、经两位成员独立复算确认，属 Phase 3 立即项，<strong>与 LOGO 冻结解耦</strong>；两者只改使用位置、不改色值，不触碰裁决 A 的零覆盖前提。</p>
+
+  <h3>9.3 冻结后需同步的章节</h3>
+  <p class="small">§2 标识系统<strong>全节</strong>（待定项关闭、换实测值、占位规范作废、协议标已执行）；§3（若纸墨微调 / 另出单色靛紫标）；§5.1（月桂叶数与顶端距离改实测定值）；§7.2（反白由候选色改冻结资产色，确认双资产切换已实现）；§8（C 标已替换、I / K 标完成）；§9.1 待定项逐条关闭并注明冻结版本与日期。<strong>不受冻结影响</strong>：§0 现状审计、§1 品牌内核、§4 字体系统、§6 版式与空间、§7.2 的白字填充硬约束、§7.3 / §8 的 lab 深字边界。</p>
+</section>
+
+<!-- ============ 10 附录 ============ -->
+<section id="s10">
+  <h2><span class="num">10 / APPENDIX</span>附录 · 迭代档案</h2>
+
+  <h3>10.1 LOGO 迭代资产状态</h3>
+  <table>
+    <tr><th style="width:230px">资产</th><th style="width:110px">状态</th><th>说明</th></tr>
+    <tr><td><code>design-options.html/.png</code></td><td><span class="pill wip">迭代中</span></td><td>六方向 00/A/B/C/D/E/F，基准固定 Barlow Condensed 400；推荐 D 负形月桂或 D+A，<strong>推荐非定案</strong></td></tr>
+    <tr><td><code>_r2_strip.png</code> / <code>r2-*.svg</code></td><td><span class="pill wip">迭代中</span></td><td>第二轮八方向 O1/W1/W2/S1/M1/L1/E1；L1 正形月桂与 D 负形月桂需先裁路线；W1/W2 加重字重与用户偏好相悖</td></tr>
+    <tr><td><code>preview.html</code>（Cormorant）</td><td><span class="pill no">已否</span></td><td>页头自标 <code>BASELINE / NOT APPROVED</code>；与更早的细衬线同体系，未换出字体差异；但其纸墨组被采纳为品牌层色值</td></tr>
+    <tr><td><code>font-options*.html</code></td><td><span class="pill no">已否</span></td><td>第一批 8 款优雅衬线全否；第二批压缩窄体对比提供了参照站 CSS 结论</td></tr>
+    <tr><td><code>smallcaps.*</code></td><td><span class="pill no">未采纳</span></td><td>Barlow 500/400 小型大写实验；提供 M 内腔度量依据，当前倾向维持混合大小写</td></tr>
+    <tr><td><code>laurel-study.*</code> / <code>try-mixed-weight.*</code></td><td><span class="pill neutral">度量依据</span></td><td>M 的 V 槽深度实测、字重梯度对照</td></tr>
+    <tr><td><code>designkit-artifacts/</code> 10 张</td><td><span class="pill no">已否</span></td><td>高对比衬线 + 对称月桂环方向全否；<strong>文件名含「终稿」不作数</strong></td></tr>
+    <tr><td><code>design-00-baseline.svg</code></td><td><span class="pill lock">基线</span></td><td>唯一可写入规范的字形事实：Barlow Condensed Regular 400 混合大小写、<code>.028em</code>、纯路径</td></tr>
+  </table>
+
+  <h3>10.2 三条教训</h3>
+  <ol>
+    <li>换字体必须<strong>跨骨架体系并排看图</strong>，不能只换同大类相近款（第一批全否的原因）。</li>
+    <li>用户给参考链接要<strong>真的去读 CSS</strong>，别凭「编辑式排版」脑补（前两批方向从一开始就反了）。</li>
+    <li>「藏在 M 里」要求月桂顶端<strong>明显低于 M 肩线</strong>；Barlow 的浅内腔决定了必须走笔画镂空而非贴图。</li>
+  </ol>
+
+  <h3>10.3 术语与版本</h3>
+  <p class="small"><strong>三态</strong>：〔现〕现状 / 〔目〕目标态 / 〔冻〕LOGO 冻结后。<strong>纸墨</strong>：品牌层六枚 <code>--brand-*</code>。<strong>交互色</strong>：产品层 indigo，只给可点 / 选中项。<strong>基线</strong>：已锁定的字体 / 字样 / 字距 / 字重，不含字形手术。<strong>冻结包</strong>：五类 SVG/PNG 资产 + 实测安全区 / 最小尺寸 / 色彩稿。<strong>单一接入点</strong>：<code>.brand-wordmark</code>。<br>
+  版本记录：v1.0（2026-11-13）首次汇编；Phase 1 v1.1（620 行）、Phase 2 v1.1（888 行 / 61 条验收项）、Phase 3 工程方案（871 行）定稿后合并，含主理人裁决 5 项、验收 62 条口径（61 条正式项 + 1 条手册补遗）。同日收口补丁：脚本口径更新为 PASS 18 / FAIL 8 / INFO 1（27 组）、新增裁决 5、§6.2 适用域外声明、§6.4 hover 明规则、§9.2 B/M/N 全量口径；Phase 1 / 2 双文档保持冻结。
+  <br><br>
+  <strong>v2.0（2026-11-13 · 蝉形辅助图形落地）</strong>：① <strong>§1.1 定位改写</strong> —— 「剧集（电影）AI 导演台」/ 中文名「司梦」；旧表述「创作工作台 / AIGC 模型社区」作废；② <strong>§2.0 新增辅助图形层整节</strong>（三层尺寸策略、favicon、深色三方案、语义自洽性）；③ <strong>组合标定案</strong> MAX 56×26px + 10px gap，视觉总宽 128.9px / 占位宽 156px（改判自 62×29px —— 原尺寸下蝉形宽 63px ≥ 字标墨迹 62.92px，击穿「辅助地位」）；④ <strong>侧栏可用宽更正</strong> 190px → <strong>200px</strong>（漏算 <code>.brand</code> 6px 双内边距）；⑤ <strong>接缝线三层策略</strong> —— 可见阈值实测为 ~1024px（原记 64px 不成立），L1 ≥1024px / L2 64–1024px 须另出加粗接缝资产 / L3 16–64px 独立重画；⑥ <strong>月桂改判</strong> —— 从品牌标志层移除，归位「作品层荣誉母题」，M 内嵌方案移出字形实验池；⑦ <strong>深色版定案方案 A</strong>（保色相提明度至 ≥3:1，实测 3.00:1）；⑧ <strong>蝉镜 AI P0 风险经用户判定解除</strong>（品类不重叠 + 命名不冲突，<strong>依赖新定位成立</strong>）；⑨ <strong>矢量资产全套产出</strong>（46 个文件 / 三帧 64·50·27 面片 / L3 favicon 简化版）；⑩ <strong>验收清单 62 → 78</strong> 条。</p>
+
+  <footer>
+    SiMuseor · Visual Identity System v2.0 · 2026-11-13<br>
+    编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
+    本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
+  </footer>
+</section>
+
+</main>
+</div>
+
+<div class="toolbar">
+  <button type="button" onclick="window.print()">打印 / 导出 PDF</button>
+  <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs  = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function sync(){
+    var y = window.scrollY + 120, idx = 0;
+    for (var i=0;i<secs.length;i++){ if (secs[i] && secs[i].offsetTop <= y) idx = i; }
+    links.forEach(function(a,i){ a.classList.toggle('on', i===idx); });
+  }
+  window.addEventListener('scroll', sync, {passive:true});
+  window.addEventListener('resize', sync);
+  sync();
+})();
+</script>
+</body>
+</html>

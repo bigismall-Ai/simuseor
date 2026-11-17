@@ -41,6 +41,10 @@ artifacts/*
 !artifacts/vis/*.txt
 !artifacts/vis/assets/
 !artifacts/vis/assets/**/
+# cicada 过程产物与已废弃稿，不入库（交付资产在 assets/cicada/{svg,png,ico}/）
+artifacts/vis/assets/cicada-preview/
+artifacts/vis/assets/cicada/svg/cicada-FULL.ai
+artifacts/vis/assets/cicada/svg/SVG/
 # 例外之外：_work/ 是探针脚本与临时图，不入库
 artifacts/vis/_work/
 # 但 tests/artifacts/ 是 E2E 截图产物，仍要忽略
@@ -52,6 +56,10 @@ tests/artifacts/
 !artifacts/vis/*.txt
 !artifacts/vis/assets/
 !artifacts/vis/assets/**/
+# cicada 过程产物与已废弃稿，不入库（交付资产在 assets/cicada/{svg,png,ico}/）
+artifacts/vis/assets/cicada-preview/
+artifacts/vis/assets/cicada/svg/cicada-FULL.ai
+artifacts/vis/assets/cicada/svg/SVG/
 # 例外之外：_work/ 是探针脚本与临时图，不入库
 artifacts/vis/_work/
 # 例外：VIS 视觉规范是交付物，不是测试产物，必须进版本库

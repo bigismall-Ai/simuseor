@@ -1,0 +1,231 @@
+/* ============================================================================
+ * SiMuseor VIS · vis-tokens.css
+ * ----------------------------------------------------------------------------
+ * 定位：Phase 3 产出的「独立 token 层」，目标态声明文件。
+ *       本阶段【零落地】：不接入构建、不修改 web/src/ 或 tests/ 下任何文件，
+ *       仅作为 M0 阶段可直接追加的 CSS 资产；主理人汇编 VIS 手册时可用作 token 附录。
+ *
+ * 引入顺序（相对 web/angular.json:29-32 / tailwind.css / styles.css）
+ *   现状 web/angular.json:29-32
+ *     "styles": [ "src/tailwind.css", "src/styles.css" ]
+ *   M0 建议（本轮【不改】 angular.json，只登记接入方式）
+ *     "styles": [ "src/tailwind.css", "src/styles.css", "src/vis-tokens.css" ]
+ *   理由
+ *     1. web/src/tailwind.css:1-11 只 @import theme.css + utilities.css，不引 preflight；
+ *        它在 angular.json 里排在 styles.css 之前，让 styles.css:17/:77 的 :root
+ *        覆盖同名 token。本层排在最末，不参与任何「覆盖」关系（见零覆盖承诺）。
+ *     2. CSS 自定义属性同特异性下「后定义者生效」。放在 styles.css 之后，可保证
+ *        将来若 Tailwind @theme 或任何上游误写同名 --brand-*，本层仍胜出。
+ *     3. @font-face 是全局注册，与顺序无关；放最末便于构建产物统一 outputHashing。
+ *   注意：Angular 把 styles 数组全部打进同一 bundle；本文件不写 @import / @layer，
+ *   避免与 Tailwind v4 的 @layer theme 产生层序歧义。
+ *
+ * 【零覆盖承诺】（硬性，由 artifacts/vis/vis-check.mjs 自动校验）
+ *   本文件不重新赋值 web/src/styles.css:17-74 / :77-122 中任何已有 --* 变量。
+ *   下述 --brand-* / --border-control / --radius-lg / 四个 URL 变量 / 三个常量
+ *   全部为【新增名】。UI 两套 :root 原样保留（Phase1 §3.1 裁决 A：分层双轨、
+ *   零覆盖、零回归）；靛紫 --accent/#4f46e5 / #a5b4fc 仍是唯一交互色。
+ *   vis-check.mjs 会剥离注释后取两文件「赋值变量名」集合求交集，交集必须为空。
+ *
+ * 状态：LOGO 仍在迭代（design-options 六方向 / r2-* 八方向 / Cormorant preview /
+ *       smallcaps / designkit「终稿」全部实验稿或已否，无一终稿）。四个 URL 变量
+ *       占位期一律取 none（无任何字形），冻结后只填 URL，不改任何布局/颜色/字号。
+ *
+ * 上游口径（v1.1 定稿）：Phase1 v1.1 / 620 行、Phase2 v1.1 / 888 行。
+ *       §8 冲突表共 15 项（v1.0 为 13 项，v1.1 新增 M/N；早期「12 项」为笔误），
+ *       全部「本轮不执行」；其中 M（3 处 --accent 白字填充）/ N（21 处 --faint 文本
+ *       引用）为 Phase 3 立即项、与 LOGO 冻结解耦，由 _phase3-engineering.md 的
+ *       M1-d / M1-e 落地，本 token 层【不因此新增或改动任何变量值】。
+ *       v1.1 §7.3 裁决 G 边界：归一对象仅「文字/描边/图形型 --accent」；主 UI
+ *       （600 底 + 白字 6.29:1）与 lab 实验区（亮底 + contrastColor 深字）是两条
+ *       各自合规、字色相反的填充路线，不得拉齐；本文件不含任何填充色变量。
+ * ============================================================================ */
+
+
+/* ============================================================================
+ * 1. 字体声明（Phase1 §4.4 冲突 F / §9.1-9 · P3-10）
+ *    字体来源（已逐一核实存在，本轮【不写入】 web/public/fonts/）：
+ *      E:/Projects/model-downloader/logo-vector/fonts/BarlowCondensed.ttf  102,480 B
+ *      E:/Projects/model-downloader/logo-vector/fonts/Inter.ttf            876,576 B
+ *    全仓 web/src 目录内无 @font-face、web/public/ 无字体文件 —— 即 Barlow
+ *    Condensed 基线字体在产品里【尚未生效】，落地前不得宣称生效。
+ *    url('/fonts/...') 对应 web/public/fonts/（angular.json:22-28 assets 输出到 /）。
+ *    woff2 文件缺失时浏览器忽略这两条声明（或 404），正文继续走 styles.css:131
+ *    的 "Segoe UI","Microsoft YaHei" 回退栈，因此【文件未落地时零渲染回归】。
+ *    取舍：Inter 一旦真正落地，body（styles.css:131 首位即 "Inter"）会从系统字体
+ *    切换到 Inter 实际渲染，属于 P3-10 的「中风险、需截图回归」。若不愿改动现有正文
+ *    渲染，可把 Inter 注册为独立族名（如 "Inter VIS"）只给品牌展示面用；本文件按
+ *    Phase1 §4.1 既定 UI 字体栈对齐，保留 "Inter"，取舍详见 _phase3-engineering.md。
+ * ============================================================================ */
+
+/* Phase1 §2.1 / §4.4：字标唯一字体，严格 400，禁止 300/500/600/700 */
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("/fonts/BarlowCondensed-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Phase1 §4.1 / §4.4：UI 正文可变字重；font-display:swap 避免 FOIT */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ============================================================================
+ * 2. 浅色 :root —— 只追加新变量，不触碰现有任何 --*
+ * ============================================================================ */
+:root {
+  /* ---- 品牌层 · 纸墨六枚（Phase1 §3.3-(1)，统一取 preview.html 一组 §3.2 裁决 A′） ----
+   * 它们是【资产导出常量】，不进高频 UI；--brand-paper 不得用作 --bg/--panel/
+   * --input-bg（Phase1 §3.5-2）；品牌层不设交互色、不引 --accent（§3.3-(1) 注）。
+   * --brand-ink #1b1b1e 与 UI --text #18181b 明度差 <2%，但不合并、不互相引用（§3.1）。 */
+  --brand-paper:          #f8f6f1;  /* Phase1 §3.3-(1) 纸（浅）：品牌展示面底 */
+  --brand-ink:            #1b1b1e;  /* Phase1 §3.3-(1) 墨：字标/品牌文字（浅底） */
+  --brand-line:           #dedbd3;  /* Phase1 §3.3-(1) 线：1px 品牌展示面分隔细线 */
+  --brand-muted:          #6d6a64;  /* Phase1 §3.3-(1) 弱字：品牌展示面辅助文字 */
+  --brand-paper-reverse:  #15151a;  /* Phase1 §3.3-(1) 纸（深）：反白底 preview.html:76 */
+  --brand-ink-reverse:    #f1ede4;  /* Phase1 §3.3-(1) 墨（反白）：暖白，非纯白 preview.html:76,78 */
+
+  /* ---- 品牌层「活跃面」语义别名（Phase1 §2.4 / §7.2 / Phase2 §4.2） ----
+   * 六枚常量本身【不随 data-theme 变】：品牌层反白靠双份 SVG 资产切换，不是 CSS
+   * 取色（§2.4 / §7.2 / cover.ts:43）。这组别名是给将来「关于页 / 分享卡」等
+   * 品牌展示面用的语义入口，浅色指向纸墨，深色指向反白组（见 §3 的 dark 块）。
+   * 本轮不接入产品 UI，UI 继续用现有 :root 的 --panel/--text。 */
+  --brand-surface: var(--brand-paper);   /* Phase1 §7.2 品牌层反白映射（浅色侧） */
+  --brand-fg:      var(--brand-ink);     /* Phase1 §7.2 品牌层反白映射（浅色侧） */
+  --brand-rule:    var(--brand-line);    /* Phase1 §3.3-(1) 1px 发丝线 */
+
+  /* ---- 控件边界色（Phase2 §2.10-11 / §3.2 实算；新增，不覆盖 --border） ----
+   * 用途：仅 input / select / textarea / .radio-row 的【静止边框】；不覆盖现有
+   * --border #e4e4e7（该值对白 1.27:1，仅作结构分隔线，不作控件边界 1.4.11）。
+   * 浅色 #8b8b94 实算：on --panel #ffffff = 3.38:1；on --bg #f5f5f6 = 3.10:1，
+   * 均 >= 3:1（WCAG 1.4.11 非文本对比下限）。
+   * 深色侧取值相同（见 §3），深底 #141417 上实算 5.44:1。
+   * 若视觉过重，走 Phase2 §2.10-11 的降级方案：每个控件配可见 <label> + F 焦点环
+   * + aria，登记例外，不用本变量。 */
+  --border-control: #8b8b94;            /* Phase2 §2.10-11 / §3.2 浅：3.38:1 / 3.10:1 */
+
+  /* ---- 圆角第 4 档（Phase1 §6.4 例外 1；登记白名单，不是新「中间档」） ----
+   * 仅弹层 .modal（styles.css:909）与 lab-theme.ts:89 dialog 用 16px；
+   * 三档 12/8/5 仍是矩形唯一档，胶囊 999px 属另一类语义（§6.4 例外 2）。 */
+  --radius-lg: 16px;                    /* Phase1 §6.4 / §8-D；不覆盖 --radius */
+
+  /* ---- 标识 URL 变量（Phase1 §2.6-2 / Phase2 §1.1 / §8.2；四个，占位期 none） ----
+   * none 是 background-image 的合法「无图像」值，【不含任何字形】。
+   * 冻结后只把这四个改成 url('/brand/simuseor-light.svg') 等，其余一律不动。
+   * 只允许 .brand-wordmark 单一接入点读取，禁止第二处手写 <img>。 */
+  --brand-logo-light: none;             /* Phase1 §2.6-2 横版字标 · 浅底 */
+  --brand-logo-dark:  none;             /* Phase1 §2.6-2 横版字标 · 深底（反白稿） */
+  --brand-icon-light: none;             /* Phase1 §8-K / Phase2 §4.4 紧凑 30x30 图标 · 浅 */
+  --brand-icon-dark:  none;             /* Phase1 §8-K / Phase2 §4.4 紧凑 30x30 图标 · 深 */
+
+  /* ---- 标识三常量（Phase1 §2.3 / §2.6-3 / Phase2 §8.2；冻结时按实测覆盖） ---- */
+  --brand-clear-space: 10px;            /* Phase1 §2.3 占位近似：字标总高 20px 的 0.5 倍；冻结后按实测 X（S cap-height）替换 */
+  --brand-min-width:   120px;           /* Phase1 §2.3 横向字标最小宽度；侧栏可用宽约 190px */
+  --brand-icon-min:    32px;            /* Phase1 §2.3 独立图标最小尺寸；<20px 只用字首单体 */
+}
+
+
+/* ============================================================================
+ * 3. 深色 :root[data-theme="dark"] —— 品牌层反白映射
+ *    明暗唯一入口仍是 data-theme（theme.service.ts:43-48 / Phase1 §7.1）。
+ *    四个 URL 变量【不在这里重赋值】：light/dark 是两份资产路径，由接入片段里的
+ *    :host-context([data-theme='dark']) 规则选择读哪一个，而不是把变量本身改掉。
+ *    这样「冻结只改 3 处」成立：资产文件 / 四个 URL 变量 / 三个常量。
+ * ============================================================================ */
+:root[data-theme="dark"] {
+  /* 品牌层反白映射（Phase1 §2.4 / §7.2 / §3.3-(1)）：
+   * 纸 #f8f6f1 -> #15151a 反白底，墨 #1b1b1e -> #f1ede4 暖白反白字。
+   * 实算（Phase2 §3.2 品牌层表）：反白字/反白底 15.57:1；墨/纸 15.91:1；
+   * 弱字/纸 4.99:1。品牌层全部达标，不达标集中在 UI 层 --faint 与 --accent 填充。 */
+  --brand-surface: var(--brand-paper-reverse);   /* Phase1 §7.2 反白底 #15151a */
+  --brand-fg:      var(--brand-ink-reverse);      /* Phase1 §7.2 暖白反白字 #f1ede4 */
+  --brand-rule:    var(--brand-line);             /* 1px 细线保持，反白面同样用 --brand-line */
+
+  /* 控件边界（Phase2 §2.10-11）：深底 --panel #141417 上 #8b8b94 实算 5.44:1。
+   * 深浅取同一 HEX 是 Phase2 §2.10-11 的实测结论；分别声明是为了留出深色独立
+   * 微调的接口。禁止用它覆盖 --border / --border-strong。 */
+  --border-control: #8b8b94;            /* Phase2 §2.10-11 深：on #141417 = 5.44:1 */
+}
+
+
+/* ============================================================================
+ * 4. 接入片段【注释形式，不生效】—— 仅供参考，不产出组件实现
+ * ----------------------------------------------------------------------------
+ * 说明：本文件中【生效】的 CSS 只有上面两条 @font-face 与两个 :root 块。
+ *       以下全部为注释，复制到 M2/M3 的具体文件时才成为真实规则；刻意不写成
+ *       完整组件代码，避免被直接当成已落地的组件实现（本阶段零落地）。
+ *
+ * 占位期（M2 · P3-2），app.component.ts:25-31 的 .brand 内只放一个字标：
+ *
+ *   <div class="brand">
+ *     <span class="brand-wordmark" lang="en" aria-label="SiMuseor">SiMuseor</span>
+ *     <small class="brand-sub">创作工作台</small>
+ *   </div>
+ *
+ * 全局样式（写进 styles.css，或本文件去注释后）：
+ *
+ *   .brand-wordmark {
+ *     font-family: "Barlow Condensed", "Segoe UI", sans-serif;
+ *     font-weight: 400; letter-spacing: .028em;
+ *     font-size: 20px; line-height: 1.1; color: var(--text);
+ *     min-width: var(--brand-min-width);
+ *     white-space: nowrap; flex: none;
+ *   }
+ *   .brand-sub {
+ *     font-size: 10px; font-weight: 500;
+ *     letter-spacing: 0;
+ *     color: var(--muted);
+ *   }
+ *
+ *   逐条依据：
+ *   - letter-spacing: 0 —— 中文硬约束（Phase1 §4.1 / 主理人裁决采纳附录 A-4）
+ *   - color: var(--muted) —— --faint 实测 2.56:1 不达 AA（Phase2 §3.2 / 附录 A-2）
+ *   - 字标严格 400 + .028em（Phase1 §2.1 锁定基线）
+ *   - 全站 .brand-wordmark 有且仅有 1 个实例（Phase2 §1.1）
+ *
+ * 900px 品牌位（M2 · P3-3）—— 替换 styles.css:1616 的 .brand-text{display:none}：
+ *
+ *   @media (max-width: 900px) {
+ *     .brand { padding: 0 8px 0 0; gap: 8px; }
+ *     .brand-sub { display: none; }
+ *     .brand-wordmark { display: inline-block; flex: none; white-space: nowrap;
+ *                       min-width: 120px; }
+ *   }
+ *
+ * 冻结后（M3）—— 只把 URL 变量从 none 换成资产路径，接入规则占位期就写好。
+ * 组件 scoped 样式内用 :host-context（cover-plate.component.ts:256-261 是现成范本）：
+ *
+ *   .brand-wordmark { background-image: var(--brand-logo-light); }
+ *   :host-context([data-theme='dark']) .brand-wordmark {
+ *     background-image: var(--brand-logo-dark);
+ *   }
+ *
+ * 等价全局写法（若规则放在 styles.css 而非组件 scoped 样式）：
+ *
+ *   :root[data-theme='dark'] .brand-wordmark {
+ *     background-image: var(--brand-logo-dark);
+ *   }
+ *
+ * 900px 紧凑图标分支（Phase2 §4.4，占位期就预置，冻结只填 --brand-icon-*）：
+ *
+ *   @media (max-width: 900px) {
+ *     .brand-wordmark { min-width: 30px; width: 30px; height: 30px;
+ *                       font-size: 0;
+ *                       background-image: var(--brand-icon-light);
+ *                       background-size: contain; background-repeat: no-repeat; }
+ *   }
+ *   :host-context([data-theme='dark']) .brand-wordmark {
+ *     background-image: var(--brand-icon-dark);
+ *   }
+ *
+ * 禁止：filter: invert()（cover.ts:43）；第二个手写 img 实例；把 --brand-paper
+ *       铺进 --bg/--panel；引用任何 design-options / r2-* / Cormorant / smallcaps /
+ *       designkit 实验稿字形或依赖月桂几何；给 .brand-sub 加 uppercase。
+ * ============================================================================ */

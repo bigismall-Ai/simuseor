@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1397 644" width="1397" height="644" role="img" aria-hidden="true"><!-- SiMuseor 蝉形 · MAX 帧 · 低多边形面片矢量
+     结构：<g> 按解剖区域分组 → <path> 每个面片一条，纯色填充
+     编辑：改单个面片 = 改该 <path> 的 fill 属性（色值格式 #rrggbb）
+     面片 64 个 · 主体 1397x644 · 接缝为白色底衬透出
+     -->
+  <path id="seam-base-01" d="M0 0 L55 64 L168 39 L56 66 L99 141 L227 127 L192 56 L252 162 L230 130 L102 146 L211 262 L286 238 L215 265 L250 291 L394 269 L304 147 L238 130 L306 146 L261 54 L72 22 L87 10 L174 17 L279 56 L266 57 L310 145 L352 110 L313 147 L452 183 L379 86 L371 92 L375 84 L281 56 L371 80 L373 73 L387 85 L443 100 L589 193 L432 101 L384 87 L457 185 L522 202 L595 200 L586 195 L599 198 L604 150 L703 280 L759 371 L773 320 L762 376 L813 466 L796 157 L780 174 L797 148 L774 98 L747 85 L754 82 L745 52 L701 18 L656 48 L647 87 L626 99 L602 150 L448 105 L602 147 L449 75 L280 22 L181 1 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-02" d="M604 156 L604 197 L640 373 L685 306 L641 379 L697 549 L697 534 L699 548 L725 487 L700 556 L639 384 L632 386 L637 375 L603 203 L587 466 L631 395 L587 471 L634 575 L698 643 L741 602 L767 499 L744 599 L780 547 L812 469 L768 498 L808 465 L761 380 L736 448 L758 375 L699 287 L692 295 L696 285 L660 279 L695 281 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-03" d="M1370 0 L1214 1 L1048 43 L918 92 L800 147 L954 104 L800 151 L802 197 L952 109 L807 201 L1008 267 L1019 256 L1017 270 L1154 291 L1190 264 L1049 220 L1018 255 L1092 150 L959 182 L1092 146 L1039 96 L1095 144 L1138 54 L1030 81 L1242 14 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-04" d="M595 205 L561 229 L586 209 L399 271 L366 353 L436 307 L366 358 L438 367 L463 290 L499 266 L468 293 L442 367 L509 348 L575 251 L527 356 L514 494 L575 363 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-05" d="M803 205 L827 362 L887 495 L875 355 L817 238 L892 347 L964 366 L937 290 L821 212 L1039 352 L1008 271 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-06" d="M1344 66 L1226 37 L1210 62 L1221 36 L1147 52 L1098 145 L1168 126 L1208 61 L1174 126 L1302 140 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-07" d="M1142 178 L1243 210 L1300 144 L1172 129 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-08" d="M592 204 L362 219 L398 268 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-09" d="M1107 234 L1192 261 L1241 213 L1140 181 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-10" d="M312 150 L362 215 L512 203 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-11" d="M394 272 L274 307 L362 355 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-12" d="M1012 272 L1044 355 L1128 308 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-13" d="M1396 0 L1340 23 L1229 36 L1346 63 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-14" d="M1087 164 L1050 217 L1103 233 L1136 180 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-15" d="M941 292 L968 367 L1039 357 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-16" d="M1167 130 L1097 149 L1089 162 L1138 176 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-17" d="M605 10 L643 53 L615 76 L627 94 L641 86 L651 51 Z" fill="#ffffff" fill-rule="evenodd"/>
+  <path id="seam-base-18" d="M791 8 L748 51 L758 85 L774 94 L781 72 L750 52 Z" fill="#ffffff" fill-rule="evenodd"/>
+<g id="wings-left">
+  <path id="wings-left-01" d="M258 179 L230 130 L102 144 L158 210 Z" fill="#df4c8f" fill-rule="evenodd"/>
+  <path id="wings-left-02" d="M291 236 L261 183 L264 179 L160 212 L211 262 Z" fill="#e15193" fill-rule="evenodd"/>
+  <path id="wings-left-03" d="M394 269 L357 219 L298 237 L301 232 L355 216 L317 163 L266 180 L296 238 L215 265 L250 291 Z" fill="#da438b" fill-rule="evenodd"/>
+  <path id="wings-left-04" d="M234 130 L262 177 L315 160 L306 149 Z" fill="#e03e89" fill-rule="evenodd"/>
+  <path id="wings-left-05" d="M393 273 L275 308 L362 355 Z" fill="#ec79a1" fill-rule="evenodd"/>
+  <path id="wings-left-06" d="M312 150 L359 214 L423 181 Z" fill="#d33683" fill-rule="evenodd"/>
+  <path id="wings-left-07" d="M313 147 L452 183 L379 86 Z" fill="#a80968" fill-rule="evenodd"/>
+  <path id="wings-left-08" d="M464 295 L366 358 L438 367 Z" fill="#dd5891" fill-rule="evenodd"/>
+  <path id="wings-left-09" d="M577 213 L399 271 L368 351 Z" fill="#d72c7a" fill-rule="evenodd"/>
+  <path id="wings-left-10" d="M370 214 L512 203 L428 181 Z" fill="#c92476" fill-rule="evenodd"/>
+</g>
+<g id="wings-right">
+  <path id="wings-right-01" d="M1056 41 L930 87 L800 147 L964 98 L967 103 L807 201 L888 201 L890 206 L810 204 L1010 267 L1043 219 L895 207 L893 201 L945 185 L945 190 L904 203 L1038 215 L1022 202 L1047 214 L1088 152 L956 187 L948 182 L1017 90 L1014 87 L1011 92 L1008 86 L1020 82 L1025 87 L1025 77 Z M973 99 L976 95 L979 98 Z M994 90 L996 93 L990 95 Z" fill="#ea3444" fill-rule="evenodd"/>
+  <path id="wings-right-02" d="M820 211 L1039 352 L1008 271 Z" fill="#f35155" fill-rule="evenodd"/>
+  <path id="wings-right-03" d="M944 296 L968 367 L1039 357 Z" fill="#f3929d" fill-rule="evenodd"/>
+  <path id="wings-right-04" d="M1089 144 L1023 89 L955 182 L1079 150 Z" fill="#e4393c" fill-rule="evenodd"/>
+  <path id="wings-right-05" d="M1012 272 L1044 355 L1128 308 Z" fill="#f5989c" fill-rule="evenodd"/>
+  <path id="wings-right-06" d="M1013 268 L1154 291 L1190 264 L1047 220 Z" fill="#f8837e" fill-rule="evenodd"/>
+  <path id="wings-right-07" d="M1087 164 L1050 217 L1103 233 L1136 180 Z" fill="#f87b72" fill-rule="evenodd"/>
+  <path id="wings-right-08" d="M1167 130 L1097 149 L1090 161 L1138 176 Z" fill="#f97d7b" fill-rule="evenodd"/>
+  <path id="wings-right-09" d="M1107 234 L1192 261 L1241 213 L1140 181 Z" fill="#f89a9a" fill-rule="evenodd"/>
+  <path id="wings-right-10" d="M1142 178 L1243 210 L1300 144 L1172 129 Z" fill="#fa9c9d" fill-rule="evenodd"/>
+</g>
+<g id="body">
+  <path id="body-01" d="M592 204 L512 206 L362 219 L398 268 Z" fill="#be2378" fill-rule="evenodd"/>
+  <path id="body-02" d="M388 89 L457 185 L517 201 L595 200 L432 101 Z" fill="#b40361" fill-rule="evenodd"/>
+  <path id="body-03" d="M598 206 L470 290 L442 367 L496 351 Z" fill="#b71170" fill-rule="evenodd"/>
+  <path id="body-04" d="M450 106 L599 198 L601 150 Z" fill="#470144" fill-rule="evenodd"/>
+  <path id="body-05" d="M570 257 L499 351 L509 348 Z" fill="#651758" fill-rule="evenodd"/>
+  <path id="body-06" d="M597 218 L527 356 L522 450 L514 494 L575 363 Z" fill="#e52b5a" fill-rule="evenodd"/>
+  <path id="body-07" d="M603 203 L590 352 L587 466 L588 457 L594 453 L637 376 Z" fill="#650454" fill-rule="evenodd"/>
+  <path id="body-08" d="M587 469 L612 535 L652 599 L627 494 Z" fill="#640758" fill-rule="evenodd"/>
+  <path id="body-09" d="M639 386 L591 466 L627 490 L656 444 Z" fill="#84106d" fill-rule="evenodd"/>
+  <path id="body-10" d="M774 98 L703 154 L695 154 L627 99 L604 150 L694 274 L696 157 L701 155 L704 273 L797 150 Z" fill="#ef3954" fill-rule="evenodd"/>
+  <path id="body-11" d="M605 163 L604 197 L640 373 L660 334 L696 285 L639 280 Z" fill="#7f0458" fill-rule="evenodd"/>
+  <path id="body-12" d="M611 171 L640 274 L692 280 Z" fill="#ac045e" fill-rule="evenodd"/>
+  <path id="body-13" d="M761 380 L699 557 L690 542 L658 449 L631 492 L654 596 L660 595 L655 602 L697 642 L697 558 L699 642 L741 602 L769 493 L808 468 Z" fill="#d76883" fill-rule="evenodd"/>
+  <path id="body-14" d="M696 295 L641 377 L660 440 L696 420 Z" fill="#b80158" fill-rule="evenodd"/>
+  <path id="body-15" d="M694 425 L662 447 L696 538 Z" fill="#ac0665" fill-rule="evenodd"/>
+  <path id="body-16" d="M704 426 L699 548 L737 444 Z" fill="#e9305c" fill-rule="evenodd"/>
+  <path id="body-17" d="M796 169 L762 284 L752 280 L701 285 L757 367 L797 200 Z" fill="#e93037" fill-rule="evenodd"/>
+  <path id="body-18" d="M701 296 L701 421 L737 441 L758 375 Z" fill="#ef373c" fill-rule="evenodd"/>
+  <path id="body-19" d="M790 170 L706 280 L762 275 Z" fill="#e82633" fill-rule="evenodd"/>
+  <path id="body-20" d="M812 469 L771 496 L744 599 L780 547 Z" fill="#ec6b85" fill-rule="evenodd"/>
+  <path id="body-21" d="M798 203 L762 374 L813 466 L810 323 Z" fill="#ef463c" fill-rule="evenodd"/>
+  <path id="body-22" d="M956 105 L800 151 L802 197 Z" fill="#440141" fill-rule="evenodd"/>
+  <path id="body-23" d="M803 205 L803 211 L807 211 L909 352 L964 367 L937 290 Z" fill="#b52d7b" fill-rule="evenodd"/>
+  <path id="body-24" d="M804 215 L827 362 L887 495 L875 355 Z" fill="#ed4570" fill-rule="evenodd"/>
+  <path id="body-25" d="M825 246 L886 341 L906 352 Z" fill="#841e64" fill-rule="evenodd"/>
+</g>
+<g id="antennae">
+  <path id="antennae-01" d="M1 0 L55 64 L175 36 L72 22 L87 10 L103 8 L174 17 L267 53 L372 79 L347 40 L204 5 Z" fill="#da1871" fill-rule="evenodd"/>
+  <path id="antennae-02" d="M179 38 L56 66 L84 121 L99 141 L226 126 Z" fill="#dc3985" fill-rule="evenodd"/>
+  <path id="antennae-03" d="M181 37 L233 127 L306 146 L261 54 Z" fill="#c20769" fill-rule="evenodd"/>
+  <path id="antennae-04" d="M268 57 L309 142 L375 84 Z" fill="#b2106f" fill-rule="evenodd"/>
+  <path id="antennae-05" d="M351 41 L383 83 L602 146 L481 88 Z" fill="#da0361" fill-rule="evenodd"/>
+  <path id="antennae-06" d="M606 11 L643 52 L639 38 Z" fill="#4c223f" fill-rule="evenodd"/>
+  <path id="antennae-07" d="M651 51 L632 59 L616 74 L615 79 L626 94 L641 86 Z" fill="#4a0546" fill-rule="evenodd"/>
+  <path id="antennae-08" d="M701 62 L632 95 L691 146 L696 146 L696 68 L701 67 Z" fill="#e81c77" fill-rule="evenodd"/>
+  <path id="antennae-09" d="M646 83 L689 63 L655 50 Z" fill="#a7075c" fill-rule="evenodd"/>
+  <path id="antennae-10" d="M656 49 L696 60 L696 40 L662 45 L696 37 L698 17 L700 37 L733 44 L700 40 L701 59 L740 48 L697 17 Z" fill="#c91664" fill-rule="evenodd"/>
+  <path id="antennae-11" d="M769 95 L701 69 L701 149 Z" fill="#f85846" fill-rule="evenodd"/>
+  <path id="antennae-12" d="M752 83 L744 51 L707 64 Z" fill="#f6583b" fill-rule="evenodd"/>
+  <path id="antennae-13" d="M748 51 L758 85 L774 94 L783 80 L781 72 Z" fill="#540549" fill-rule="evenodd"/>
+  <path id="antennae-14" d="M791 8 L757 37 L750 50 L755 50 L761 38 L783 21 Z" fill="#461f36" fill-rule="evenodd"/>
+  <path id="antennae-15" d="M1138 54 L1029 86 L1095 144 Z" fill="#e93d62" fill-rule="evenodd"/>
+  <path id="antennae-16" d="M1370 0 L1198 4 L1060 39 L1031 79 L1144 50 L1242 14 Z" fill="#ea444b" fill-rule="evenodd"/>
+  <path id="antennae-17" d="M1221 36 L1144 53 L1098 145 L1168 126 Z" fill="#ed486b" fill-rule="evenodd"/>
+  <path id="antennae-18" d="M1174 125 L1302 140 L1344 66 L1225 37 Z" fill="#f8888f" fill-rule="evenodd"/>
+  <path id="antennae-19" d="M1396 0 L1340 23 L1229 36 L1346 63 Z" fill="#f8959d" fill-rule="evenodd"/>
+</g>
+</svg>
