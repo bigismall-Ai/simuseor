@@ -1,10 +1,11 @@
 ﻿# 一键启动：环境检查 → 按需构建前端 → 起后端 → 等待健康 → 打开浏览器
-# 用法: powershell -ExecutionPolicy Bypass -File scripts\start.ps1 [-Build] [-NoBuild] [-Restart] [-NoOpen]
+# 用法: powershell -ExecutionPolicy Bypass -File scripts\start.ps1 [-Build] [-NoBuild] [-Restart] [-NoOpen] [-Dev]
 param(
     [switch]$Build,      # 强制重建前端（默认：产物缺失或源码比产物新时自动构建）
     [switch]$NoBuild,    # 跳过构建检查，直接用现有 web\dist
     [switch]$Restart,    # 强制重启（停掉占用端口的旧进程）
-    [switch]$NoOpen      # 不自动打开浏览器
+    [switch]$NoOpen,     # 不自动打开浏览器
+    [switch]$Dev         # 开发模式：后端热重载(8000) + 前端 dev server(4200, HMR)；改代码即时生效
 )
 
 $ErrorActionPreference = 'Stop'
@@ -62,9 +63,12 @@ function Get-PortOwner([int]$p) {
 }
 
 # ---- 前端产物 ----
+# dev 模式跑的是 ng serve（内存里现编），不需要也不该看 dist
 $dist = Join-Path $root 'web\dist\browser\index.html'
 $needBuild = $false
-if ($Build) {
+if ($Dev) {
+    $needBuild = $false
+} elseif ($Build) {
     $needBuild = $true
 } elseif (-not $NoBuild) {
     if (-not (Test-Path $dist)) {
@@ -93,26 +97,80 @@ if ($needBuild) {
 }
 
 # ---- 旧实例 ----
-$running = Test-Health
-if ($running -and -not $Restart) {
-    Write-Host "✔ 服务已在运行：$url （要重启请加 -Restart）"
-    if (-not $NoOpen) { Start-Process $url }
-    exit 0
-}
-if ($running) { Write-Host '→ -Restart：停止旧服务' }
+$devPort = 4200
+$devUrl = "http://127.0.0.1:$devPort"
 
-$oldProcId = Get-PortOwner $port
-if ($oldProcId -gt 0) {
-    if ($Restart) {
-        Write-Host "→ 清理占用 $port 的进程 $oldProcId"
-        Stop-Process -Id $oldProcId -Force -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds 1
-    } else {
-        throw "端口 $port 被进程 $oldProcId 占用且 /api/health 无响应；加 -Restart 强制重启"
+if ($Dev) {
+    # 开发模式下每次都是「重启」：8000 与 4200 都清掉。
+    # 这里**不报错**（生产模式那条路会报），因为热重载本来就该无脑覆盖。
+    foreach ($p in @($port, $devPort)) {
+        $owner = Get-PortOwner $p
+        if ($owner -gt 0) {
+            Write-Host "→ 清理占用 $p 的进程 $owner"
+            & taskkill /PID $owner /T /F 2>$null | Out-Null
+            Start-Sleep -Milliseconds 600
+        }
+    }
+} else {
+    $running = Test-Health
+    if ($running -and -not $Restart) {
+        Write-Host "✔ 服务已在运行：$url （要重启请加 -Restart）"
+        if (-not $NoOpen) { Start-Process $url }
+        exit 0
+    }
+    if ($running) { Write-Host '→ -Restart：停止旧服务' }
+
+    $oldProcId = Get-PortOwner $port
+    if ($oldProcId -gt 0) {
+        if ($Restart) {
+            Write-Host "→ 清理占用 $port 的进程 $oldProcId"
+            Stop-Process -Id $oldProcId -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 1
+        } else {
+            throw "端口 $port 被进程 $oldProcId 占用且 /api/health 无响应；加 -Restart 强制重启"
+        }
     }
 }
 
 # ---- 启动 ----
+if ($Dev) {
+    # 后端：RELOAD=1 走自研 backend/dev.py。**不要改用 uvicorn --reload** ——
+    # 0.54 在 Windows 上收到 CTRL_C_EVENT 后 join() 永不返回，老进程会继续占着端口不换新代码。
+    Write-Host "→ 启动后端（热重载）：$url"
+    $env:RELOAD = '1'
+    $server = Start-Process -FilePath $py -ArgumentList 'backend/run.py' -WorkingDirectory $root -PassThru -NoNewWindow
+
+    Write-Host "→ 启动前端 dev server：$devUrl"
+    # 端口不在这里传：web/package.json 的 start 已经是
+    # `ng serve --port 4200 --host 127.0.0.1`，再传一遍 Angular 会警告
+    # 「Option 'port' has been specified multiple times」。$devPort 必须与它保持一致。
+    $webProc = Start-Process -FilePath 'npm.cmd' `
+        -ArgumentList @('start') `
+        -WorkingDirectory (Join-Path $root 'web') -PassThru -NoNewWindow
+
+    try {
+        $ready = $false
+        for ($i = 0; $i -lt 120; $i++) {
+            if (Test-Health) { $ready = $true; break }
+            if ($server.HasExited) { throw '后端进程提前退出' }
+            Start-Sleep -Milliseconds 500
+        }
+        if (-not $ready) { throw '等待 /api/health 超时（60s）' }
+
+        Write-Host "✔ 后端已就绪：$url （改后端 .py 自动重启）"
+        Write-Host "✔ 前端开发地址：$devUrl （改前端即时生效，Ctrl+C 一起停）"
+        if (-not $NoOpen) { Start-Process $devUrl }
+        Wait-Process -Id $server.Id
+    } finally {
+        # npm 在 Windows 会再拉一层 node 子进程，必须连树一起杀，
+        # 否则 4200 被孤儿进程占着，下次启动会以为「端口被占」。
+        foreach ($p in @($webProc, $server)) {
+            if ($p -and -not $p.HasExited) { & taskkill /PID $p.Id /T /F 2>$null | Out-Null }
+        }
+    }
+    exit 0
+}
+
 Write-Host "→ 启动后端：$url"
 $proc = Start-Process -FilePath $py -ArgumentList 'backend/run.py' -WorkingDirectory $root -PassThru -NoNewWindow
 try {
