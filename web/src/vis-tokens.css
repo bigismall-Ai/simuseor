@@ -1,37 +1,148 @@
 /* ============================================================================
  * SiMuseor VIS · vis-tokens.css
  * ----------------------------------------------------------------------------
- * 定位：Phase 3 产出的「独立 token 层」，目标态声明文件。
- *       本阶段【零落地】：不接入构建、不修改 web/src/ 或 tests/ 下任何文件，
- *       仅作为 M0 阶段可直接追加的 CSS 资产；主理人汇编 VIS 手册时可用作 token 附录。
+ * 定位：VIS 设计 token 层。已接入构建（web/angular.json:29-32 styles 数组第三项，
+ *       顺序为 tailwind.css -> styles.css -> vis-tokens.css）。
+ *       本文件只提供 token 变量与字体声明，【不】产出任何组件实现规则。
  *
- * 引入顺序（相对 web/angular.json:29-32 / tailwind.css / styles.css）
- *   现状 web/angular.json:29-32
- *     "styles": [ "src/tailwind.css", "src/styles.css" ]
- *   M0 建议（本轮【不改】 angular.json，只登记接入方式）
- *     "styles": [ "src/tailwind.css", "src/styles.css", "src/vis-tokens.css" ]
- *   理由
- *     1. web/src/tailwind.css:1-11 只 @import theme.css + utilities.css，不引 preflight；
- *        它在 angular.json 里排在 styles.css 之前，让 styles.css:17/:77 的 :root
- *        覆盖同名 token。本层排在最末，不参与任何「覆盖」关系（见零覆盖承诺）。
- *     2. CSS 自定义属性同特异性下「后定义者生效」。放在 styles.css 之后，可保证
- *        将来若 Tailwind @theme 或任何上游误写同名 --brand-*，本层仍胜出。
- *     3. @font-face 是全局注册，与顺序无关；放最末便于构建产物统一 outputHashing。
+ * ============================================================================
+ * 【三层结构】primitive（原始值） / semantic（用途语义） / component（组件槽位）
+ * ============================================================================
+ *
+ *   第一层  primitive  —— 原始值层，命名 --pri-*（品牌色板沿用 --brand-* 登记名）
+ *     · 只存【不可再分的字面值】：具体色值、具体尺寸、具体圆角、具体阴影串
+ *     · 【不引用任何其它 token】：本层任一变量的值里不允许出现 var()
+ *     · 主题无关：同一套 primitive 同时供给浅色与深色语义层
+ *
+ *   第二层  semantic   —— 用途语义层，命名 --sem-*（品牌语义沿用 --brand-surface/-fg/-rule）
+ *     · 存放【用途语义】：surface / text / border / accent / success / radius ...
+ *     · 【必须】用 var(--pri-*) 引用第一层；不允许引用别的 semantic（避免语义链式耦合）
+ *     · 语义分浅/深两套：浅色在 :root，深色在 :root[data-theme="dark"] 覆盖同一批名字
+ *
+ *   第三层  component  —— 组件槽位层，命名 --cmp-*（本轮【只建结构、不写值】）
+ *     · 把语义 token 落到具体组件槽位（按钮 / 输入框 / 卡片 / 弹层 ...）
+ *     · 规则：组件层只允许引用 --sem-*，不得直接引用 --pri-*
+ *     · 本轮不赋值，避免与 styles.css 里已有的组件类产生冲突
+ *
+ * ----------------------------------------------------------------------------
+ * 【怎么改】（用户视角）
+ * ----------------------------------------------------------------------------
+ *   改 primitive  ->  影响全局。
+ *     例：把 --pri-neutral-0 从 #ffffff 改成 #fffdf8，所有引用它的 semantic
+ *     （--sem-surface / --sem-field-bg / --sem-on-accent ...）一起变，
+ *     于是全站所有「面板底 / 输入框底 / 主按钮白字」同步联动。
+ *
+ *   改 semantic   ->  影响一类用途。
+ *     例：把 --sem-accent 从 var(--pri-indigo-600) 改成 var(--pri-indigo-500)，
+ *     全站「强调色（文字 / 描边 / 图标 / 焦点环）」这一类跟着变，
+ *     但原始色板 --pri-indigo-* 本身不动，其它用途不受影响。
+ *
+ *   改 component  ->  只影响单个组件。
+ *     例：--cmp-button-primary-bg 只服务主按钮。
+ *
+ * ----------------------------------------------------------------------------
+ * 【与 web/src/styles.css 的零覆盖关系】
+ * ----------------------------------------------------------------------------
+ *   web/src/styles.css:17-90（浅色 :root）与 :93-150（深色 :root[data-theme="dark"]）
+ *   持有 43 个平铺 token（--bg / --panel / --text / --accent / --radius ...）。
+ *   本文件【不重新赋值其中任何一个名字】：全部 --pri-* / --sem-* / --cmp-* 都是新增名，
+ *   既有 --brand-* / --border-control / --radius-lg 也全部是新增名。
+ *   产物：两文件「赋值变量名」集合交集为空 —— 由 artifacts/vis/vis-check.mjs 自动校验
+ *   （剥离注释后取交集，必须为空）。零覆盖承诺是 Phase1 §3.1 裁决 A
+ *   「分层双轨、零覆盖、零回归」的硬边界，本轮不得破坏。
+ *
+ *   【本轮是 additive，接线在后续任务】
+ *   本轮只建立「原始值 -> 语义」的映射关系；UI 目前仍读 styles.css 的平铺 token，
+ *   因此「改 primitive 全站联动」要在 styles.css 改指 --sem-*（即下表的迁移映射）
+ *   之后才在 UI 上可见。迁移映射表见下节 —— styles.css 本轮【不改】（其它并行任务在改）。
+ *
+ * ----------------------------------------------------------------------------
+ * 【迁移映射表】styles.css 平铺 token  ->  本层 semantic token
+ *   接线时把 styles.css 里右列的值换成左列（等值替换，零视觉回归）。
+ * ----------------------------------------------------------------------------
+ *   --bg            -> --sem-bg                 --bg-deep        -> --sem-bg-deep
+ *   --panel         -> --sem-surface           --panel-2        -> --sem-surface-raised
+ *   --panel-3       -> --sem-surface-sunken     --input-bg       -> --sem-field-bg
+ *   --hover         -> --sem-hover              --text           -> --sem-text
+ *   --text-2        -> --sem-text-secondary     --muted          -> --sem-text-muted
+ *   --faint         -> --sem-text-faint         --placeholder    -> --sem-text-placeholder
+ *   --border        -> --sem-border-subtle      --border-soft    -> --sem-border-hairline
+ *   --border-strong -> --sem-border-strong      --border-control -> --sem-control-border
+ *   --accent        -> --sem-accent             --accent-hover   -> --sem-accent-hover
+ *   --accent-soft   -> --sem-accent-soft        --accent-line    -> --sem-accent-line
+ *   --primary       -> --sem-fill-accent        --primary-hover  -> --sem-fill-accent-hover
+ *   --on-primary    -> --sem-on-accent          --ok             -> --sem-success
+ *   --ok-soft       -> --sem-success-soft       --warn           -> --sem-warning
+ *   --warn-soft     -> --sem-warning-soft       --err            -> --sem-danger
+ *   --err-soft      -> --sem-danger-soft        --star           -> --sem-attention
+ *   --track         -> --sem-track              --chip           -> --sem-chip
+ *   --pill-bg       -> --sem-pill-bg            --pill-bg-hover  -> --sem-pill-bg-hover
+ *   --pill-ink      -> --sem-pill-ink           --pill-ink-hover -> --sem-pill-ink-hover
+ *   --radius        -> --sem-radius-card        --radius-sm      -> --sem-radius-control
+ *   --radius-xs     -> --sem-radius-badge       --radius-lg      -> --sem-radius-modal
+ *   --shadow-sm     -> --sem-shadow-sm          --shadow-md      -> --sem-shadow-md
+ *   --shadow-lg     -> --sem-shadow-lg          --ring           -> --sem-focus-ring
+ *   --sidebar-w     -> --sem-sidebar-width
+ *
+ * ============================================================================
+ * 【明暗双主题方案：分组式（A）】
+ * ----------------------------------------------------------------------------
+ *   选 A（:root 浅色语义 + :root[data-theme="dark"] 深色语义覆盖，primitive 两主题共用
+ *   一套），不选 B（light-dark() 函数）。理由：
+ *     1. 与既有系统同构：styles.css 就是「:root 浅色 + :root[data-theme="dark"] 深色」
+ *        两套并列；Phase1 §7.1 裁定 data-theme 是明暗唯一入口，本方案与之完全一致。
+ *     2. light-dark() 解析依据是 color-scheme，而本项目切换依据是 data-theme。
+ *        两者脱钩：若并行任务把 styles.css 的 color-scheme 改成 `light dark`
+ *        （常见写法），light-dark() 会改为跟随操作系统偏好，主题切换静默失效。
+ *        分组式不受 color-scheme 取值影响。
+ *     3. light-dark() 只接受 <color>，长度（圆角/尺寸）与阴影复合串无法表达，
+ *        混用会变成「一半函数、一半双块」，反而更难读。
+ *     4. primitive 一套共用、明暗只在 semantic 层换档，正是 PrimeNG preset 的做法
+ *        （primitive 存原始值、semantic.colorScheme.{light,dark} 各自引用 primitive），
+ *        也让「改 primitive 全站联动」成立。
+ *   实现在下：深浅两套 semantic 都只引用同一批 --pri-*，深色档位不同而已。
+ *
+ * ----------------------------------------------------------------------------
+ * 【命名规则与例外】
+ * ----------------------------------------------------------------------------
+ *   --pri-*  原始值        例：--pri-indigo-600 / --pri-neutral-100 / --pri-radius-md
+ *   --sem-*  用途语义      例：--sem-surface / --sem-accent / --sem-radius-card
+ *   --cmp-*  组件槽位      例：--cmp-button-primary-bg（本轮不赋值）
+ *   例外 1（品牌色板）：--brand-paper / -ink / -line / -muted / -paper-reverse / -ink-reverse
+ *         六枚是【原始值】角色（字面值资产导出常量、主题不变），按分层应属 primitive；
+ *         但名字沿用 VIS Phase1 §3.3-(1) 登记名 —— artifacts/vis 手册与「冻结只改 3 处」
+ *         协议都引用它，且并行任务可能已在读这些名字，故【不重命名】。
+ *         归层看角色（primitive），不靠前缀判断。
+ *   例外 2（品牌语义）：--brand-surface / -fg / -rule 是 Phase1 §7.2 登记的语义入口，
+ *         值随 data-theme 在纸墨组与反白组之间切换 -> semantic 层，同样沿用原名。
+ *   例外 3（既有语义名）：--border-control / --radius-lg 是既有【语义】名
+ *         （分别被 web/src/app/pages/workflows.component.ts:717+ 与
+ *         web/src/styles.css:1041 引用），保留原名并直接引用 primitive，
+ *         同时给出 --sem-* 规范名作为对齐用词汇（两者同值，改动须同步）。
+ *
+ * ----------------------------------------------------------------------------
+ * 【零覆盖承诺】（硬性，由 artifacts/vis/vis-check.mjs 自动校验）
+ *   本文件不重新赋值 web/src/styles.css:17-90 / :93-150 中任何已有 --* 变量。
+ *   下述 --pri-* / --sem-* / --brand-* / --border-control / --radius-lg / 四个 URL
+ *   变量 / 三个常量全部为【新增名】。UI 两套 :root 原样保留（Phase1 §3.1 裁决 A：
+ *   分层双轨、零覆盖、零回归）；靛紫 --accent/#4f46e5 / #a5b4fc 仍是唯一交互色。
+ *   vis-check.mjs 会剥离注释后取两文件「赋值变量名」集合求交集，交集必须为空。
+ *
+ * 【接入顺序】本文件排末（tailwind.css -> styles.css -> vis-tokens.css）：
+ *   1. web/src/tailwind.css:1-11 只 @import theme.css + utilities.css，不引 preflight；
+ *      它在 angular.json 里排在 styles.css 之前，让 styles.css:17/:93 的 :root
+ *      覆盖同名 token。本层排在最末，不参与任何「覆盖」关系（见零覆盖承诺）。
+ *   2. CSS 自定义属性同特异性下「后定义者生效」。放在 styles.css 之后，可保证
+ *      将来若 Tailwind @theme 或任何上游误写同名 --brand-*，本层仍胜出。
+ *   3. @font-face 是全局注册，与顺序无关；放最末便于构建产物统一 outputHashing。
  *   注意：Angular 把 styles 数组全部打进同一 bundle；本文件不写 @import / @layer，
  *   避免与 Tailwind v4 的 @layer theme 产生层序歧义。
  *
- * 【零覆盖承诺】（硬性，由 artifacts/vis/vis-check.mjs 自动校验）
- *   本文件不重新赋值 web/src/styles.css:17-74 / :77-122 中任何已有 --* 变量。
- *   下述 --brand-* / --border-control / --radius-lg / 四个 URL 变量 / 三个常量
- *   全部为【新增名】。UI 两套 :root 原样保留（Phase1 §3.1 裁决 A：分层双轨、
- *   零覆盖、零回归）；靛紫 --accent/#4f46e5 / #a5b4fc 仍是唯一交互色。
- *   vis-check.mjs 会剥离注释后取两文件「赋值变量名」集合求交集，交集必须为空。
- *
- * 状态：LOGO 仍在迭代（design-options 六方向 / r2-* 八方向 / Cormorant preview /
+ * 【状态】LOGO 仍在迭代（design-options 六方向 / r2-* 八方向 / Cormorant preview /
  *       smallcaps / designkit「终稿」全部实验稿或已否，无一终稿）。四个 URL 变量
  *       占位期一律取 none（无任何字形），冻结后只填 URL，不改任何布局/颜色/字号。
  *
- * 上游口径（v1.1 定稿）：Phase1 v1.1 / 620 行、Phase2 v1.1 / 888 行。
+ * 【上游口径】（v1.1 定稿）：Phase1 v1.1 / 620 行、Phase2 v1.1 / 888 行。
  *       §8 冲突表共 15 项（v1.0 为 13 项，v1.1 新增 M/N；早期「12 项」为笔误），
  *       全部「本轮不执行」；其中 M（3 处 --accent 白字填充）/ N（21 处 --faint 文本
  *       引用）为 Phase 3 立即项、与 LOGO 冻结解耦，由 _phase3-engineering.md 的
@@ -50,9 +161,9 @@
  *    Barlow Condensed 基线字体【已生效】，仅作用于 .brand-wordmark。
  *    Inter 的 @font-face 见下方注释块，M0 不加载（缺文件 + 需截图回归）。
  *    url('/fonts/...') 对应 web/public/fonts/（angular.json:22-28 assets 输出到 /）。
- *    woff2 文件缺失时浏览器忽略这两条声明（或 404），正文继续走 styles.css:131
+ *    woff2 文件缺失时浏览器忽略这两条声明（或 404），正文继续走 styles.css:159
  *    的 "Segoe UI","Microsoft YaHei" 回退栈，因此【文件未落地时零渲染回归】。
- *    取舍：Inter 一旦真正落地，body（styles.css:131 首位即 "Inter"）会从系统字体
+ *    取舍：Inter 一旦真正落地，body（styles.css:159 首位即 "Inter"）会从系统字体
  *    切换到 Inter 实际渲染，属于 P3-10 的「中风险、需截图回归」。若不愿改动现有正文
  *    渲染，可把 Inter 注册为独立族名（如 "Inter VIS"）只给品牌展示面用；本文件按
  *    Phase1 §4.1 既定 UI 字体栈对齐，保留 "Inter"，取舍详见 _phase3-engineering.md。
@@ -70,7 +181,7 @@
 /* Phase1 §4.1 / §4.4：UI 正文可变字重；font-display:swap 避免 FOIT
  *
  * 【M0 暂缓 · 主理人裁决 2】Inter 保留声明但暂不加载文件：body 首位字体栈是 "Inter"
- * （styles.css:131），一旦 woff2 到位，全站正文会从系统字体切到 Inter 实际渲染，
+ * （styles.css:159），一旦 woff2 到位，全站正文会从系统字体切到 Inter 实际渲染，
  * 属「中风险、需截图回归」，须单独排期。文件未落地时浏览器走回退栈，零渲染回归。
  * 启用步骤：把 Inter-Variable.woff2 放入 web/public/fonts/，再解注释本块。
  *
@@ -85,13 +196,99 @@
 
 
 /* ============================================================================
- * 2. 浅色 :root —— 只追加新变量，不触碰现有任何 --*
+ * 2. :root —— primitive 层 + semantic 层（浅色语义）
+ *    【同一块内先 primitive 后 semantic】：CSS 自定义属性解析与书写顺序无关，
+ *    分块只是为了人读起来有层次；合并在一块也让 vis-check 的取值报告完整。
  * ============================================================================ */
 :root {
-  /* ---- 品牌层 · 纸墨六枚（Phase1 §3.3-(1)，统一取 preview.html 一组 §3.2 裁决 A′） ----
-   * 它们是【资产导出常量】，不进高频 UI；--brand-paper 不得用作 --bg/--panel/
-   * --input-bg（Phase1 §3.5-2）；品牌层不设交互色、不引 --accent（§3.3-(1) 注）。
-   * --brand-ink #1b1b1e 与 UI --text #18181b 明度差 <2%，但不合并、不互相引用（§3.1）。 */
+
+  /* ==========================================================================
+   * 2.1 【primitive 层】中性色阶 --pri-neutral-*
+   *     按【亮度序位】排列（step 越大越暗）。所有取值都取自 styles.css 现值，
+   *     保证后续接线时零视觉回归。
+   *     一阶双用是「改 primitive -> semantic 联动」的前提：
+   *       浅色主题表面用小 step（0-225）、浅色文字用中大 step（325-700）；
+   *       深色主题表面用大 step（600-800）、深色文字用小中 step（150-300）。
+   * ====================================================================== */
+  --pri-neutral-0:   #ffffff;   /* 面板底 / 输入框底 / 实心块上的白字 */
+  --pri-neutral-25:  #fafafa;   /* 次级面板 */
+  --pri-neutral-50:  #f5f5f6;   /* 页面底 */
+  --pri-neutral-75:  #f4f4f5;   /* 三级面板 / 悬停 / chip */
+  --pri-neutral-100: #f1f1f3;   /* 分类胶囊底 */
+  --pri-neutral-125: #f0f0f1;   /* 发丝线 */
+  --pri-neutral-150: #ededf0;   /* 深色主题正文色 */
+  --pri-neutral-175: #ededef;   /* 浅色深底 */
+  --pri-neutral-200: #ececee;   /* 进度轨道 */
+  --pri-neutral-225: #e7e7ea;   /* 胶囊悬停底 */
+  --pri-neutral-250: #e4e4e7;   /* 结构分隔线 */
+  --pri-neutral-275: #d4d4d8;   /* 强分隔线 / 深色次级正文 */
+  --pri-neutral-300: #b4b4bc;   /* 深色胶囊文字 */
+  --pri-neutral-325: #a1a1aa;   /* 浅色弱字 / 占位符 */
+  --pri-neutral-350: #8b8b94;   /* 控件边界色 / 深色次级文字 */
+  --pri-neutral-375: #71717a;   /* 浅色次级文字 */
+  --pri-neutral-400: #5f5f68;   /* 深色弱字 / 占位符 */
+  --pri-neutral-425: #52525b;   /* 浅色胶囊文字 */
+  --pri-neutral-450: #3f3f46;   /* 浅色次级正文 */
+  --pri-neutral-475: #34343a;   /* 深色强分隔线 */
+  --pri-neutral-500: #32323a;   /* 深色胶囊悬停底 */
+  --pri-neutral-525: #26262c;   /* 深色胶囊底 */
+  --pri-neutral-550: #26262b;   /* 深色分隔线 */
+  --pri-neutral-575: #232329;   /* 深色轨道 / chip */
+  --pri-neutral-600: #202025;   /* 深色三级面板 */
+  --pri-neutral-625: #1e1e23;   /* 深色悬停 */
+  --pri-neutral-650: #1e1e22;   /* 深色发丝线 */
+  --pri-neutral-675: #1a1a1e;   /* 深色次级面板 */
+  --pri-neutral-700: #18181b;   /* 浅色正文 */
+  --pri-neutral-725: #17171b;   /* 深色输入框底 */
+  --pri-neutral-750: #141417;   /* 深色面板底 */
+  --pri-neutral-775: #0b0b0d;   /* 深色页面底 */
+  --pri-neutral-800: #070708;   /* 深色深底 */
+
+  /* ==========================================================================
+   * 2.2 【primitive 层】靛紫 --pri-indigo-*
+   *     唯一交互色相。--accent（文字/描边/图标态）与 --primary（实心填充态）
+   *     同色相、不同用法，所以本层只给色阶，用途判定放在 semantic 层。
+   *     600 = 实心填充档（双主题不翻，白字 6.29:1）；300/100 = 文字档（深色主题提亮）。
+   * ====================================================================== */
+  --pri-indigo-50:   #eef2ff;   /* 浅色强调底 */
+  --pri-indigo-100:  #c7d2fe;   /* 浅色描边 / 深色 hover 文字 */
+  --pri-indigo-300:  #a5b4fc;   /* 深色主题强调文字（styles.css 深色 --accent） */
+  --pri-indigo-400:  #818cf8;   /* lab 实验区 400 档（仅供对照，本层不引用） */
+  --pri-indigo-500:  #6366f1;   /* 深色主题填充 hover */
+  --pri-indigo-600:  #4f46e5;   /* 交互主色：实心填充 + 浅色强调 */
+  --pri-indigo-700:  #4338ca;   /* 浅色强调 hover / 深色描边 */
+  --pri-indigo-950:  #1e1b4b;   /* lab 实验区深字（仅供对照，本层不引用） */
+  --pri-indigo-a18:  rgb(79 70 229 / 0.18);  /* 深色主题强调底（半透明） */
+
+  /* ==========================================================================
+   * 2.3 【primitive 层】状态色 --pri-green-* / --pri-amber-* / --pri-red-*
+   *     与 styles.css 一致：浅色用「能压在浅底上读清」的深档，深色用亮档。
+   *     aNN = alpha NN 百分比（深色主题的半透明软底）。
+   * ====================================================================== */
+  --pri-green-50:    #f0fdf4;   /* 浅色成功软底 */
+  --pri-green-400:   #4ade80;   /* 深色成功 */
+  --pri-green-600:   #15803d;   /* 浅色成功 */
+  --pri-green-a12:   rgb(74 222 128 / 0.12);  /* 深色成功软底 */
+
+  --pri-amber-50:    #fffbeb;   /* 浅色警告软底 */
+  --pri-amber-400:   #fbbf24;   /* 深色警告 / 深色星标 */
+  --pri-amber-500:   #d97706;   /* 浅色星标 */
+  --pri-amber-600:   #b45309;   /* 浅色警告 */
+  --pri-amber-a12:   rgb(251 191 36 / 0.12);  /* 深色警告软底 */
+
+  --pri-red-50:      #fef2f2;   /* 浅色危险软底 */
+  --pri-red-400:     #f87171;   /* 深色危险 */
+  --pri-red-700:     #b91c1c;   /* 浅色危险 */
+  --pri-red-a12:     rgb(248 113 113 / 0.12);  /* 深色危险软底 */
+
+  /* ==========================================================================
+   * 2.4 【primitive 层】品牌色板六枚（Phase1 §3.3-(1) / §3.2 裁决 A′）
+   *     归层说明：它们是【字面值资产导出常量】、主题不变、不引用任何 token，
+   *     因此在分层上属 primitive；只是名字沿用 VIS 登记名（见头部「例外 1」）。
+   *     它们是【资产导出常量】，不进高频 UI；--brand-paper 不得用作 --bg/--panel/
+   *     --input-bg（Phase1 §3.5-2）；品牌层不设交互色、不引 --accent（§3.3-(1) 注）。
+   *     --brand-ink #1b1b1e 与 UI --text #18181b 明度差 <2%，但不合并、不互相引用（§3.1）。
+   * ====================================================================== */
   --brand-paper:          #f8f6f1;  /* Phase1 §3.3-(1) 纸（浅）：品牌展示面底 */
   --brand-ink:            #1b1b1e;  /* Phase1 §3.3-(1) 墨：字标/品牌文字（浅底） */
   --brand-line:           #dedbd3;  /* Phase1 §3.3-(1) 线：1px 品牌展示面分隔细线 */
@@ -99,71 +296,258 @@
   --brand-paper-reverse:  #15151a;  /* Phase1 §3.3-(1) 纸（深）：反白底 preview.html:76 */
   --brand-ink-reverse:    #f1ede4;  /* Phase1 §3.3-(1) 墨（反白）：暖白，非纯白 preview.html:76,78 */
 
-  /* ---- 品牌层「活跃面」语义别名（Phase1 §2.4 / §7.2 / Phase2 §4.2） ----
-   * 六枚常量本身【不随 data-theme 变】：品牌层反白靠双份 SVG 资产切换，不是 CSS
-   * 取色（§2.4 / §7.2 / cover.ts:43）。这组别名是给将来「关于页 / 分享卡」等
-   * 品牌展示面用的语义入口，浅色指向纸墨，深色指向反白组（见 §3 的 dark 块）。
-   * 本轮不接入产品 UI，UI 继续用现有 :root 的 --panel/--text。 */
-  --brand-surface: var(--brand-paper);   /* Phase1 §7.2 品牌层反白映射（浅色侧） */
-  --brand-fg:      var(--brand-ink);     /* Phase1 §7.2 品牌层反白映射（浅色侧） */
-  --brand-rule:    var(--brand-line);    /* Phase1 §3.3-(1) 1px 发丝线 */
+  /* ==========================================================================
+   * 2.5 【primitive 层】尺寸 / 圆角 / 线宽
+   *     圆角只登记四档（Phase1 §6.4 例外 1：弹层 16px）+ 胶囊 999px（例外 2）。
+   *     矩形唯一三档仍是 12 / 8 / 5，本层不引入中间档。
+   * ====================================================================== */
+  --pri-radius-xs:   5px;                  /* 小角标 */
+  --pri-radius-sm:   8px;                  /* 控件 */
+  --pri-radius-md:   12px;                 /* 面板 / 卡片 */
+  --pri-radius-lg:   16px;                 /* 弹层（Phase1 §6.4 例外 1） */
+  --pri-radius-pill: 999px;                /* 胶囊（Phase1 §6.4 例外 2） */
+  --pri-size-sidebar:    236px;            /* 侧栏宽度（styles.css:89 复用） */
+  --pri-border-width-hairline: 1px;        /* 发丝线 */
+  --pri-border-width-focus:    2px;        /* 焦点环线宽（styles.css:170 focus-visible） */
+  --pri-ring-width:          3px;          /* --ring 外扩环宽 */
 
-  /* ---- 控件边界色（Phase2 §2.10-11 / §3.2 实算；新增，不覆盖 --border） ----
-   * 用途：仅 input / select / textarea / .radio-row 的【静止边框】；不覆盖现有
-   * --border #e4e4e7（该值对白 1.27:1，仅作结构分隔线，不作控件边界 1.4.11）。
-   * 浅色 #8b8b94 实算：on --panel #ffffff = 3.38:1；on --bg #f5f5f6 = 3.10:1，
-   * 均 >= 3:1（WCAG 1.4.11 非文本对比下限）。
-   * 深色侧取值相同（见 §3），深底 #141417 上实算 5.44:1。
-   * 若视觉过重，走 Phase2 §2.10-11 的降级方案：每个控件配可见 <label> + F 焦点环
-   * + aria，登记例外，不用本变量。 */
-  --border-control: #8b8b94;            /* Phase2 §2.10-11 / §3.2 浅：3.38:1 / 3.10:1 */
+  /* ==========================================================================
+   * 2.6 【primitive 层】阴影 / 焦点环（复合值：长度 + 颜色）
+   *     这类值整体就是字面量，无法拆成「颜色 primitive + 长度 primitive」后再组合
+   *     而不破坏阴影串，所以按主题各存一份原始串（-light / -dark），
+   *     由 semantic 层按主题选档（见 2.9 / 3 节）。
+   * ====================================================================== */
+  --pri-shadow-sm-light: 0 1px 2px rgb(24 24 27 / 0.04);
+  --pri-shadow-sm-dark:  0 1px 2px rgb(0 0 0 / 0.4);
+  --pri-shadow-md-light: 0 14px 36px -16px rgb(24 24 27 / 0.22), 0 2px 8px -4px rgb(24 24 27 / 0.08);
+  --pri-shadow-md-dark:  0 14px 36px -16px rgb(0 0 0 / 0.7), 0 2px 8px -4px rgb(0 0 0 / 0.4);
+  --pri-shadow-lg-light: 0 32px 64px -24px rgb(24 24 27 / 0.32);
+  --pri-shadow-lg-dark:  0 32px 64px -24px rgb(0 0 0 / 0.8);
+  --pri-ring-light: 0 0 0 3px rgb(79 70 229 / 0.14);
+  --pri-ring-dark:  0 0 0 3px rgb(99 102 241 / 0.28);
 
-  /* ---- 圆角第 4 档（Phase1 §6.4 例外 1；登记白名单，不是新「中间档」） ----
-   * 仅弹层 .modal（styles.css:909）与 lab-theme.ts:89 dialog 用 16px；
-   * 三档 12/8/5 仍是矩形唯一档，胶囊 999px 属另一类语义（§6.4 例外 2）。 */
-  --radius-lg: 16px;                    /* Phase1 §6.4 / §8-D；不覆盖 --radius */
-
-  /* ---- 标识 URL 变量（Phase1 §2.6-2 / Phase2 §1.1 / §8.2；四个，占位期 none） ----
-   * none 是 background-image 的合法「无图像」值，【不含任何字形】。
-   * 冻结后只把这四个改成 url('/brand/simuseor-light.svg') 等，其余一律不动。
-   * 只允许 .brand-wordmark 单一接入点读取，禁止第二处手写 <img>。 */
+  /* ==========================================================================
+   * 2.7 【primitive 层】标识资产接口
+   *     四个 URL 变量：light/dark 是两份资产路径，由接入片段里的
+   *     :host-context([data-theme='dark']) 规则选择读哪一个，而不是把变量本身改掉。
+   *     这样「冻结只改 3 处」成立：资产文件 / 四个 URL 变量 / 三个常量。
+   *     none 是 background-image 的合法「无图像」值，【不含任何字形】。
+   *     三个常量：占位期近似值，冻结时按实测覆盖。
+   * ====================================================================== */
   --brand-logo-light: none;             /* Phase1 §2.6-2 横版字标 · 浅底 */
   --brand-logo-dark:  none;             /* Phase1 §2.6-2 横版字标 · 深底（反白稿） */
   --brand-icon-light: none;             /* Phase1 §8-K / Phase2 §4.4 紧凑 30x30 图标 · 浅 */
   --brand-icon-dark:  none;             /* Phase1 §8-K / Phase2 §4.4 紧凑 30x30 图标 · 深 */
-
-  /* ---- 标识三常量（Phase1 §2.3 / §2.6-3 / Phase2 §8.2；冻结时按实测覆盖） ---- */
   --brand-clear-space: 10px;            /* Phase1 §2.3 占位近似：字标总高 20px 的 0.5 倍；冻结后按实测 X（S cap-height）替换 */
   --brand-min-width:   120px;           /* Phase1 §2.3 横向字标最小宽度；侧栏可用宽约 190px */
   --brand-icon-min:    32px;            /* Phase1 §2.3 独立图标最小尺寸；<20px 只用字首单体 */
+
+  /* ==========================================================================
+   * 2.8 【semantic 层】表面 / 文字 / 描边 / 强调色 / 状态色（浅色）
+   *     规则：全部用 var(--pri-*) 引用 primitive；不引用别的 semantic。
+   *     深色同名覆盖见第 3 节（:root[data-theme="dark"]）。
+   * ====================================================================== */
+
+  /* ---- 表面 ---- */
+  --sem-bg:              var(--pri-neutral-50);    /* 页面底 */
+  --sem-bg-deep:         var(--pri-neutral-175);   /* 更深的底 */
+  --sem-surface:         var(--pri-neutral-0);     /* 面板 / 卡片底 */
+  --sem-surface-raised:  var(--pri-neutral-25);    /* 次级面板底 */
+  --sem-surface-sunken:  var(--pri-neutral-75);    /* 三级面板底 */
+  --sem-field-bg:        var(--pri-neutral-0);     /* 输入框底 */
+  --sem-hover:           var(--pri-neutral-75);    /* 悬停底 */
+
+  /* ---- 文字 ---- */
+  --sem-text:             var(--pri-neutral-700);  /* 正文 */
+  --sem-text-secondary:   var(--pri-neutral-450);  /* 次级正文 */
+  --sem-text-muted:       var(--pri-neutral-375);  /* 辅助文字 */
+  --sem-text-faint:       var(--pri-neutral-325);  /* 弱字（禁承载文本，见 Phase2 §3.3） */
+  --sem-text-placeholder: var(--pri-neutral-325);  /* 占位符 */
+
+  /* ---- 描边 ---- */
+  --sem-border-subtle:  var(--pri-neutral-250);    /* 结构分隔线 */
+  --sem-border-hairline: var(--pri-neutral-125);   /* 发丝线 */
+  --sem-border-strong:  var(--pri-neutral-275);    /* 强分隔线 */
+  /* 控件边界（Phase2 §2.10-11 / §3.2 实算）：仅 input / select / textarea /
+   * .radio-row 的【静止边框】；不覆盖现有 --border #e4e4e7（该值对白 1.27:1，
+   * 仅作结构分隔线，不作控件边界 1.4.11）。浅色 #8b8b94 实算：on --panel #ffffff
+   * = 3.38:1；on --bg #f5f5f6 = 3.10:1，均 >= 3:1（WCAG 1.4.11 非文本对比下限）。
+   * 若视觉过重，走 Phase2 §2.10-11 的降级方案：每个控件配可见 <label> + F 焦点环
+   * + aria，登记例外，不用本变量。 */
+  --sem-control-border: var(--pri-neutral-350);
+  --border-control:     var(--pri-neutral-350);    /* 兼容别名：与 --sem-control-border 同值，改动须同步 */
+
+  /* ---- 强调色：文字/描边/图标态 vs 实心填充态 ---- */
+  --sem-accent:            var(--pri-indigo-600);  /* 交互色的文字/描边/图标态 */
+  --sem-accent-hover:      var(--pri-indigo-700);
+  --sem-accent-soft:       var(--pri-indigo-50);   /* 交互色的软底 */
+  --sem-accent-line:       var(--pri-indigo-100);  /* 交互色的描边 */
+  --sem-fill-accent:       var(--pri-indigo-600);  /* 交互色的实心填充态 */
+  --sem-fill-accent-hover: var(--pri-indigo-700);
+  --sem-on-accent:         var(--pri-neutral-0);   /* 实心块上的字色（白） */
+
+  /* ---- 状态色 ---- */
+  --sem-success:      var(--pri-green-600);
+  --sem-success-soft: var(--pri-green-50);
+  --sem-warning:      var(--pri-amber-600);
+  --sem-warning-soft: var(--pri-amber-50);
+  --sem-danger:       var(--pri-red-700);
+  --sem-danger-soft:  var(--pri-red-50);
+  --sem-attention:    var(--pri-amber-500);        /* 星标 */
+  --sem-track:        var(--pri-neutral-200);     /* 进度轨道 */
+  --sem-chip:         var(--pri-neutral-75);      /* chip 底 */
+
+  /* ---- 分类胶囊：底色比面板深一档，文字用次级灰；强调色一律不给 ---- */
+  --sem-pill-bg:         var(--pri-neutral-100);
+  --sem-pill-bg-hover:   var(--pri-neutral-225);
+  --sem-pill-ink:        var(--pri-neutral-425);
+  --sem-pill-ink-hover:  var(--pri-neutral-700);
+
+  /* ==========================================================================
+   * 2.9 【semantic 层】圆角 / 阴影 / 焦点环 / 布局尺寸 / 品牌语义（浅色）
+   *     圆角、布局尺寸、品牌色板是主题无关的，因此只在 :root 声明一次，
+   *     深色块不重复声明（继承即可）—— 这也是「primitive 一套共用」的体现。
+   * ====================================================================== */
+
+  /* ---- 圆角（Phase1 §6.4：三档 12/8/5 + 弹层 16 + 胶囊 999，无中间档） ---- */
+  --sem-radius-card:    var(--pri-radius-md);   /* 面板 / 卡片 */
+  --sem-radius-control: var(--pri-radius-sm);   /* 控件 */
+  --sem-radius-badge:   var(--pri-radius-xs);   /* 小角标 */
+  --sem-radius-modal:   var(--pri-radius-lg);   /* 弹层 */
+  --sem-radius-pill:    var(--pri-radius-pill); /* 胶囊 */
+  --radius-lg:          var(--pri-radius-lg);   /* 兼容别名：与 --sem-radius-modal 同值（styles.css:1041 引用） */
+
+  /* ---- 阴影 / 焦点环（浅色档） ---- */
+  --sem-shadow-sm:   var(--pri-shadow-sm-light);
+  --sem-shadow-md:   var(--pri-shadow-md-light);
+  --sem-shadow-lg:   var(--pri-shadow-lg-light);
+  --sem-focus-ring:  var(--pri-ring-light);
+
+  /* ---- 布局尺寸 ---- */
+  --sem-sidebar-width: var(--pri-size-sidebar);
+
+  /* ---- 品牌层「活跃面」语义（Phase1 §2.4 / §7.2 / Phase2 §4.2） ----
+   * 六枚原始色板本身【不随 data-theme 变】：品牌层反白靠双份 SVG 资产切换，不是 CSS
+   * 取色（§2.4 / §7.2 / cover.ts:43）。这组语义入口给将来「关于页 / 分享卡」等品牌
+   * 展示面用：浅色指向纸墨，深色指向反白组（见第 3 节）。本轮不接入产品 UI，
+   * UI 继续用现有 :root 的 --panel/--text。 */
+  --brand-surface: var(--brand-paper);   /* Phase1 §7.2 品牌层反白映射（浅色侧） */
+  --brand-fg:      var(--brand-ink);     /* Phase1 §7.2 品牌层反白映射（浅色侧） */
+  --brand-rule:    var(--brand-line);    /* Phase1 §3.3-(1) 1px 发丝线 */
 }
 
 
 /* ============================================================================
- * 3. 深色 :root[data-theme="dark"] —— 品牌层反白映射
- *    明暗唯一入口仍是 data-theme（theme.service.ts:43-48 / Phase1 §7.1）。
+ * 3. 深色 :root[data-theme="dark"] —— semantic 层深色覆盖
+ *    明暗唯一入口仍是 data-theme（theme.service.ts:47 / Phase1 §7.1）。
+ *    【只覆盖 semantic，不新增 primitive】：深色语义引用的是同一批 --pri-* 的
+ *    另一档位，所以「改 primitive -> 两套语义一起变」的联动仍然成立。
  *    四个 URL 变量【不在这里重赋值】：light/dark 是两份资产路径，由接入片段里的
  *    :host-context([data-theme='dark']) 规则选择读哪一个，而不是把变量本身改掉。
- *    这样「冻结只改 3 处」成立：资产文件 / 四个 URL 变量 / 三个常量。
  * ============================================================================ */
 :root[data-theme="dark"] {
-  /* 品牌层反白映射（Phase1 §2.4 / §7.2 / §3.3-(1)）：
+
+  /* ---- 表面（深色：底比面板暗，层级越高越亮） ---- */
+  --sem-bg:             var(--pri-neutral-775);
+  --sem-bg-deep:        var(--pri-neutral-800);
+  --sem-surface:        var(--pri-neutral-750);
+  --sem-surface-raised: var(--pri-neutral-675);
+  --sem-surface-sunken: var(--pri-neutral-600);
+  --sem-field-bg:       var(--pri-neutral-725);
+  --sem-hover:          var(--pri-neutral-625);
+
+  /* ---- 文字（深色：反过来用亮灰） ---- */
+  --sem-text:             var(--pri-neutral-150);
+  --sem-text-secondary:   var(--pri-neutral-275);
+  --sem-text-muted:       var(--pri-neutral-350);
+  --sem-text-faint:       var(--pri-neutral-400);
+  --sem-text-placeholder: var(--pri-neutral-400);
+
+  /* ---- 描边（深色：线比底亮一档） ---- */
+  --sem-border-subtle:  var(--pri-neutral-550);
+  --sem-border-hairline: var(--pri-neutral-650);
+  --sem-border-strong:  var(--pri-neutral-475);
+  /* 控件边界（Phase2 §2.10-11）：深底 --panel #141417 上 #8b8b94 实算 5.44:1。
+   * 深浅取同一 HEX 是 Phase2 §2.10-11 的实测结论；分别声明是为了留出深色独立
+   * 微调的接口。禁止用它覆盖 --border / --border-strong。 */
+  --sem-control-border: var(--pri-neutral-350);
+  --border-control:     var(--pri-neutral-350);   /* 兼容别名：与 --sem-control-border 同值，改动须同步 */
+
+  /* ---- 强调色（深色：文字态提亮成 300 档，实心填充态不翻） ----
+   * --sem-accent 取 300 档（#a5b4fc）：#4f46e5 压在深色面板 #141417 上仅 2.2:1，
+   * 提亮后约 8.6:1。--sem-fill-accent 保持 600 档：实心块自带底色，白字压上去
+   * 仍是 6.29:1；提亮反而会让靛底发灰。 */
+  --sem-accent:            var(--pri-indigo-300);
+  --sem-accent-hover:      var(--pri-indigo-100);
+  --sem-accent-soft:       var(--pri-indigo-a18);
+  --sem-accent-line:       var(--pri-indigo-700);
+  --sem-fill-accent:       var(--pri-indigo-600);
+  --sem-fill-accent-hover: var(--pri-indigo-500);
+  --sem-on-accent:         var(--pri-neutral-0);
+
+  /* ---- 状态色（深色：亮档 + 半透明软底） ---- */
+  --sem-success:      var(--pri-green-400);
+  --sem-success-soft: var(--pri-green-a12);
+  --sem-warning:      var(--pri-amber-400);
+  --sem-warning-soft: var(--pri-amber-a12);
+  --sem-danger:       var(--pri-red-400);
+  --sem-danger-soft:  var(--pri-red-a12);
+  --sem-attention:    var(--pri-amber-400);
+  --sem-track:        var(--pri-neutral-575);
+  --sem-chip:         var(--pri-neutral-575);
+
+  /* ---- 分类胶囊（深色：底比面板亮一档，文字用浅灰） ---- */
+  --sem-pill-bg:        var(--pri-neutral-525);
+  --sem-pill-bg-hover:  var(--pri-neutral-500);
+  --sem-pill-ink:       var(--pri-neutral-300);
+  --sem-pill-ink-hover: var(--pri-neutral-150);
+
+  /* ---- 阴影 / 焦点环（深色档） ---- */
+  --sem-shadow-sm:  var(--pri-shadow-sm-dark);
+  --sem-shadow-md:  var(--pri-shadow-md-dark);
+  --sem-shadow-lg:  var(--pri-shadow-lg-dark);
+  --sem-focus-ring: var(--pri-ring-dark);
+
+  /* ---- 品牌层反白映射（Phase1 §2.4 / §7.2 / §3.3-(1)） ----
    * 纸 #f8f6f1 -> #15151a 反白底，墨 #1b1b1e -> #f1ede4 暖白反白字。
    * 实算（Phase2 §3.2 品牌层表）：反白字/反白底 15.57:1；墨/纸 15.91:1；
    * 弱字/纸 4.99:1。品牌层全部达标，不达标集中在 UI 层 --faint 与 --accent 填充。 */
   --brand-surface: var(--brand-paper-reverse);   /* Phase1 §7.2 反白底 #15151a */
   --brand-fg:      var(--brand-ink-reverse);      /* Phase1 §7.2 暖白反白字 #f1ede4 */
   --brand-rule:    var(--brand-line);             /* 1px 细线保持，反白面同样用 --brand-line */
-
-  /* 控件边界（Phase2 §2.10-11）：深底 --panel #141417 上 #8b8b94 实算 5.44:1。
-   * 深浅取同一 HEX 是 Phase2 §2.10-11 的实测结论；分别声明是为了留出深色独立
-   * 微调的接口。禁止用它覆盖 --border / --border-strong。 */
-  --border-control: #8b8b94;            /* Phase2 §2.10-11 深：on #141417 = 5.44:1 */
 }
 
 
 /* ============================================================================
- * 4. 接入片段【注释形式，不生效】—— 仅供参考，不产出组件实现
+ * 4. 【component 层】--cmp-* 预留 —— 本轮【只建结构、不写值】
+ * ----------------------------------------------------------------------------
+ * 用途：把 semantic token 落到具体组件槽位。作用范围 = 单个组件，是三层里
+ *       最窄的一层。值留空有两个原因：
+ *         1. styles.css 里已有大量组件类（.btn / .card / .modal ...），本层若现在
+ *            就赋值，必须同步改这些类才能生效，而 styles.css 本轮【不改】
+ *            （其它并行任务在改），赋值只会变成「定义了但没人用」的死变量；
+ *         2. 组件层是「表现细节」，与 semantic 的稳定契约不同，变更频率更高，
+ *            提前写死反而增加耦合。
+ * 规则（将来启用时必须遵守）：
+ *         · 组件层只允许引用 --sem-*，不得直接引用 --pri-*
+ *           （否则改 primitive 就绕过了语义层，联动链断掉）
+ *         · 一个组件可以有多枚槽位（bg / fg / border / radius / shadow ...）
+ *         · 组件层不得反向影响 semantic（单向依赖）
+ * 规划中的槽位（不生效，仅示意命名）：
+ *   --cmp-button-primary-bg / --cmp-button-primary-fg / --cmp-button-primary-radius
+ *   --cmp-button-ghost-border / --cmp-button-ghost-fg
+ *   --cmp-input-bg / --cmp-input-border / --cmp-input-fg / --cmp-input-radius
+ *   --cmp-card-bg / --cmp-card-border / --cmp-card-radius
+ *   --cmp-modal-bg / --cmp-modal-border / --cmp-modal-radius / --cmp-modal-shadow
+ *   --cmp-chip-bg / --cmp-chip-fg / --cmp-chip-radius
+ *   --cmp-badge-bg / --cmp-badge-fg
+ *   --cmp-wordmark-logo / --cmp-wordmark-fg / --cmp-wordmark-min-width
+ *   --cmp-wordmark-icon / --cmp-wordmark-icon-min
+ * ============================================================================ */
+
+
+/* ============================================================================
+ * 5. 接入片段【注释形式，不生效】—— 仅供参考，不产出组件实现
  * ----------------------------------------------------------------------------
  * 说明：本文件中【生效】的 CSS 只有上面两条 @font-face 与两个 :root 块。
  *       以下全部为注释，复制到 M2/M3 的具体文件时才成为真实规则；刻意不写成
@@ -181,19 +565,19 @@
  *   .brand-wordmark {
  *     font-family: "Barlow Condensed", "Segoe UI", sans-serif;
  *     font-weight: 400; letter-spacing: .028em;
- *     font-size: 20px; line-height: 1.1; color: var(--text);
+ *     font-size: 20px; line-height: 1.1; color: var(--brand-fg);
  *     min-width: var(--brand-min-width);
  *     white-space: nowrap; flex: none;
  *   }
  *   .brand-sub {
  *     font-size: 10px; font-weight: 500;
  *     letter-spacing: 0;
- *     color: var(--muted);
+ *     color: var(--brand-muted);
  *   }
  *
  *   逐条依据：
  *   - letter-spacing: 0 —— 中文硬约束（Phase1 §4.1 / 主理人裁决采纳附录 A-4）
- *   - color: var(--muted) —— --faint 实测 2.56:1 不达 AA（Phase2 §3.2 / 附录 A-2）
+ *   - color: var(--brand-muted) —— --faint 实测 2.56:1 不达 AA（Phase2 §3.2 / 附录 A-2）
  *   - 字标严格 400 + .028em（Phase1 §2.1 锁定基线）
  *   - 全站 .brand-wordmark 有且仅有 1 个实例（Phase2 §1.1）
  *
