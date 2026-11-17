@@ -10,6 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
+from . import hot_board
 from .api.routes import router, warm_discover, warm_workflows
 from .comfy.api import router as comfy_router
 from .comfy.runner import stop_all as stop_comfy_instances
@@ -46,6 +47,8 @@ async def lifespan(_app: FastAPI):
         threading.Thread(target=warm_discover, name="warm-discover", daemon=True).start()
         # 工作流发现页同理：模板/ComfyHub 索引 + 默认查询都先跑一遍
         threading.Thread(target=warm_workflows, name="warm-workflows", daemon=True).start()
+        # 三个发现页的本地热力榜：先读盘顶住首屏，过期的再去换新
+        threading.Thread(target=hot_board.warm_all, name="warm-hot-board", daemon=True).start()
         # 节点清单 5.6MB，第一次进节点页要等十几秒，同样丢后台先拉
         warm_catalog()
     try:

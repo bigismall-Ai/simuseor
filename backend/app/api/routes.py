@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
 from .. import family_scan
+from .. import hot_board
 from .. import image_proxy
 from ..comfy.model_dirs import infer_folder, plan_folders
 from .. import nodes as node_service
@@ -232,6 +233,11 @@ def folders() -> list[dict]:
 # ---------------- 工作流发现 ----------------
 @router.get("/workflows")
 def search_workflows(q: str = "", source: str = "all", limit: int = 12, page: int = 1, sort: str = "downloads") -> dict:
+    # 首屏（默认参数）直接给本地热力榜：重启后也是秒开，后台再换新
+    if hot_board.matches("workflows", q=q, source=source, sort=sort, limit=limit, page=page):
+        cached = hot_board.get("workflows")
+        if cached is not None:
+            return cached
     return workflow_service.search(q, source, limit, page, sort)
 
 
@@ -438,6 +444,10 @@ def search_nodes(
     page: int = 1,
     category: str = "",
 ) -> dict:
+    if hot_board.matches("nodes", q=q, sort=sort, scope=scope, limit=limit, page=page, category=category):
+        cached = hot_board.get("nodes")
+        if cached is not None:
+            return cached
     try:
         return node_service.search(q, sort, scope, limit, page, category)
     except SourceError as exc:
@@ -798,6 +808,13 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
     if cached is not None:
         return cached
 
+    # 首屏（空关键词 + trending + page 1）优先用本地热力榜：落过盘，重启也秒开
+    board_name = f"models:{source}" if source else "models"
+    if hot_board.matches(board_name, q=q, source=source, sort=sort, limit=limit, page=page, task=task):
+        board = hot_board.get(board_name)
+        if board is not None:
+            return board
+
     settings = load_settings()
     if source and source != "all":
         names = [source]
@@ -854,6 +871,39 @@ def warm_discover() -> None:
 
     with ThreadPoolExecutor(max_workers=3) as pool:
         list(pool.map(one, ("huggingface", "modelscope", "civitai")))
+
+
+# ---------------- 本地热力榜 ----------------
+# 只登记「首屏默认参数」这一份；搜索词不空、或换了排序/来源时照旧实时查。
+# 数据落在 var/data/hot/，进程重启后先读盘顶住，后台再去换新 ——
+# 这样「后端重启一次，第一个进发现页的人白等一轮」这件事就不存在了。
+hot_board.register(
+    "models",
+    hot_board.TTL_DEFAULT,
+    {"q": "", "source": "", "sort": "trending", "limit": 20, "page": 1, "task": ""},
+    lambda: search_models("", "", "trending", 20, 1, ""),
+)
+# 模型发现页前端是「按来源各发一次」，不是一次 all —— 必须按来源各建一份，
+# 否则只有「全部来源」这种页面根本不发的参数能命中，等于没生效。
+for _src in ("huggingface", "modelscope", "civitai"):
+    hot_board.register(
+        f"models:{_src}",
+        hot_board.TTL_DEFAULT,
+        {"q": "", "source": _src, "sort": "trending", "limit": 20, "page": 1, "task": ""},
+        (lambda s: lambda: search_models("", s, "trending", 20, 1, ""))(_src),
+    )
+hot_board.register(
+    "workflows",
+    hot_board.TTL_DEFAULT,
+    {"q": "", "source": "all", "sort": "downloads", "limit": 12, "page": 1},
+    lambda: workflow_service.search("", "all", 12, 1, "downloads"),
+)
+hot_board.register(
+    "nodes",
+    hot_board.TTL_NODES,
+    {"q": "", "sort": "nodes", "scope": "all", "limit": 20, "page": 1, "category": ""},
+    lambda: node_service.search("", "nodes", "all", 20, 1, ""),
+)
 
 
 def warm_workflows() -> None:
