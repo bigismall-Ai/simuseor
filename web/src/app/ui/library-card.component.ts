@@ -189,9 +189,16 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         pointer-events: none;
         transition: box-shadow 0.16s ease;
       }
+      /* M1-c：hover 不再位移 + 不再外阴影（Phase2 §2.10-13 / §8-E 第 3 处）。
+         保留 1px 描边作为唯一可见反馈，但画在**本体外圈**而不是本体 inset：
+         本卡封面铺满本体、z-index 高于本体，inset 描边会被封面盖住 ——
+         逐像素实测 hover 前后本体边缘没有一像素靛蓝，只有灰边消失，
+         等于「看不出 hover 发生过」。改成外圈 0 0 0 1px 后同一探针实测
+         边缘 7/7 像素为靛蓝 rgb(79,70,229)，反馈真实可见。
+         外圈贴着页面底色、与卡片内容无关，也不与 ::after 的内描边叠成两层。
+         ::after 的 1px 内描边同时让位，避免两层边。 */
       .mcard:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 0 1px var(--accent), 0 14px 30px -20px rgb(0 0 0 / 0.3);
+        box-shadow: 0 0 0 1px var(--accent);
       }
       .mcard:hover::after {
         box-shadow: inset 0 0 0 1px transparent;

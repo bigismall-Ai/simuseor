@@ -253,10 +253,17 @@ const SORTS = [
     }
     .nd-row:hover {
       border-color: var(--border-strong);
-      box-shadow: var(--shadow-sm);
+      background: var(--hover);
     }
     .nd-row.is-installed {
       background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft)), var(--panel);
+    }
+    /* 已安装行：.is-installed 与 :hover 同特异性(0,2,0)且写在后面，会盖掉 hover 的
+       background —— 实测已安装行 hover 时背景不变、只剩 border-color 变化。
+       这里补一条同选择器组合：保留 accent-soft 底纹（已安装的状态提示不能丢），
+       只把底板换成 --hover，与普通行 hover 一致。 */
+    .nd-row.is-installed:hover {
+      background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft)), var(--hover);
     }
 
     .nd-tile {

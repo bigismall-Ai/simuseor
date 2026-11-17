@@ -1625,7 +1625,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     }
     .wf-row:hover {
       border-color: var(--border-strong);
-      box-shadow: var(--shadow-sm);
+      background: var(--hover);
     }
     .wf-thumb {
       align-self: start;
