@@ -8,14 +8,20 @@
  *
  * 两条硬规则：
  *  1. **深色主题换整套色，不翻色板**。浅色底在深色页面上会整块发亮，
- *     所以每个家族 / 任务都有独立的深色值（与 cover-plate 的 `.f-*` 同源）。
- *  2. **内联只给 `--t-*` / `--t-*-d`，由调用方 CSS 映射到 `--plate-*`**。
+ *     所以每个家族 / 任务都有独立的深色值。
+ *  2. **两套色都返回，调用方只给 `--t-*` / `--t-*-d`，由 CSS 映射到 `--plate-*`**。
  *     两套色都写内联的话，内联永远赢过 CSS 规则，深色主题就切不过去。
  *
- * 家族值与 `cover-plate.component.ts` 的 `.f-*` 保持一致；任务值来自 v4 原型
- * （认不出家族时的兜底）。两边必须同步，否则同一张卡在两处颜色不同。
+ * ── 家族色的唯一出处 ──────────────────────────────────────────────
+ * 这里的 `FAMILY_TONE` / `FAMILY_TONE_DARK` 是**全站唯一一份家族色**。
+ * 以前 `cover-plate.component.ts` 里还有一份等值的 `.f-*` 静态类，两边各改各的，
+ * 迟早会飘。现在封面（`ui/cover-plate.component.ts`）也走这份色板，
+ * 改颜色只改这里一处。
+ *
+ * 任务值来自 v4 原型（认不出家族时的兜底），只在本文件里存在。
  */
 
+/** 一套色：底 / 正文 / 强调 / 纹样 */
 export interface Tone {
   bg: string;
   ink: string;
@@ -23,7 +29,12 @@ export interface Tone {
   mark: string;
 }
 
-const FAMILY_TONE: Record<string, Tone> = {
+/**
+ * 家族色板（浅色）：16 个家族。
+ *
+ * 与封面 `.f-*` 那份曾经重复的两套色，现在只留这里。
+ */
+export const FAMILY_TONE: Record<string, Tone> = {
   flux: { bg: '#f1eefc', ink: '#574f8c', strong: '#3c3489', mark: '#8f86d6' },
   wan: { bg: '#e1f5ee', ink: '#2f7563', strong: '#085041', mark: '#59b79f' },
   sdxl: { bg: '#fbeaf0', ink: '#95516b', strong: '#72243e', mark: '#d78aa6' },
@@ -42,7 +53,8 @@ const FAMILY_TONE: Record<string, Tone> = {
   chroma: { bg: '#f7ece2', ink: '#7d5a3a', strong: '#5a3c1e', mark: '#c39a72' },
 };
 
-const FAMILY_TONE_DARK: Record<string, Tone> = {
+/** 家族色板（深色）。同源同值，只是底压深、字提亮。 */
+export const FAMILY_TONE_DARK: Record<string, Tone> = {
   flux: { bg: '#1e1b33', ink: '#c3bcfa', strong: '#ded9ff', mark: '#8f86d6' },
   wan: { bg: '#10241f', ink: '#8fdfca', strong: '#bdf2e2', mark: '#59b79f' },
   sdxl: { bg: '#2a1620', ink: '#f2adc3', strong: '#ffd2e0', mark: '#d78aa6' },
@@ -61,8 +73,16 @@ const FAMILY_TONE_DARK: Record<string, Tone> = {
   chroma: { bg: '#2a2018', ink: '#d8b596', strong: '#f2dcc4', mark: '#c39a72' },
 };
 
+/**
+ * 中性底：家族认不出、任务也认不出时的最后一块底。
+ *
+ * 「未知就是未知，不猜」—— 所以是中性灰，不是随便挑一个家族色。
+ */
+export const NEUTRAL_TONE: Tone = { bg: '#f2f1ed', ink: '#6b6a63', strong: '#57564f', mark: '#b3b2aa' };
+export const NEUTRAL_TONE_DARK: Tone = { bg: '#232321', ink: '#b0afa6', strong: '#d7d6cd', mark: '#b3b2aa' };
+
 /** 任务色：认不出家族时的第二维度。id 与后端 `weight_class.TASK_LABELS` 一致 */
-const TASK_TONE: Record<string, Tone> = {
+export const TASK_TONE: Record<string, Tone> = {
   text_to_image: { bg: '#f1eefc', ink: '#574f8c', strong: '#3c3489', mark: '#8f86d6' },
   image_to_image: { bg: '#fbeaf0', ink: '#95516b', strong: '#72243e', mark: '#d78aa6' },
   text_to_video: { bg: '#e7f0fa', ink: '#3a6291', strong: '#14487a', mark: '#8cb4de' },
@@ -77,7 +97,7 @@ const TASK_TONE: Record<string, Tone> = {
   image_understanding: { bg: '#eef2f4', ink: '#4e6069', strong: '#36474e', mark: '#8ea3ad' },
 };
 
-const TASK_TONE_DARK: Record<string, Tone> = {
+export const TASK_TONE_DARK: Record<string, Tone> = {
   text_to_image: { bg: '#1e1b33', ink: '#c3bcfa', strong: '#ded9ff', mark: '#8f86d6' },
   image_to_image: { bg: '#2a1620', ink: '#f2adc3', strong: '#ffd2e0', mark: '#d78aa6' },
   text_to_video: { bg: '#132336', ink: '#8fc0e8', strong: '#c3e0f7', mark: '#8cb4de' },
@@ -92,19 +112,17 @@ const TASK_TONE_DARK: Record<string, Tone> = {
   image_understanding: { bg: '#182026', ink: '#a3b6c2', strong: '#c9dae4', mark: '#8ea3ad' },
 };
 
-/** 两个维度都认不出：中性。这是「未知就是未知」，不猜 */
-const OTHER_TONE: Tone = { bg: '#eef0f4', ink: '#5b6272', strong: '#41475a', mark: '#a3aab8' };
-const OTHER_TONE_DARK: Tone = { bg: '#1c1f27', ink: '#a4abba', strong: '#ccd2dd', mark: '#7c8496' };
-
 /**
  * 取一套色。`family` 为 `other`（认不出）时落到任务色，任务也没有才中性。
  *
  * 家族色回答「谁家的」，任务色回答「干什么的」—— 两个都认不出才不涂色。
+ *
+ * 两套色都留着：调用方同时拿到浅色与深色，由 CSS 按 `data-theme` 挑。
  */
 export function modelTone(family: string, task: string, dark: boolean): Tone {
   const fam = dark ? FAMILY_TONE_DARK : FAMILY_TONE;
   if (family && family !== 'other' && fam[family]) return fam[family];
   const taskTable = dark ? TASK_TONE_DARK : TASK_TONE;
   if (task && taskTable[task]) return taskTable[task];
-  return dark ? OTHER_TONE_DARK : OTHER_TONE;
+  return dark ? NEUTRAL_TONE_DARK : NEUTRAL_TONE;
 }

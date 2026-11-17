@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, output } from '@angular/core';
 import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
+import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
 
 /**
  * 兜底封面铭牌：整块只有一层。
@@ -25,8 +26,12 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
  * 图片背景上给标加白底：各家规范都要求标不要压在不透明度的未知背景上，白底是最稳的解法，
  * 也不涉及改色（白底上继续用原本给浅色用的那版资产）。
  *
- * 颜色写成 9 个家族类 × 明暗两套静态规则，不用行内 color-mix 绑定变量：
+ * 颜色写成家族类 × 明暗两套规则，不用行内 color-mix 绑定变量：
  * 组件里的 CSS 自定义属性绑定在部分 Angular 版本上会被裁剪，静态类更稳。
+ *
+ * 家族色的**字面值只在 model-tone.ts 一份**（家族色单一出处），这里的类只做
+ * 「家族 id → CSS 变量」的映射，用模板字面量插值取过来 —— 编译后与手写字面值
+ * 逐字节一致，但改颜色只需改 model-tone.ts 一处。
  */
 @Component({
   selector: 'app-cover-plate',
@@ -566,210 +571,214 @@ import { CoverInput, CoverMeta, coverMeta } from '../core/cover';
         height: 16px;
       }
 
-      /* 家族色板：17 桶 × 明暗两套（16 个家族 + other）。色相在这里定死，不按 id 哈希取。
-         撞色不可避免（16 个家族、一屏十来张卡）——身份由家族码承担，颜色只做分组。 */
+      /* 家族色板：色值只在 model-tone.ts 定义一份（家族色单一出处）。
+         这里只负责把「家族 id → 家族色」映射到 CSS 变量。
+
+         色相在这里定死，不按 id 哈希取。撞色不可避免（16 个家族、一屏十来张卡）
+         ——身份由家族码承担，颜色只做分组。 */
       .f-flux {
-        --plate-bg: #f1eefc;
-        --plate-ink: #574f8c;
-        --plate-strong: #3c3489;
-        --plate-mark: #8f86d6;
+        --plate-bg: ${FAMILY_TONE.flux.bg};
+        --plate-ink: ${FAMILY_TONE.flux.ink};
+        --plate-strong: ${FAMILY_TONE.flux.strong};
+        --plate-mark: ${FAMILY_TONE.flux.mark};
       }
       .f-wan {
-        --plate-bg: #e1f5ee;
-        --plate-ink: #2f7563;
-        --plate-strong: #085041;
-        --plate-mark: #59b79f;
+        --plate-bg: ${FAMILY_TONE.wan.bg};
+        --plate-ink: ${FAMILY_TONE.wan.ink};
+        --plate-strong: ${FAMILY_TONE.wan.strong};
+        --plate-mark: ${FAMILY_TONE.wan.mark};
       }
       .f-sdxl {
-        --plate-bg: #fbeaf0;
-        --plate-ink: #95516b;
-        --plate-strong: #72243e;
-        --plate-mark: #d78aa6;
+        --plate-bg: ${FAMILY_TONE.sdxl.bg};
+        --plate-ink: ${FAMILY_TONE.sdxl.ink};
+        --plate-strong: ${FAMILY_TONE.sdxl.strong};
+        --plate-mark: ${FAMILY_TONE.sdxl.mark};
       }
       .f-sd15 {
-        --plate-bg: #f1f3f4;
-        --plate-ink: #5b6165;
-        --plate-strong: #41474a;
-        --plate-mark: #a3abaf;
+        --plate-bg: ${FAMILY_TONE.sd15.bg};
+        --plate-ink: ${FAMILY_TONE.sd15.ink};
+        --plate-strong: ${FAMILY_TONE.sd15.strong};
+        --plate-mark: ${FAMILY_TONE.sd15.mark};
       }
       .f-pony {
-        --plate-bg: #fbebf6;
-        --plate-ink: #8a4a74;
-        --plate-strong: #6d2a55;
-        --plate-mark: #d18cb8;
+        --plate-bg: ${FAMILY_TONE.pony.bg};
+        --plate-ink: ${FAMILY_TONE.pony.ink};
+        --plate-strong: ${FAMILY_TONE.pony.strong};
+        --plate-mark: ${FAMILY_TONE.pony.mark};
       }
       .f-hunyuan {
-        --plate-bg: #e7f0fa;
-        --plate-ink: #3a6291;
-        --plate-strong: #14487a;
-        --plate-mark: #8cb4de;
+        --plate-bg: ${FAMILY_TONE.hunyuan.bg};
+        --plate-ink: ${FAMILY_TONE.hunyuan.ink};
+        --plate-strong: ${FAMILY_TONE.hunyuan.strong};
+        --plate-mark: ${FAMILY_TONE.hunyuan.mark};
       }
       .f-ltx {
-        --plate-bg: #ecf4e3;
-        --plate-ink: #55703a;
-        --plate-strong: #3a5a1e;
-        --plate-mark: #9dbe7c;
+        --plate-bg: ${FAMILY_TONE.ltx.bg};
+        --plate-ink: ${FAMILY_TONE.ltx.ink};
+        --plate-strong: ${FAMILY_TONE.ltx.strong};
+        --plate-mark: ${FAMILY_TONE.ltx.mark};
       }
       .f-qwen {
-        --plate-bg: #f7efdd;
-        --plate-ink: #8b6421;
-        --plate-strong: #633806;
-        --plate-mark: #d3a862;
+        --plate-bg: ${FAMILY_TONE.qwen.bg};
+        --plate-ink: ${FAMILY_TONE.qwen.ink};
+        --plate-strong: ${FAMILY_TONE.qwen.strong};
+        --plate-mark: ${FAMILY_TONE.qwen.mark};
       }
-      /* MiniMax：底色取官方渐变（#E21680 品红 → #FF633A 橙）的低饱和底，
-         家族标识本身就是那个渐变，底色不能再抢。 */
       .f-minimax {
-        --plate-bg: #fdeef3;
-        --plate-ink: #9c3f68;
-        --plate-strong: #6d2645;
-        --plate-mark: #e88ab0;
+        --plate-bg: ${FAMILY_TONE.minimax.bg};
+        --plate-ink: ${FAMILY_TONE.minimax.ink};
+        --plate-strong: ${FAMILY_TONE.minimax.strong};
+        --plate-mark: ${FAMILY_TONE.minimax.mark};
       }
       .f-krea {
-        --plate-bg: #e2f2f5;
-        --plate-ink: #2c6d78;
-        --plate-strong: #0d4a54;
-        --plate-mark: #66b3bf;
+        --plate-bg: ${FAMILY_TONE.krea.bg};
+        --plate-ink: ${FAMILY_TONE.krea.ink};
+        --plate-strong: ${FAMILY_TONE.krea.strong};
+        --plate-mark: ${FAMILY_TONE.krea.mark};
       }
       .f-zimage {
-        --plate-bg: #e9ebfa;
-        --plate-ink: #464c8e;
-        --plate-strong: #262a63;
-        --plate-mark: #8d94d6;
+        --plate-bg: ${FAMILY_TONE.zimage.bg};
+        --plate-ink: ${FAMILY_TONE.zimage.ink};
+        --plate-strong: ${FAMILY_TONE.zimage.strong};
+        --plate-mark: ${FAMILY_TONE.zimage.mark};
       }
       .f-hidream {
-        --plate-bg: #fdeae6;
-        --plate-ink: #93503f;
-        --plate-strong: #70301f;
-        --plate-mark: #dda08c;
+        --plate-bg: ${FAMILY_TONE.hidream.bg};
+        --plate-ink: ${FAMILY_TONE.hidream.ink};
+        --plate-strong: ${FAMILY_TONE.hidream.strong};
+        --plate-mark: ${FAMILY_TONE.hidream.mark};
       }
-      /* ERNIE：底色跟官方蓝走（#002F8E / #26AAFF），但压低饱和度，
-         免得和 hunyuan 的蓝抢；品牌识别交给官方 symbol 本身。 */
       .f-ernie {
-        --plate-bg: #e8edfc;
-        --plate-ink: #2f4fa0;
-        --plate-strong: #16306e;
-        --plate-mark: #7f9ede;
+        --plate-bg: ${FAMILY_TONE.ernie.bg};
+        --plate-ink: ${FAMILY_TONE.ernie.ink};
+        --plate-strong: ${FAMILY_TONE.ernie.strong};
+        --plate-mark: ${FAMILY_TONE.ernie.mark};
       }
       .f-noobai {
-        --plate-bg: #eef2df;
-        --plate-ink: #67703c;
-        --plate-strong: #474e1f;
-        --plate-mark: #a8b477;
+        --plate-bg: ${FAMILY_TONE.noobai.bg};
+        --plate-ink: ${FAMILY_TONE.noobai.ink};
+        --plate-strong: ${FAMILY_TONE.noobai.strong};
+        --plate-mark: ${FAMILY_TONE.noobai.mark};
       }
       .f-illustrious {
-        --plate-bg: #f3ebf7;
-        --plate-ink: #7a4a8c;
-        --plate-strong: #582866;
-        --plate-mark: #b789c9;
+        --plate-bg: ${FAMILY_TONE.illustrious.bg};
+        --plate-ink: ${FAMILY_TONE.illustrious.ink};
+        --plate-strong: ${FAMILY_TONE.illustrious.strong};
+        --plate-mark: ${FAMILY_TONE.illustrious.mark};
       }
       .f-chroma {
-        --plate-bg: #f7ece2;
-        --plate-ink: #7d5a3a;
-        --plate-strong: #5a3c1e;
-        --plate-mark: #c39a72;
+        --plate-bg: ${FAMILY_TONE.chroma.bg};
+        --plate-ink: ${FAMILY_TONE.chroma.ink};
+        --plate-strong: ${FAMILY_TONE.chroma.strong};
+        --plate-mark: ${FAMILY_TONE.chroma.mark};
       }
+
+      /* other：中性兜底色（认不出家族），不属于家族色板 —— model-tone.ts 里没有它是对的，
+         故只在此处定义，取值与该文件的 NEUTRAL_TONE 一致。 */
       .f-other {
         --plate-bg: #f2f1ed;
         --plate-ink: #6b6a63;
         --plate-strong: #57564f;
         --plate-mark: #b3b2aa;
       }
+
       :host-context([data-theme='dark']) .f-flux {
-        --plate-bg: #1e1b33;
-        --plate-ink: #c3bcfa;
-        --plate-strong: #ded9ff;
-        --plate-mark: #8f86d6;
+        --plate-bg: ${FAMILY_TONE_DARK.flux.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.flux.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.flux.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.flux.mark};
       }
       :host-context([data-theme='dark']) .f-wan {
-        --plate-bg: #10241f;
-        --plate-ink: #8fdfca;
-        --plate-strong: #bdf2e2;
-        --plate-mark: #59b79f;
+        --plate-bg: ${FAMILY_TONE_DARK.wan.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.wan.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.wan.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.wan.mark};
       }
       :host-context([data-theme='dark']) .f-sdxl {
-        --plate-bg: #2a1620;
-        --plate-ink: #f2adc3;
-        --plate-strong: #ffd2e0;
-        --plate-mark: #d78aa6;
+        --plate-bg: ${FAMILY_TONE_DARK.sdxl.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.sdxl.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.sdxl.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.sdxl.mark};
       }
       :host-context([data-theme='dark']) .f-sd15 {
-        --plate-bg: #202326;
-        --plate-ink: #a8b0b4;
-        --plate-strong: #d3d9dc;
-        --plate-mark: #a3abaf;
+        --plate-bg: ${FAMILY_TONE_DARK.sd15.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.sd15.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.sd15.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.sd15.mark};
       }
       :host-context([data-theme='dark']) .f-pony {
-        --plate-bg: #281626;
-        --plate-ink: #f3b6df;
-        --plate-strong: #ffd6ee;
-        --plate-mark: #d18cb8;
+        --plate-bg: ${FAMILY_TONE_DARK.pony.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.pony.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.pony.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.pony.mark};
       }
       :host-context([data-theme='dark']) .f-hunyuan {
-        --plate-bg: #131f2c;
-        --plate-ink: #9dcbf3;
-        --plate-strong: #cce6ff;
-        --plate-mark: #8cb4de;
+        --plate-bg: ${FAMILY_TONE_DARK.hunyuan.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.hunyuan.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.hunyuan.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.hunyuan.mark};
       }
       :host-context([data-theme='dark']) .f-ltx {
-        --plate-bg: #1b2313;
-        --plate-ink: #b4d68a;
-        --plate-strong: #d9efbb;
-        --plate-mark: #9dbe7c;
+        --plate-bg: ${FAMILY_TONE_DARK.ltx.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.ltx.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.ltx.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.ltx.mark};
       }
       :host-context([data-theme='dark']) .f-qwen {
-        --plate-bg: #232220;
-        --plate-ink: #eec48a;
-        --plate-strong: #ffdfae;
-        --plate-mark: #d3a862;
+        --plate-bg: ${FAMILY_TONE_DARK.qwen.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.qwen.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.qwen.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.qwen.mark};
       }
       :host-context([data-theme='dark']) .f-minimax {
-        --plate-bg: #2a1620;
-        --plate-ink: #f0a3c1;
-        --plate-strong: #ffc8dc;
-        --plate-mark: #e88ab0;
+        --plate-bg: ${FAMILY_TONE_DARK.minimax.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.minimax.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.minimax.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.minimax.mark};
       }
       :host-context([data-theme='dark']) .f-krea {
-        --plate-bg: #10282c;
-        --plate-ink: #8fd6e0;
-        --plate-strong: #bdeef5;
-        --plate-mark: #66b3bf;
+        --plate-bg: ${FAMILY_TONE_DARK.krea.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.krea.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.krea.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.krea.mark};
       }
       :host-context([data-theme='dark']) .f-zimage {
-        --plate-bg: #1a1b33;
-        --plate-ink: #b0b6f2;
-        --plate-strong: #d9dcff;
-        --plate-mark: #8d94d6;
+        --plate-bg: ${FAMILY_TONE_DARK.zimage.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.zimage.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.zimage.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.zimage.mark};
       }
       :host-context([data-theme='dark']) .f-hidream {
-        --plate-bg: #2b1a15;
-        --plate-ink: #f0b5a2;
-        --plate-strong: #ffd6c7;
-        --plate-mark: #dda08c;
+        --plate-bg: ${FAMILY_TONE_DARK.hidream.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.hidream.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.hidream.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.hidream.mark};
       }
       :host-context([data-theme='dark']) .f-ernie {
-        --plate-bg: #141d33;
-        --plate-ink: #a8bdf0;
-        --plate-strong: #d3e0ff;
-        --plate-mark: #7f9ede;
+        --plate-bg: ${FAMILY_TONE_DARK.ernie.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.ernie.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.ernie.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.ernie.mark};
       }
       :host-context([data-theme='dark']) .f-noobai {
-        --plate-bg: #202415;
-        --plate-ink: #c3cf95;
-        --plate-strong: #e2ecc0;
-        --plate-mark: #a8b477;
+        --plate-bg: ${FAMILY_TONE_DARK.noobai.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.noobai.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.noobai.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.noobai.mark};
       }
       :host-context([data-theme='dark']) .f-illustrious {
-        --plate-bg: #251a2b;
-        --plate-ink: #d9b2e6;
-        --plate-strong: #f2d9fb;
-        --plate-mark: #b789c9;
+        --plate-bg: ${FAMILY_TONE_DARK.illustrious.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.illustrious.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.illustrious.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.illustrious.mark};
       }
       :host-context([data-theme='dark']) .f-chroma {
-        --plate-bg: #2a2018;
-        --plate-ink: #d8b596;
-        --plate-strong: #f2dcc4;
-        --plate-mark: #c39a72;
+        --plate-bg: ${FAMILY_TONE_DARK.chroma.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.chroma.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.chroma.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.chroma.mark};
       }
+
       :host-context([data-theme='dark']) .f-other {
         --plate-bg: #232321;
         --plate-ink: #b0afa6;
