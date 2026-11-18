@@ -132,15 +132,10 @@ function fmtScanTime(iso: string | null): string {
                       <span>含成熟内容（18+，部分地区依法受限）</span>
                     </div>
                   </ui-field>
-                  <ui-field label="API 域名（只换通路）">
+                  <ui-field label="API 域名（留空 = civitai.red）">
                     <input [(ngModel)]="settings.sources[key].mirror" placeholder="https://civitai.red">
                   </ui-field>
-                  <ui-field label="使用该域名">
-                    <div class="check-row">
-                      <input type="checkbox" [(ngModel)]="settings.sources[key].use_mirror">
-                      <span>只改连哪条线，不改可见性；两个域名的 API 实测同一份数据</span>
-                    </div>
-                  </ui-field>
+                  <span class="muted">只改连哪条线，不改可见性。留空默认 civitai.red（国内可直连）；填 https://civitai.com 才走官方域名（需代理）。</span>
                 }
                 @if (key === 'huggingface') {
                   <ui-field label="镜像站（hf-mirror）">

@@ -13,22 +13,28 @@ from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 OFFICIAL_API = "https://civitai.com/api/v1"
 
+# 默认走 .red。理由不是偏好，是可达性：
+#   civitai.com 在国内被 DNS 注入（解析到轮换的假 IP）+ SNI 阻断，直连 21 秒超时；
+#   civitai.red 解析到真实 Cloudflare IP，搜索 / 翻页 / 详情 都在 1.5 秒内。
+# 而两者 /api/v1 实测是同一个后端（5 组查询逐条 id 完全一致），换域名不改数据。
+# 所以对中文用户 .red 严格更优，不值得让用户再勾一个开关。
+DEFAULT_API = "https://civitai.red/api/v1"
+
 
 def api_base(cfg: dict | None) -> str:
     """API 域名 = **网络通路**，与 full_catalog（可见性）是两件事。
 
     civitai.com 与 civitai.red 在**产品层面并列**（面向不同可见性），不是主备关系，
-    所以这里不做「失败降级」—— 降级会把通路和可见性缠在一起，等两条线内容真分叉时
+    所以这里**不做失败降级** —— 降级会把通路和可见性缠在一起，等两条线内容真分叉时
     会静默改变用户看到的范围。
 
-    但两者的 /api/v1 实测是同一个后端（5 种查询逐条 id 完全一致），因此 API 走哪个
-    域名只影响「连不连得上」，不影响「看到什么」。想换通路就显式填 mirror，
-    不填就固定走官方域名。
+    默认值取 .red（见上）；要强制走官方域名就在设置里显式填 civitai.com，
+    那时会按「按源代理」的开关套代理。
     """
     cfg = cfg or {}
     raw = str(cfg.get("mirror") or "").strip().rstrip("/")
-    if not (cfg.get("use_mirror") and raw):
-        return OFFICIAL_API
+    if not raw:
+        return DEFAULT_API
     return raw if raw.endswith("/api/v1") else f"{raw}/api/v1"
 
 # 卡片是 4:3 横版，`object-fit: cover` 会从两端裁掉，所以按「离 4:3 多远」挑图。

@@ -102,32 +102,24 @@ def test_cursor_cache_is_per_query(monkeypatch):
 # ---------------- API 域名是「通路」，不是「可见性」 ----------------
 #
 # civitai.com 与 civitai.red 在产品上是**并列的两条线**（面向不同可见性），不是主备，
-# 所以这里不做失败降级。但两者 /api/v1 实测是同一后端（5 种查询逐条 id 一致），
-# 于是「走哪个域名」退化成纯网络问题 —— 单独给一个开关，别塞进 full_catalog 分支。
+# 所以这里不做失败降级。但两者 /api/v1 实测是同一后端（5 组查询逐条 id 一致），
+# 于是「走哪个域名」退化成纯网络问题 —— 默认取 .red（国内可直连），不做成开关。
 
-def test_api_base_defaults_to_official():
-    assert cv.api_base({}) == cv.OFFICIAL_API
-    assert cv.api_base(None) == cv.OFFICIAL_API
-    # 填了但没启用：不该生效，否则「填一下试试」就悄悄换了通路
-    assert cv.api_base({"mirror": "https://civitai.red"}) == cv.OFFICIAL_API
-    assert cv.api_base({"use_mirror": True, "mirror": ""}) == cv.OFFICIAL_API
+def test_api_base_defaults_to_red():
+    """留空就走 .red：.com 在国内 DNS 注入 + SNI 阻断，直连 21 秒超时。"""
+    assert cv.api_base({}) == cv.DEFAULT_API == "https://civitai.red/api/v1"
+    assert cv.api_base(None) == cv.DEFAULT_API
 
 
 def test_api_base_normalizes_host_and_full_path():
-    assert cv.api_base({"use_mirror": True, "mirror": "https://civitai.red"}) == (
-        "https://civitai.red/api/v1"
-    )
+    assert cv.api_base({"mirror": "https://civitai.com"}) == "https://civitai.com/api/v1"
     # 尾斜杠 / 已经带路径，都不该拼成 /api/v1/api/v1
-    assert cv.api_base({"use_mirror": True, "mirror": "https://civitai.red/"}) == (
-        "https://civitai.red/api/v1"
-    )
-    assert cv.api_base({"use_mirror": True, "mirror": "https://civitai.red/api/v1"}) == (
-        "https://civitai.red/api/v1"
-    )
+    assert cv.api_base({"mirror": "https://civitai.red/"}) == "https://civitai.red/api/v1"
+    assert cv.api_base({"mirror": "https://civitai.red/api/v1"}) == "https://civitai.red/api/v1"
 
 
-def test_search_uses_mirror_without_proxy(monkeypatch):
-    """走镜像时不能再套代理：镜像是另一条通路，经代理等于绕回原路。"""
+def test_search_uses_red_without_proxy(monkeypatch):
+    """默认通路不套代理：.red 是替代通路，经代理等于绕回原路。"""
     seen = {}
 
     def fake_get(url, **kw):
@@ -138,15 +130,14 @@ def test_search_uses_mirror_without_proxy(monkeypatch):
     monkeypatch.setattr(cv.httpx, "get", fake_get)
     monkeypatch.setattr(cv, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
 
-    cv.CivitaiAdapter().search(
-        "", 6, 1, "downloads", {"use_mirror": True, "mirror": "https://civitai.red"}
-    )
+    cv.CivitaiAdapter().search("", 6, 1, "downloads", {})
 
     assert seen["url"].startswith("https://civitai.red/api/v1/models")
-    assert seen.get("proxy") is None, "镜像通路不该再经代理"
+    assert seen.get("proxy") is None, "默认通路不该再经代理"
 
 
-def test_search_keeps_proxy_on_official(monkeypatch):
+def test_search_keeps_proxy_when_official_domain_explicit(monkeypatch):
+    """显式填了 civitai.com 就按「按源代理」走 —— 那是用户自己的选择。"""
     seen = {}
 
     def fake_get(url, **kw):
@@ -157,7 +148,7 @@ def test_search_keeps_proxy_on_official(monkeypatch):
     monkeypatch.setattr(cv.httpx, "get", fake_get)
     monkeypatch.setattr(cv, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
 
-    cv.CivitaiAdapter().search("", 6, 1, "downloads", {"proxy_enabled": True})
+    cv.CivitaiAdapter().search("", 6, 1, "downloads", {"mirror": "https://civitai.com"})
 
     assert seen["url"].startswith("https://civitai.com/api/v1/models")
     assert seen.get("proxy") == "http://127.0.0.1:7890"
