@@ -203,10 +203,23 @@
       "id": "krea",
       "code": "KREA",
       "guidelines": "https://www.krea.ai/",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/krea.svg",
+          "variant": "light",
+          "sha256": "2416df6418322b5c83ead75a38e0f957bfa84d9163f0a793f30572c5f0871761",
+          "sig": "339ccb8c8d930d2e"
+        },
+        {
+          "path": "families/krea-dark.svg",
+          "variant": "dark",
+          "sha256": "c44d4b2666c6e28a2568b7e9a246229ae0b8cc87cb42a238c99b1309d3811843",
+          "sig": "c31dc27cd5c21950"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "官网与产品界面只有「Krea」文字字标，没有可单独使用的 symbol；press/brand 页 404，favicon 也没有矢量标。按「没有就留白」处理，只给家族码。",
+        "kind": "manual",
+        "note": "官网只有「Krea」文字字标，press/brand 页 404，favicon 也没有矢量标；krea.ai 是 SvelteKit 应用，首屏 196×140 图形是页面装饰纹样，不是品牌标。2026-11-18 决策：按官方外观重绘 K 形近似标（非官方资产），明暗两版。",
         "hint": "krea.ai 是 SvelteKit 应用，首屏里的 196×140 图形是页面装饰纹样，不是品牌标 —— 别误用。"
       }
     },
@@ -214,20 +227,46 @@
       "id": "zimage",
       "code": "ZIMG",
       "guidelines": "https://tongyi-mai.github.io/Z-Image-blog/",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/zimage.svg",
+          "variant": "light",
+          "sha256": "46f5b864a7d87afed2da25774b53e1a48991c6189e1d3c71c3a340f976b15aec",
+          "sig": "cef6239aa6c036e4"
+        },
+        {
+          "path": "families/zimage-dark.svg",
+          "variant": "dark",
+          "sha256": "628fde7012b45b9314f321e6c8c22c8a81e3c524196f883be4bbbae3404dbfdc",
+          "sig": "cfd61e34c9561857"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "通义 Z-Image：官方 blog 与 GitHub 仓库均无 logo 资产（assets/ 里只有效果图与架构图），HF 模型卡也没有。留白。"
+        "kind": "manual",
+        "note": "通义 Z-Image：官方 blog 与 GitHub 仓库均无 logo 资产（assets/ 里只有效果图与架构图），HF 模型卡也没有。2026-11-18 决策：按官方外观重绘 Z 形近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "hidream",
       "code": "HDRM",
       "guidelines": "https://hidreamai.com/",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/hidream.svg",
+          "variant": "light",
+          "sha256": "1fe9569dd6c82c4b20d948c96c81878ababda12e506f1aef3a61eb62f1810b7b",
+          "sig": "78404a17f0a47cf4"
+        },
+        {
+          "path": "families/hidream-dark.svg",
+          "variant": "dark",
+          "sha256": "bc4f8af9bb058aad67a71e8f00ba87c98acb1ad4d70ded3f337f4287b1c4a03f",
+          "sig": "d061428f3212f90c"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "hidreamai.com 只有位图 logo_v2.png / logo_v2_white.png，没有 SVG。按规矩不描摹位图 → 留白。"
+        "kind": "manual",
+        "note": "hidreamai.com 只有位图 logo_v2.png / logo_v2_white.png，没有 SVG。2026-11-18 决策：按官方外观重绘月牙近似标（非官方资产），明暗两版。"
       }
     },
     {
@@ -261,30 +300,69 @@
       "id": "noobai",
       "code": "NOOB",
       "guidelines": "",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/noobai.svg",
+          "variant": "light",
+          "sha256": "b9db1281e5d186e4ae058cdcaf4038e0ab710da2a6da011617a9e38eee97a4b7",
+          "sig": "e3e5db3ca4957a30"
+        },
+        {
+          "path": "families/noobai-dark.svg",
+          "variant": "dark",
+          "sha256": "b9db1281e5d186e4ae058cdcaf4038e0ab710da2a6da011617a9e38eee97a4b7",
+          "sig": "e3e5db3ca4957a30"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "社区家族（Laxhar/noobai-XL），作者没有发布品牌资产，Civitai 页只有效果图。任何「NoobAI 标」都是二创 → 留白。"
+        "kind": "manual",
+        "note": "NoobAI XL（Laxhar Lab）。官方 HF 仓库没有 logo 文件；noobaixl.org 的 /logo.png（512×512，RGBA）就是这套棕底米白像素 N 的官方图标，原图以 data URI 嵌入 SVG（非描摹）。明暗共用同一份彩色图；22px 槽位内缩 1.5px 留边。"
       }
     },
     {
       "id": "illustrious",
       "code": "ILST",
       "guidelines": "",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/illustrious.svg",
+          "variant": "light",
+          "sha256": "c55bd3a247a5715858b6fa304fa37798c7665123950ddd6a3cbc6f81b558363c",
+          "sig": "92b9a650f9bc0cff"
+        },
+        {
+          "path": "families/illustrious-dark.svg",
+          "variant": "dark",
+          "sha256": "6f19ccda5327c8ba04e7ef8ea319ee4a948a194e37a3843d07a5442c9f26db49",
+          "sig": "dfe71f500739b29d"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "社区家族（OnomaAI Illustrious-XL），无官方品牌资产。留白。注意：大量 Illustrious 微调名里带 SDXL 字样，所以 cover.ts 里这个正则必须排在 sdxl 之前。"
+        "kind": "manual",
+        "note": "社区家族（OnomaAI Illustrious-XL），无官方品牌资产。注意：大量 Illustrious 微调名里带 SDXL 字样，cover.ts 里该正则必须排在 sdxl 之前。2026-11-18 决策：按官方外观重绘星芒近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "chroma",
       "code": "CHRM",
       "guidelines": "",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/chroma.svg",
+          "variant": "light",
+          "sha256": "cef8a2908684b1e36784e219a5d2956839d133da91cc58cec88d92ab7aea5d47",
+          "sig": "fcdd5570727bf938"
+        },
+        {
+          "path": "families/chroma-dark.svg",
+          "variant": "dark",
+          "sha256": "52bf57ae230d160bcbe8689073089cf10af6a472a1cb6d56909c09389b0be075",
+          "sig": "c3e532f5dba49ee6"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Chroma1-HD（lodestones，Flux 系社区项目），GitHub 仓库不存在/不可访问，无品牌资产。留白。"
+        "kind": "manual",
+        "note": "Chroma1-HD（lodestones，Flux 系社区项目），GitHub 仓库不存在/不可访问，无品牌资产。2026-11-18 决策：按官方外观重绘渐变 C 形近似标（非官方资产），明暗两版。"
       }
     },
     {
@@ -301,90 +379,209 @@
       "id": "sd3",
       "code": "SD3",
       "guidelines": "https://stability.ai/",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/sd3.svg",
+          "variant": "light",
+          "sha256": "05473e466152a45d32a17292a42530aee563a6fe81a2798e7669f23be463e048",
+          "sig": "7c13dd562ec946fb"
+        },
+        {
+          "path": "families/sd3-dark.svg",
+          "variant": "dark",
+          "sha256": "c7275e41c1b2c0de39b509784bd465d734249d0bafc96eb237ad34547c35d8e7",
+          "sig": "94f347598d491b0a"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Stability 的 SD3/3.5 是另一代产品。官方只出位图与规范文档，没有可取的 symbol SVG；不复用 sd15/sdxl 的 S. 标 —— 那是另一代标识，指称会误导。"
+        "kind": "official",
+        "url": null,
+        "sharedWith": "sd15",
+        "note": "SD3/3.5 没有独立 symbol；官方材料（stability.ai 的 SD3 发布页）沿用 Stability AI 的 S. 标，因此与 sd15/sdxl 共用同一份资产（字节级相同）。世代由家族码 SD3 区分，不再自绘「3」。"
       }
     },
     {
       "id": "cogvideo",
       "code": "COGV",
       "guidelines": "https://github.com/THUDM/CogVideo",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/cogvideo.svg",
+          "variant": "light",
+          "sha256": "c529a7bdb2ae92488d577c69b804cdef62c8708e937720091ce9516bd36c03c8",
+          "sig": "ec4897cd734d30de"
+        },
+        {
+          "path": "families/cogvideo-dark.svg",
+          "variant": "dark",
+          "sha256": "147742862b5464dd566fda6a919f96d9f69c3b7c9e2b6cf7a93325e207d4c5f9",
+          "sig": "ae4bfcef46ad43a4"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "智谱 CogVideoX。仓库与官网均无矢量品牌资产（只有演示页与效果图）。"
+        "kind": "manual",
+        "note": "智谱 CogVideoX：仓库与官网均无矢量品牌资产（只有演示页与效果图）。2026-11-18 决策：按官方外观重绘播放圆环近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "kolors",
       "code": "KOLORS",
       "guidelines": "https://github.com/Kwai-Kolors/Kolors",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/kolors.svg",
+          "variant": "light",
+          "sha256": "5e46a09d3666c543a9fb0a07a633aae125db49f4dd9da0a7cea98d091895c2c5",
+          "sig": "ddb6409bea3b2c41"
+        },
+        {
+          "path": "families/kolors-dark.svg",
+          "variant": "dark",
+          "sha256": "609bcb400796b282dc623686def35d76cb6d3d1627c5e5f82e01dc821167036f",
+          "sig": "b7307a23fb9f7a61"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "快手可图。官方品牌页未提供可下载的 SVG。"
+        "kind": "manual",
+        "note": "快手可图：官方品牌页未提供可下载的 SVG。2026-11-18 决策：按官方外观重绘渐变 K 近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "mochi",
       "code": "MOCHI",
-      "guidelines": "https://github.com/genmoai/models",
-      "assets": [],
+      "guidelines": "https://github.com/genmoai/mochi",
+      "assets": [
+        {
+          "path": "families/mochi.svg",
+          "variant": "light",
+          "sha256": "3f9095cd648cacf54d5c0a682f1861b67e8289c9bd0bf5e3e00930e7fea01461",
+          "sig": "e3e5db3ca4957a30"
+        },
+        {
+          "path": "families/mochi-dark.svg",
+          "variant": "dark",
+          "sha256": "3f9095cd648cacf54d5c0a682f1861b67e8289c9bd0bf5e3e00930e7fea01461",
+          "sig": "e3e5db3ca4957a30"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Genmo Mochi。官方只有演示页，无矢量资产。"
+        "kind": "manual",
+        "note": "Genmo Mochi。官方仓库 genmoai/mochi 没有 logo 文件（assets/ 只有 mochi-factory.webp 与 grid.mp4），GitHub 组织头像是带渐变底的 Genmo 三色方块。官网 genmo.ai 的 384×91 字标 PNG（https://www.genmo.ai/media/content/714c69ee663a9adf98722d053ddcf2733d1ff5ee-384x91.png）带透明通道，裁出左侧三色 symbol 后以 data URI 原样嵌入 SVG（非描摹、非二创）。22px 槽位用 symbol 不用字标；明暗共用同一份彩色图。"
       }
     },
     {
       "id": "lumina",
       "code": "LUMINA",
       "guidelines": "https://github.com/Alpha-VLLM/Lumina-Image-2.0",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/lumina.svg",
+          "variant": "light",
+          "sha256": "a714339f861e02237683ded2e1b6794feb053c8866307310133a3761a3e485df",
+          "sig": "5551fd2959019be6"
+        },
+        {
+          "path": "families/lumina-dark.svg",
+          "variant": "dark",
+          "sha256": "f904da7f55b14c56f292b6098b6afe95f1607ffebaa3f2c3c7943f57271e64c2",
+          "sig": "4036165c9d2a1610"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Alpha-VLLM Lumina。仓库里没有品牌资产。"
+        "kind": "manual",
+        "note": "Alpha-VLLM Lumina：仓库里没有品牌资产。2026-11-18 决策：按官方外观重绘光芒近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "skyreels",
       "code": "SKY",
       "guidelines": "https://github.com/SkyworkAI/SkyReels-V2",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/skyreels.svg",
+          "variant": "light",
+          "sha256": "50724ac0d9491eaf02217771280657f33301e8e11803787590e654a1ef9e3c90",
+          "sig": "8ba3ae67777ed65b"
+        },
+        {
+          "path": "families/skyreels-dark.svg",
+          "variant": "dark",
+          "sha256": "c66c1ee27b31cd2519266b1cc6b5f35c44853ab55ef0254c0668b55e2e533b1c",
+          "sig": "fdc79e9433f1146b"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "昆仑万维 SkyReels 视频模型。无矢量标。"
+        "kind": "manual",
+        "note": "昆仑万维 SkyReels 视频模型：无矢量标。2026-11-18 决策：按官方外观重绘胶片盘近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "kandinsky",
       "code": "KAND",
       "guidelines": "https://github.com/kandinskylab",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/kandinsky.svg",
+          "variant": "light",
+          "sha256": "b00b7b74fe268b4587558fcd7d9679adc14639943610a92760afae316738ded2",
+          "sig": "444aba76feba389b"
+        },
+        {
+          "path": "families/kandinsky-dark.svg",
+          "variant": "dark",
+          "sha256": "e113b35bf8c67556e6af361d97c34eefc5e0aa56d4df7cb04e1c2e0fb657e1e3",
+          "sig": "5728e117785838d6"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Kandinsky 实验室。有官网但未提供可下载的 SVG。"
+        "kind": "manual",
+        "note": "Kandinsky 实验室：官网未提供可下载的 SVG。2026-11-18 决策：按官方外观重绘构成主义三形近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "playground",
       "code": "PLAY",
       "guidelines": "https://playground.com/",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/playground.svg",
+          "variant": "light",
+          "sha256": "c4b995083c75112e320a4b1d1036bdd81f93db7edf2601d60fcb8ef0bc862306",
+          "sig": "eefc06530b9a4b6c"
+        },
+        {
+          "path": "families/playground-dark.svg",
+          "variant": "dark",
+          "sha256": "ac27fc7a7354a3c5b877429c0dbfe98c294001aec14db9e38b778a2385bbd42a",
+          "sig": "a4a3d594d8c31bae"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "Playground AI。无矢量标。"
+        "kind": "manual",
+        "note": "Playground AI：无矢量标。2026-11-18 决策：按官方外观重绘圆角播放键近似标（非官方资产），明暗两版。"
       }
     },
     {
       "id": "pixart",
       "code": "PIX",
       "guidelines": "https://github.com/PixArt-alpha/PixArt-alpha",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/pixart.svg",
+          "variant": "light",
+          "sha256": "0613f2e6ae6b1824bee8eb77f7903d77b52f1ce20e3adb09172f79258f013f04",
+          "sig": "5422dee965885097"
+        },
+        {
+          "path": "families/pixart-dark.svg",
+          "variant": "dark",
+          "sha256": "7d6f8f3b46b8883c2c1836ead4c139eed067a92de5af3fb7089926c42693cc16",
+          "sig": "64155256ad646db0"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "华为诺亚 PixArt。仓库无品牌资产。"
+        "kind": "manual",
+        "note": "华为诺亚 PixArt：仓库无品牌资产。2026-11-18 决策：按官方外观重绘像素 P 近似标（非官方资产），明暗两版。"
       }
     }
   ]

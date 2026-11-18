@@ -78,10 +78,11 @@ export const FAMILIES: FamilySpec[] = [
     id: 'sd3',
     code: 'SD3',
     /*
-     * Stability 的 SD3/3.5 是另一代产品，不复用 sd15/sdxl 的 S. 标 —— 指称会误导。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     * SD3/3.5 没有独立 symbol，官方材料沿用 Stability AI 的 S. 标；
+     * 因此与 sd15/sdxl 共用同一份资产（字节相同），世代由家族码 SD3 区分。
      */
+    logo: 'families/sd3.svg',
+    logoDark: 'families/sd3-dark.svg',
     mark: '',
     filled: false,
     test: /sd[\s._-]?3(?:[._]?5)?|stable[\s._-]?diffusion[\s._-]?3/i,
@@ -103,10 +104,12 @@ export const FAMILIES: FamilySpec[] = [
      * 先撞到 sdxl 的 /sd[\s._-]?xl/i 就永远认不出真正的家族。
      * 家族判定是「第一个命中」，顺序就是优先级。
      *
-     * 两者都没有官方品牌资产（作者只发效果图），所以只给家族码 —— 和 pony 同一处理。
+     * 两者都没有官方品牌资产（作者只发效果图），按官方外观重绘为近似标（非官方资产）。
      */
     id: 'illustrious',
     code: 'ILST',
+    logo: 'families/illustrious.svg',
+    logoDark: 'families/illustrious-dark.svg',
     mark: '',
     filled: true,
     test: /illustrious/i,
@@ -114,6 +117,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'noobai',
     code: 'NOOB',
+    // NoobAI XL：取 noobaixl.org 的官方 512×512 图标（棕底米白像素 N），原图嵌入
+    logo: 'families/noobai.svg',
+    logoDark: 'families/noobai-dark.svg',
     mark: '',
     filled: true,
     test: /noob[\s._-]?ai/i,
@@ -147,7 +153,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'krea',
     code: 'KREA',
-    // 官网只有「Krea」文字字标，没有 symbol；留空 → 只显示家族码，不画二创图形
+    // 官网只有「Krea」文字字标；按官方外观重绘为 K 形标（非官方资产），明暗两版
+    logo: 'families/krea.svg',
+    logoDark: 'families/krea-dark.svg',
     mark: '',
     filled: true,
     test: /krea/i,
@@ -155,14 +163,18 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'zimage',
     code: 'ZIMG',
+    // 通义 Z-Image，命名有 Z-Image / ZImage / z_image 三种写法；标为按官方外观重绘
+    logo: 'families/zimage.svg',
+    logoDark: 'families/zimage-dark.svg',
     mark: '',
     filled: true,
-    // 通义 Z-Image，命名有 Z-Image / ZImage / z_image 三种写法
     test: /z[\s._-]?image/i,
   },
   {
     id: 'hidream',
     code: 'HDRM',
+    logo: 'families/hidream.svg',
+    logoDark: 'families/hidream-dark.svg',
     mark: '',
     filled: true,
     test: /hidream/i,
@@ -187,6 +199,8 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'chroma',
     code: 'CHRM',
+    logo: 'families/chroma.svg',
+    logoDark: 'families/chroma-dark.svg',
     mark: '',
     filled: true,
     test: /chroma/i,
@@ -266,11 +280,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'cogvideo',
     code: 'COGV',
-    /*
-     * 智谱 CogVideoX 系列；官方站点只出位图与演示页，没有可取的矢量标。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // 智谱 CogVideoX：官方只出位图与演示页；按官方外观重绘为视频播放标（非官方资产）
+    logo: 'families/cogvideo.svg',
+    logoDark: 'families/cogvideo-dark.svg',
     mark: '',
     filled: false,
     test: /cogvideo/i,
@@ -278,11 +290,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'kolors',
     code: 'KOLORS',
-    /*
-     * 快手可图；官方品牌页未提供 SVG。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // 快手可图：官方品牌页未提供 SVG；按官方外观重绘为渐变 K 标（非官方资产）
+    logo: 'families/kolors.svg',
+    logoDark: 'families/kolors-dark.svg',
     mark: '',
     filled: false,
     test: /kolors/i,
@@ -290,11 +300,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'mochi',
     code: 'MOCHI',
-    /*
-     * Genmo Mochi；官方只有演示页，无矢量资产。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // Genmo Mochi：官方仓库无 logo，取 genmo.ai 字标 PNG 里的三色 symbol（原图嵌入，非重绘）
+    logo: 'families/mochi.svg',
+    logoDark: 'families/mochi-dark.svg',
     mark: '',
     filled: false,
     test: /mochi/i,
@@ -302,11 +310,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'lumina',
     code: 'LUMINA',
-    /*
-     * Alpha-VLLM Lumina 系列；仓库里没有品牌资产。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // Alpha-VLLM Lumina：仓库没有品牌资产；按官方外观重绘为光芒标（非官方资产）
+    logo: 'families/lumina.svg',
+    logoDark: 'families/lumina-dark.svg',
     mark: '',
     filled: false,
     test: /lumina/i,
@@ -314,11 +320,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'skyreels',
     code: 'SKY',
-    /*
-     * 昆仑万维 SkyReels 视频模型；无矢量标。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // 昆仑万维 SkyReels 视频模型：无矢量标；按官方外观重绘为胶片盘标（非官方资产）
+    logo: 'families/skyreels.svg',
+    logoDark: 'families/skyreels-dark.svg',
     mark: '',
     filled: false,
     test: /skyreels/i,
@@ -326,11 +330,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'kandinsky',
     code: 'KAND',
-    /*
-     * Kandinsky 实验室；有官网但未提供可下载的 SVG。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // Kandinsky 实验室：官网未提供可下载 SVG；按官方外观重绘为构成主义三形（非官方资产）
+    logo: 'families/kandinsky.svg',
+    logoDark: 'families/kandinsky-dark.svg',
     mark: '',
     filled: false,
     test: /kandinsky/i,
@@ -338,11 +340,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'playground',
     code: 'PLAY',
-    /*
-     * Playground AI；无矢量标。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // Playground AI：无矢量标；按官方外观重绘为圆角播放键（非官方资产）
+    logo: 'families/playground.svg',
+    logoDark: 'families/playground-dark.svg',
     mark: '',
     filled: false,
     test: /playground/i,
@@ -350,11 +350,9 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'pixart',
     code: 'PIX',
-    /*
-     * 华为诺亚 PixArt；仓库无品牌资产。
-     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
-     * 自绘几何去暗示某个品牌，比留白更容易误导。
-     */
+    // 华为诺亚 PixArt：仓库无品牌资产；按官方外观重绘为像素 P（非官方资产）
+    logo: 'families/pixart.svg',
+    logoDark: 'families/pixart-dark.svg',
     mark: '',
     filled: false,
     test: /pixart/i,
