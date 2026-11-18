@@ -643,7 +643,7 @@ def library_gpu() -> dict:
 
 @router.get("/library/facets")
 def library_facets() -> dict:
-    """筛选面板用的分面：存放类型 / 任务类型，各带条数与占用体积。
+    """筛选面板用的分面：存放类型 / 任务类型 / 发布方 / 来源，各带条数与占用体积。
 
     分类是**现算**的（读目录路径 + 文件名推断），不落库 ——
     存一份就会和实际文件脱节，用户移动了模型目录就失效。
@@ -651,7 +651,7 @@ def library_facets() -> dict:
     import json as _json
 
     rows = query("SELECT * FROM library_models")
-    buckets: dict[str, dict] = {"folder": {}, "task": {}, "source": {}}
+    buckets: dict[str, dict] = {"folder": {}, "task": {}, "source": {}, "publisher": {}}
     for r in rows:
         tags = _json.loads(r.get("tags") or "[]")
         info = describe_model(r["local_path"], r["name"], tags, r.get("size_bytes") or 0)
@@ -662,6 +662,18 @@ def library_facets() -> dict:
             b["bytes"] += r.get("size_bytes") or 0
         src = r.get("source") or ""
         b = buckets["source"].setdefault(src, {"id": src, "label": src, "count": 0, "bytes": 0})
+        b["count"] += 1
+        b["bytes"] += r.get("size_bytes") or 0
+
+        # 发布方是独立于「家族」的维度：家族回答「哪条模型线」，发布方回答「谁发的」。
+        # 只从 repo_id 的 org 段取 —— 库里的 local_path / tags 都不带这个信息。
+        rid = (r.get("repo_id") or "").strip()
+        org = rid.split("/")[0].strip() if "/" in rid else ""
+        pub_id = org.lower()
+        pub_label = org or "未登记"
+        b = buckets["publisher"].setdefault(
+            pub_id, {"id": pub_id, "label": pub_label, "count": 0, "bytes": 0}
+        )
         b["count"] += 1
         b["bytes"] += r.get("size_bytes") or 0
 
@@ -677,6 +689,7 @@ def library_facets() -> dict:
         "folder": _pack("folder"),
         "task": _pack("task"),
         "source": _pack("source"),
+        "publisher": _pack("publisher"),
         "allFolders": all_folders(),
         "allTasks": all_tasks(),
     }

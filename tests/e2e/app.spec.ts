@@ -349,6 +349,11 @@ test.describe('Model Downloader Web UI', () => {
           { id: 'demo', label: 'demo', count: 1, sizeText: '4.0 MB' },
           { id: 'huggingface', label: 'huggingface', count: 2, sizeText: '23.80 GB' },
         ],
+        publisher: [
+          { id: 'black-forest-labs', label: 'black-forest-labs', count: 1, sizeText: '23.80 GB' },
+          { id: 'demo', label: 'demo', count: 1, sizeText: '4.0 MB' },
+          { id: 'openai', label: 'openai', count: 1, sizeText: '1.0 MB' },
+        ],
         allFolders: [], allTasks: [],
       },
     }));
@@ -362,10 +367,17 @@ test.describe('Model Downloader Web UI', () => {
     // 右侧筛选默认收起：右缘只有一枚浮标
     await expect(page.locator('.rail-fab')).toBeVisible();
     await expect(page.locator('.rail.open')).toHaveCount(0);
-    // 展开后是浮层，三个可多选分面都在
+    // 展开后是浮层，四个可多选分面都在
     await page.locator('.rail-fab').click();
     await expect(page.locator('.rail.open')).toBeVisible();
-    await expect(page.locator('.rail .facet')).toHaveCount(3);
+    await expect(page.locator('.rail .facet')).toHaveCount(4);
+    // 发布方是独立于家族的分面：取消 openai 后 gpt2 消失，重置后回来
+    const pub = page.locator('.rail .facet').filter({ hasText: '发布方' });
+    await expect(pub.locator('.fx')).toHaveCount(3);
+    await pub.locator('label', { hasText: 'openai' }).locator('input').uncheck();
+    await expect(page.locator('md-library-card')).toHaveCount(2);
+    await pub.getByRole('button', { name: '重置' }).click();
+    await expect(page.locator('md-library-card')).toHaveCount(3);
     // 三种形态都在，压力条一点都不少
     await expect(page.locator('md-library-card .gauge')).toHaveCount(3);
     // 残缺条目的主操作是补救，不是「查找适配工作流」

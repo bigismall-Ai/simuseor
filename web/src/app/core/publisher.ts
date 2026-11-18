@@ -30,6 +30,15 @@ export function publisherOf(model: { id?: string; author?: string }): Publisher 
 }
 
 /**
+ * 发布方筛选键：与后端 `/library/facets` 的 publisher 桶保持同一口径。
+ * 没有 repo_id 的本地导入条目统一落空串（后端标记为「未登记」）。
+ */
+export function publisherKeyOf(repoId?: string): string {
+  const id = (repoId || '').trim();
+  return id.includes('/') ? id.split('/')[0].trim().toLowerCase() : '';
+}
+
+/**
  * 缩写规则：
  * - 纯 ASCII：按 `- _ .` 与驼峰拆词；≥2 词取各词首字母（最多 3 个）；
  *   单 token ≤3 字符全取，否则取前 2 个 —— 22px 里 3 个字符已是上限。

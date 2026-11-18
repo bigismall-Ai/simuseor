@@ -3,13 +3,14 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
+import { publisherKeyOf } from '../core/publisher';
 import { sourceLabel } from '../core/source-links';
 import { LibraryFacet, LibraryFacets, LibraryModel, errMsg, fmtBytes } from '../core/types';
 import { EmptyComponent } from '../ui/empty.component';
 import { LibraryCardComponent } from '../ui/library-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 
-type FacetKey = 'folder' | 'task' | 'source';
+type FacetKey = 'folder' | 'task' | 'source' | 'publisher';
 type SortKey = 'name' | 'created' | 'folder' | 'size';
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
@@ -429,10 +430,12 @@ export class LibraryComponent implements OnInit {
   private selFolder = new Set<string>();
   private selTask = new Set<string>();
   private selSource = new Set<string>();
+  private selPublisher = new Set<string>();
   /** 已经见过的分面值：用来区分「新出现的桶」和「用户主动取消的桶」 */
   private knownFolder = new Set<string>();
   private knownTask = new Set<string>();
   private knownSource = new Set<string>();
+  private knownPublisher = new Set<string>();
   private facets: LibraryFacets | null = null;
   private facetsLoaded = false;
 
@@ -514,6 +517,7 @@ export class LibraryComponent implements OnInit {
     sync(this.knownFolder, this.selFolder, this.facets.folder);
     sync(this.knownTask, this.selTask, this.facets.task);
     sync(this.knownSource, this.selSource, this.facets.source);
+    sync(this.knownPublisher, this.selPublisher, this.facets.publisher);
   }
 
   /**
@@ -554,6 +558,7 @@ export class LibraryComponent implements OnInit {
     return [
       { key: 'folder', title: '存放类型', items: this.facets.folder },
       { key: 'task', title: '任务类型', items: this.facets.task },
+      { key: 'publisher', title: '发布方', items: this.facets.publisher },
       {
         key: 'source',
         title: '来源',
@@ -563,7 +568,16 @@ export class LibraryComponent implements OnInit {
   }
 
   private setOf(key: FacetKey): Set<string> {
-    return key === 'folder' ? this.selFolder : key === 'task' ? this.selTask : this.selSource;
+    switch (key) {
+      case 'folder':
+        return this.selFolder;
+      case 'task':
+        return this.selTask;
+      case 'publisher':
+        return this.selPublisher;
+      default:
+        return this.selSource;
+    }
   }
 
   isFacetOn(key: FacetKey, id: string): boolean {
@@ -583,6 +597,7 @@ export class LibraryComponent implements OnInit {
     const set = new Set(dim.items.map((i) => i.id));
     if (key === 'folder') this.selFolder = set;
     else if (key === 'task') this.selTask = set;
+    else if (key === 'publisher') this.selPublisher = set;
     else this.selSource = set;
   }
 
@@ -591,7 +606,9 @@ export class LibraryComponent implements OnInit {
     let list = this.models;
     if (q) {
       list = list.filter((m) =>
-        `${m.name} ${m.local_path} ${(m.tags || []).join(' ')}`.toLowerCase().includes(q),
+        `${m.name} ${m.repo_id || ''} ${m.local_path} ${(m.tags || []).join(' ')}`
+          .toLowerCase()
+          .includes(q),
       );
     }
     if (this.facetsLoaded) {
@@ -599,7 +616,8 @@ export class LibraryComponent implements OnInit {
         (m) =>
           this.selFolder.has(m.folder || '') &&
           this.selTask.has(m.task || '') &&
-          this.selSource.has(m.source || ''),
+          this.selSource.has(m.source || '') &&
+          this.selPublisher.has(publisherKeyOf(m.repo_id)),
       );
     }
     return this.sortList(list);

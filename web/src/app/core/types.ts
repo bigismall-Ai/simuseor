@@ -127,6 +127,8 @@ export interface LibraryFacets {
   folder: LibraryFacet[];
   task: LibraryFacet[];
   source: LibraryFacet[];
+  /** 发布方（repo_id 的 org 段）：独立于家族的「谁发的」维度 */
+  publisher: LibraryFacet[];
   allFolders: { id: string; label: string }[];
   allTasks: { id: string; label: string }[];
 }
