@@ -122,7 +122,9 @@ class DownloadManager:
         if not files:
             raise SourceError("没有选中任何文件")
 
-        strategy = (strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "direct").lower()
+        strategy = (
+            strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "mirror"
+        ).lower()
         base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
         # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录。
         # 分体仓库（Flux / SD3）的 transformer、text_encoder、vae 属于不同目录，
@@ -212,9 +214,37 @@ class DownloadManager:
             threading.Thread(target=self._aria2_file, args=(task_id, row, target, task["strategy"], src_cfg, index), daemon=True).start()
 
     # ---------------- 策略实现 ----------------
-    def _pick_url(self, candidates: list[str], strategy: str, index: int) -> str:
+    @staticmethod
+    def _mirror_host(src_cfg: dict | None) -> str:
+        """该源配置的镜像主机名，用来把镜像地址从 direct / proxy 的候选里剔掉。
+
+        镜像和代理是两条互斥的通路：hf-mirror 是境内直连，套代理会被判成海外 IP 而
+        308 跳回官方；反过来「直连」策略如果选中了镜像地址，那个名字也就不叫直连了。
+        """
+        raw = str((src_cfg or {}).get("mirror") or "").strip()
+        if not raw.startswith("http") or "://" not in raw:
+            return ""
+        return raw.split("/")[2]
+
+    @staticmethod
+    def _wants_proxy(strategy: str, src_cfg: dict | None) -> bool:
+        """这次下载该不该走代理。
+
+        proxy 策略是「这一次强制走代理」，覆盖每源的 proxy_enabled；
+        其余策略仍只看每源开关 —— 不然用户点一次「代理优先」还得回去改所有源。
+        """
+        return strategy == "proxy" or bool((src_cfg or {}).get("proxy_enabled"))
+
+    def _pick_url(self, candidates: list[str], strategy: str, index: int, src_cfg: dict | None = None) -> str:
         if not candidates:
             return ""
+        if strategy == "direct" or strategy == "proxy":
+            skip = self._mirror_host(src_cfg)
+            for url in candidates:
+                host = url.split("/")[2] if "://" in url else ""
+                if not skip or host != skip:
+                    return url
+            return candidates[0]
         if strategy == "mirror" and len(candidates) > 1:
             hosts: dict[str, list[str]] = {}
             for url in candidates:
@@ -230,7 +260,7 @@ class DownloadManager:
         if task_id in self._canceled:
             return
         candidates = json.loads(row.get("candidates") or "[]")
-        url = self._pick_url(candidates, strategy, index)
+        url = self._pick_url(candidates, strategy, index, src_cfg)
         if not url:
             execute("UPDATE task_files SET status='failed', error='无可用下载地址' WHERE id=?", (row["id"],))
             return
@@ -247,7 +277,7 @@ class DownloadManager:
                 "split": str(int(aria_cfg.get("split", 8))),
             }
             proxy_url = build_proxy_url(settings.get("proxy") or {})
-            if (src_cfg or {}).get("proxy_enabled") and proxy_url:
+            if self._wants_proxy(strategy, src_cfg) and proxy_url:
                 options["http-proxy"] = proxy_url
                 options["https-proxy"] = proxy_url
             token = (src_cfg or {}).get("token") or ""
@@ -265,6 +295,10 @@ class DownloadManager:
         """当前 URL 失败时尝试候选里的下一个站点（多站点回退）。"""
         current = row.get("url") or ""
         rest = [u for u in candidates if u != current]
+        if strategy in ("direct", "proxy"):
+            skip = self._mirror_host(src_cfg)
+            if skip:
+                rest = [u for u in rest if (u.split("/")[2] if "://" in u else "") != skip]
         if rest:
             new_row = dict(row)
             new_row["candidates"] = json.dumps(rest)

@@ -54,10 +54,12 @@ DB_PATH = DATA_DIR / "model_downloader.db"
 WEB_DIST_CANDIDATES = [ROOT / "web" / "dist" / "browser", ROOT / "web" / "dist"]
 
 # strategy:
+#   mirror - 镜像优先（默认）：文件按候选站点轮询分配 + aria2 多连接分片，失败换站重试
+#   direct - 只用官方地址直连
+#   proxy  - 代理优先：只用官方地址，且强制经 proxy.host:port（覆盖每源的 proxy_enabled）
 #   sdk    - 走官方下载 SDK（huggingface_hub / modelscope），失败自动回退 aria2 直连
-#   direct - aria2 直连下载（默认）
-#   mirror - 多站点分片：文件按候选站点轮询分配 + aria2 多连接分片，失败自动换站重试
-# 代理与策略解耦：每源 proxy_enabled 开启时，aria2 下载经 proxy.host:port
+# 镜像 ≠ 代理：镜像是境内直连的另一条通路，套代理会绕回原路（HF 镜像会 308 跳回官方），
+# 所以 direct / proxy 两种策略都会**排除镜像地址**。
 DEFAULT_SETTINGS: dict = {
     "app": {"host": "127.0.0.1", "port": 8000},
     "aria2": {
@@ -67,8 +69,8 @@ DEFAULT_SETTINGS: dict = {
         "split": 8,
         "max_concurrent": 3,
     },
-    "default_strategy": "direct",
-    "download": {"save_dir": "workspace/models", "strategy": "direct"},
+    "default_strategy": "mirror",
+    "download": {"save_dir": "workspace/models", "strategy": "mirror"},
     # ComfyUI 依赖轮子缓存上限（GB）。同一包只留最新版本，总量超出按最久未用淘汰；
     # 0 或负数表示不限制。缓存跟着共享环境 comfy/.environment/cache 走。
     "comfy": {"cache_limit_gb": 4},
@@ -204,6 +206,40 @@ def source_proxy(cfg: dict | None) -> str | None:
     return build_proxy_url(load_settings().get("proxy") or {}) or None
 
 
+def gh_proxy_prefix() -> str:
+    """GitHub 加速前缀（族 1：`{前缀}` + 完整 URL），空串 = 直连。
+
+    现存的公共反代（gh-proxy / ghfast / githubproxy / ghproxy.net）**全是这种写法**，
+    实测 4/4 通；同族的「前缀 + 去协议」只有 3/4（githubproxy.cc 会 404），
+    「域名替换式」（kkgithub / bgithub）已全部失效。所以这里只支持族 1。
+
+    存的是 `sources.github.mirror`（和 HF 的 mirror 同一个字段位置），
+    **填了就生效**，不再额外要求一个开关 —— 反正留空就是不启用。
+    """
+    cfg = (load_settings().get("sources") or {}).get("github") or {}
+    raw = str(cfg.get("mirror") or "").strip()
+    if not raw:
+        return ""
+    if not raw.startswith("http"):
+        raw = "https://" + raw
+    return raw if raw.endswith("/") else raw + "/"
+
+
+def gh_url(url: str) -> str:
+    """给 GitHub 地址套加速前缀。非 http(s) 地址原样返回（如 demo://）。"""
+    if not url.startswith("http"):
+        return url
+    prefix = gh_proxy_prefix()
+    return f"{prefix}{url}" if prefix else url
+
+
+def gh_proxy(cfg: dict | None) -> str | None:
+    """GitHub 请求该走代理吗：填了前缀就不再经代理（前缀本身就是替代通路）。"""
+    if gh_proxy_prefix():
+        return None
+    return source_proxy(cfg)
+
+
 def split_proxy_url(url: str) -> dict:
     """旧 proxy.url 拆成 {host, port}；非 http 的 scheme 保留在 host 上（socks5:// 等不丢）。"""
     raw = str(url or "").strip()
@@ -263,10 +299,6 @@ def _migrate(data: dict) -> dict:
         proxy.update(split_proxy_url(str(proxy.pop("url"))))
     else:
         proxy.pop("url", None)
-    if str(download.get("strategy") or "").lower() == "proxy":
-        download["strategy"] = "direct"
-    if str(data.get("default_strategy") or "").lower() == "proxy":
-        data["default_strategy"] = "direct"
     return data
 
 
@@ -338,10 +370,6 @@ def save_settings(settings: dict) -> dict:
         px.update(split_proxy_url(str(px.pop("url"))))
     else:
         px.pop("url", None)
-    if str(dl.get("strategy") or "").lower() == "proxy":
-        dl["strategy"] = "direct"
-    if str(out.get("default_strategy") or "").lower() == "proxy":
-        out["default_strategy"] = "direct"
     # 设置页不认识 comfy 段（缓存上限等），别让一次保存把它冲回默认值
     if "comfy" not in out:
         kept = _read_json(SETTINGS_PATH).get("comfy")

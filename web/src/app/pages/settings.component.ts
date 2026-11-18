@@ -132,10 +132,6 @@ function fmtScanTime(iso: string | null): string {
                       <span>含成熟内容（18+，部分地区依法受限）</span>
                     </div>
                   </ui-field>
-                  <ui-field label="API 域名（留空 = civitai.red）">
-                    <input [(ngModel)]="settings.sources[key].mirror" placeholder="https://civitai.red">
-                  </ui-field>
-                  <span class="muted">只改连哪条线，不改可见性。留空默认 civitai.red（国内可直连）；填 https://civitai.com 才走官方域名（需代理）。</span>
                 }
                 @if (key === 'huggingface') {
                   <ui-field label="镜像站（hf-mirror）">
@@ -147,6 +143,15 @@ function fmtScanTime(iso: string | null): string {
                       <span>解析与下载优先走镜像</span>
                     </div>
                   </ui-field>
+                }
+                @if (key === 'github') {
+                  <ui-field label="加速前缀（gh-proxy）">
+                    <input [(ngModel)]="settings.sources[key].mirror" placeholder="https://gh-proxy.com/">
+                  </ui-field>
+                  <span class="muted">
+                    写法是「前缀 + 完整 URL」，如 https://gh-proxy.com/。留空直连。
+                    同时作用于节点清单、官方模板、GitHub 工作流与节点包。填了前缀就不再经代理。
+                  </span>
                 }
               </div>
             </ui-panel>
@@ -188,8 +193,9 @@ export class SettingsComponent implements OnInit {
   familyScanning = false;
 
   strategyOptions = [
+    { value: 'mirror', label: 'mirror - 镜像优先' },
     { value: 'direct', label: 'direct - 直连' },
-    { value: 'mirror', label: 'mirror - 多站点分片' },
+    { value: 'proxy', label: 'proxy - 代理优先' },
     { value: 'sdk', label: 'sdk - 官方 SDK' },
   ];
 

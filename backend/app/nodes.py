@@ -35,8 +35,9 @@ from .config import (
     DATA_DIR,
     WORKSPACE_CUSTOM_NODES_DIR,
     WORKSPACE_WORKFLOWS_DIR,
+    gh_proxy,
+    gh_url,
     load_settings,
-    source_proxy,
 )
 from .node_categories import CATEGORIES, category_of
 from .sources.base import SourceError
@@ -143,12 +144,14 @@ def _node_source_cfg() -> dict:
 
 
 def _fetch(url: str, cfg: dict | None = None) -> Any:
+    # 清单在 GitHub raw 上：填了 gh 加速前缀就套前缀，否则按 github 源的代理开关走
+    cfg = cfg if cfg is not None else _node_source_cfg()
     resp = httpx.get(
-        url,
+        gh_url(url),
         headers=UA,
         timeout=90,
         follow_redirects=True,
-        proxy=source_proxy(cfg if cfg is not None else _node_source_cfg()),
+        proxy=gh_proxy(cfg),
     )
     if resp.status_code >= 400:
         raise SourceError(f"节点清单拉取失败 {resp.status_code}: {url.rsplit('/', 1)[-1]}")
@@ -651,7 +654,7 @@ def install(node_id: str) -> dict:
                 "git",
                 "-c", "core.longpaths=true",
                 "clone", "--depth", "1", "--single-branch", "--progress",
-                item["repo"], str(tmp),
+                gh_url(item["repo"]), str(tmp),
             ]
             env = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "GIT_ASKPASS": "echo"}
             proc = subprocess.Popen(

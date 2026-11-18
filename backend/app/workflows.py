@@ -28,7 +28,16 @@ from typing import Callable
 
 import httpx
 
-from .config import COMFY_DIR, COMFY_ENV_DIR, DATA_DIR, WORKSPACE_WORKFLOWS_DIR, load_settings, source_proxy
+from .config import (
+    COMFY_DIR,
+    COMFY_ENV_DIR,
+    DATA_DIR,
+    WORKSPACE_WORKFLOWS_DIR,
+    gh_proxy,
+    gh_url,
+    load_settings,
+    source_proxy,
+)
 from . import cache
 from .comfy.runner import active as active_instance, start as start_instance, status as instance_status
 from .sources import get_adapter
@@ -552,11 +561,11 @@ def _templates() -> list[dict]:
 def _templates_fetch() -> list[dict]:
     try:
         resp = httpx.get(
-            TEMPLATES_INDEX,
+            gh_url(TEMPLATES_INDEX),
             headers=UA,
             timeout=60,
             follow_redirects=True,
-            proxy=source_proxy(_source_cfg("templates")),
+            proxy=gh_proxy(_source_cfg("templates")),
         )
     except httpx.HTTPError as exc:
         raise SourceError(f"ComfyUI 官方模板拉取失败: {exc}") from exc
@@ -639,11 +648,11 @@ def _search_github(
     }
     try:
         resp = httpx.get(
-            f"{GH_API}/search/repositories",
+            gh_url(f"{GH_API}/search/repositories"),
             params=params,
             headers=headers,
             timeout=30,
-            proxy=source_proxy(cfg),
+            proxy=gh_proxy(cfg),
         )
     except httpx.HTTPError as exc:
         raise SourceError(f"GitHub 搜索失败: {exc}") from exc

@@ -545,11 +545,12 @@ def test_github_search_passes_proxy(monkeypatch):
 
 
 def test_github_adapter_tree_uses_source_proxy(monkeypatch):
-    """列文件树（N+1 那一段）是最吃链路的，必须一起走代理。"""
+    """列文件树（N+1 那一段）是最吃链路的，必须一起走代理 / 前缀。"""
     from app.sources import github as gh
 
     seen = {}
-    monkeypatch.setattr(gh, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+    monkeypatch.setattr(gh, "gh_url", lambda url: url)
+    monkeypatch.setattr(gh, "gh_proxy", lambda cfg: "http://127.0.0.1:7890")
 
     def fake_get(url, **kw):
         seen.update(kw)

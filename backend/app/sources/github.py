@@ -10,7 +10,7 @@ from urllib.parse import quote
 
 import httpx
 
-from ..config import source_proxy
+from ..config import gh_proxy, gh_url
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
 GITHUB_API = "https://api.github.com"
@@ -29,12 +29,12 @@ def _headers(cfg: dict) -> dict:
 def _get_json(url: str, cfg: dict, params: dict | None = None) -> dict:
     try:
         resp = httpx.get(
-            url,
+            gh_url(url),
             headers=_headers(cfg),
             params=params,
             timeout=30,
             follow_redirects=True,
-            proxy=source_proxy(cfg),
+            proxy=gh_proxy(cfg),
         )
     except httpx.HTTPError as exc:
         raise SourceError(f"GitHub 请求失败: {exc}") from exc
@@ -74,7 +74,7 @@ class GithubAdapter(SourceAdapter):
             RemoteFile(
                 path=path,
                 size=size,
-                candidates=[f"{RAW_BASE}/{rid}/{quote(branch)}/{quote(path)}"],
+                candidates=[gh_url(f"{RAW_BASE}/{rid}/{quote(branch)}/{quote(path)}")],
             )
             for path, size in entries
         ]

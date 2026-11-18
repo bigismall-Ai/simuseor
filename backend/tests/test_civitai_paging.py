@@ -99,27 +99,14 @@ def test_cursor_cache_is_per_query(monkeypatch):
     assert seen[-1]["query"] == "cat"
 
 
-# ---------------- API 域名是「通路」，不是「可见性」 ----------------
+
+# ---------------- API 固定走 civitai.red，不提供配置 ----------------
 #
-# civitai.com 与 civitai.red 在产品上是**并列的两条线**（面向不同可见性），不是主备，
-# 所以这里不做失败降级。但两者 /api/v1 实测是同一后端（5 组查询逐条 id 一致），
-# 于是「走哪个域名」退化成纯网络问题 —— 默认取 .red（国内可直连），不做成开关。
+# civitai.com 在国内被 DNS 注入（轮换假 IP）+ SNI 阻断，直连 21 秒超时；
+# .red 解析到真实 Cloudflare IP，1.4~1.9 秒。两者 /api/v1 实测同一后端
+# （5 组查询逐条 id 一致），所以只挑能连上的那条，不给用户一个没意义的选择。
 
-def test_api_base_defaults_to_red():
-    """留空就走 .red：.com 在国内 DNS 注入 + SNI 阻断，直连 21 秒超时。"""
-    assert cv.api_base({}) == cv.DEFAULT_API == "https://civitai.red/api/v1"
-    assert cv.api_base(None) == cv.DEFAULT_API
-
-
-def test_api_base_normalizes_host_and_full_path():
-    assert cv.api_base({"mirror": "https://civitai.com"}) == "https://civitai.com/api/v1"
-    # 尾斜杠 / 已经带路径，都不该拼成 /api/v1/api/v1
-    assert cv.api_base({"mirror": "https://civitai.red/"}) == "https://civitai.red/api/v1"
-    assert cv.api_base({"mirror": "https://civitai.red/api/v1"}) == "https://civitai.red/api/v1"
-
-
-def test_search_uses_red_without_proxy(monkeypatch):
-    """默认通路不套代理：.red 是替代通路，经代理等于绕回原路。"""
+def test_search_always_hits_red(monkeypatch):
     seen = {}
 
     def fake_get(url, **kw):
@@ -128,27 +115,28 @@ def test_search_uses_red_without_proxy(monkeypatch):
         return httpx.Response(200, json={"items": [], "metadata": {}})
 
     monkeypatch.setattr(cv.httpx, "get", fake_get)
-    monkeypatch.setattr(cv, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
-
     cv.CivitaiAdapter().search("", 6, 1, "downloads", {})
 
     assert seen["url"].startswith("https://civitai.red/api/v1/models")
-    assert seen.get("proxy") is None, "默认通路不该再经代理"
 
 
-def test_search_keeps_proxy_when_official_domain_explicit(monkeypatch):
-    """显式填了 civitai.com 就按「按源代理」走 —— 那是用户自己的选择。"""
+def test_search_proxy_follows_source_switch(monkeypatch):
+    """通路固定 .red，但「要不要再过代理」仍归每源开关管。"""
     seen = {}
 
     def fake_get(url, **kw):
-        seen["url"] = url
         seen.update(kw)
         return httpx.Response(200, json={"items": [], "metadata": {}})
 
     monkeypatch.setattr(cv.httpx, "get", fake_get)
-    monkeypatch.setattr(cv, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+    # 假实现必须尊重开关，否则「关掉代理」那条断言恒假
+    monkeypatch.setattr(
+        cv, "source_proxy", lambda cfg: "http://127.0.0.1:7890" if (cfg or {}).get("proxy_enabled") else None
+    )
 
-    cv.CivitaiAdapter().search("", 6, 1, "downloads", {"mirror": "https://civitai.com"})
-
-    assert seen["url"].startswith("https://civitai.com/api/v1/models")
+    cv.CivitaiAdapter().search("", 6, 1, "downloads", {"proxy_enabled": True})
     assert seen.get("proxy") == "http://127.0.0.1:7890"
+
+    # 用 page=1：只有第 1 页一定会发请求，第 2 页在游标为空时直接返回空页
+    cv.CivitaiAdapter().search("", 6, 1, "downloads", {"proxy_enabled": False})
+    assert seen.get("proxy") is None

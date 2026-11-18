@@ -101,8 +101,8 @@ def test_hf_resolve_follows_same_rule(proxy_settings, monkeypatch):
     assert seen["url"].startswith("https://hf-mirror.com/api/models/")
 
 
-def test_civitai_search_uses_proxy_on_official_domain(proxy_settings, monkeypatch):
-    """默认走 civitai.red（不套代理）；只有显式选官方域名时才按开关套代理。"""
+def test_civitai_search_follows_switch_on_fixed_red_domain(proxy_settings, monkeypatch):
+    """域名固定 civitai.red（不提供配置）；代理与否只看每源开关。"""
     seen: dict = {}
 
     def fake_get(url, **kwargs):
@@ -112,16 +112,12 @@ def test_civitai_search_uses_proxy_on_official_domain(proxy_settings, monkeypatc
 
     monkeypatch.setattr(cv.httpx, "get", fake_get)
 
-    # 默认：.red，直连
     cv.CivitaiAdapter().search("", 2, 1, "", {"proxy_enabled": True})
     assert seen["url"].startswith("https://civitai.red/api/v1/models")
-    assert seen["proxy"] is None
-
-    # 显式选官方域名：按开关套代理
-    cv.CivitaiAdapter().search("", 2, 1, "", {"proxy_enabled": True, "mirror": "https://civitai.com"})
-    assert seen["url"].startswith("https://civitai.com/api/v1/models")
     assert seen["proxy"] == "http://127.0.0.1:7890"
 
+    cv.CivitaiAdapter().search("", 2, 1, "", {"proxy_enabled": False})
+    assert seen["proxy"] is None
 
 def test_civitai_search_stays_direct_when_switch_off(proxy_settings, monkeypatch):
     seen: dict = {}

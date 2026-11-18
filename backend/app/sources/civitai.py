@@ -11,31 +11,13 @@ import httpx
 from ..config import source_proxy
 from .base import RemoteFile, RepoInfo, SourceAdapter, SourceError
 
-OFFICIAL_API = "https://civitai.com/api/v1"
+# 固定走 civitai.red —— **不提供配置**，用户不该为这件事做决定。
+# 依据：civitai.com 在国内被 DNS 注入（解析到轮换的假 IP：Facebook / Dropbox / DigitalOcean 段）
+# 且被 SNI 阻断，直连 21 秒超时；civitai.red 解析到真实 Cloudflare IP，搜索 1.4~1.9 秒。
+# 两条线在**产品上并列**（可见性不同），但 /api/v1 实测是同一后端
+# （5 组查询逐条 id 完全一致），所以这里只挑能连上的那条，数据不会有差别。
+API = "https://civitai.red/api/v1"
 
-# 默认走 .red。理由不是偏好，是可达性：
-#   civitai.com 在国内被 DNS 注入（解析到轮换的假 IP）+ SNI 阻断，直连 21 秒超时；
-#   civitai.red 解析到真实 Cloudflare IP，搜索 / 翻页 / 详情 都在 1.5 秒内。
-# 而两者 /api/v1 实测是同一个后端（5 组查询逐条 id 完全一致），换域名不改数据。
-# 所以对中文用户 .red 严格更优，不值得让用户再勾一个开关。
-DEFAULT_API = "https://civitai.red/api/v1"
-
-
-def api_base(cfg: dict | None) -> str:
-    """API 域名 = **网络通路**，与 full_catalog（可见性）是两件事。
-
-    civitai.com 与 civitai.red 在**产品层面并列**（面向不同可见性），不是主备关系，
-    所以这里**不做失败降级** —— 降级会把通路和可见性缠在一起，等两条线内容真分叉时
-    会静默改变用户看到的范围。
-
-    默认值取 .red（见上）；要强制走官方域名就在设置里显式填 civitai.com，
-    那时会按「按源代理」的开关套代理。
-    """
-    cfg = cfg or {}
-    raw = str(cfg.get("mirror") or "").strip().rstrip("/")
-    if not raw:
-        return DEFAULT_API
-    return raw if raw.endswith("/api/v1") else f"{raw}/api/v1"
 
 # 卡片是 4:3 横版，`object-fit: cover` 会从两端裁掉，所以按「离 4:3 多远」挑图。
 COVER_RATIO = 4 / 3
@@ -102,12 +84,10 @@ class CivitaiAdapter(SourceAdapter):
         if token:
             headers["Authorization"] = f"Bearer {token}"
         page = max(1, int(page))
-        base = api_base(cfg)
-        # 走镜像时不套代理：镜像是另一条通路，再经代理等于绕回原路
-        proxy = None if base != OFFICIAL_API else source_proxy(cfg)
+        proxy = source_proxy(cfg)
         # Civitai 的 /models **不再支持 page 参数**：page=1/2/3 返回同一批结果，
         # 翻页只能跟随 metadata.nextPage 里的 cursor。关键词搜索与普通列表都要走游标。
-        data = self._fetch_query_page(params, headers, page, proxy, base)
+        data = self._fetch_query_page(params, headers, page, proxy)
         items = []
         for m in data.get("items") or []:
             if m.get("type") == "Workflows":
@@ -137,12 +117,10 @@ class CivitaiAdapter(SourceAdapter):
             items = [m for m in items if (m.get("task") or "") == task]
         return {"items": items, "total": len(items)}
 
-    def _fetch(
-        self, params: dict, headers: dict, proxy: str | None = None, base: str = OFFICIAL_API
-    ) -> dict:
+    def _fetch(self, params: dict, headers: dict, proxy: str | None = None) -> dict:
         try:
             resp = httpx.get(
-                f"{base}/models",
+                f"{API}/models",
                 params=params,
                 headers=headers,
                 timeout=30,
@@ -155,21 +133,13 @@ class CivitaiAdapter(SourceAdapter):
             raise SourceError(f"Civitai 搜索错误 {resp.status_code}")
         return resp.json()
 
-    def _fetch_query_page(
-        self,
-        params: dict,
-        headers: dict,
-        page: int,
-        proxy: str | None = None,
-        base: str = OFFICIAL_API,
-    ) -> dict:
+    def _fetch_query_page(self, params: dict, headers: dict, page: int, proxy: str | None = None) -> dict:
         """游标翻页：cursors[i] 为获取第 i+1 页的游标，末页之后再记 None。
 
         2026-11 实测：`page` 参数对 /models 已失效（三页返回同一批），
         只能顺着 `metadata.nextPage` 的 cursor 走。关键词搜索与分类浏览共用这条链路。
         """
-        # 游标与后端绑定，换通路必须换一份缓存
-        key = (base, params.get("query"), params.get("sort"), params.get("nsfw"), params.get("limit"))
+        key = (params.get("query"), params.get("sort"), params.get("nsfw"), params.get("limit"))
         cursors = self._cursors.get(key) or [None]
         data: dict | None = None
         fetched = 0  # data 对应的页码
@@ -180,7 +150,7 @@ class CivitaiAdapter(SourceAdapter):
             p = dict(params)
             if cur is not None:
                 p["cursor"] = cur
-            data = self._fetch(p, headers, proxy, base)
+            data = self._fetch(p, headers, proxy)
             fetched = len(cursors)
             cursors.append(self._next_cursor(data))
         self._cursors[key] = cursors
@@ -189,11 +159,11 @@ class CivitaiAdapter(SourceAdapter):
         if fetched == page and data is not None:
             return data
         if page == 1:
-            return self._fetch(dict(params), headers, proxy, base)
+            return self._fetch(dict(params), headers, proxy)
         cur = cursors[page - 1] if page - 1 < len(cursors) else None
         if cur is None:
             return {"items": []}  # 已越过末页
-        return self._fetch({**params, "cursor": cur}, headers, proxy, base)
+        return self._fetch({**params, "cursor": cur}, headers, proxy)
 
     @staticmethod
     def _next_cursor(data: dict) -> str | None:
@@ -214,16 +184,15 @@ class CivitaiAdapter(SourceAdapter):
 
         headers = {"User-Agent": "model-downloader/0.1"}
         token = cfg.get("token") or ""
-        base = api_base(cfg)
         detail_params = {"nsfw": "true"} if cfg.get("full_catalog") else None
         try:
             resp = httpx.get(
-                f"{base}/models/{model_id}",
+                f"{API}/models/{model_id}",
                 params=detail_params,
                 headers=headers,
                 timeout=30,
                 follow_redirects=True,
-                proxy=None if base != OFFICIAL_API else source_proxy(cfg),
+                proxy=source_proxy(cfg),
             )
         except httpx.HTTPError as exc:
             raise SourceError(f"Civitai 解析失败: {exc}") from exc

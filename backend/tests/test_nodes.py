@@ -422,7 +422,7 @@ def test_marker_is_per_cache_key(tmp_path):
 
 
 def test_node_catalog_uses_github_proxy(monkeypatch):
-    """节点清单在 GitHub raw 上，跟着 github 源的代理开关走。
+    """节点清单在 GitHub raw 上，跟着「加速前缀 / github 源代理」走。
 
     过去它永远直连：5.7MB 在窄链路上要几分钟，而同一时刻下载却走代理。
     """
@@ -431,10 +431,9 @@ def test_node_catalog_uses_github_proxy(monkeypatch):
     from app import nodes
 
     seen = {}
-    monkeypatch.setattr(
-        nodes, "load_settings", lambda: {"sources": {"github": {"proxy_enabled": True}}, "proxy": {"host": "127.0.0.1", "port": 7890}}
-    )
-    monkeypatch.setattr(nodes, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+    monkeypatch.setattr(nodes, "gh_url", lambda url: url)
+    monkeypatch.setattr(nodes, "gh_proxy", lambda cfg: "http://127.0.0.1:7890")
+    monkeypatch.setattr(nodes, "load_settings", lambda: {"sources": {"github": {"proxy_enabled": True}}})
 
     def fake_get(url, **kw):
         seen.update(kw)
