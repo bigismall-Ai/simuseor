@@ -487,21 +487,6 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   searchNow(): void {
     this.debounceSub?.unsubscribe();
     this.applyFilters();
-    this.pingFamilyScan();
-  }
-
-  /**
-   * 顺带触发厂标资产巡检。
-   *
-   * 为什么搭在搜索上：定时任务会在没人用的时候也去抓上游，纯属浪费；而
-   * 「用户正在找模型」这个时刻恰好是资产状态最该被知道的时刻。
-   *
-   * 后端按 24 小时节流，一天最多真跑一次 —— 所以这里每次搜索都调也不心疼。
-   * 结果不在发现页显示（找模型的人不该被资产提示打断），到设置页看。
-   * 失败静默：巡检挂了绝不能影响搜索。
-   */
-  private pingFamilyScan(): void {
-    this.api.triggerFamilyScan().subscribe({ next: () => {}, error: () => {} });
   }
 
   searchKeyword(kw: string): void {

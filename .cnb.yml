@@ -8,7 +8,9 @@
 # 三道检查：
 #   1. 家族表一致性 —— 纯 Node，零依赖，秒级。拦「改了 cover.ts 的正则忘了重新生成」
 #   2. 厂牌资产校验 —— 需要 Chromium。拦「手改资产没登记」「色板漏补」「野生资产」
-#   3. VIS 视觉规范 —— 纯 Node，零依赖，秒级。拦「硬编码色值」「非白名单字重」「圆角中间档」
+#   3. 厂标资产归一化 —— 纯 Node，零依赖。拦「资产没登记」「指纹没重算」「缺 viewBox」；
+#      「还没归一到 24×24」「缺深色版」只作为待办打印，不阻断（那是人眼活，不是坏了）
+#   4. VIS 视觉规范 —— 纯 Node，零依赖，秒级。拦「硬编码色值」「非白名单字重」「圆角中间档」
 #
 # 校验脚本自己会决定「上游有没有改版」并写进候选区，但**永远不会自动替换正式资产**
 # —— 那一步永远要人点头（--promote）。
@@ -20,6 +22,11 @@ main:
           image: node:22
           script:
             - node tests/family-table-sync.mjs
+
+        - name: 厂标资产归一化
+          image: node:22
+          script:
+            - node scripts/normalize-family-assets.mjs --check
 
         - name: 厂牌资产校验
           image: node:22

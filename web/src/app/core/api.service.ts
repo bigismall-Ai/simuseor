@@ -10,8 +10,6 @@ import {
   ComfyInstanceState,
   ComfyPreview,
   ComfyVersions,
-  FamilyScanStatus,
-  FamilyScanTrigger,
   LibraryModel,
   LibraryFacets,
   LocalWorkflow,
@@ -517,19 +515,4 @@ export class ApiService {
     return this.http.get<NodeMissingReport>(`${this.base}/nodes/missing`);
   }
 
-  /**
-   * 触发厂标资产巡检。
-   *
-   * 搭车调用：发现页搜索时顺带调一次，后端按 24 小时节流，一天最多真跑一次。
-   * 巡检只报告上游有没有改版，**永远不会替换正式资产** —— 换不换由人决定。
-   */
-  triggerFamilyScan(force = false): Observable<FamilyScanTrigger> {
-    const url = force ? `${this.base}/families/scan?force=true` : `${this.base}/families/scan`;
-    return this.http.post<FamilyScanTrigger>(url, {});
-  }
-
-  /** 厂标资产巡检状态：上次什么时候跑的、哪些家族需要人看。 */
-  familyScanStatus(): Observable<FamilyScanStatus> {
-    return this.http.get<FamilyScanStatus>(`${this.base}/families/scan`);
-  }
 }

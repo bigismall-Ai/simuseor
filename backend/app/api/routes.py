@@ -14,7 +14,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
-from .. import family_scan
 from .. import hot_board
 from .. import image_proxy
 from ..comfy.model_dirs import infer_folder, plan_folders
@@ -997,23 +996,6 @@ def cover_cache_stats() -> dict:
 def clear_cover_cache() -> dict:
     """清空封面缓存（文件 + 索引），下次访问会重新取图。"""
     return image_proxy.clear()
-
-
-# ---------------- 厂标资产巡检 ----------------
-@router.post("/families/scan")
-def trigger_family_scan(force: bool = False) -> dict:
-    """搭车触发一次巡检。
-
-    24 小时内已经巡检过就直接返回、不跑 —— 这是「每天最多一次」的实现。
-    巡检只报告上游有没有改版，**永远不会替换正式资产**。
-    """
-    return family_scan.trigger(force=force)
-
-
-@router.get("/families/scan")
-def family_scan_status() -> dict:
-    """巡检状态：上次什么时候跑的、哪些家族需要人看。"""
-    return family_scan.status()
 
 
 # ---------------- 代理测试 ----------------
