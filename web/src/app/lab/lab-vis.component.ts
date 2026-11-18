@@ -315,9 +315,9 @@ import { LocalWorkflow } from '../core/types';
             <img class="logo-light" src="/brand/cicada-max.svg" alt="" />
             <img class="logo-dark" src="/brand/cicada-max-dark.svg" alt="" />
           </span>
-          <span class="brand-wordmark">
+          <span class="lv-wordmark">
             SiMuseor
-            <small class="brand-sub">剧集导演台</small>
+            <small class="lv-sub">剧集导演台</small>
           </span>
         </div>
         <div class="vis-fav">
@@ -401,6 +401,32 @@ import { LocalWorkflow } from '../core/types';
       display: grid; place-items: center; padding: 24px;
     }
     .vis-modal-stage .modal { max-height: none; width: min(680px, 100%); }
+    /* 参考页的品牌位演示。
+       刻意**不**复用全局 .brand-wordmark / .brand-sub ——
+       VIS Phase2 §1.1 规定「全站 .brand-wordmark 有且仅有 1 个实例
+       （侧栏品牌位）」，参考页若也用它就变成 2 个，违反该约束
+       （vis-check.mjs 1.5 项会判 FAIL）。此处用独立类名 lv- 前缀，
+       视觉口径与全局一致：Barlow Condensed 400 / 20px / letter-spacing .028em。 */
+    .lv-wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      font-family: "Barlow Condensed", "Segoe UI", system-ui, sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.028em;
+      line-height: 1;
+      white-space: nowrap;
+      color: var(--text);
+    }
+    .lv-sub {
+      font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: 1.4;
+      color: var(--muted);
+    }
   `,
 })
 export class LabVisComponent {
