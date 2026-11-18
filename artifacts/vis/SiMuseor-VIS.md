@@ -414,6 +414,16 @@ white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 >
 > **三卡片实测（顶部 24px 带的 accent 像素，off → on）**：`md-model-card` **40 → 329**（`::after` z-index 2）　·　`md-library-card` **0 → 289**（`::after` z-index 3）　·　`app-workflow-card` **0 → 289**（`::after`）—— **三张全部可见、落点全部在 `::after`**（提交 `b006877` 把 library-card 从本体外圈改到 `::after`）。
 
+> **像素级验收的判据**：测 hover 反馈时，accent 像素用**欧氏距离**判定（目标色 `rgb(79,70,229)`，阈值 **60** —— 含义是「肉眼能明确认出是那个靛蓝」），**不要用单通道差值** —— accent 的 r 与 g 仅差 9，用「r−g 大」判蓝会**假阴性**（把 accent 本身判成非蓝，得出「hover 无反应」的错误结论）；用「b−r 大」又会把偏蓝的灰色**误判**成 accent（假阳性）。
+
+```js
+// accent = rgb(79,70,229)
+const isAccent = (r, g, b) => {
+  const dr = r - 79, dg = g - 70, db = b - 229;
+  return Math.hypot(dr, dg, db) < 60;
+};
+```
+
 > ⚠️ **登记更正**：主理人简报中 `.nd-row` / `.wf-row` 的内边写作「`10px 14px`」，源码实测**两者均为 `12px 14px 12px 12px`**（四值：上 右 下 左）。`10px 10px 10px 14px` 属于 `workflows.component.ts` 的 `.wf-toast`，与两行无关。**以本表为准。**
 
 #### 3.7.4 蝉形矢量的可编辑性结构

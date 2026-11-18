@@ -610,6 +610,14 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <strong>三卡片实测</strong>（顶部 24px 带的 accent 像素，off → on）：<code>md-model-card</code> <strong>40 → 329</strong>（<code>::after</code> z-index 2）　·　<code>md-library-card</code> <strong>0 → 289</strong>（<code>::after</code> z-index 3）　·　<code>app-workflow-card</code> <strong>0 → 289</strong>（<code>::after</code>）—— <strong>三张全部可见、落点全部在 <code>::after</code></strong>（提交 <code>b006877</code> 把 library-card 从本体外圈改到 <code>::after</code>）。</p>
   </div>
   <div class="notice ink">
+    <p style="margin:0"><strong>像素级验收的判据</strong>：测 hover 反馈时，accent 像素用<strong>欧氏距离</strong>判定（目标色 <code>rgb(79,70,229)</code>，阈值 <strong>60</strong> —— 含义是「肉眼能明确认出是那个靛蓝」），<strong>不要用单通道差值</strong> —— accent 的 r 与 g 仅差 9，用「r−g 大」判蓝会<strong>假阴性</strong>（把 accent 本身判成非蓝，得出「hover 无反应」的错误结论）；用「b−r 大」又会把偏蓝的灰色<strong>误判</strong>成 accent（假阳性）。</p>
+    <pre><span class="c">// accent = rgb(79,70,229)</span>
+const isAccent = (r, g, b) =&gt; {
+  const dr = r - 79, dg = g - 70, db = b - 229;
+  return Math.hypot(dr, dg, db) &lt; 60;
+};</pre>
+  </div>
+  <div class="notice ink">
     <p style="margin:0"><strong>登记更正</strong>：主理人简报中 <code>.nd-row</code> / <code>.wf-row</code> 的内边写作「<code>10px 14px</code>」，源码实测<strong>两者均为 <code>12px 14px 12px 12px</code></strong>（四值：上 右 下 左）。<code>10px 10px 10px 14px</code> 属于 <code>workflows.component.ts</code> 的 <code>.wf-toast</code>，与两行无关。<strong>以本表为准。</strong></p>
   </div>
 
