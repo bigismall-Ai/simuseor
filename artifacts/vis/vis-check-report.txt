@@ -1,183 +1,217 @@
 ====================================================================================================
- SiMuseor VIS · Phase 3 只读校验报告  (vis-check.mjs)
- 生成时间: 2026-11-13T07:57:49.316Z
- 项目根  : E:/Projects/model-downloader
- 只读    : 不写任何项目文件，仅输出 stdout
+ SiMuseor VIS · 视觉规范校验报告  (vis-check.mjs v2 · 合规判定版)
+ 生成时间: 2026-11-18T05:31:27.838Z
+ 项目根  : E:/Projects/wt-vis-gate
+ 模式    : 只读 + --write-report（写 artifacts/vis/vis-check-report.txt）
 ====================================================================================================
 
 [0] 扫描范围
-    styles.css : web/src/styles.css  (1641 行)
-    app/**/*.ts: 27 个文件
-    vis-tokens.css: artifacts/vis/vis-tokens.css  (232 行)
-    口径: 先剥离 /*...*/ 注释（保留换行以维持行号），再按正则/规则块扫描。
+    styles.css          : web/src/styles.css  (1787 行)
+    app/**/*.ts         : 36 个文件
+    token 文件（设计层）: artifacts/vis/vis-tokens.css  (232 行)
+    token 文件（生效层）: web/src/vis-tokens.css  (623 行)
+    口径: 先剥离 /*...*/ 与 //... 注释（保留换行以维持行号），再按正则/规则块扫描。
+
+    判定语义分类：
+      [合规判定] 违规数必须 0 / 目标态必须精确成立 —— 不达标即阻塞（退出码 2）
+      [棘轮]     已知债务按「文件+值」精确登记，只降不升 —— 超基线阻塞（2），等于基线仅提示（1）
+      [落地进度] 引用数 > 0 即视为已落地 —— 只报进度，不判定
+      [现状快照] 纯登记，不判定
 
 ----------------------------------------------------------------------------------------------------
-[1] 现状基线扫描：web/src/styles.css + web/src/app/**/*.ts
-    说明：以下 FAIL 是【现状真实值】。Phase1 §8 / Phase2 §0.1 已声明 VIS 是目标态，
-          这些命中代表 M1/M2 待修项，不是脚本错误、也不是本轮交付物缺陷。
-    上游口径：Phase1 v1.1 (620 行) / Phase2 v1.1 (888 行)；§8 冲突表共 15 项
-          （v1.0 为 13 项，v1.1 新增 M/N；早期「12 项」为笔误），全部「本轮不执行」；
-          M（3 处 --accent 白字填充）/ N（21 处 --faint 文本）为 Phase 3 立即项，与 LOGO 冻结解耦。
-    【主理人裁决 · 方案 A】button.primary:hover 归入 §8-M【适用范围补充】，【不】新增第 16 项，
-          §8 冲突表仍 15 项。background 保持 var(--primary)（不跟 --primary-hover），
-          border-color 改 var(--accent) 作 1px 装饰描边；零 token 改动、双主题白字 6.29:1。
-          M 项描述扩为「不达 AA 的实心填充承载白字（--accent / --accent-hover / --primary-hover）」。
-    v1.1 §7.3 边界：裁决 G 只归一「文字/描边型 --accent」，两套实心填充分开处理，
-          1.3 / 1.3b 只检主 UI 的 CSS 规则，【不】对 lab-theme.ts 的深字方案报 FAIL（另见 1.10）。
-    30 处组件 scoped 盲区处置（ux-designer / visual-architect 裁定）：字重全量 26 处纳入 M1；
-          --faint 全量 39 处文本引用纳入 M1；圆角 lab-primeng:344 10px→12px（§8-D）；
-          cover-plate 3 处「适用域外 / 保持」不收敛，不作第 16 项。
+[1] 现状扫描：web/src/styles.css + web/src/app/**/*.ts
+    上游口径：Phase1 v1.1 / Phase2 v1.1；§8 冲突表 15 项（v1.0 13 项 + M/N）。
+    【主理人裁决 · 方案 A】button.primary:hover 归入 §8-M【适用范围补充】，
+          §8 冲突表仍 15 项。background 保持 var(--primary)，border-color 改 var(--accent)
+          作 1px 装饰描边；零 token 改动、双主题白字 6.29:1。
+    【裁决 G 边界】1.3 / 1.3b 只检主 UI 的 CSS 规则，不对 lab-theme.ts 的深字方案报 FAIL
+          （另见 1.10 正向验收）。
 ----------------------------------------------------------------------------------------------------
-    1.1 非白名单 font-weight (550/620/640/650/660/680) -> 26 处 = styles.css 17 + 组件 scoped 9
-      web/src/styles.css:204                               font-weight: 650
-      web/src/styles.css:529                               font-weight: 660
-      web/src/styles.css:563                               font-weight: 640
-      web/src/styles.css:592                               font-weight: 550
-      web/src/styles.css:629                               font-weight: 550
-      web/src/styles.css:695                               font-weight: 550
-      web/src/styles.css:741                               font-weight: 550
-      web/src/styles.css:764                               font-weight: 550
-      web/src/styles.css:970                               font-weight: 620
-      web/src/styles.css:1009                              font-weight: 620
-      web/src/styles.css:1106                              font: 550
-      web/src/styles.css:1125                              font-weight: 650
-      web/src/styles.css:1134                              font-weight: 640
-      web/src/styles.css:1148                              font-weight: 620
-      web/src/styles.css:1385                              font-weight: 680
-      web/src/styles.css:1401                              font-weight: 650
-      web/src/styles.css:1437                              font-weight: 620
-      web/src/app/lab/lab-primeng.component.ts:144         font-weight: 650
-      web/src/app/pages/downloads.component.ts:223         font-weight: 620
-      web/src/app/pages/library.component.ts:184           font: 620
-      web/src/app/pages/node-library.component.ts:218      font-weight: 620
-      web/src/app/pages/node-library.component.ts:322      font-weight: 550
-      web/src/app/pages/nodes.component.ts:259             font-weight: 620
-      web/src/app/pages/nodes.component.ts:279             font-weight: 620
-      web/src/app/pages/workflows.component.ts:368         font-weight: 620
-      web/src/app/ui/model-card.component.ts:145           font-weight: 620
+    1.1 非白名单 font-weight (550/620/640/650/660/680) -> 11 处 = styles.css 0 + 组件 scoped 11
+      web/src/app/pages/workflow-editor.component.ts:606   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:617   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:637   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:655   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:686   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:776   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:792   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:796   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:801   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:848   font-weight: 650
+      web/src/app/ui/library-card.component.ts:511         font-weight: 650
       白名单 400/500/600/700；550->500，620/640/650/660/680->600（Phase1 §4.2）
-      判定: [PASS] styles.css 内 17 处 = Phase1 §4.2 登记 17 处
-      [DISCOVERY] 组件 scoped 内 9 处为 Phase1/2 未审到的同类项，建议并入 M1 补充批次（不推翻 17 处登记值）
-    1.2 color: var(--faint|--placeholder) 文本用法 -> 39 处 = styles.css 22（--faint 21 / --placeholder 1） + 组件 scoped 17
-      web/src/styles.css:214                               color: var(--faint)
-      web/src/styles.css:226                               color: var(--faint)
-      web/src/styles.css:270                               color: var(--faint)
-      web/src/styles.css:380                               color: var(--faint)
-      web/src/styles.css:406                               color: var(--faint)
-      web/src/styles.css:458                               color: var(--faint)
-      web/src/styles.css:462                               color: var(--faint)
-      web/src/styles.css:524                               color: var(--faint)
-      web/src/styles.css:653                               color: var(--placeholder)
-      web/src/styles.css:786                               color: var(--faint)
-      web/src/styles.css:1111                              color: var(--faint)
-      web/src/styles.css:1128                              color: var(--faint)
-      web/src/styles.css:1140                              color: var(--faint)
-      web/src/styles.css:1153                              color: var(--faint)
-      web/src/styles.css:1163                              color: var(--faint)
-      web/src/styles.css:1167                              color: var(--faint)
-      web/src/styles.css:1211                              color: var(--faint)
-      web/src/styles.css:1294                              color: var(--faint)
-      web/src/styles.css:1391                              color: var(--faint)
-      web/src/styles.css:1432                              color: var(--faint)
-      web/src/styles.css:1465                              color: var(--faint)
-      web/src/styles.css:1508                              color: var(--faint)
-      web/src/app/pages/discover.component.ts:362          color: var(--faint)
-      web/src/app/pages/downloads.component.ts:254         color: var(--faint)
-      web/src/app/pages/library.component.ts:181           color: var(--faint)
-      web/src/app/pages/node-library.component.ts:252      color: var(--faint)
-      web/src/app/pages/node-library.component.ts:299      color: var(--faint)
-      web/src/app/pages/node-library.component.ts:319      color: var(--faint)
-      web/src/app/pages/node-library.component.ts:333      color: var(--faint)
-      web/src/app/pages/node-library.component.ts:335      color: var(--faint)
-      web/src/app/pages/nodes.component.ts:216             color: var(--faint)
-      web/src/app/pages/nodes.component.ts:265             color: var(--faint)
-      web/src/app/pages/nodes.component.ts:335             color: var(--faint)
-      web/src/app/pages/nodes.component.ts:366             color: var(--faint)
-      web/src/app/pages/workflows.component.ts:244         color: var(--faint)
-      web/src/app/pages/workflows.component.ts:263         color: var(--faint)
-      web/src/app/pages/workflows.component.ts:297         color: var(--faint)
-      web/src/app/pages/workflows.component.ts:424         color: var(--faint)
-      web/src/app/pages/workflows.component.ts:431         color: var(--faint)
-      全量 var(--faint|--placeholder) 引用: 41 处；差值 2 处为 background/border 等非文本装饰引用（§3.3 允许）
+      [合规判定] styles.css 内 0 处（必须 0）
+      判定: [PASS] styles.css 内零非白名单字重
+      [棘轮] 组件 scoped 内 11 处（登记基线 11 处，只降不升）
+        现状 11 处 / 登记基线 11 处
+        判定: [PASS] 无新增违规；已登记旧债 11 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflow-editor.component.ts|font-weight:650 x5
+        web/src/app/pages/workflow-editor.component.ts|font-weight:550 x5
+        web/src/app/ui/library-card.component.ts|font-weight:650 x1
+    1.2 color: var(--faint|--placeholder) 文本用法 -> 23 处 = styles.css 0（--faint 0 / --placeholder 0） + 组件 scoped 23
+      web/src/app/pages/library.component.ts:254           color: var(--faint)
+      web/src/app/pages/library.component.ts:312           color: var(--faint)
+      web/src/app/pages/library.component.ts:339           color: var(--faint)
+      web/src/app/pages/library.component.ts:365           color: var(--faint)
+      web/src/app/pages/library.component.ts:368           color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:607   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:689   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:717   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:720   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:726   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:728   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:761   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:763   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:797   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:798   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:801   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:804   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:817   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:822   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:835   color: var(--faint)
+      web/src/app/ui/library-card.component.ts:493         color: var(--faint)
+      web/src/app/ui/library-card.component.ts:531         color: var(--faint)
+      web/src/app/ui/workflow-card.component.ts:450        color: var(--faint)
+      全量 var(--faint|--placeholder) 引用: 28 处；差值 5 处为 background/border 等非文本装饰引用（§3.3 允许）
       处置: 不改 token 值，只把文本引用迁到 --muted / --text-2；::placeholder 文本必须保留（E2E :54,:92）
-      判定: [PASS] styles.css 内 21 + 1 = Phase2 §3.3 登记值
-      [DISCOVERY] 组件 scoped 内 17 处同样为 --faint 文本，Phase2 §3.3 未列；建议并入 M1 补充批次（不推翻 21 处清单）
+      [合规判定] styles.css 内 --faint 0 处 / --placeholder 0 处（两者都必须 0）
+      判定: [PASS] styles.css 内零 --faint / --placeholder 文本用法
+      [棘轮] 组件 scoped 内 23 处（登记基线 23 处，只降不升）
+        现状 23 处 / 登记基线 23 处
+        判定: [PASS] 无新增违规；已登记旧债 23 处仍在（只降不升，不阻塞）
+        web/src/app/pages/library.component.ts|--faint x5
+        web/src/app/pages/workflow-editor.component.ts|--faint x15
+        web/src/app/ui/library-card.component.ts|--faint x2
+        web/src/app/ui/workflow-card.component.ts|--faint x1
     1.3 background: var(--accent*) 且同规则含 color: var(--on-primary)
-        -> 3 处（Phase1 §8-M / Phase2 §2.10-3 登记 3 处）
-        web/src/styles.css:737                             .filter-chip.active                background: var(--accent); border-color: var(--accent); color: var(--o
-        web/src/styles.css:743                             .filter-chip.active:hover          background: var(--accent-hover); border-color: var(--accent-hover); co
-        web/src/styles.css:1469                            .step-row.active .step-dot         background: var(--accent); color: var(--on-primary);
-        处置: 三处填充改 var(--primary)（白字 6.29:1 双主题一致）；--accent 深色 #a5b4fc 白字仅 1.99:1 FAIL
-        检测口径（Phase1 v1.1 §7.3 / team-lead 指定）: 本项【只】匹配主 UI 的 CSS 规则块
-          （同规则 background:var(--accent*) + color:var(--on-primary)）。lab-theme.ts 是 TS 对象，
-          其 dark primary = 亮靛紫底 + contrastColor {primary.950} 深字，属另一条合规路线，
-          【不参与本项检测、不报 FAIL】；该路线由 1.10 做正向验收，由 §2 对比度表做数值复核。
+        -> 1 处（合规目标 0 处；登记基线 1 处）
+        web/src/app/pages/workflows.component.ts:1283      .cm-cell-tag                       position: absolute; left: 6px; bottom: 6px; padding: 1px 5px; border-r
+        处置: 该填充改 var(--primary)（白字 6.29:1 双主题一致）；--accent 深色 #a5b4fc 白字仅 1.99:1 FAIL
+        检测口径: 本项只匹配主 UI 的 CSS 规则块。lab-theme.ts 是 TS 对象，其 dark primary =
+          亮靛紫底 + contrastColor {primary.950} 深字，属另一条合规路线，不参与本项检测；
+          该路线由 1.10 做正向验收，由 §2 对比度表做数值复核。
         segmented button.active（--panel 底 + --accent 文字）合规，不改、不计入。
-        判定: [PASS] 与登记的 3 处一致
+        现状 1 处 / 登记基线 1 处
+        判定: [PASS] 无新增违规；已登记旧债 1 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflows.component.ts|.cm-cell-tag x1
     1.3b 白字实心填充通用枚举（修复 1.3 只匹配 --accent* 的漏检盲区）
         规则 @行                                      填充变量           浅        深        判定
-        button.primary @602                           --primary          6.29:1    6.29:1    [PASS]
-        button.primary:hover @608                     --primary-hover    7.90:1    4.47:1    [FAIL 现状·M1-d 待修]
-        .filter-chip.active @737                      --accent           6.29:1    1.99:1    [FAIL 现状·M1-d 待修]
-        .filter-chip.active:hover @743                --accent-hover     7.90:1    1.49:1    [FAIL 现状·M1-d 待修]
-        .step-row.active .step-dot @1469              --accent           6.29:1    1.99:1    [FAIL 现状·M1-d 待修]
-        -> 5 条白字实心填充规则；<4.5 不达 AA = 4 条（全部为【现状违规】，M1-d 待修，非脚本或交付物缺陷）
+        button.primary @650                           --primary          6.29:1    6.29:1    [PASS]
+        button.primary:hover @658                     --primary          6.29:1    6.29:1    [PASS]
+        .segmented button.active @773                 --primary          6.29:1    6.29:1    [PASS]
+        .segmented button.active:hover @778           --primary          6.29:1    6.29:1    [PASS]
+        .filter-chip.active @792                      --primary          6.29:1    6.29:1    [PASS]
+        .filter-chip.active:hover @800                --primary          6.29:1    6.29:1    [PASS]
+        .step-row.active .step-dot @1600              --primary          6.29:1    6.29:1    [PASS]
+        .cm-cell-tag @1283                            --accent           6.29:1    1.99:1    [FAIL 旧债·待修]
+        .lw-primary @1528                             --primary          6.29:1    6.29:1    [PASS]
+        .wc-primary @458                              --primary          6.29:1    6.29:1    [PASS]
+        -> 10 条白字实心填充规则；<4.5 不达 AA = 1 条（登记基线 1 条）
         M 项描述（ux-designer / visual-architect 一致）：不达 AA 的实心填充承载白字
-          （--accent / --accent-hover / --primary-hover）；§8 仍 15 项，【不】新增第 16 项。
+          （--accent / --accent-hover / --primary-hover）；§8 仍 15 项，不新增第 16 项。
         边界: lab-theme.ts 已显式跳过；其「亮靛紫底 + contrastColor 深字」由 1.10 正向验收，不报 FAIL。
-        判定: [PASS] 通用枚举已覆盖 --primary-hover 漏检盲区（button.primary:hover 深色 4.47:1 FAIL）
+        现状 1 处 / 登记基线 1 处
+        判定: [PASS] 无新增违规；已登记旧债 1 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflows.component.ts|.cm-cell-tag x1
     1.4 filter: invert() -> 0 处（硬约束：禁止，Phase1 §2.4 / cover.ts:43）
+      [合规判定] 全仓必须 0
       判定: [PASS] 全仓零 invert，反白走双份 SVG + :host-context
-    1.5 brand-wordmark 字面（项目源码） -> 0 个
-        vis-tokens.css 注释内提及: 10 次（接入片段参考，不计实例）
-        目标态（M2 后）应恰好 1 个实例，且是 .sidebar > .brand 的子元素（Phase2 §1.1）
-        判定: [PASS] 现状 0 = 占位期尚未落地，符合本轮零落地
-    1.6 圆角中间档 border-radius: 6/9/4/10px -> 9 处 = styles.css 5 + 组件 scoped 4
-      web/src/styles.css:191                               border-radius: 9px
-      web/src/styles.css:444                               border-radius: 4px
-      web/src/styles.css:621                               border-radius: 6px
-      web/src/styles.css:882                               border-radius: 4px
-      web/src/styles.css:1450                              border-radius: 6px
+    1.5 brand-wordmark 字面（项目源码） -> 2 个
+      web/src/styles.css:238                               brand-wordmark
+      web/src/app/app.component.ts:32                      brand-wordmark
+        模板实例（TS class="brand-wordmark"）: 1 个 -> web/src/app/app.component.ts:32
+        CSS 规则（.brand-wordmark 选择器）  : 1 个 -> web/src/styles.css:238
+        目标态（Phase2 §1.1）：全站 .brand-wordmark 有且仅有 1 个实例，且是 .sidebar > .brand 的子元素
+      [合规判定] 模板实例必须恰好 1 个
+      判定: [PASS] 模板实例恰好 1 个（M2 已落地）
+    1.6 圆角中间档 border-radius: 6/9/4/10px -> 21 处 = styles.css 0 + 组件 scoped 21
       web/src/app/lab/lab-primeng.component.ts:344         border-radius: 10px
-      web/src/app/ui/cover-plate.component.ts:128          border-radius: 6px
-      web/src/app/ui/cover-plate.component.ts:268          border-radius: 6px
-      web/src/app/ui/cover-plate.component.ts:310          border-radius: 4px
+      web/src/app/pages/library.component.ts:218           border-radius: 10px
+      web/src/app/pages/library.component.ts:319           border-radius: 6px
+      web/src/app/pages/library.component.ts:351           border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:610   border-radius: 4px
+      web/src/app/pages/workflow-editor.component.ts:614   border-radius: 9px
+      web/src/app/pages/workflow-editor.component.ts:625   border-radius: 4px
+      web/src/app/pages/workflow-editor.component.ts:666   border-radius: 9px
+      web/src/app/pages/workflow-editor.component.ts:706   border-radius: 10px
+      web/src/app/pages/workflow-editor.component.ts:723   border-radius: 4px
+      web/src/app/pages/workflow-editor.component.ts:755   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:758   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:802   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:810   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:811   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:813   border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:148          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:319          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:371          border-radius: 4px
+      web/src/app/ui/library-card.component.ts:374         border-radius: 6px
+      web/src/app/ui/library-card.component.ts:418         border-radius: 4px
       Phase1 §6.4 待收敛：.brand-mark 9px(随 C 删除) / .btn-xs 6px / .tp-swatch 4px / .skel-line 4px / .step-row 6px
-      web/src/styles.css                         登记例外: 16px x1 / 999px x7（弹层与胶囊，Phase1 §6.4）
+      web/src/styles.css                         登记例外: 16px x0 / 999px x8（弹层与胶囊，Phase1 §6.4）
       web/src/app/pages/nodes.component.ts       登记例外: 16px x0 / 999px x1（弹层与胶囊，Phase1 §6.4）
-      判定: [PASS] styles.css 内 5 处 = Phase1 §6.4 登记 5 处
-      [DISCOVERY] 组件 scoped 内 4 处（cover-plate / lab-primeng）未列入 §6.4；主理人裁决 3 已定：cover-plate 3 处定性「适用域外」（独立图形子系统，圆角三档规则不适用），不收敛、不登记第三类例外；lab-primeng 1 处并入 M1
-    1.7 prefers-reduced-motion 规则 -> 1 处（Phase2 §3.8：全仓仅 model-card.component.ts:119-123 一处）
-      web/src/app/ui/model-card.component.ts:119           prefers-reduced-motion: reduce
-      判定: [WARN] 目标态需全局 @media reduce（P3-7）：7 个动画停止，spinner 降级为静态 + role=status 文字
-    1.8 @font-face（项目源码） -> 0 条
-        vis-tokens.css 目标态声明: 2 条（Barlow 400 / Inter 100 900）
-        判定: [INFO] 源码 0 条 = 基线字体【尚未生效】，落地前不得宣称生效（Phase1 冲突 F）
-    1.9a stroke-width: 1.6（-> 1.5，Phase1 §5.3） -> 2 处
-      web/src/styles.css:250                               stroke-width: 1.6
-      web/src/styles.css:370                               stroke-width: 1.6
-    1.9b 源码引用新增 token: --brand-* 0 / --border-control 0 / --radius-lg 0（应全为 0 = 本轮零落地）
-      判定: [PASS] 零落地证据
-    1.10 lab-theme.ts 裁决 G 边界（Phase1 v1.1 §7.3 / Phase2 §7.2 新增验收项）
-        [INFO] dark primary.color 当前 = {primary.400}（现状）；裁决 G 只改这一行色值，不牵动 contrastColor
+      web/src/app/pages/workflow-editor.component.ts 登记例外: 16px x0 / 999px x1（弹层与胶囊，Phase1 §6.4）
+      web/src/app/pages/workflows.component.ts   登记例外: 16px x0 / 999px x1（弹层与胶囊，Phase1 §6.4）
+      [合规判定] styles.css 内 0 处（必须 0）
+      判定: [PASS] styles.css 内零圆角中间档
+      [棘轮] 组件 scoped 内 21 处（登记基线 21 处，只降不升）
+      [DISCOVERY] cover-plate 3 处定性「适用域外」（独立图形子系统，圆角三档规则不适用）；
+                lab-primeng 1 处并入 M1。
+        现状 21 处 / 登记基线 21 处
+        判定: [PASS] 无新增违规；已登记旧债 21 处仍在（只降不升，不阻塞）
+        web/src/app/lab/lab-primeng.component.ts|border-radius:10px x1
+        web/src/app/pages/library.component.ts|border-radius:10px x1
+        web/src/app/pages/library.component.ts|border-radius:6px x2
+        web/src/app/pages/workflow-editor.component.ts|border-radius:4px x3
+        web/src/app/pages/workflow-editor.component.ts|border-radius:9px x2
+        web/src/app/pages/workflow-editor.component.ts|border-radius:10px x1
+        web/src/app/pages/workflow-editor.component.ts|border-radius:6px x6
+        web/src/app/ui/cover-plate.component.ts|border-radius:6px x2
+        web/src/app/ui/cover-plate.component.ts|border-radius:4px x1
+        web/src/app/ui/library-card.component.ts|border-radius:6px x1
+        web/src/app/ui/library-card.component.ts|border-radius:4px x1
+    1.7 prefers-reduced-motion 规则 -> 4 处
+      web/src/styles.css:1775                              prefers-reduced-motion: reduce
+      web/src/app/pages/workflows.component.ts:1606        prefers-reduced-motion: reduce
+      web/src/app/ui/library-card.component.ts:645         prefers-reduced-motion: reduce
+      web/src/app/ui/model-card.component.ts:149           prefers-reduced-motion: reduce
+      [现状快照] 目标态需全局 @media reduce（P3-7）：7 个动画停止，spinner 降级为静态 + role=status 文字
+    1.8 @font-face（项目源码，不含 token 文件） -> 0 条
+        生效层 web/src/vis-tokens.css 生效 @font-face: 1 条（Barlow Condensed 400；Inter 按 M0 暂缓裁决以注释块保留，未生效）
+        设计层 artifacts/vis/vis-tokens.css 生效 @font-face: 2 条
+      [现状快照] 源码 0 条 = 字体声明集中在 token 文件，非组件内联；落地前不得宣称生效（Phase1 冲突 F）
+    1.9a stroke-width: 1.6（-> 1.5，Phase1 §5.3） -> 1 处（合规目标 0 处；登记基线 1 处）
+      web/src/app/pages/workflow-editor.component.ts:634   stroke-width: 1.6
+        现状 1 处 / 登记基线 1 处
+        判定: [PASS] 无新增违规；已登记旧债 1 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflow-editor.component.ts|stroke-width:1.6 x1
+    1.9b 新增 token 在源码中的引用（落地进度）
+      --brand-*        引用 0 处  [未接线]
+      --border-control 引用 6 处  [已落地]
+        web/src/app/pages/workflows.component.ts:717 --border-control
+        web/src/app/pages/workflows.component.ts:1068 --border-control
+        web/src/app/pages/workflows.component.ts:1099 --border-control
+        web/src/app/pages/workflows.component.ts:1210 --border-control
+        web/src/app/pages/workflows.component.ts:1335 --border-control
+        web/src/app/pages/workflows.component.ts:1350 --border-control
+      --radius-lg      引用 1 处  [已落地]
+        web/src/styles.css:1041 --radius-lg
+      口径: M2-d 之后「引用数 > 0」即视为已落地（v1 判「=== 0 = 零落地证据」已过时）。
+      [落地进度] 只报进度，不判定、不阻塞。
+    1.10 lab-theme.ts 裁决 G 边界（Phase1 v1.1 §7.3 / Phase2 v1.2 新增验收项）
+        [INFO] dark primary.color 当前 = {primary.300}（M1-g 目标已落地）；裁决 G 只改这一行色值，不牵动 contrastColor
         [PASS] dark.primary.contrastColor 保持 {primary.950} 深字      
         [PASS] dark 块未被误改成白字 contrastColor（绝不改白字）       
         [PASS] light.primary.contrastColor #ffffff 为合规浅色方案（不判 FAIL）
         [PASS] dialog.root.borderRadius 保持 16px（Phase1 §6.4 例外 1）
-        [PASS] focusRing 宽度 2px / offset 2px 与 styles.css:142 一致  
+        [PASS] focusRing 宽度 2px / offset 2px 与 styles.css 一致      
         独立复算: 白字 on indigo 400 #818cf8 = 2.98:1 FAIL；深字 #1e1b4b on 400 = 5.36:1 / on 300 #a5b4fc = 8.02:1 -> 两套填充路线各自合规
-        口径: 1.3 只检主 UI 的 --accent 白字填充，【不】对 lab 深字方案报 FAIL。
+        口径: 1.3 只检主 UI 的 --accent 白字填充，不对 lab 深字方案报 FAIL。
     1.11 --primary-hover 承载白字填充（方案 A 静态检测；M 项适用范围补充，不新开第 16 项）
-        -> 1 处规则（视觉架构师登记：1 处 button.primary:hover）
-        web/src/styles.css:608                     button.primary:hover
-        全仓 --primary-hover 出现 4 次: :47 浅定义 #4338ca / :103 深定义 #6366f1 / :609 background / :610 border-color
+        -> 0 处规则（方案 A 落地后应恰好 0 处：hover 不再承载白字填充）
+        styles.css 内 --primary-hover 出现 2 次（浅定义 / 深定义 / 可能的 background / border-color）
         [INFO] 浅 #4338ca + 白字 = 7.90:1 PASS；深 #6366f1 + 白字 = 4.47:1 FAIL（差 0.03 不达 AA）-> 仅深色主题出问题
-        口径: 属 §8-M 的【未列举实例】；【不】计入 §1.3 的 3 处 --accent 登记值、
-              【不】新增第 16 项冲突、15 项计数不变；token 值浅/深保持原样，只改使用位置（同 N 项治理范式）。
-        处置: 并入 M1-d，采纳【主理人裁决 · 方案 A】: background 保持 var(--primary) + 白字，
-              仅以 border-color:var(--accent) 作 1px 装饰描边；不改任何 token 值；
-              button.primary:disabled:hover (:619) 已保持 --primary、button:disabled:hover (:617) 不动；
-              静止态 :606 的 1px 内高光保留（Phase1 §6.6 已允许）；M1 后本项应归零。
+        口径: 属 §8-M 的【未列举实例】；不计入 §1.3 的登记值、不新增第 16 项冲突；
+              token 值浅/深保持原样，只改使用位置（同 N 项治理范式）。
         正向验收: 深色 hover 不改用 --primary-hover，白字保持 6.29:1 -> §2 第 27 组 PASS；
               现状 4.47:1 违规由 §1.3b 通用枚举持续覆盖，落地后自动归零（防止改回 --primary-hover）。
         [PASS] --primary-hover token 值浅/深保持原样（零覆盖 / 零 token 改动）
@@ -186,6 +220,221 @@
           深色 #a5b4fc 对底 #4f46e5 = 3.15:1（>=3:1 达标）。
           A′ 备选：--accent-hover 深 #c7d2fe = 4.22:1 / 浅 #4338ca = 1.26:1（浅色不达 3:1，须按主题分开）。
           本脚本按【方案 A】输出、不擅自切换 A′；双主题两条若都验则组数 27→28，请主理人定夺。
+    1.12 硬编码色值（新增）：web/src/app/**/*.ts 内的裸 hex / rgb() / rgba()
+      口径: 组件 scoped 样式块（styles: `...`）与 TS 字面量分开统计，两类各自棘轮。
+      豁免清单（显式白名单，附理由）:
+        - web/src/app/core/model-tone.ts
+          理由: 家族色唯一出处。该文件刻意存双套色（浅/深各一份），由调用方只给 --t-* / --t-*-d，由 CSS 映射到 --plate-*；深色主题因此能整体切换。文件头 :11-26 写明「这里只给两套色，映射交给 CSS」。这是「色板即数据」的设计，不是绕过 token 的硬编码。
+        - web/src/app/lab/**
+          理由: 选型对照实验页。app.routes.ts:83 注释：「设计对照实验：两套组件体系各做一页，仅用于评估，不属于产品导航」。这些页面刻意不消费 VIS token，否则就失去了对照实验的意义（要对比的就是「不用 token 的裸 PrimeNG/Tailwind」）。
+        - web/src/app/core/cover.ts
+          理由: 【未豁免】已核实其 7 处 hex 全在注释里（官方品牌色讨论：Qwen 官方紫 #6950EF、
+                ERNIE 深端 #0439B5 等），剥离注释后命中数为 0，因此保持受检 —— 将来若在
+                此写入真实色值会被当场抓住。
+
+      [豁免命中明细]（273 处，不计入违规）
+        web/src/app/core/model-tone.ts  232 处
+        web/src/app/lab/fixtures.ts  4 处
+        web/src/app/lab/lab-primeng.component.ts  13 处
+        web/src/app/lab/lab-theme.ts  24 处
+
+      [组件 scoped 样式块内] 110 处
+        web/src/app/pages/workflow-editor.component.ts:613   #fee2e2
+        web/src/app/pages/workflow-editor.component.ts:642   #fff
+        web/src/app/pages/workflow-editor.component.ts:643   #fff
+        web/src/app/pages/workflow-editor.component.ts:653   #fef2f2
+        web/src/app/pages/workflow-editor.component.ts:846   #fef2f2
+        web/src/app/pages/workflow-editor.component.ts:710   rgb(0 0 0 / 0.4)
+        web/src/app/pages/workflow-editor.component.ts:711   rgb(0 0 0 / 0.35)
+        web/src/app/pages/workflow-editor.component.ts:865   rgb(0 0 0 / 0.55)
+        web/src/app/pages/workflows.component.ts:933         #fff
+        web/src/app/pages/workflows.component.ts:800         rgb(0 0 0 / 0.55)
+        web/src/app/pages/workflows.component.ts:859         rgb(0 0 0 / 0.34)
+        web/src/app/pages/workflows.component.ts:861         rgb(0 0 0 / 0.58)
+        web/src/app/pages/workflows.component.ts:988         rgb(0 0 0 / 0.55)
+        web/src/app/pages/workflows.component.ts:1020        rgb(0 0 0 / 0.34)
+        web/src/app/pages/workflows.component.ts:1022        rgb(0 0 0 / 0.6)
+        web/src/app/pages/workflows.component.ts:1035        rgb(0 0 0 / 0.6)
+        web/src/app/pages/workflows.component.ts:1378        rgb(0 0 0 / 0.55)
+        web/src/app/ui/cover-plate.component.ts:247          #ffffff
+        web/src/app/ui/cover-plate.component.ts:395          #fff
+        web/src/app/ui/cover-plate.component.ts:400          #fff
+        web/src/app/ui/cover-plate.component.ts:435          #000
+        web/src/app/ui/cover-plate.component.ts:435          #000
+        web/src/app/ui/cover-plate.component.ts:436          #000
+        web/src/app/ui/cover-plate.component.ts:436          #000
+        web/src/app/ui/cover-plate.component.ts:470          #000
+        web/src/app/ui/cover-plate.component.ts:470          #000
+        web/src/app/ui/cover-plate.component.ts:471          #000
+        web/src/app/ui/cover-plate.component.ts:471          #000
+        web/src/app/ui/cover-plate.component.ts:679          #f2f1ed
+        web/src/app/ui/cover-plate.component.ts:680          #6b6a63
+        web/src/app/ui/cover-plate.component.ts:681          #57564f
+        web/src/app/ui/cover-plate.component.ts:682          #b3b2aa
+        web/src/app/ui/cover-plate.component.ts:783          #232321
+        web/src/app/ui/cover-plate.component.ts:784          #b0afa6
+        web/src/app/ui/cover-plate.component.ts:785          #d7d6cd
+        web/src/app/ui/cover-plate.component.ts:786          #b3b2aa
+        web/src/app/ui/cover-plate.component.ts:248          rgba(255, 255, 255, 0.76)
+        web/src/app/ui/cover-plate.component.ts:253          rgba(8, 10, 16, 0.52)
+        web/src/app/ui/cover-plate.component.ts:253          rgba(8, 10, 16, 0)
+        web/src/app/ui/cover-plate.component.ts:256          rgba(8, 10, 16, 0.94)
+        web/src/app/ui/cover-plate.component.ts:257          rgba(8, 10, 16, 0.66)
+        web/src/app/ui/cover-plate.component.ts:258          rgba(8, 10, 16, 0)
+        web/src/app/ui/cover-plate.component.ts:274          rgb(0 0 0 / 0.5)
+        web/src/app/ui/cover-plate.component.ts:320          rgba(255, 255, 255, 0.94)
+        web/src/app/ui/cover-plate.component.ts:394          rgba(255, 255, 255, 0.18)
+        web/src/app/ui/cover-plate.component.ts:399          rgba(255, 255, 255, 0.28)
+        web/src/app/ui/family-mark.component.ts:59           rgb(0 0 0 / 0.28)
+        web/src/app/ui/library-card.component.ts:268         #000
+        web/src/app/ui/library-card.component.ts:268         #000
+        web/src/app/ui/library-card.component.ts:269         #000
+        web/src/app/ui/library-card.component.ts:269         #000
+        web/src/app/ui/library-card.component.ts:297         #000
+        web/src/app/ui/library-card.component.ts:297         #000
+        web/src/app/ui/library-card.component.ts:298         #000
+        web/src/app/ui/library-card.component.ts:298         #000
+        web/src/app/ui/library-card.component.ts:344         #fff
+        web/src/app/ui/library-card.component.ts:442         #fff
+        web/src/app/ui/library-card.component.ts:447         #fff
+        web/src/app/ui/library-card.component.ts:520         #fff
+        web/src/app/ui/library-card.component.ts:564         #fff
+        web/src/app/ui/library-card.component.ts:583         #15803d
+        web/src/app/ui/library-card.component.ts:583         #15803d
+        web/src/app/ui/library-card.component.ts:584         #b45309
+        web/src/app/ui/library-card.component.ts:584         #b45309
+        web/src/app/ui/library-card.component.ts:585         #ff0000
+        web/src/app/ui/library-card.component.ts:592         #ff0000
+        web/src/app/ui/library-card.component.ts:592         #ff0000
+        web/src/app/ui/library-card.component.ts:597         #eab308
+        web/src/app/ui/library-card.component.ts:597         #eab308
+        web/src/app/ui/library-card.component.ts:634         #fff
+        web/src/app/ui/library-card.component.ts:643         #17101d
+        web/src/app/ui/library-card.component.ts:337         rgb(0 0 0 / 0.74)
+        web/src/app/ui/library-card.component.ts:338         rgb(0 0 0 / 0.18)
+        web/src/app/ui/library-card.component.ts:339         rgb(0 0 0 / 0.1)
+        web/src/app/ui/library-card.component.ts:340         rgb(0 0 0 / 0.42)
+        web/src/app/ui/library-card.component.ts:345         rgb(255 255 255 / 0.78)
+        web/src/app/ui/library-card.component.ts:441         rgb(255 255 255 / 0.18)
+        web/src/app/ui/library-card.component.ts:446         rgb(255 255 255 / 0.28)
+        web/src/app/ui/library-card.component.ts:492         rgb(0 0 0 / 0.1)
+        web/src/app/ui/library-card.component.ts:521         rgb(0 0 0 / 0.55)
+        web/src/app/ui/library-card.component.ts:536         rgb(255 255 255 / 0.78)
+        web/src/app/ui/library-card.component.ts:537         rgb(0 0 0 / 0.5)
+        web/src/app/ui/library-card.component.ts:563         rgb(255 255 255 / 0.24)
+        web/src/app/ui/library-card.component.ts:581         rgb(255 255 255 / 0.22)
+        web/src/app/ui/library-card.component.ts:592         rgb(255 0 0 / 0.5)
+        web/src/app/ui/library-card.component.ts:592         rgb(255 0 0 / 0.5)
+        web/src/app/ui/library-card.component.ts:597         rgb(234 179 8 / 0.5)
+        web/src/app/ui/library-card.component.ts:597         rgb(234 179 8 / 0.5)
+        web/src/app/ui/model-card.component.ts:225           #fff
+        web/src/app/ui/model-card.component.ts:267           #fff
+        web/src/app/ui/model-card.component.ts:122           rgb(0 0 0 / 0.16)
+        web/src/app/ui/model-card.component.ts:219           rgb(255 255 255 / 0.14)
+        web/src/app/ui/model-card.component.ts:220           rgb(255 255 255 / 0.88)
+        web/src/app/ui/model-card.component.ts:224           rgb(255 255 255 / 0.24)
+        web/src/app/ui/model-card.component.ts:268           rgb(0 0 0 / 0.5)
+        web/src/app/ui/model-card.component.ts:270           rgb(255 255 255 / 0.8)
+        web/src/app/ui/model-card.component.ts:271           rgb(255 255 255 / 0.28)
+        web/src/app/ui/workflow-card.component.ts:267        #fff
+        web/src/app/ui/workflow-card.component.ts:284        #fff
+        web/src/app/ui/workflow-card.component.ts:320        #fff
+        web/src/app/ui/workflow-card.component.ts:351        #fff
+        web/src/app/ui/workflow-card.component.ts:375        #fff
+        web/src/app/ui/workflow-card.component.ts:276        rgb(220 38 38 / 0.58)
+        web/src/app/ui/workflow-card.component.ts:318        rgb(0 0 0 / 0.42)
+        web/src/app/ui/workflow-card.component.ts:323        rgb(217 119 6 / 0.86)
+        web/src/app/ui/workflow-card.component.ts:349        rgb(0 0 0 / 0.42)
+        web/src/app/ui/workflow-card.component.ts:353        rgb(0 0 0 / 0.6)
+        web/src/app/ui/workflow-card.component.ts:376        rgb(0 0 0 / 0.58)
+        web/src/app/ui/workflow-card.component.ts:390        rgb(255 255 255 / 0.74)
+        web/src/app/ui/workflow-card.component.ts:391        rgb(0 0 0 / 0.5)
+      [TS 字面量] 7 处
+        web/src/app/pages/workflow-editor.component.ts:67    #6366f1
+        web/src/app/pages/workflow-editor.component.ts:68    #0284c7
+        web/src/app/pages/workflow-editor.component.ts:69    #8b5cf6
+        web/src/app/pages/workflow-editor.component.ts:70    #d97706
+        web/src/app/pages/workflow-editor.component.ts:71    #059669
+        web/src/app/pages/workflow-editor.component.ts:72    #71717a
+        web/src/app/pages/workflow-editor.component.ts:231   #4f46e5
+        现状 110 处 / 登记基线 110 处
+        判定: [PASS] 无新增违规；已登记旧债 110 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflow-editor.component.ts|#fee2e2 x1
+        web/src/app/pages/workflow-editor.component.ts|#fff x2
+        web/src/app/pages/workflow-editor.component.ts|#fef2f2 x2
+        web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.4) x1
+        web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.35) x1
+        web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.55) x1
+        web/src/app/pages/workflows.component.ts|#fff x1
+        web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.55) x3
+        web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.34) x2
+        web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.58) x1
+        web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.6) x2
+        web/src/app/ui/cover-plate.component.ts|#ffffff x1
+        web/src/app/ui/cover-plate.component.ts|#fff x2
+        web/src/app/ui/cover-plate.component.ts|#000 x8
+        web/src/app/ui/cover-plate.component.ts|#f2f1ed x1
+        web/src/app/ui/cover-plate.component.ts|#6b6a63 x1
+        web/src/app/ui/cover-plate.component.ts|#57564f x1
+        web/src/app/ui/cover-plate.component.ts|#b3b2aa x2
+        web/src/app/ui/cover-plate.component.ts|#232321 x1
+        web/src/app/ui/cover-plate.component.ts|#b0afa6 x1
+        web/src/app/ui/cover-plate.component.ts|#d7d6cd x1
+        web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.76) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.52) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0) x2
+        web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.94) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.66) x1
+        web/src/app/ui/cover-plate.component.ts|rgb(0 0 0 / 0.5) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.94) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.18) x1
+        web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.28) x1
+        web/src/app/ui/family-mark.component.ts|rgb(0 0 0 / 0.28) x1
+        web/src/app/ui/library-card.component.ts|#000 x8
+        web/src/app/ui/library-card.component.ts|#fff x6
+        web/src/app/ui/library-card.component.ts|#15803d x2
+        web/src/app/ui/library-card.component.ts|#b45309 x2
+        web/src/app/ui/library-card.component.ts|#ff0000 x3
+        web/src/app/ui/library-card.component.ts|#eab308 x2
+        web/src/app/ui/library-card.component.ts|#17101d x1
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.74) x1
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.18) x1
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.1) x2
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.42) x1
+        web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.78) x2
+        web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.18) x1
+        web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.28) x1
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.55) x1
+        web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.5) x1
+        web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.24) x1
+        web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.22) x1
+        web/src/app/ui/library-card.component.ts|rgb(255 0 0 / 0.5) x2
+        web/src/app/ui/library-card.component.ts|rgb(234 179 8 / 0.5) x2
+        web/src/app/ui/model-card.component.ts|#fff x2
+        web/src/app/ui/model-card.component.ts|rgb(0 0 0 / 0.16) x1
+        web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.14) x1
+        web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.88) x1
+        web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.24) x1
+        web/src/app/ui/model-card.component.ts|rgb(0 0 0 / 0.5) x1
+        web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.8) x1
+        web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.28) x1
+        web/src/app/ui/workflow-card.component.ts|#fff x5
+        web/src/app/ui/workflow-card.component.ts|rgb(220 38 38 / 0.58) x1
+        web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.42) x2
+        web/src/app/ui/workflow-card.component.ts|rgb(217 119 6 / 0.86) x1
+        web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.6) x1
+        web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.58) x1
+        web/src/app/ui/workflow-card.component.ts|rgb(255 255 255 / 0.74) x1
+        web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.5) x1
+        现状 7 处 / 登记基线 7 处
+        判定: [PASS] 无新增违规；已登记旧债 7 处仍在（只降不升，不阻塞）
+        web/src/app/pages/workflow-editor.component.ts|#6366f1 x1
+        web/src/app/pages/workflow-editor.component.ts|#0284c7 x1
+        web/src/app/pages/workflow-editor.component.ts|#8b5cf6 x1
+        web/src/app/pages/workflow-editor.component.ts|#d97706 x1
+        web/src/app/pages/workflow-editor.component.ts|#059669 x1
+        web/src/app/pages/workflow-editor.component.ts|#71717a x1
+        web/src/app/pages/workflow-editor.component.ts|#4f46e5 x1
 
 ----------------------------------------------------------------------------------------------------
 [2] 关键对比度实算（WCAG 2.x：sRGB 线性化 -> L=0.2126R+0.7152G+0.0722B -> (L1+.05)/(L2+.05)）
@@ -198,17 +447,17 @@
       正文次级
     浅色 UI    --muted #71717a                    #ffffff                        4.83:1    4.5     PASS    
       正文勉强达标 4.83
-    浅色 UI    --faint #a1a1aa                    #ffffff                        2.56:1    4.5     FAIL    
+    浅色 UI    --faint #a1a1aa                    --ffffff                       2.56:1    4.5     FAIL    
       【禁止】不得承载文本 §3.5-9
     浅色 UI    --placeholder #a1a1aa              --input-bg #ffffff             2.56:1    4.5     FAIL    
       【禁止】占位符改 --muted，但文本保留
-    浅色 UI    --accent #4f46e5                   #ffffff                        6.29:1    4.5     PASS    
+    浅色 UI    --accent #4f46e5                   --ffffff                       6.29:1    4.5     PASS    
       文字/图形/焦点实线
     浅色 UI    --on-primary #ffffff               --primary #4f46e5              6.29:1    4.5     PASS    
       【硬约束】实心按钮，双主题一致
-    浅色 UI    --border #e4e4e7                   #ffffff                        1.27:1    3.0     FAIL    
+    浅色 UI    --border #e4e4e7                   --ffffff                       1.27:1    3.0     FAIL    
       【禁止】不可作控件边界 1.4.11
-    浅色 UI    --border-control #8b8b94           #ffffff                        3.38:1    3.0     PASS    
+    浅色 UI    --border-control #8b8b94           --ffffff                       3.38:1    3.0     PASS    
       【新增】非文本控件边界，实算 3.38
     浅色 UI    --border-control #8b8b94           --bg #f5f5f6                   3.10:1    3.0     PASS    
       【新增】实算 3.10
@@ -258,39 +507,21 @@
       --primary-hover(#6366f1 4.47:1 FAIL)，白字保持 --primary 6.29:1。该现状违规改由
       §1.3b 通用枚举 + §1.11 静态检测持续覆盖，因此 §2 的 FAIL 保持 7、不登记第 8 个；
       不新增第 16 项冲突、不改任何 token 色值（M 项适用范围补充）。
+      [现状快照] 本节不参与退出码判定（其违规项已由 §1 的合规判定/棘轮覆盖）。
 
 ----------------------------------------------------------------------------------------------------
-[3] 交付物校验：vis-tokens.css 零覆盖（允许新增，禁止重名赋值）
+[3] 交付物校验：两份 token 文件
+    3A = 设计层 artifacts/vis/vis-tokens.css（Phase1/2 交付物，18 个赋值变量）
+    3B = 生效层 web/src/vis-tokens.css（真正接入构建，136 个赋值变量，三层结构）
 ----------------------------------------------------------------------------------------------------
-    web/src/styles.css 已有 --* 变量: 39 个（:root:17-74 / dark:77-122，去重）
-    vis-tokens.css 赋值 --* 变量  : 18 个
-    重名赋值（必须为空）          : 0 个 
-    判定: [PASS]  ZERO-OVERRIDE / 零覆盖承诺
 
-    新增变量清单（18 个，附浅/深取值）：
-    变量名                        浅色值                        深色值                        来源
-    --border-control              #8b8b94                       #8b8b94                       Phase2 §2.10-11
-    --brand-clear-space           10px                          （继承浅值）                  Phase1 §2/§3
-    --brand-fg                    var(--brand-ink)              var(--brand-ink-reverse)      Phase1 §2/§3
-    --brand-icon-dark             none                          （继承浅值）                  Phase1 §2/§3
-    --brand-icon-light            none                          （继承浅值）                  Phase1 §2/§3
-    --brand-icon-min              32px                          （继承浅值）                  Phase1 §2/§3
-    --brand-ink                   #1b1b1e                       （继承浅值）                  Phase1 §2/§3
-    --brand-ink-reverse           #f1ede4                       （继承浅值）                  Phase1 §2/§3
-    --brand-line                  #dedbd3                       （继承浅值）                  Phase1 §2/§3
-    --brand-logo-dark             none                          （继承浅值）                  Phase1 §2/§3
-    --brand-logo-light            none                          （继承浅值）                  Phase1 §2/§3
-    --brand-min-width             120px                         （继承浅值）                  Phase1 §2/§3
-    --brand-muted                 #6d6a64                       （继承浅值）                  Phase1 §2/§3
-    --brand-paper                 #f8f6f1                       （继承浅值）                  Phase1 §2/§3
-    --brand-paper-reverse         #15151a                       （继承浅值）                  Phase1 §2/§3
-    --brand-rule                  var(--brand-line)             var(--brand-line)             Phase1 §2/§3
-    --brand-surface               var(--brand-paper)            var(--brand-paper-reverse)    Phase1 §2/§3
-    --radius-lg                   16px                          （继承浅值）                  Phase1 §6.4
-
-    vis-tokens.css 自身完整性自检：
+  3A 设计层 —— artifacts/vis/vis-tokens.css
+    赋值 --* 变量: 18 个（浅 :root 18 / 深 :root[data-theme=dark] 4）
+    [3.1 零覆盖] 与 web/src/styles.css 赋值变量名的交集: 0 个 
+    判定: [PASS] ZERO-OVERRIDE / 零覆盖承诺
+    自身完整性自检：
       [PASS] CSS 注释配对                                        open=37 close=37
-      [PASS] @font-face 恰好 2 条                                2 条
+      [PASS] @font-face 恰好 2 条（Barlow + Inter 均生效）       2 条
       [PASS] Barlow 仅声明 font-weight:400                       
       [PASS] Inter 声明 font-weight:100 900                      
       [PASS] 两条均 font-display:swap                            2 处
@@ -300,28 +531,61 @@
       [PASS] 生效 CSS 无 filter:invert()                         
       [PASS] 生效 CSS 无实验稿字形/月桂引用                      
 
+  3B 生效层 —— web/src/vis-tokens.css
+    赋值 --* 变量: 136 个（浅 :root 136 / 深 :root[data-theme=dark] 44）
+    [3.1 零覆盖] 与 web/src/styles.css 赋值变量名的交集: 0 个 
+    判定: [PASS] ZERO-OVERRIDE / 零覆盖承诺
+    自身完整性自检：
+      [PASS] CSS 注释配对                                        open=151 close=151
+      [PASS] @font-face 恰好 1 条生效（Barlow Condensed 400）    1 条生效
+      [PASS] Inter 声明以注释块保留、未生效（M0 暂缓 · 主理人裁决 2）
+      [PASS] Barlow 仅声明 font-weight:400                       
+      [PASS] 生效 font-display:swap 恰好 1 处（Barlow）          1 处
+      [PASS] primitive 层存在且不含 var()（不可再分）            --pri-* 72 个，含 var() 的 0 个
+      [PASS] semantic 层只引用 --pri-*（不链式引用其它 semantic）--sem-* 46 个，越界 0 个
+      [PASS] component 层本轮不赋值（--cmp-* = 0，符合文件头声明）--cmp-* 0 个
+      [PASS] 深色 semantic 缺的仅限非颜色 token（半径/宽度可继承）缺 6 个（颜色类 0 个）
+      [PASS] 四个 URL 变量占位期均为 none（无字形）              
+      [PASS] 三个标识常量存在                                    --brand-min-width=120px / --brand-icon-min=32px
+      [PASS] 生效 CSS 不含组件实现规则（只有 @font-face + :root）
+      [PASS] 生效 CSS 无 filter:invert()                         
+      [PASS] 生效 CSS 无实验稿字形/月桂引用                      
+
+  3C 交叉校验：设计层 18 个变量名 vs 生效层
+    设计层变量名在生效层缺失: 0 个 
+    判定: [PASS] 设计层交付物已在生效层落地
+    解析后字面值不一致: 0 个（var() 链已展开）
+    判定: [PASS] 两层 token 语义一致
+
     注：接入片段（.brand-wordmark / :host-context 反白切换）全部写在注释中，
-        本文件生效 CSS 仅 2 条 @font-face + :root / :root[data-theme=dark] 两个变量块，
-        因此不会被误当成已落地的组件实现。
+        因此 token 文件不会被误当成已落地的组件实现。
 
 ====================================================================================================
 [4] SUMMARY
 ====================================================================================================
-  交付物校验（零覆盖 / token 文件自检）: 全部 PASS
-  基线计数一致性（styles.css 对 Phase1/2 登记值）: 全部吻合（17 字重 / 21+1 faint / 5 圆角 / 3 白字填充）
-  组件 scoped 审计盲区（DISCOVERY，不推翻登记值）: 字重 +9 / --faint 文本 +17 /
-     圆角中间档 +4，共 30 处同类项，Phase1/2 未审；建议并入 M1 补充批次
-  其它现状: filter:invert 0 / brand-wordmark 0 / reduced-motion 仅 1 处 /
-     @font-face 0 条（基线字体未生效）/ 源码引用新增 token 0（零落地）
-  对比度实算: PASS 19 / FAIL 7 / INFO 1（共 27 组）
-  裁决 G 边界（v1.1 §7.3）: 1.10 正向验收 lab 深字方案全部 PASS；1.3 未对其报 FAIL；
-     白字 on indigo 400 = 2.98:1 列为「禁止组合」示例，与主 UI --primary 白字 6.29:1 分开。
-  上游口径: Phase1 v1.1 / Phase2 v1.1；§8 冲突表 15 项（v1.0 13 项 + M/N），
-     M/N 为 Phase 3 立即项，与 LOGO 冻结解耦，并入 M1（P3-5/P3-6），不新开任务。
+  合规判定（违规必须 0 / 目标态精确成立）: 全部 PASS
+  棘轮超基线（新增违规，只降不升）: 无新增违规
+  棘轮旧债（已登记、仍在）: 175 处（仅提示，退出码 1）
+  交付物校验（两份 token 文件 + 交叉校验）: 全部 PASS
+  对比度实算: PASS 19 / FAIL 7 / INFO 1（共 27 组，不参与退出码）
 
-  本轮边界: 零落地、零 E2E 改动、零实验稿字形。本脚本只读，未写任何项目文件。
-  M0 后重跑本脚本，1.x 的 FAIL 计数应逐批下降；M3（LOGO 冻结）不改变本脚本判定口径。
+  §1 判定语义分类一览：
+    1.1  styles.css 字重 = 合规判定(0)  |  组件 scoped = 棘轮(基线 11)
+    1.2  styles.css --faint/--placeholder = 合规判定(0/0)  |  组件 scoped = 棘轮(基线 23)
+    1.3  --accent 白字填充 = 棘轮(基线 1)
+    1.3b 白字填充通用枚举 AA = 棘轮(基线 1)
+    1.4  filter:invert = 合规判定(0)
+    1.5  .brand-wordmark 实例 = 合规判定(恰好 1)
+    1.6  styles.css 圆角中间档 = 合规判定(0)  |  组件 scoped = 棘轮(基线 21)
+    1.7  prefers-reduced-motion = 现状快照
+    1.8  @font-face = 现状快照
+    1.9a stroke-width:1.6 = 棘轮(基线 1)
+    1.9b 新增 token 引用 = 落地进度(>0 即已落地)
+    1.10 lab 裁决 G 正向验收 = 合规判定(PASS 型，不变)
+    1.11 --primary-hover token 值 = 合规判定(PASS 型，不变)
+    1.12 硬编码色值 = 棘轮(scoped 基线 110 / literal 基线 7)
 
-  退出码约定: 0=全通过 / 1=仅现状基线 FAIL（预期） / 2=交付物校验失败
+  退出码约定: 0=全通过 / 1=仅现状基线 FAIL（旧债仍在，不阻塞） /
+              2=合规类 FAIL（新违规或合规项不达标，阻塞） / 3=脚本自身出错
 ====================================================================================================
   EXIT CODE = 1

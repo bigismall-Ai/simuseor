@@ -1,13 +1,14 @@
 # CNB 构建配置
 # 文档：https://docs.cnb.cool/zh/build/configuration.html
 #
-# 这个仓库的门禁只管一件事：厂标资产与家族表不能悄悄漂移。
-# 校验脚本在本仓库长期存在（tests/families-assets.mjs / tests/family-table-sync.mjs），
-# 但没有 CI 就等于没有 —— 漂移只有有人想起来跑的时候才暴露。
+# 这个仓库的门禁管三件事：厂标资产与家族表不能悄悄漂移，VIS 视觉规范不能悄悄不合规。
+# 校验脚本在本仓库长期存在（tests/families-assets.mjs / tests/family-table-sync.mjs
+# / artifacts/vis/vis-check.mjs），但没有 CI 就等于没有 —— 漂移只有有人想起来跑的时候才暴露。
 #
-# 两道检查：
+# 三道检查：
 #   1. 家族表一致性 —— 纯 Node，零依赖，秒级。拦「改了 cover.ts 的正则忘了重新生成」
 #   2. 厂牌资产校验 —— 需要 Chromium。拦「手改资产没登记」「色板漏补」「野生资产」
+#   3. VIS 视觉规范 —— 纯 Node，零依赖，秒级。拦「硬编码色值」「非白名单字重」「圆角中间档」
 #
 # 校验脚本自己会决定「上游有没有改版」并写进候选区，但**永远不会自动替换正式资产**
 # —— 那一步永远要人点头（--promote）。
@@ -30,6 +31,22 @@ main:
             - cd tests && npx playwright install --with-deps chromium
             - node tests/families-assets.mjs
 
+        - name: VIS 视觉规范校验
+          image: node:22
+          script:
+            - |
+              code=0
+              node artifacts/vis/vis-check.mjs || code=$?
+              if [ "$code" -eq 1 ]; then
+                echo "[vis-check] 退出码 1 = 已登记的现状旧债仍在，按设计不阻塞合并。"
+                code=0
+              elif [ "$code" -eq 2 ]; then
+                echo "[vis-check] 退出码 2 = 有合规类违规（新增违规 / 合规项不达标），阻塞。"
+              elif [ "$code" -eq 3 ]; then
+                echo "[vis-check] 退出码 3 = 脚本自身出错，阻塞（门禁失效不能静默放过）。"
+              fi
+              exit "$code"
+
 # 临时：探测 CNB Runner 到各家源的连通性（决定抓取端放境内还是境外）。
 # 只在 feat/ 分支跑，不动 main 的不流；结论拿到后连同此段一起删。
 "feat/**":
@@ -40,6 +57,22 @@ main:
           script:
             - apk add --no-cache curl
             - for u in "https://huggingface.co/api/models?limit=1" "https://civitai.com/api/v1/models?limit=1" "https://cloud.comfy.org/api/hub/workflows/index?status=approved" "https://raw.githubusercontent.com/Comfy-Org/ComfyUI-Manager/main/custom-node-list.json"; do echo "=== $u"; curl -s -o /dev/null -w "code=%{http_code} time=%{time_total}s speed=%{speed_download}B/s\n" --max-time 40 "$u" || echo FAIL; done
+
+        - name: VIS 视觉规范校验
+          image: node:22
+          script:
+            - |
+              code=0
+              node artifacts/vis/vis-check.mjs || code=$?
+              if [ "$code" -eq 1 ]; then
+                echo "[vis-check] 退出码 1 = 已登记的现状旧债仍在，按设计不阻塞合并。"
+                code=0
+              elif [ "$code" -eq 2 ]; then
+                echo "[vis-check] 退出码 2 = 有合规类违规（新增违规 / 合规项不达标），阻塞。"
+              elif [ "$code" -eq 3 ]; then
+                echo "[vis-check] 退出码 3 = 脚本自身出错，阻塞（门禁失效不能静默放过）。"
+              fi
+              exit "$code"
 
   pull_request:
     - stages:
@@ -57,3 +90,19 @@ main:
             - cd tests && npm install --no-audit --no-fund
             - cd tests && npx playwright install --with-deps chromium
             - node tests/families-assets.mjs
+
+        - name: VIS 视觉规范校验
+          image: node:22
+          script:
+            - |
+              code=0
+              node artifacts/vis/vis-check.mjs || code=$?
+              if [ "$code" -eq 1 ]; then
+                echo "[vis-check] 退出码 1 = 已登记的现状旧债仍在，按设计不阻塞合并。"
+                code=0
+              elif [ "$code" -eq 2 ]; then
+                echo "[vis-check] 退出码 2 = 有合规类违规（新增违规 / 合规项不达标），阻塞。"
+              elif [ "$code" -eq 3 ]; then
+                echo "[vis-check] 退出码 3 = 脚本自身出错，阻塞（门禁失效不能静默放过）。"
+              fi
+              exit "$code"
