@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "start": "ng serve --port 4200 --host 127.0.0.1",
-    "build": "ng build"
+    "build": "ng build",
+    "vis:check": "node ../artifacts/vis/vis-check.mjs",
+    "vis:report": "node ../artifacts/vis/vis-check.mjs --write-report"
   },
   "dependencies": {
     "@angular/animations": "~19.2.0",
