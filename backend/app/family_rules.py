@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 FAMILY_RULES: tuple[tuple[str, str], ...] = (
+    ('sd3', r'sd[\s._-]?3(?:[._]?5)?|stable[\s._-]?diffusion[\s._-]?3'),
     ('sd15', r'sd[\s._-]?v?1[._]?5|stable[\s._-]?diffusion[\s._-]?v?1'),
     ('illustrious', r'illustrious'),
     ('noobai', r'noob[\s._-]?ai'),
@@ -32,4 +33,12 @@ FAMILY_RULES: tuple[tuple[str, str], ...] = (
     ('flux', r'flux'),
     ('qwen', r'qwen'),
     ('minimax', r'minimax|\bmmx\b'),
+    ('cogvideo', r'cogvideo'),
+    ('kolors', r'kolors'),
+    ('mochi', r'mochi'),
+    ('lumina', r'lumina'),
+    ('skyreels', r'skyreels'),
+    ('kandinsky', r'kandinsky'),
+    ('playground', r'playground'),
+    ('pixart', r'pixart'),
 )

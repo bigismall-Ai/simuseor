@@ -106,6 +106,10 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
         @if (meta.code !== '—') {
           <span class="label">{{ meta.code }}</span>
         }
+        @if (meta.byline) {
+          <!-- 搬运标注：发布者不是家族官方时贴在家族码右侧 -->
+          <span class="byline" [title]="'发布者：' + meta.byline">{{ meta.byline }}</span>
+        }
         @if (specLine) {
           <span class="specs">{{ specLine }}</span>
         }
@@ -338,6 +342,21 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
         letter-spacing: 0.08em;
         color: var(--plate-strong);
         white-space: nowrap;
+      }
+
+      /* 搬运标注：字号比家族码小一档、颜色更淡，不跟厂牌抢注意力；
+         宽度封顶后截断 —— 发布者名可能很长（WarmBloodAban 这类），
+         宁可省略也不能把规格和「原站」挤出这一行。 */
+      .byline {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 96px;
+        font: 500 10px/1 'Cascadia Mono', Consolas, 'JetBrains Mono', monospace;
+        color: var(--plate-ink);
+        opacity: 0.78;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* 规格跟在同一行，用点隔开。旧版这三条各占一行高，加起来就是卡片高出来的那截 */
@@ -672,6 +691,60 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
         --plate-strong: ${FAMILY_TONE.chroma.strong};
         --plate-mark: ${FAMILY_TONE.chroma.mark};
       }
+      .f-sd3 {
+        --plate-bg: ${FAMILY_TONE.sd3.bg};
+        --plate-ink: ${FAMILY_TONE.sd3.ink};
+        --plate-strong: ${FAMILY_TONE.sd3.strong};
+        --plate-mark: ${FAMILY_TONE.sd3.mark};
+      }
+      .f-cogvideo {
+        --plate-bg: ${FAMILY_TONE.cogvideo.bg};
+        --plate-ink: ${FAMILY_TONE.cogvideo.ink};
+        --plate-strong: ${FAMILY_TONE.cogvideo.strong};
+        --plate-mark: ${FAMILY_TONE.cogvideo.mark};
+      }
+      .f-kolors {
+        --plate-bg: ${FAMILY_TONE.kolors.bg};
+        --plate-ink: ${FAMILY_TONE.kolors.ink};
+        --plate-strong: ${FAMILY_TONE.kolors.strong};
+        --plate-mark: ${FAMILY_TONE.kolors.mark};
+      }
+      .f-mochi {
+        --plate-bg: ${FAMILY_TONE.mochi.bg};
+        --plate-ink: ${FAMILY_TONE.mochi.ink};
+        --plate-strong: ${FAMILY_TONE.mochi.strong};
+        --plate-mark: ${FAMILY_TONE.mochi.mark};
+      }
+      .f-lumina {
+        --plate-bg: ${FAMILY_TONE.lumina.bg};
+        --plate-ink: ${FAMILY_TONE.lumina.ink};
+        --plate-strong: ${FAMILY_TONE.lumina.strong};
+        --plate-mark: ${FAMILY_TONE.lumina.mark};
+      }
+      .f-skyreels {
+        --plate-bg: ${FAMILY_TONE.skyreels.bg};
+        --plate-ink: ${FAMILY_TONE.skyreels.ink};
+        --plate-strong: ${FAMILY_TONE.skyreels.strong};
+        --plate-mark: ${FAMILY_TONE.skyreels.mark};
+      }
+      .f-kandinsky {
+        --plate-bg: ${FAMILY_TONE.kandinsky.bg};
+        --plate-ink: ${FAMILY_TONE.kandinsky.ink};
+        --plate-strong: ${FAMILY_TONE.kandinsky.strong};
+        --plate-mark: ${FAMILY_TONE.kandinsky.mark};
+      }
+      .f-playground {
+        --plate-bg: ${FAMILY_TONE.playground.bg};
+        --plate-ink: ${FAMILY_TONE.playground.ink};
+        --plate-strong: ${FAMILY_TONE.playground.strong};
+        --plate-mark: ${FAMILY_TONE.playground.mark};
+      }
+      .f-pixart {
+        --plate-bg: ${FAMILY_TONE.pixart.bg};
+        --plate-ink: ${FAMILY_TONE.pixart.ink};
+        --plate-strong: ${FAMILY_TONE.pixart.strong};
+        --plate-mark: ${FAMILY_TONE.pixart.mark};
+      }
 
       /* other：中性兜底色（认不出家族），不属于家族色板 —— model-tone.ts 里没有它是对的，
          故只在此处定义，取值与该文件的 NEUTRAL_TONE 一致。 */
@@ -777,6 +850,60 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
         --plate-ink: ${FAMILY_TONE_DARK.chroma.ink};
         --plate-strong: ${FAMILY_TONE_DARK.chroma.strong};
         --plate-mark: ${FAMILY_TONE_DARK.chroma.mark};
+      }
+      :host-context([data-theme='dark']) .f-sd3 {
+        --plate-bg: ${FAMILY_TONE_DARK.sd3.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.sd3.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.sd3.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.sd3.mark};
+      }
+      :host-context([data-theme='dark']) .f-cogvideo {
+        --plate-bg: ${FAMILY_TONE_DARK.cogvideo.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.cogvideo.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.cogvideo.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.cogvideo.mark};
+      }
+      :host-context([data-theme='dark']) .f-kolors {
+        --plate-bg: ${FAMILY_TONE_DARK.kolors.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.kolors.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.kolors.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.kolors.mark};
+      }
+      :host-context([data-theme='dark']) .f-mochi {
+        --plate-bg: ${FAMILY_TONE_DARK.mochi.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.mochi.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.mochi.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.mochi.mark};
+      }
+      :host-context([data-theme='dark']) .f-lumina {
+        --plate-bg: ${FAMILY_TONE_DARK.lumina.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.lumina.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.lumina.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.lumina.mark};
+      }
+      :host-context([data-theme='dark']) .f-skyreels {
+        --plate-bg: ${FAMILY_TONE_DARK.skyreels.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.skyreels.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.skyreels.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.skyreels.mark};
+      }
+      :host-context([data-theme='dark']) .f-kandinsky {
+        --plate-bg: ${FAMILY_TONE_DARK.kandinsky.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.kandinsky.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.kandinsky.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.kandinsky.mark};
+      }
+      :host-context([data-theme='dark']) .f-playground {
+        --plate-bg: ${FAMILY_TONE_DARK.playground.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.playground.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.playground.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.playground.mark};
+      }
+      :host-context([data-theme='dark']) .f-pixart {
+        --plate-bg: ${FAMILY_TONE_DARK.pixart.bg};
+        --plate-ink: ${FAMILY_TONE_DARK.pixart.ink};
+        --plate-strong: ${FAMILY_TONE_DARK.pixart.strong};
+        --plate-mark: ${FAMILY_TONE_DARK.pixart.mark};
       }
 
       :host-context([data-theme='dark']) .f-other {

@@ -20,7 +20,11 @@
  * 两个字段，但从来没人消费——颜色早就搬进 CSS 了。留着只会让后来的人以为改它有用。
  */
 
-export type FamilyId = 'flux' | 'wan' | 'sdxl' | 'sd15' | 'qwen' | 'pony' | 'hunyuan' | 'ltx' | 'minimax' | 'krea' | 'zimage' | 'hidream' | 'ernie' | 'noobai' | 'illustrious' | 'chroma' | 'other';
+export type FamilyId =
+  | 'flux' | 'wan' | 'sdxl' | 'sd15' | 'sd3' | 'qwen' | 'pony' | 'hunyuan' | 'ltx'
+  | 'minimax' | 'krea' | 'zimage' | 'hidream' | 'ernie' | 'noobai' | 'illustrious'
+  | 'chroma' | 'cogvideo' | 'kolors' | 'mochi' | 'lumina' | 'skyreels' | 'kandinsky'
+  | 'playground' | 'pixart' | 'other';
 
 export interface FamilySpec {
   id: FamilyId;
@@ -70,6 +74,18 @@ export interface FamilySpec {
  * 例如 wan2.2 的简称、sd1.5 与 sdxl 的区分，都靠顺序保证。
  */
 export const FAMILIES: FamilySpec[] = [
+  {
+    id: 'sd3',
+    code: 'SD3',
+    /*
+     * Stability 的 SD3/3.5 是另一代产品，不复用 sd15/sdxl 的 S. 标 —— 指称会误导。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /sd[\s._-]?3(?:[._]?5)?|stable[\s._-]?diffusion[\s._-]?3/i,
+  },
   {
     id: 'sd15',
     code: 'SD15',
@@ -248,6 +264,102 @@ export const FAMILIES: FamilySpec[] = [
     test: /minimax|\bmmx\b/i,
   },
   {
+    id: 'cogvideo',
+    code: 'COGV',
+    /*
+     * 智谱 CogVideoX 系列；官方站点只出位图与演示页，没有可取的矢量标。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /cogvideo/i,
+  },
+  {
+    id: 'kolors',
+    code: 'KOLORS',
+    /*
+     * 快手可图；官方品牌页未提供 SVG。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /kolors/i,
+  },
+  {
+    id: 'mochi',
+    code: 'MOCHI',
+    /*
+     * Genmo Mochi；官方只有演示页，无矢量资产。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /mochi/i,
+  },
+  {
+    id: 'lumina',
+    code: 'LUMINA',
+    /*
+     * Alpha-VLLM Lumina 系列；仓库里没有品牌资产。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /lumina/i,
+  },
+  {
+    id: 'skyreels',
+    code: 'SKY',
+    /*
+     * 昆仑万维 SkyReels 视频模型；无矢量标。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /skyreels/i,
+  },
+  {
+    id: 'kandinsky',
+    code: 'KAND',
+    /*
+     * Kandinsky 实验室；有官网但未提供可下载的 SVG。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /kandinsky/i,
+  },
+  {
+    id: 'playground',
+    code: 'PLAY',
+    /*
+     * Playground AI；无矢量标。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /playground/i,
+  },
+  {
+    id: 'pixart',
+    code: 'PIX',
+    /*
+     * 华为诺亚 PixArt；仓库无品牌资产。
+     * 沿用 other 的处理：没有官方资产就**不画任何标记**，只留家族码 ——
+     * 自绘几何去暗示某个品牌，比留白更容易误导。
+     */
+    mark: '',
+    filled: false,
+    test: /pixart/i,
+  },
+  {
     id: 'other',
     code: '—',
     /*
@@ -327,6 +439,8 @@ export interface CoverInput {
    * 没有就退回生成构图。HF / ModelScope 基本拿不到，所以生成那条路才是主线。
    */
   image?: string;
+  /** 发布者（HF 的 org / Civitai 的作者），用来判断是不是搬运 */
+  author?: string;
 }
 
 /** 规格字段。只在取到确定值时生成。 */
@@ -352,6 +466,8 @@ export interface CoverMeta {
   motif: number;
   /** 真实封面图，缺省表示走生成构图 */
   image?: string;
+  /** 搬运标注：非官方发布者的名字，缺省表示不显示 */
+  byline?: string;
 }
 
 export function resolveFamily(model: CoverInput): FamilySpec {
@@ -373,6 +489,66 @@ function motifOf(name: string): number {
     h = Math.imul(h, 16777619);
   }
   return (h >>> 0) % MOTIF_COUNT;
+}
+
+/**
+ * 家族官方发布者（小写）。
+ *
+ * 只用来回答一件事：**这张卡是不是搬运**。发布者不是官方时，在家族码右侧标出发布者，
+ * 免得把 `Comfy-Org/stable-diffusion-3.5`、`unsloth/FLUX.1-dev` 这类打包版当成官方出品。
+ *
+ * 只登记能确认的；没登记的家族**不做判断**（宁可不标，也别把社区作者误标成搬运）。
+ */
+const FAMILY_OWNERS: Record<string, string[]> = {
+  flux: ['black-forest-labs'],
+  qwen: ['qwen', 'qwenlm'],
+  wan: ['wan-ai', 'alibaba-pai'],
+  hunyuan: ['tencent', 'tencent-hunyuan'],
+  ltx: ['lightricks'],
+  hidream: ['hidream-ai'],
+  krea: ['krea'],
+  chroma: ['lodestones'],
+  sdxl: ['stabilityai'],
+  sd15: ['stabilityai', 'stable-diffusion-v1-5'],
+  sd3: ['stabilityai'],
+  minimax: ['minimaxai'],
+  ernie: ['baidu', 'ernie'],
+  cogvideo: ['zai-org', 'thu-coai'],
+  kolors: ['kwai-kolors'],
+  mochi: ['genmo'],
+  lumina: ['alpha-vllm'],
+  skyreels: ['skywork'],
+  kandinsky: ['kandinskylab', 'ai-forever'],
+  playground: ['playgroundai'],
+  pixart: ['pixart-alpha'],
+};
+
+/**
+ * 已知的打包 / 量化 / 加速发布者。
+ *
+ * 这几个组织发的基本都是别人家的模型（GGUF、fp8、蒸馏、重打包），
+ * 不管家族有没有登记官方发布者，都可以判定为搬运。
+ */
+const REPACK_ORGS = [
+  'comfy-org',
+  'unsloth',
+  'quantstack',
+  'city96',
+  'john6666',
+  'prunaai',
+  'lightx2v',
+  'ai-modelscope',
+  'lmstudio-community',
+];
+
+/** 是搬运就返回发布者名，否则返回空串。 */
+function repackByline(familyId: string, author?: string): string {
+  const name = (author || '').trim();
+  if (!name) return '';
+  const low = name.toLowerCase();
+  const owners = FAMILY_OWNERS[familyId];
+  if (owners) return owners.includes(low) ? '' : name;
+  return REPACK_ORGS.includes(low) ? name : '';
 }
 
 export function coverMeta(model: CoverInput): CoverMeta {
@@ -398,5 +574,6 @@ export function coverMeta(model: CoverInput): CoverMeta {
     specs,
     motif: motifOf(model.name),
     image: thumb(model.image),
+    byline: repackByline(family.id, model.author),
   };
 }

@@ -296,6 +296,96 @@
         "kind": "none",
         "note": "认不出家族 → 什么都不画。"
       }
+    },
+    {
+      "id": "sd3",
+      "code": "SD3",
+      "guidelines": "https://stability.ai/",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Stability 的 SD3/3.5 是另一代产品。官方只出位图与规范文档，没有可取的 symbol SVG；不复用 sd15/sdxl 的 S. 标 —— 那是另一代标识，指称会误导。"
+      }
+    },
+    {
+      "id": "cogvideo",
+      "code": "COGV",
+      "guidelines": "https://github.com/THUDM/CogVideo",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "智谱 CogVideoX。仓库与官网均无矢量品牌资产（只有演示页与效果图）。"
+      }
+    },
+    {
+      "id": "kolors",
+      "code": "KOLORS",
+      "guidelines": "https://github.com/Kwai-Kolors/Kolors",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "快手可图。官方品牌页未提供可下载的 SVG。"
+      }
+    },
+    {
+      "id": "mochi",
+      "code": "MOCHI",
+      "guidelines": "https://github.com/genmoai/models",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Genmo Mochi。官方只有演示页，无矢量资产。"
+      }
+    },
+    {
+      "id": "lumina",
+      "code": "LUMINA",
+      "guidelines": "https://github.com/Alpha-VLLM/Lumina-Image-2.0",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Alpha-VLLM Lumina。仓库里没有品牌资产。"
+      }
+    },
+    {
+      "id": "skyreels",
+      "code": "SKY",
+      "guidelines": "https://github.com/SkyworkAI/SkyReels-V2",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "昆仑万维 SkyReels 视频模型。无矢量标。"
+      }
+    },
+    {
+      "id": "kandinsky",
+      "code": "KAND",
+      "guidelines": "https://github.com/kandinskylab",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Kandinsky 实验室。有官网但未提供可下载的 SVG。"
+      }
+    },
+    {
+      "id": "playground",
+      "code": "PLAY",
+      "guidelines": "https://playground.com/",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "Playground AI。无矢量标。"
+      }
+    },
+    {
+      "id": "pixart",
+      "code": "PIX",
+      "guidelines": "https://github.com/PixArt-alpha/PixArt-alpha",
+      "assets": [],
+      "source": {
+        "kind": "none",
+        "note": "华为诺亚 PixArt。仓库无品牌资产。"
+      }
     }
   ]
 }

@@ -308,24 +308,40 @@ export class ModelCardComponent {
    * 就会让子组件的 ngOnChanges 每帧触发（`meta` 被反复重置，图片加载失败时
    * 甚至会把失败的图重新挂回去形成死循环）。
    */
-  get plate(): { name: string; tags: string[]; href?: string; hrefLabel?: string; image?: string } {
+  get plate(): {
+    name: string;
+    tags: string[];
+    href?: string;
+    hrefLabel?: string;
+    image?: string;
+    author?: string;
+  } {
     const p = this.primary;
     const shot = this.shot;
     const name = p?.name || '';
     const href = p?.url || '';
     const hrefLabel = p ? sourceShort(p.source) : '';
+    const author = p?.author || '';
     if (
       !this._plate ||
       this._plate.name !== name ||
       this._plate.image !== shot ||
       this._plate.href !== href ||
-      this._plate.hrefLabel !== hrefLabel
+      this._plate.hrefLabel !== hrefLabel ||
+      this._plate.author !== author
     ) {
-      this._plate = { name, tags: p?.tags || [], href, hrefLabel, image: shot };
+      this._plate = { name, tags: p?.tags || [], href, hrefLabel, image: shot, author };
     }
     return this._plate;
   }
-  private _plate: { name: string; tags: string[]; href?: string; hrefLabel?: string; image?: string } | null = null;
+  private _plate: {
+    name: string;
+    tags: string[];
+    href?: string;
+    hrefLabel?: string;
+    image?: string;
+    author?: string;
+  } | null = null;
 
   get authorText(): string {
     const authors = [...new Set(this.items.map((i) => i.author).filter((a) => !!a))];

@@ -30,7 +30,7 @@ export interface Tone {
 }
 
 /**
- * 家族色板（浅色）：16 个家族。
+ * 家族色板（浅色）：25 个家族。
  *
  * 与封面 `.f-*` 那份曾经重复的两套色，现在只留这里。
  */
@@ -49,6 +49,15 @@ export const FAMILY_TONE: Record<string, Tone> = {
   hidream: { bg: '#fdeae6', ink: '#93503f', strong: '#70301f', mark: '#dda08c' },
   ernie: { bg: '#e8edfc', ink: '#2f4fa0', strong: '#16306e', mark: '#7f9ede' },
   noobai: { bg: '#eef2df', ink: '#67703c', strong: '#474e1f', mark: '#a8b477' },
+  sd3: { bg: '#e8ecf3', ink: '#475573', strong: '#22314c', mark: '#8b9ab8' },
+  cogvideo: { bg: '#e3efe7', ink: '#34694f', strong: '#124a33', mark: '#74b391' },
+  kolors: { bg: '#fdefe0', ink: '#8f5a1e', strong: '#6b3c05', mark: '#daa464' },
+  mochi: { bg: '#eef1dc', ink: '#6b7233', strong: '#49500f', mark: '#adb46f' },
+  lumina: { bg: '#f8f0d9', ink: '#86701f', strong: '#665100', mark: '#d2ba70' },
+  skyreels: { bg: '#e6f0f8', ink: '#3b6488', strong: '#163f63', mark: '#84b0d4' },
+  kandinsky: { bg: '#f6e9f3', ink: '#84406f', strong: '#62244f', mark: '#c88cb4' },
+  playground: { bg: '#e4f3ef', ink: '#2f6d5f', strong: '#0d4a3d', mark: '#6fb9a6' },
+  pixart: { bg: '#f9eae6', ink: '#8f4a3a', strong: '#6b2a1c', mark: '#d99c8b' },
   illustrious: { bg: '#f3ebf7', ink: '#7a4a8c', strong: '#582866', mark: '#b789c9' },
   chroma: { bg: '#f7ece2', ink: '#7d5a3a', strong: '#5a3c1e', mark: '#c39a72' },
 };
@@ -69,6 +78,15 @@ export const FAMILY_TONE_DARK: Record<string, Tone> = {
   hidream: { bg: '#2b1a15', ink: '#f0b5a2', strong: '#ffd6c7', mark: '#dda08c' },
   ernie: { bg: '#141d33', ink: '#a8bdf0', strong: '#d3e0ff', mark: '#7f9ede' },
   noobai: { bg: '#202415', ink: '#c3cf95', strong: '#e2ecc0', mark: '#a8b477' },
+  sd3: { bg: '#191e2b', ink: '#b3bfd3', strong: '#d8e1f0', mark: '#8b9ab8' },
+  cogvideo: { bg: '#12261e', ink: '#93d3b5', strong: '#c4ecd8', mark: '#74b391' },
+  kolors: { bg: '#2b1c0f', ink: '#e8bc85', strong: '#ffd9ac', mark: '#daa464' },
+  mochi: { bg: '#21240f', ink: '#cfd68f', strong: '#e9edb9', mark: '#adb46f' },
+  lumina: { bg: '#26200f', ink: '#e4cb84', strong: '#ffe6ab', mark: '#d2ba70' },
+  skyreels: { bg: '#131f2b', ink: '#a8cbe8', strong: '#d3e6f7', mark: '#84b0d4' },
+  kandinsky: { bg: '#291726', ink: '#e3b3d1', strong: '#f8d6ea', mark: '#c88cb4' },
+  playground: { bg: '#12241f', ink: '#95d6c4', strong: '#c3f0e2', mark: '#6fb9a6' },
+  pixart: { bg: '#2b1a15', ink: '#ecb3a3', strong: '#ffd5c8', mark: '#d99c8b' },
   illustrious: { bg: '#251a2b', ink: '#d9b2e6', strong: '#f2d9fb', mark: '#b789c9' },
   chroma: { bg: '#2a2018', ink: '#d8b596', strong: '#f2dcc4', mark: '#c39a72' },
 };
