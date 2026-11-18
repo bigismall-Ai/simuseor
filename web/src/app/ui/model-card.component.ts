@@ -34,7 +34,9 @@ interface CardTag {
   imports: [CoverPlateComponent],
   template: `
     <article class="card" [class.on-shot]="photoOk">
-      <app-cover-plate class="card-plate" [model]="plate" (shotState)="photoOk = $event" />
+      <!-- ratio="fill"：不声明比例，宽高由外层给 —— 本卡封面是
+           position:absolute; inset:0 铺满整卡，正是 fill 的语义。 -->
+      <app-cover-plate class="card-plate" ratio="fill" [model]="plate" (shotState)="photoOk = $event" />
 
       <div class="card-body">
         <h2 class="card-name" [title]="primary?.id">{{ primary?.name }}</h2>
