@@ -88,5 +88,8 @@ export const routes: Routes = [
     loadComponent: () => import('./lab/lab-primeng.component').then((m) => m.LabPrimeNgComponent),
   },
   { path: 'lab/tailwind', loadComponent: () => import('./lab/lab-tailwind.component').then((m) => m.LabTailwindComponent) },
+  // VIS 组件参考页：直接渲染 ui/ 下的真实组件，与产品同源。
+  // 单文件静态版在 artifacts/vis/vis-reference.html（双击即开，给外部评审）。
+  { path: 'lab/vis', loadComponent: () => import('./lab/lab-vis.component').then((m) => m.LabVisComponent) },
   { path: '**', redirectTo: 'workflows' },
 ];
