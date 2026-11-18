@@ -757,7 +757,7 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['model'] && this.model) {
-      this.meta = coverMeta({ name: this.model.name, tags: this.model.tags || [] });
+      this.meta = coverMeta({ id: this.model.repo_id, name: this.model.name, tags: this.model.tags || [] });
       this.tone = modelTone(this.meta.family, this.model.task || '', false);
       this.toneDark = modelTone(this.meta.family, this.model.task || '', true);
     }

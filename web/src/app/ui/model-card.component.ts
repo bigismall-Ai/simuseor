@@ -310,6 +310,7 @@ export class ModelCardComponent {
    * 甚至会把失败的图重新挂回去形成死循环）。
    */
   get plate(): {
+    id?: string;
     name: string;
     tags: string[];
     href?: string;
@@ -319,23 +320,26 @@ export class ModelCardComponent {
   } {
     const p = this.primary;
     const shot = this.shot;
+    const id = p?.id || '';
     const name = p?.name || '';
     const href = p?.url || '';
     const hrefLabel = p ? sourceShort(p.source) : '';
     const author = p?.author || '';
     if (
       !this._plate ||
+      this._plate.id !== id ||
       this._plate.name !== name ||
       this._plate.image !== shot ||
       this._plate.href !== href ||
       this._plate.hrefLabel !== hrefLabel ||
       this._plate.author !== author
     ) {
-      this._plate = { name, tags: p?.tags || [], href, hrefLabel, image: shot, author };
+      this._plate = { id, name, tags: p?.tags || [], href, hrefLabel, image: shot, author };
     }
     return this._plate;
   }
   private _plate: {
+    id?: string;
     name: string;
     tags: string[];
     href?: string;

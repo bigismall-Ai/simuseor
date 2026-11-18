@@ -2,7 +2,7 @@
  * 兜底封面：由模型元信息生成「家族铭牌」。
  *
  * 三条原则（缺一条就会退回彩色雪花）：
- *  1. 只读稳定字段（name / tags / params）。下载量、点赞、更新时间一律不参与，
+ *  1. 只读稳定字段（id / name / tags / params）。下载量、点赞、更新时间一律不参与，
  *     否则同一张封面会随统计漂移，识别价值归零。
  *  2. 每个通道只绑一个字段，不做纯装饰：左上角标绑家族、大字绑家族码、
  *     规格行绑参数量与量化、右上角标绑文件形态。模型上千个，颜色只能标识「家族」，
@@ -10,15 +10,19 @@
  *  3. 拿不到就不显示，不做估算。「参数 3B」如果是按家族常见规模猜出来的，
  *     用户会拿它跟真实文件对不上号，那比留白更糟。
  *
- * 家族标识是「槽位 + 降级」两段：
+ * 家族标识是「槽位 + 降级」三段：
  *  - 有官方资产（public/families/{id}.svg）时填品牌标，22px 完整呈现、不裁切、不改色。
  *    这是指称性使用（用标识指代该模型家族本身），合规；但**绝不能**放大成背景水印或改配色，
  *    那会脱离指称语境变成装饰图案，也从「标识该模型」变成「用它的标装饰我们的界面」。
  *  - 没有资产时退回自绘几何标记，尺寸与位置一致，所以两种状态版式不跳。
+ *  - 连自绘标记也没有（认不出家族）时，退回发布方缩写（1–3 字）：它回答的是
+ *    「谁发的」，不是伪造的厂牌标，详见 publisher.ts。
  *
  * 家族色不在这里：色值写在组件里 9 个 `.f-*` 类 × 明暗两套。这里曾经有 hue / strength
  * 两个字段，但从来没人消费——颜色早就搬进 CSS 了。留着只会让后来的人以为改它有用。
  */
+
+import { Publisher, publisherOf } from './publisher';
 
 export type FamilyId =
   | 'flux' | 'wan' | 'sdxl' | 'sd15' | 'sd3' | 'qwen' | 'pony' | 'hunyuan' | 'ltx'
@@ -211,7 +215,7 @@ export const FAMILIES: FamilySpec[] = [
     logo: 'families/hunyuan.svg',
     mark: 'M12 3l8.5 4.75v9.5L12 21l-8.5-4.75v-9.5Z',
     filled: false,
-    test: /hunyuan|\bhyv\b/i,
+    test: /hunyuan|\bhyv\b|混元/i,
   },
   {
     id: 'ltx',
@@ -233,7 +237,7 @@ export const FAMILIES: FamilySpec[] = [
     mark: 'M3 19.4V13.4A9 9 0 0 1 21 13.4V19.4H18.2V13.4A6.2 6.2 0 0 0 5.8 13.4V19.4Z M7.6 19.4V13.4A4.4 4.4 0 0 1 16.4 13.4V19.4H14.2V13.4A2.2 2.2 0 0 0 9.8 13.4V19.4Z',
     filled: true,
     // 官方只有 assets/logo.png 位图，描摹成 SVG 属于重绘，形状不可靠
-    test: /\bwan[\s._-]?2|\bwan\b|wan2/i,
+    test: /\bwan[\s._-]?2|\bwan\b|wan2|万相/i,
   },
   {
     id: 'flux',
@@ -256,7 +260,7 @@ export const FAMILIES: FamilySpec[] = [
     // 作为品牌图形（3:1 门槛）够用，且保住了「官方紫」这个识别特征。
     mark: 'M4 9V4h16v5M4 15v5h16v-5',
     filled: false,
-    test: /qwen/i,
+    test: /qwen|通义千问|千问/i,
   },
   {
     id: 'minimax',
@@ -295,7 +299,7 @@ export const FAMILIES: FamilySpec[] = [
     logoDark: 'families/kolors-dark.svg',
     mark: '',
     filled: false,
-    test: /kolors/i,
+    test: /kolors|可图/i,
   },
   {
     id: 'mochi',
@@ -425,6 +429,8 @@ export const MOTIF_COUNT = 5;
 const QUANT_IN_NAME = /\b(i?q\d+(?:[_-][a-z0-9]+)*|fp\d+|bf16|fp16|fp32|e4m3fn)\b/i;
 
 export interface CoverInput {
+  /** 仓库 id（org/name）。家族判定同时看它 —— display_name 常是中文，只看 name 会漏判 */
+  id?: string;
   name: string;
   tags?: string[];
   params?: string;
@@ -466,10 +472,12 @@ export interface CoverMeta {
   image?: string;
   /** 搬运标注：非官方发布者的名字，缺省表示不显示 */
   byline?: string;
+  /** 发布方：家族没有徽章时用它做默认身份（缩写由 publisher.ts 推导） */
+  publisher?: Publisher;
 }
 
 export function resolveFamily(model: CoverInput): FamilySpec {
-  const hay = `${model.name} ${(model.tags ?? []).join(' ')}`;
+  const hay = `${model.id ?? ''} ${model.name} ${(model.tags ?? []).join(' ')}`;
   for (const f of FAMILIES) {
     if (f.test.test(hay)) return f;
   }
@@ -573,5 +581,6 @@ export function coverMeta(model: CoverInput): CoverMeta {
     motif: motifOf(model.name),
     image: thumb(model.image),
     byline: repackByline(family.id, model.author),
+    publisher: publisherOf(model) ?? undefined,
   };
 }

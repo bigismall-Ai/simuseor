@@ -101,6 +101,14 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
               </svg>
             }
           </span>
+        } @else if (meta.publisher) {
+          <!-- 未登记家族：用发布方缩写兜底。文字本身就是「谁发的」，
+               不是装饰性占位符；方角细框与圆角/彩色的品牌标区分开。 -->
+          <span
+            class="brand mono"
+            [title]="'未登记厂牌 · 发布方：' + meta.publisher.label"
+            [attr.aria-label]="'未登记厂牌，发布方 ' + meta.publisher.label"
+          >{{ meta.publisher.abbr }}</span>
         }
 
         @if (meta.code !== '—') {
@@ -315,6 +323,19 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
         display: block;
       }
 
+      /* 发布方缩写：1–3 个字符，中性色、方角细框。
+         不做图形、不做随机色 —— 与官方品牌标保持明确的视觉距离。 */
+      .brand.mono {
+        width: 22px;
+        border: 1px solid color-mix(in oklab, var(--plate-ink) 22%, transparent);
+        border-radius: 3px;
+        font: 700 9px/1 'Cascadia Mono', Consolas, 'JetBrains Mono', monospace;
+        letter-spacing: 0.02em;
+        color: var(--plate-ink);
+        opacity: 0.82;
+        white-space: nowrap;
+      }
+
       /* 照片上没有可靠的底色，只压暗不够——给标垫一块白底。
          白底上必须用「给浅色用的那版」资产，所以下面把明暗切换在这里强行扳回来。 */
       .plate.on-shot .brand {
@@ -334,6 +355,14 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
       }
       .plate.on-shot .brand .logo-dark {
         display: none;
+      }
+
+      /* 照片上的白底芯片：缩写必须用深色（深色主题下 --plate-ink 是浅色，
+         直接继承会在白底上看不见）。 */
+      .plate.on-shot .brand.mono {
+        width: 22px;
+        color: #3b3a35;
+        border-color: rgb(0 0 0 / 0.18);
       }
 
       .label {
