@@ -10,7 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
-from . import hot_board
+from . import family_scan, hot_board
 from .api.routes import router, warm_discover, warm_workflows
 from .comfy.api import router as comfy_router
 from .comfy.runner import stop_all as stop_comfy_instances
@@ -51,6 +51,9 @@ async def lifespan(_app: FastAPI):
         threading.Thread(target=hot_board.warm_all, name="warm-hot-board", daemon=True).start()
         # 节点清单 5.6MB，第一次进节点页要等十几秒，同样丢后台先拉
         warm_catalog()
+        # 厂标资产巡检：启动后跑一次（24h 节流，同一天重启多次只跑第一回）。
+        # 丢后台线程 + 全量 try/except，巡检失败绝不能拖住启动。
+        threading.Thread(target=family_scan.trigger, name="family-scan", daemon=True).start()
     try:
         yield
     finally:

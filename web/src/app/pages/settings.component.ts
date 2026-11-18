@@ -80,11 +80,11 @@ function fmtScanTime(iso: string | null): string {
           <ui-panel
             kicker="Branding"
             title="厂标资产巡检"
-            hint="发现页搜索时会顺带检查一次上游有没有改版（一天最多一次）。官方改了 logo 时这里会列出待确认的厂牌 —— 换不换由你决定，脚本绝不自动替换。"
+            hint="后端每次启动会自动检查一次上游有没有改版（24 小时内不重复）。官方改了 logo 时这里会列出待确认的厂牌 —— 换不换由你决定，脚本绝不自动替换。"
           >
             <div class="toolbar mt">
               <button (click)="scanFamilies(true)" [disabled]="familyScanning">
-                {{ familyScanning ? '检查中…' : '立即检查' }}
+                {{ familyScanning ? '检查中…' : '立即重检' }}
               </button>
               <span class="muted">{{ familyScanText() }}</span>
             </div>
