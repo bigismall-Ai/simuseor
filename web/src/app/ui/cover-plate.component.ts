@@ -347,6 +347,13 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
       /* 搬运标注：字号比家族码小一档、颜色更淡，不跟厂牌抢注意力；
          宽度封顶后截断 —— 发布者名可能很长（WarmBloodAban 这类），
          宁可省略也不能把规格和「原站」挤出这一行。 */
+      /* 与家族码之间用一个中点隔开：两者字号/字重相近，不留分隔会读成「SD3Comfy-Org」。 */
+      .byline::before {
+        content: '·';
+        margin: 0 3px 0 1px;
+        opacity: 0.55;
+      }
+
       .byline {
         flex: 0 1 auto;
         min-width: 0;

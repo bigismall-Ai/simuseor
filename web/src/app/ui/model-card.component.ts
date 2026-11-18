@@ -1,4 +1,5 @@
 import { Component, Input, output } from '@angular/core';
+import { coverMeta } from '../core/cover';
 import { sourceLabel, sourceShort } from '../core/source-links';
 import { SearchItem, fmtNum } from '../core/types';
 import { sourceTaskLabel } from '../core/task-labels';
@@ -384,8 +385,14 @@ export class ModelCardComponent {
         title: `在 ${full} 上打开原始仓库`,
       });
     }
+    // 铭牌上已经标了「搬运」作者，标签行不再重复 —— 同一张卡上出现两次既冗余、
+    // 又让人以为是两个不同的发布者。铭牌没标（官方出品 / 家族未登记官方发布者）时才在这里补。
     const author = this.authorText;
-    if (author) out.push({ key: 'author', text: author, title: `发布者：${author}` });
+    // 铭牌上的搬运标注由 coverMeta 从作者 + 家族官方发布者推导，不是 plate 的入参字段，
+    // 这里复用同一份判定，避免「铭牌标了、标签行又标一次」。
+    if (author && !coverMeta(this.plate).byline) {
+      out.push({ key: 'author', text: author, title: `发布者：${author}` });
+    }
     return out;
   }
 
