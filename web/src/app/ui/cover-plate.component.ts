@@ -52,7 +52,7 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
              在页面没有滚动前根本不发起请求，首屏一排缩略图全是空白。列表最多
              几十行、一行一张图，直接 eager 更划算。 -->
         <img
-          class="photo"
+          [class]="photoClass"
           [src]="meta.image"
           alt=""
           [attr.loading]="size === 'wide' ? 'eager' : 'lazy'"
@@ -803,6 +803,19 @@ export class CoverPlateComponent implements OnChanges, OnDestroy {
   @Input() ratio: 'auto' | 'wide' | 'fill' | 'fixed' = 'auto';
 
   /**
+   * 追加在封面图上的 class 名（空格分隔，可多个）。
+   *
+   * 为什么需要它：调用方有时要用固定选择器命中这张图 —— 工作流卡的 E2E 就靠
+   * `app-workflow-card img.wc-cover-img` 认封面（换封面、选封面管理都断言它）。
+   * CSS 没法给元素加 class，包一层容器也只会多一个壳、选择器照样命不中
+   * （`img.wc-cover-img` 要求 class 落在 <img> 本身），所以只能由调用方指定。
+   *
+   * 追加而不是替换：`.photo` 的定位/裁切规则在组件自己的样式里，
+   * 去掉它这张图就铺不满、也不会裁切了。
+   */
+  @Input() imgClass = '';
+
+  /**
    * 照片是否真的显示出来了。
    *
    * 卡片正文压在铭牌上，有照片时正文要翻白、没照片时保持深色——但「有没有照片」
@@ -831,6 +844,11 @@ export class CoverPlateComponent implements OnChanges, OnDestroy {
   /** 「12B · Q4_K_S」，竖线由 CSS 的 ::before 补，这里只管内容 */
   get specLine(): string {
     return this.meta.specs.map((s) => s.v).join(' · ');
+  }
+
+  /** 封面图的 class：`.photo` 永远在，调用方可以再追加自己的 */
+  get photoClass(): string {
+    return this.imgClass ? `photo ${this.imgClass}` : 'photo';
   }
 
   get aria(): string {

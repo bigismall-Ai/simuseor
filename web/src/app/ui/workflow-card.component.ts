@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FamilyMarkComponent } from './family-mark.component';
-import { proxied } from '../core/cover';
+import { CoverPlateComponent } from './cover-plate.component';
 import { LocalWorkflow } from '../core/types';
 
 export type WorkflowState = 'broken' | 'api' | 'missing' | 'ready';
@@ -24,61 +24,73 @@ interface StateView {
  * 2. **解析失败的说明长在封面图区里**，不弹 toast、不弹模态、不另开错误块 ——
  *    坏文件是这条资产自己的属性。
  * 3. **徽标与正文不重复表达**。红色徽标已经说了「缺东西」，正文不再写一遍状态行。
+ *
+ * 封面收敛：底板 / 纹样 / 铺图 / 蒙版都交给共享的 `app-cover-plate`
+ * （`ratio="wide"` = 16:10 横版），本卡只留「这张工作流怎么样」的状态层
+ * （家族厂标、状态徽标、⋯ 菜单、标题、解析失败提示）。
  */
 @Component({
   selector: 'app-workflow-card',
   standalone: true,
-  imports: [FamilyMarkComponent],
+  imports: [FamilyMarkComponent, CoverPlateComponent],
   template: `
-    <article class="wc" [class.broken]="state() === 'broken'" [attr.data-name]="it.name">
-      <div class="wc-cover" [class.broken-cover]="state() === 'broken'">
-        @if (state() !== 'broken' && it.cover && !coverFailed) {
-          <!-- 用 img 而不是 background-image：Civitai 按 referrer 拦图，
-               只有 img 能带 referrerpolicy，背景图带不了 -->
-          <img class="wc-cover-img" [src]="coverSrc" alt="" referrerpolicy="no-referrer"
-               loading="lazy" (error)="coverFailed = true" />
-        }
-        @if (state() === 'broken') {
-          <div class="wc-broken">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
-                 stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
-              <path d="M12 8v5" /><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
-              <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-            </svg>
-            <span class="wc-broken-title">无法解析</span>
-            <span class="wc-broken-msg">{{ it.error || '文件解析失败' }}</span>
-          </div>
-        } @else {
-          <div class="wc-veil"></div>
-        }
+    <article class="wc" [class.broken]="state() === 'broken'" [class.on-shot]="photoOk"
+             [attr.data-name]="it.name">
+      <!-- 封面本体 = 共享铭牌。ratio="wide" 给出 16:10 的横版封面，
+           家族色底 / 几何纹样 / 铺满图 / 蒙版都在铭牌里，本卡不再各写一套。
+           imgClass="wc-cover-img"：E2E 用 img.wc-cover-img 认这张封面
+           （换封面 / 封面管理都断言它），class 必须落在 <img> 本身。 -->
+      <div class="wc-cover">
+        <app-cover-plate
+          class="wc-plate"
+          ratio="wide"
+          imgClass="wc-cover-img"
+          [model]="plate"
+          (shotState)="photoOk = $event"
+        />
 
-        <div class="wc-top">
-          <ui-family-mark [model]="it.main_model || ''" [plate]="true" />
-          @if (view().badge === 'dep') {
-            <span class="wc-dep" [title]="missingTip()">
-              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor"
-                   stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-                <path d="M8 2.6v6.2" /><circle cx="8" cy="11.9" r="0.85" fill="currentColor" stroke="none" />
-                <path d="M6.9 2.4 1.5 11.9A1.6 1.6 0 0 0 2.9 14.4h10.2a1.6 1.6 0 0 0 1.4-2.5L9.1 2.4a1.6 1.6 0 0 0-2.2 0z" />
+        <!-- 状态层盖在封面上。这些是「这张工作流怎么样」，不是封面本身。 -->
+        <div class="wc-over">
+          @if (state() === 'broken') {
+            <div class="wc-broken">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+                   stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+                <path d="M12 8v5" /><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
+                <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
               </svg>
-              <span>{{ view().badgeText }}</span>
-            </span>
-          } @else if (view().badge === 'count') {
-            <span class="wc-count">
-              <span>{{ it.nodes }} 节点</span><span>{{ totalDeps() }} 依赖</span>
-            </span>
-          } @else if (view().badge === 'note') {
-            <span class="wc-note">{{ view().badgeText }}</span>
+              <span class="wc-broken-title">无法解析</span>
+              <span class="wc-broken-msg">{{ it.error || '文件解析失败' }}</span>
+            </div>
           }
-          <div class="wc-acts">
-            <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
-                    title="更多操作" (click)="openMore($event)">⋯</button>
-          </div>
-        </div>
 
-        <div class="wc-name">
-          <h3 [title]="it.path">{{ it.title || it.name }}</h3>
-          <p>{{ sizeText() }} · {{ agoText() }}</p>
+          <div class="wc-top">
+            <ui-family-mark [model]="it.main_model || ''" [plate]="true" />
+            @if (view().badge === 'dep') {
+              <span class="wc-dep" [title]="missingTip()">
+                <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor"
+                     stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                  <path d="M8 2.6v6.2" /><circle cx="8" cy="11.9" r="0.85" fill="currentColor" stroke="none" />
+                  <path d="M6.9 2.4 1.5 11.9A1.6 1.6 0 0 0 2.9 14.4h10.2a1.6 1.6 0 0 0 1.4-2.5L9.1 2.4a1.6 1.6 0 0 0-2.2 0z" />
+                </svg>
+                <span>{{ view().badgeText }}</span>
+              </span>
+            } @else if (view().badge === 'count') {
+              <span class="wc-count">
+                <span>{{ it.nodes }} 节点</span><span>{{ totalDeps() }} 依赖</span>
+              </span>
+            } @else if (view().badge === 'note') {
+              <span class="wc-note">{{ view().badgeText }}</span>
+            }
+            <div class="wc-acts">
+              <button class="wc-kebab" type="button" aria-haspopup="menu" aria-label="更多操作"
+                      title="更多操作" (click)="openMore($event)">⋯</button>
+            </div>
+          </div>
+
+          <div class="wc-name">
+            <h3 [title]="it.path">{{ it.title || it.name }}</h3>
+            <p>{{ sizeText() }} · {{ agoText() }}</p>
+          </div>
         </div>
       </div>
 
@@ -143,34 +155,63 @@ interface StateView {
     .wc:hover::after,
     .wc:focus-within::after { box-shadow: inset 0 0 0 1px var(--accent); }
 
+    /* ---- 封面：共享铭牌 ------------------------------------------------
+       ratio="wide" 由铭牌自己声明 16:10，本卡不再写第二份 aspect-ratio。
+       铭牌内部自己裁切（overflow:hidden），外层不用再裁。 */
     .wc-cover {
       position: relative;
-      aspect-ratio: 16 / 10;
-      background-color: var(--panel-3);
-      overflow: hidden;
+      display: block;
+      width: 100%;
     }
-    .wc-cover-img {
+    .wc-plate {
+      display: block;
+      width: 100%;
+    }
+    /* 状态层：盖在封面上（家族厂标 / 徽标 / ⋯ / 标题 / 解析失败）。
+       整层绝对定位铺满封面；pointer-events:none 让点击穿透到下面的铭牌，
+       只有 ⋯ 菜单自己打开命中。 */
+    .wc-over {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 28%;
-      display: block;
+      z-index: 2;
+      pointer-events: none;
     }
-    .wc-cover.broken-cover {
+    .wc-over .wc-acts,
+    .wc-over .wc-kebab { pointer-events: auto; }
+
+    /* 铭牌自带的顶行（厂牌标 + 厂牌码 + 规格）在本卡里是重复的：
+       本卡左上角已经有一枚 ui-family-mark（它自带随主题翻转的底衬，
+       且 E2E 按 ui-family-mark .fm 断言）。两枚叠在同一个角会打架，
+       所以这里只借铭牌的「底 + 纹样 + 图 + 蒙版」，顶行整个收掉。
+
+       选择器要带 .wc-plate 才压得住：铭牌自己的 .head 规则在它自己的
+       作用域里（.head[_ngcontent-xxx]，特异性 0,2,0），
+       而 :host ::ng-deep .head 只有 0,2,0 —— 平手时谁赢看样式注入顺序，
+       实测是铭牌赢（display 仍是 flex，QWEN 标签压在厂标上）。
+       多带一层类把它提到 0,3,0 才稳定压住。 */
+    :host ::ng-deep .wc-plate .head { display: none; }
+    /* 封面图的取景沿用原来的偏上 28%：重构不该顺带把裁切改了。
+       同样要带 .wc-plate 才压得住铭牌自己的 .photo 规则。 */
+    :host ::ng-deep .wc-plate .photo { object-position: center 28%; }
+
+    /* 解析失败：整块铭牌收掉，只留斜纹底 + 警告文案。
+       斜纹是「这个条目残了」的通用语言，与家族色区分开；
+       坏文件本来就没有图，家族色块只会和警告文案抢注意力。
+
+       斜纹画在 .wc-cover（封面容器）而不是 .wc-over（状态层）：
+       状态层带 z-index:2 会盖住 .wc::after 画的 1px 描边 ——
+       实测坏卡顶边那一行整行变色（257px）。
+       .wc-cover 的 z-index 是 auto，::after 作为最后一个子节点排在它后面，
+       描边照样压在斜纹上。 */
+    .wc.broken .wc-cover {
       background: repeating-linear-gradient(45deg, var(--panel-3), var(--panel-3) 9px,
         var(--panel-2) 9px, var(--panel-2) 18px);
     }
-    .wc-veil {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgb(0 0 0 / 0.46) 0%, rgb(0 0 0 / 0) 32%,
-        rgb(0 0 0 / 0.26) 56%, rgb(0 0 0 / 0.82) 100%);
-    }
-    :host-context([data-theme='dark']) .wc-veil {
-      background: linear-gradient(180deg, rgb(0 0 0 / 0.18) 0%, rgb(0 0 0 / 0) 38%, rgb(0 0 0 / 0.74) 100%);
-    }
+    /* 铭牌用 visibility 而不是 display 收掉：
+       16:10 的高度是铭牌自己给的（:host(.ratio-wide) 的 aspect-ratio），
+       display:none 会把铭牌从布局里摘掉 —— 封面高度塌成 0（实测 h=0）。
+       visibility:hidden 保留占位、只是不画，斜纹底从底下透出来。 */
+    :host ::ng-deep .wc.broken .wc-plate { visibility: hidden; }
 
     /* 解析失败：说明就长在图区里，不另开错误块 */
     .wc-broken {
@@ -224,12 +265,15 @@ interface StateView {
       font-size: 10px;
       font-weight: 600;
       color: #fff;
-      background: rgb(220 38 38 / 0.58);
+      /* 没有照片时封面是浅色家族底，半透明红底压不住 → 用实色；
+         有照片时蒙版已把底下压暗，回到半透明红（压图上的老口径）。 */
+      background: var(--err);
       border-radius: var(--radius-xs);
       padding: 2px 6px;
       white-space: nowrap;
       overflow: hidden;
     }
+    .wc.on-shot .wc-dep { background: rgb(220 38 38 / 0.58); }
     .wc-dep span { overflow: hidden; text-overflow: ellipsis; }
     .wc-count,
     .wc-note {
@@ -262,14 +306,21 @@ interface StateView {
       height: 16px;
       padding: 0 5px;
       border-radius: var(--radius-xs);
-      background: rgb(0 0 0 / 0.42);
-      color: #fff;
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text);
       font-size: 10px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
-    .wc-note { background: rgb(217 119 6 / 0.86); font-weight: 600; }
+    .wc.on-shot .wc-count > span {
+      background: rgb(0 0 0 / 0.42);
+      box-shadow: none;
+      color: #fff;
+    }
+    .wc-note { background: var(--warn); font-weight: 600; }
+    .wc.on-shot .wc-note { background: rgb(217 119 6 / 0.86); }
 
     .wc-acts {
       margin-left: auto;
@@ -284,8 +335,9 @@ interface StateView {
       flex: none;
       border: 0;
       border-radius: var(--radius-sm);
-      background: rgb(0 0 0 / 0.42);
-      color: #fff;
+      background: var(--panel);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+      color: var(--text-2);
       cursor: pointer;
       display: grid;
       place-items: center;
@@ -293,7 +345,12 @@ interface StateView {
       font-size: 13px;
       line-height: 1;
     }
-    .wc-kebab:hover { background: rgb(0 0 0 / 0.6); }
+    .wc.on-shot .wc-kebab {
+      background: rgb(0 0 0 / 0.42);
+      box-shadow: none;
+      color: #fff;
+    }
+    .wc.on-shot .wc-kebab:hover { background: rgb(0 0 0 / 0.6); }
 
     .wc-name {
       position: absolute;
@@ -301,23 +358,27 @@ interface StateView {
       right: 10px;
       bottom: 8px;
     }
+    /* 标题压在封面下沿。没有照片时封面是浅色家族底，字必须深色才读得出来；
+       有照片时铭牌的蒙版已把下沿压到近实色，字翻白。
+       口径与 md-model-card / md-library-card 的 .on-shot 翻转一致。 */
     .wc-name h3 {
       margin: 0;
       font-size: 12.5px;
       font-weight: 600;
       line-height: 1.4;
-      color: #fff;
-      text-shadow: 0 1px 4px rgb(0 0 0 / 0.58);
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .wc.broken .wc-name h3 { color: var(--text); text-shadow: none; }
+    .wc.on-shot .wc-name h3 {
+      color: #fff;
+      text-shadow: 0 1px 4px rgb(0 0 0 / 0.58);
+    }
     .wc-name p {
       margin: 2px 0 0;
       font-size: 10.5px;
-      color: rgb(255 255 255 / 0.74);
-      text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+      color: var(--muted);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -325,7 +386,10 @@ interface StateView {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .wc.broken .wc-name p { color: var(--muted); text-shadow: none; }
+    .wc.on-shot .wc-name p {
+      color: rgb(255 255 255 / 0.74);
+      text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+    }
     .wc-body { padding: 8px 9px; }
     .wc-split {
       display: flex;
@@ -425,13 +489,32 @@ export class WorkflowCardComponent {
   /** 带上点击坐标，菜单才能贴着按钮弹出来而不是回页面顶上去找 */
   @Output() more = new EventEmitter<{ item: LocalWorkflow; x: number; y: number }>();
 
-  /** 远程图挂掉（防盗链 / 404）就退回空封面，别留一块碎图 */
-  coverFailed = false;
+  /** 封面图是否真的画出来了（远程图会 401 / 超时）。决定状态层用深字还是白字 */
+  photoOk = false;
 
-  /** 外部封面统一经后端取（浏览器不挂代理时直连图床会超时）。 */
-  get coverSrc(): string {
-    return proxied(this.it.cover || '');
+  /**
+   * 交给铭牌的最小字段集。
+   *
+   * 只吃稳定字段：主模型文件名定家族与构图，封面图有就铺、没有就退回家族色纹样。
+   * 封面地址的归一（外链换成 /api/cover 代理、宽度换成 448）由 cover-plate
+   * 内部的 coverMeta 统一做，这里给原始地址即可。
+   *
+   * 解析失败的文件不铺图 —— 那是「这条资产坏了」，不是「封面还没加载出来」，
+   * 铺一张图反而会让斜纹底与警告文案抢注意力。
+   *
+   * 按引用缓存：模板每次变更检测都会求值 getter，返回新对象会让子组件的
+   * ngOnChanges 每帧触发（meta 被反复重置，图片加载失败时甚至会把失败的图
+   * 重新挂回去形成死循环）。
+   */
+  get plate(): { name: string; image?: string } {
+    const name = this.it.main_model || this.it.name || '';
+    const image = this.state() === 'broken' ? undefined : this.it.cover || undefined;
+    if (!this._plate || this._plate.name !== name || this._plate.image !== image) {
+      this._plate = { name, image };
+    }
+    return this._plate;
   }
+  private _plate: { name: string; image?: string } | null = null;
 
   openMore(event: MouseEvent): void {
     event.stopPropagation();
