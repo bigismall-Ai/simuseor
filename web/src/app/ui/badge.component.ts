@@ -7,7 +7,7 @@ export type BadgeTone = 'gray' | 'blue' | 'green' | 'orange' | 'red';
   selector: 'ui-badge',
   standalone: true,
   imports: [NgClass],
-  template: `<span class="badge" [ngClass]="tone"><ng-content /></span>`,
+  template: `<span class="ui-badge" [ngClass]="tone"><ng-content /></span>`,
 })
 export class BadgeComponent {
   @Input() tone: BadgeTone = 'gray';

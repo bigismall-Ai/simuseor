@@ -10,21 +10,21 @@ import { Component, Input } from '@angular/core';
   selector: 'ui-panel',
   standalone: true,
   template: `
-    <section class="panel">
+    <section class="ui-panel">
       @if (title || kicker) {
-        <div class="panel-head">
-          <div class="panel-heading">
+        <div class="ui-panel-head">
+          <div class="ui-panel-heading">
             @if (kicker) {
-              <p class="page-kicker">{{ kicker }}</p>
+              <p class="ui-page-kicker">{{ kicker }}</p>
             }
             @if (title) {
               <h2>{{ title }}</h2>
             }
             @if (hint) {
-              <p class="panel-hint">{{ hint }}</p>
+              <p class="ui-panel-hint">{{ hint }}</p>
             }
           </div>
-          <div class="panel-actions">
+          <div class="ui-panel-actions">
             <ng-content select="[panel-actions]" />
           </div>
         </div>

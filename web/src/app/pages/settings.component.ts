@@ -110,9 +110,9 @@ function fmtScanTime(iso: string | null): string {
             <ui-panel [title]="settings.sources[key].label || key" hint="凭据只属于这个源；其它设置都在左侧。">
               <div panel-actions>
                 @if (settings.sources[key].proxy_enabled) {
-                  <span class="badge blue">经代理</span>
+                  <span class="ui-badge blue">经代理</span>
                 } @else {
-                  <span class="badge gray">直连</span>
+                  <span class="ui-badge gray">直连</span>
                 }
               </div>
               <div class="form-grid">

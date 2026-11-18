@@ -554,7 +554,7 @@ body {
    归口：.grid 一处定义，页面级覆盖待 M2 收敛，本轮只登记不改。 */
 
 /* ================= 5. 页头 ================= */
-.page-header {
+.ui-page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -562,8 +562,8 @@ body {
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
-.page-heading { min-width: 0; }
-.page-kicker {
+.ui-page-heading { min-width: 0; }
+.ui-page-kicker {
   margin: 0 0 5px;
   font-size: 10px;
   font-weight: 600;
@@ -571,30 +571,30 @@ body {
   text-transform: uppercase;
   color: var(--muted);
 }
-.page-heading h1 {
+.ui-page-heading h1 {
   margin: 0;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.022em;
   line-height: 1.2;
 }
-.page-hint {
+.ui-page-hint {
   margin: 6px 0 0;
   font-size: 12.5px;
   color: var(--muted);
   max-width: 74ch;
 }
-.page-actions { display: flex; gap: 8px; align-items: center; }
+.ui-page-actions { display: flex; gap: 8px; align-items: center; }
 
 /* ================= 6. 面板 ================= */
-.panel {
+.ui-panel {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px 20px 20px;
   margin-bottom: 14px;
 }
-.panel-head {
+.ui-panel-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -604,24 +604,24 @@ body {
   padding-bottom: 13px;
   border-bottom: 1px solid var(--border-soft);
 }
-.panel-heading { min-width: 0; }
-.panel-heading h2 {
+.ui-panel-heading { min-width: 0; }
+.ui-panel-heading h2 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.panel-hint {
+.ui-panel-hint {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--muted);
   max-width: 76ch;
 }
-.panel-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.ui-panel-actions { display: flex; align-items: center; gap: 8px; flex: none; }
 
 /* 无标题面板里直接放内容时，不要顶到边框上 */
-.panel > :first-child { margin-top: 0; }
-.panel > :last-child { margin-bottom: 0; }
+.ui-panel > :first-child { margin-top: 0; }
+.ui-panel > :last-child { margin-bottom: 0; }
 
 /* ================= 7. 按钮 ================= */
 button {
@@ -671,8 +671,8 @@ button.primary:disabled:hover { background: var(--primary); border-color: var(--
 .btn-xs { height: 25px; padding: 0 9px; font-size: 11.5px; border-radius: var(--radius-sm); }
 
 /* ================= 8. 表单 ================= */
-.field { min-width: 0; }
-.field label {
+.ui-field { min-width: 0; }
+.ui-field label {
   display: block;
   margin-bottom: 6px;
   font-size: 11.5px;
@@ -821,8 +821,8 @@ select:disabled { opacity: 0.6; }
      文字 var(--pill-ink)（浅 #52525b · 深 #b4b4bc）
    注：早期注释曾写「12px 内边距 / 12px 字号」，与实现不符，已按实现更正为 9px / 11px。
 
-   为什么单独一套而不复用 .badge：
-   - .badge 是**状态**（已安装 / 已禁用 / 未登记），带语义色，一眼要看出好坏；
+   为什么单独一套而不复用 .ui-badge：
+   - .ui-badge 是**状态**（已安装 / 已禁用 / 未登记），带语义色，一眼要看出好坏；
    - .pill 是**分类**（文生图 / LoRA / VAE / HF），同权重、可并列很多个，
      用语义色就会变成一墙红黄绿。分类标签一律中性，只靠填充深浅分层。
 
@@ -886,7 +886,7 @@ select:disabled { opacity: 0.6; }
   min-width: 0;
 }
 
-.badge {
+.ui-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -897,11 +897,11 @@ select:disabled { opacity: 0.6; }
   line-height: 18px;
   white-space: nowrap;
 }
-.badge.gray { background: var(--chip); color: var(--muted); }
-.badge.blue { background: var(--accent-soft); color: var(--accent); }
-.badge.green { background: var(--ok-soft); color: var(--ok); }
-.badge.orange { background: var(--warn-soft); color: var(--warn); }
-.badge.red { background: var(--err-soft); color: var(--err); }
+.ui-badge.gray { background: var(--chip); color: var(--muted); }
+.ui-badge.blue { background: var(--accent-soft); color: var(--accent); }
+.ui-badge.green { background: var(--ok-soft); color: var(--ok); }
+.ui-badge.orange { background: var(--warn-soft); color: var(--warn); }
+.ui-badge.red { background: var(--err-soft); color: var(--err); }
 
 /* ================= 10. 表格 ================= */
 .table-wrap { overflow-x: auto; }
@@ -995,10 +995,10 @@ tbody tr:hover td:last-child { border-radius: 0 8px 8px 0; }
 }
 .loading-line .dot-spin { width: 14px; height: 14px; border-width: 1.5px; }
 
-.empty-state { text-align: center; padding: 44px 20px; color: var(--muted); }.empty-icon { font-size: 26px; opacity: 0.4; margin-bottom: 10px; line-height: 1; }
-.empty-title { margin: 0 0 4px; font-size: 13px; color: var(--text); font-weight: 600; }
-.empty-hint { margin: 0; font-size: 12px; }
-.empty-state button { margin-top: 14px; }
+.ui-empty { text-align: center; padding: 44px 20px; color: var(--muted); }.ui-empty-icon { font-size: 26px; opacity: 0.4; margin-bottom: 10px; line-height: 1; }
+.ui-empty-title { margin: 0 0 4px; font-size: 13px; color: var(--text); font-weight: 600; }
+.ui-empty-hint { margin: 0; font-size: 12px; }
+.ui-empty button { margin-top: 14px; }
 
 .skeleton {
   background: linear-gradient(90deg, var(--border-soft) 25%, var(--panel-3) 50%, var(--border-soft) 75%);
@@ -1192,12 +1192,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
   gap: 14px;
   min-width: 0;
 }
-.env-side .panel { margin-bottom: 0; }
+.env-side .ui-panel { margin-bottom: 0; }
 
 /* 两栏底边对齐：设备卡吃掉右栏剩下的高度，「更多信息」钉在最底下。
    以前两栏各按内容高，底边差一截，看起来像没排完。 */
 .env-side .dev-panel { display: flex; flex-direction: column; flex: 1; }
-.env-side .dev-panel > .panel { flex: 1; display: flex; flex-direction: column; }
+.env-side .dev-panel > .ui-panel { flex: 1; display: flex; flex-direction: column; }
 
 .inst-panel {
   grid-column: 1;
@@ -1205,7 +1205,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
 }
 /* 主栏要吃掉整行高度：两栏底边齐平，实例少的时候空白留在面板里，而不是页面下半截 */
 .env-layout > .inst-panel { display: flex; flex-direction: column; }
-.inst-panel > .panel { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; }
+.inst-panel > .ui-panel { flex: 1; display: flex; flex-direction: column; margin-bottom: 0; }
 
 /* ---------------- 基础环境：三行清单 ---------------- */
 /* 一行一件事：圆点=状态，左边名字，右边版本。以前三项各套一个边框盒子，
@@ -1714,7 +1714,7 @@ details.files[open] summary::before { transform: rotate(90deg); }
   align-items: start;
 }
 .settings-cols > .col { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-.settings-cols > .col > ui-panel .panel { margin-bottom: 0; }
+.settings-cols > .col > ui-panel .ui-panel { margin-bottom: 0; }
 
 /* ================= 16. 响应式 ================= */
 @media (max-width: 1040px) {

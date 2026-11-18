@@ -10,17 +10,17 @@ import { Component, Input } from '@angular/core';
   selector: 'ui-page-header',
   standalone: true,
   template: `
-    <header class="page-header">
-      <div class="page-heading">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
         @if (kicker) {
-          <p class="page-kicker">{{ kicker }}</p>
+          <p class="ui-page-kicker">{{ kicker }}</p>
         }
         <h1>{{ title }}</h1>
         @if (hint) {
-          <p class="page-hint">{{ hint }}</p>
+          <p class="ui-page-hint">{{ hint }}</p>
         }
       </div>
-      <div class="page-actions">
+      <div class="ui-page-actions">
         <ng-content />
       </div>
     </header>

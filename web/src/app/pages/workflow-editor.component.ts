@@ -166,7 +166,7 @@ const ROLES: Record<string, string> = {
         </nav>
 
         @if (loading) {
-          <section class="empty-state">正在读取工作流…</section>
+          <section class="ui-empty">正在读取工作流…</section>
         } @else if (view === 'canvas' && graph) {
           <section
             class="canvas"
@@ -448,7 +448,7 @@ const ROLES: Record<string, string> = {
                     <div class="grp">
                       <p class="grp-h">参数</p>
                       @for (w of node.widgets; track $index) {
-                        <label class="field">
+                        <label class="wf-field">
                           <span class="flabel" [title]="w.name">{{ w.label || w.name }}</span>
                           @switch (w.kind) {
                             @case ('number') {
@@ -503,7 +503,7 @@ const ROLES: Record<string, string> = {
                     @if (!node.inputs.length) { <p class="empty">没有输入端口。</p> }
                   </div>
                 } @else {
-                  <div class="empty-state small">
+                  <div class="ui-empty small">
                     <p>选择节点后在这里改参数。</p>
                     <p class="muted">拖动输出端口到另一个节点的输入端口即可连线；点击已连接的输入端口断开。</p>
                   </div>
@@ -672,7 +672,7 @@ const ROLES: Record<string, string> = {
     .rbtn .dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 0 2px var(--panel); }
     .rail-sep { width: 24px; height: 1px; background: var(--border-soft); margin: 4px 0; }
 
-    .empty-state { flex: 1; display: grid; place-items: center; color: var(--muted); font-size: 12px; padding: 40px; }
+    .ui-empty { flex: 1; display: grid; place-items: center; color: var(--muted); font-size: 12px; padding: 40px; }
 
     /* ---------------- 画布 ---------------- */
     .canvas {
@@ -803,7 +803,9 @@ const ROLES: Record<string, string> = {
     .rename:focus { outline: none; border-color: var(--accent-line); }
     .muted { color: var(--faint); }
     .mono { font-family: 'Cascadia Mono', Consolas, monospace; font-size: 10px; }
-    .field { display: flex; align-items: center; gap: 8px; min-height: 28px; margin-bottom: 5px; }
+    /* 原本还继承全局 .field { min-width: 0 }：全局类改名为 .ui-field 后，这里显式补回，
+       视觉保持不变。 */
+    .wf-field { display: flex; align-items: center; gap: 8px; min-height: 28px; margin-bottom: 5px; min-width: 0; }
     .flabel { flex: 1; min-width: 0; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .fnum { width: 82px; flex: none; height: 26px; padding: 0 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel-2); color: var(--text); font: 10.5px/1 'Cascadia Mono', Consolas, monospace; text-align: right; }
     .fselect { max-width: 150px; flex: none; height: 26px; padding: 0 5px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel-2); color: var(--text-2); font: 10.5px/1 'Cascadia Mono', Consolas, monospace; }
@@ -831,8 +833,8 @@ const ROLES: Record<string, string> = {
     .insp-foot { padding: 10px 14px; border-top: 1px solid var(--border-soft); display: flex; gap: 7px; }
     .insp-foot .btn { flex: 1; }
     .empty { margin: 2px 0 0; padding: 4px 0; font-size: 11px; line-height: 1.6; color: var(--faint); }
-    .empty-state.small { padding: 20px 0; text-align: left; display: block; }
-    .empty-state.small p { margin: 0 0 8px; font-size: 11.5px; line-height: 1.6; }
+    .ui-empty.small { padding: 20px 0; text-align: left; display: block; }
+    .ui-empty.small p { margin: 0 0 8px; font-size: 11.5px; line-height: 1.6; }
 
     /* ---------------- JSON 视图 ---------------- */
     .docview { flex: 1; min-width: 0; display: flex; background: var(--panel-2); }

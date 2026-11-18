@@ -14,7 +14,7 @@ let seq = 0;
   selector: 'ui-field',
   standalone: true,
   template: `
-    <div class="field">
+    <div class="ui-field">
       @if (label) {
         <label class="field-label">{{ label }}</label>
       }

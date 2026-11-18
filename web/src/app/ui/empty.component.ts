@@ -4,13 +4,13 @@ import { Component, Input } from '@angular/core';
   selector: 'ui-empty',
   standalone: true,
   template: `
-    <div class="empty-state">
+    <div class="ui-empty">
       @if (icon) {
-        <div class="empty-icon">{{ icon }}</div>
+        <div class="ui-empty-icon">{{ icon }}</div>
       }
-      <p class="empty-title">{{ title }}</p>
+      <p class="ui-empty-title">{{ title }}</p>
       @if (hint) {
-        <p class="empty-hint">{{ hint }}</p>
+        <p class="ui-empty-hint">{{ hint }}</p>
       }
       <ng-content />
     </div>
