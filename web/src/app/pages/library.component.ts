@@ -6,6 +6,7 @@ import { ApiService } from '../core/api.service';
 import { publisherKeyOf } from '../core/publisher';
 import { sourceLabel } from '../core/source-links';
 import { LibraryFacet, LibraryFacets, LibraryModel, errMsg, fmtBytes } from '../core/types';
+import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { LibraryCardComponent } from '../ui/library-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -32,7 +33,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 @Component({
   selector: 'app-library',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, EmptyComponent, LibraryCardComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterLink, CollectionBarComponent, EmptyComponent, LibraryCardComponent, PageHeaderComponent],
   template: `
     <div class="lib-body">
       <div class="lib-main">
@@ -47,14 +48,49 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
           <button type="button" class="primary" routerLink="/models/discover">发现模型</button>
         </ui-page-header>
 
-        <!-- 首次加载时不显示「0 个模型」：那会被读成「库是空的」，
-             而实际只是在等接口。骨架卡已经说明了正在加载。 -->
-        @if (models.length > 0 || !loading) {
-          <div class="lib-summary">
-            <span><b>{{ visible.length }}</b> 个模型</span>
-            <span class="sep">·</span>
-            <span>占用 <b>{{ fmtBytes(visibleSize) }}</b></span>
-          </div>
+        <!-- 列表顶部统一骨架：状态条读数，筛选行收搜索 / 排序 / 分面入口。
+             首次加载保留 46px 高度并写「读取中…」，不先给一个「0 个模型」。 -->
+        @if (models.length > 0 || loading) {
+          <ui-collection-bar
+            [count]="loading && !models.length ? null : visible.length"
+            [total]="hasFilter ? models.length : null"
+            unit="个模型"
+            [facts]="facts"
+            [loading]="loading"
+            [refreshLabel]="'重新读取模型库'"
+            (refresh)="load()"
+          >
+            <label class="cb-search">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="7" cy="7" r="4.4" />
+                <path d="M10.3 10.3 13.6 13.6" />
+              </svg>
+              <input [(ngModel)]="q" placeholder="搜索名称或路径" data-testid="lib-search" />
+            </label>
+
+            <div class="cb-tools">
+              <button class="cb-select" type="button" (click)="railOpen = true" title="打开筛选">
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M2 3h12l-4.6 5.6V13l-2.8 1.4V8.6z" />
+                </svg>
+                <span>筛选</span>
+                @if (activeFacetCount) {
+                  <b class="cb-badge">{{ activeFacetCount }}</b>
+                }
+              </button>
+
+              <label class="cb-select" title="排序">
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+                </svg>
+                <select [(ngModel)]="sort" data-testid="lib-sort" aria-label="排序">
+                  @for (o of sortOptions; track o.key) {
+                    <option [value]="o.key">{{ o.label }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+          </ui-collection-bar>
         }
 
         @if (message) {
@@ -93,21 +129,8 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
       </div>
     </div>
 
-    <!-- 默认收起：只在右缘露出一枚「筛选」浮标 -->
-    @if (!railOpen) {
-      <button
-        type="button"
-        class="rail-fab"
-        (click)="railOpen = true"
-        title="打开筛选"
-        aria-label="打开筛选"
-      >
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M2 3h12l-4.6 5.6V13l-2.8 1.4V8.6z" />
-        </svg>
-        <span>筛选</span>
-      </button>
-    }
+    <!-- 筛选入口已经在状态条下的筛选行里：右缘不再留第二枚浮标，
+         同一个控制在页面上只出现一次。 -->
 
     <!-- 悬浮面板：半透明 + 背景模糊，展开时盖在卡片上，不改变列表宽度 -->
     <aside class="rail" [class.open]="railOpen" aria-label="筛选">
@@ -123,23 +146,8 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
       </div>
 
       <div class="rail-body">
-            <div class="side-search">
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <circle cx="7" cy="7" r="4.6" />
-                <path d="M10.4 10.4 14 14" />
-              </svg>
-              <input [(ngModel)]="q" placeholder="搜索名称或路径" data-testid="lib-search" />
-            </div>
-
-            <div class="side-sort">
-              <span class="side-label">排序</span>
-              <select [(ngModel)]="sort" data-testid="lib-sort">
-                @for (o of sortOptions; track o.key) {
-                  <option [value]="o.key">{{ o.label }}</option>
-                }
-              </select>
-            </div>
-
+            <!-- 搜索与排序已经移到状态条下的筛选行：浮层只负责多选分面，
+                 同一个控制在页面上只出现一次。 -->
             @for (f of facetDims; track f.key) {
               <div class="facet">
                 <div class="facet-head">
@@ -165,6 +173,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
           </div>
       </aside>
   `,
+  styleUrls: ['../ui/collection-bar.css'],
   styles: [
     `
       .lib-body {
@@ -278,52 +287,6 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
         padding-right: 4px;
       }
 
-      .side-search { position: relative; margin-bottom: 12px; }
-      .side-search svg {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 14px;
-        height: 14px;
-        fill: none;
-        stroke: var(--faint);
-        stroke-width: 1.5;
-        pointer-events: none;
-      }
-      .side-search input {
-        width: 100%;
-        height: 32px;
-        padding: 0 10px 0 30px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        background: var(--panel-2);
-        color: var(--text);
-        font: inherit;
-        font-size: 12.5px;
-      }
-
-      .side-sort { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-      .side-label {
-        flex: none;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--faint);
-      }
-      .side-sort select {
-        flex: 1;
-        min-width: 0;
-        height: 28px;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        color: var(--text-2);
-        font: inherit;
-        font-size: 12px;
-        padding: 0 6px;
-      }
-
       .facet { margin-bottom: 18px; }
       .facet-head {
         display: flex;
@@ -373,19 +336,6 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
       }
 
       /* ---- 主区 ---- */
-      .lib-summary {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        padding: 0 2px 12px;
-        font-size: 12px;
-        color: var(--text-2);
-        border-bottom: 1px solid var(--border-soft);
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-      }
-      .lib-summary b { font-weight: 600; font-variant-numeric: tabular-nums; }
-      .lib-summary .sep { color: var(--border-strong); }
       /* 提示条下面直接是卡片墙，补一段下边距，别贴着第一排 */
       .notice { margin-bottom: 14px; }
 
@@ -648,6 +598,34 @@ export class LibraryComponent implements OnInit {
 
   get visibleSize(): number {
     return this.visible.reduce((sum, m) => sum + (m.size_bytes || 0), 0);
+  }
+
+  /** 有搜索词，或任一维分面没有全选 —— 只有这时读数才写成「42 / 128」 */
+  get hasFilter(): boolean {
+    return !!this.q.trim() || this.activeFacetCount > 0;
+  }
+
+  /** 已收窄的分面维度数：筛选按钮上的小徽标，不把每一维都摊到条上 */
+  get activeFacetCount(): number {
+    return this.facetDims.filter((d) => this.setOf(d.key).size < d.items.length).length;
+  }
+
+  /** 当前结果里权重缺失 / 损坏的条目数 —— 只读事实，不是筛选项 */
+  get visibleMissing(): number {
+    return this.visible.filter((m) => {
+      const lvl = m.vram?.level;
+      return lvl === 'broken' || lvl === 'missing';
+    }).length;
+  }
+
+  get facts(): CollectionFact[] {
+    const missing = this.visibleMissing;
+    return [
+      { label: '占用', value: fmtBytes(this.visibleSize), title: '当前结果在磁盘上的占用' },
+      missing
+        ? { label: '权重缺失', value: String(missing), tone: 'err' as const, title: '目录里没有权重文件，下载不完整' }
+        : { label: '权重缺失', value: '0', title: '当前结果没有残缺条目' },
+    ];
   }
 
   get gpuVramGb(): number {

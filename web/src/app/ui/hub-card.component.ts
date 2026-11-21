@@ -1,5 +1,5 @@
 import { Component, HostListener, Input, output } from '@angular/core';
-import { WorkflowItem, fmtNum } from '../core/types';
+import { WorkflowItem, fmtInt } from '../core/types';
 import { CoverPlateComponent } from './cover-plate.component';
 
 /** 来源色调：与发现页徽章同一套语义色（blue / green / orange / gray） */
@@ -102,7 +102,7 @@ const SOURCES: Record<string, SourceInfo> = {
         <!-- ④ 状态槽：左下载量 · 一根白线 · 右文件数。
              下载量是发现页唯一能证明「有人跑通过」的硬信号，排序也按它排。 -->
         <div class="acard-slot">
-          <span [title]="'下载量：' + (item.downloads || 0)">↓ {{ fmtNum(item.downloads) }}</span>
+          <span [title]="'下载量：' + (item.downloads || 0)">↓ {{ fmtInt(item.downloads) }}</span>
           <span class="acard-rule"></span>
           <span class="acard-size">{{ item.file_count || 0 }} 个文件</span>
         </div>
@@ -343,5 +343,5 @@ export class HubCardComponent {
     this.menuOpen = false;
   }
 
-  fmtNum = fmtNum;
+  fmtInt = fmtInt;
 }

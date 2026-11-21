@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>列表顶部 · SiMuseor 原型</title>
+<meta name="description" content="SiMuseor 原型页面：模型 / 工作流 / 节点的本地与发现页共用一套列表顶部骨架">
+<link rel="stylesheet" href="../assets/vis.css">
+<link rel="stylesheet" href="_proto.css">
+</head>
+<body data-page="page-status" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">司梦工作台</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.16 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+      <div class="proto-view active ref" id="pv-page-status">
+        <div class="proto-view-head">
+          <div>
+            <h3>列表顶部 · 统一骨架</h3>
+            <p>页头 / 状态条 / 筛选条 · 模型 / 工作流 / 节点 × 本地 / 发现</p>
+          </div>
+          <div class="proto-btns"><i class="ghost"></i><i></i></div>
+        </div>
+
+        <div class="proto-view-body">
+          <div class="ac-spec">
+            <div><b>① 页头</b><span>只回答「这是哪一页」：kicker + 标题 + 至多一句 hint + 全局动作（扫描 / 分组 / 检测 / 去发现）。数量不进来。</span></div>
+            <div><b>② 状态条</b><span>只回答「现在看到多少」：主读数 + 2–3 条只读事实。筛选时写「42 / 128」；首次加载写「读取中…」。</span></div>
+            <div><b>③ 筛选条</b><span>只回答「怎么缩小范围」：搜索 → 分面 chips → 排序 / 视图。顺序固定，工具收在右端。</span></div>
+            <div><b>④ 事实槽</b><span>只放只读聚合（占用 / 分组 / 节点类 / 清单规模）。可点的状态与动作一律去 chips 或按钮，避免「看着能点」。</span></div>
+            <div><b>⑤ 刷新</b><span>属于「重新读数」，留在状态条右端；排序 / 视图属于「怎么看」，留在筛选条右端。两者不混。</span></div>
+          </div>
+
+          <div class="proto-anchor" id="ps-before">
+            <div class="proto-anchor-head"><b>现在六页的顶部</b><span>同一个位置，六种写法 · 归一后只保留三层</span></div>
+          <div class="tbl-wrap"><table class="t"><thead><tr><th>页面</th><th>现在的顶部</th><th>归一后的顶部</th></tr></thead><tbody><tr><td><b>模型库</b></td><td>`.lib-summary` 一行读数；搜索 / 排序躲在右侧浮层里</td><td>状态条「128 个模型 · 1.2 TB」；搜索 / 排序进筛选条，浮层只留分面</td></tr><tr><td><b>模型发现</b></td><td>数量挤在页头右侧；工具栏另起一个带框面板</td><td>数量回到状态条；来源 / 任务 / 排序 / 视图同一条筛选行</td></tr><tr><td><b>工作流库</b></td><td>读数条 + 分组行 + 工具行 = 三行，边框各画各的</td><td>状态行 + 筛选行 = 两行；分组管理进页头</td></tr><tr><td><b>工作流发现</b></td><td>没有数量；来源被塞进页头 hint</td><td>数量进状态条；来源变成 chips，hint 删除</td></tr><tr><td><b>节点管理</b></td><td>4 个统计盒 + 一整块检测面板，页面被切成格子</td><td>一行读数；检测进页头动作，结果用徽标，不占主位</td></tr><tr><td><b>节点发现</b></td><td>数量在面板底部，和排序挤在一起，刷新是文字按钮</td><td>数量进状态条；分类 / 排序进筛选行，刷新收成图标</td></tr></tbody></table></div>
+          </div>
+
+          <div class="proto-anchor" id="ps-model-mine">
+            <div class="proto-anchor-head"><b>模型 · 本地库</b><span>主读数 = 本机数量 · 事实 = 占用 / 权重缺失 · 搜索从浮层搬回顶部</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Models</p>
+          <h1>模型库</h1>
+          <p class="ui-page-hint">你的模型资产：装了什么、占多大、能不能跑。</p>
+        </div>
+        <div class="ui-page-actions"><button type="button">扫描入库</button><button type="button" class="primary">发现模型</button></div>
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>128</b><span class="ps-unit">个模型</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">占用</span><b class="ps-fact-value">1.2 TB</b></li><li><span class="ps-fact-label">权重缺失</span><b class="ps-fact-value is-err">3</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜索名称或路径" aria-label="搜索名称或路径"></label><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12l-4.6 5.6V13l-2.8 1.4V8.6z"/></svg><span>筛选</span><b class="ps-badge">2</b></button><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>入库时间</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">数量与占用原来是一行散字，搜索和排序又躲在右缘浮层里 —— 同一页的「看什么」被拆成两处。现在状态条只读数，搜索 / 排序 / 浮层入口并到同一条筛选行；浮层只留多选分面。模型库的分面是多选抽屉，不在筛选行重复一遍：筛选行只给入口和已选数量。权重缺失是只读事实，用错误色；它不是筛选项，不会被误读成一个可点的过滤器。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-model-discover">
+            <div class="proto-anchor-head"><b>模型 · 发现</b><span>主读数 = 结果数 · 事实 = 来源合并 / 已入库 · 数量不再挤页头</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Models · Discover</p>
+          <h1>发现模型</h1>
+          
+        </div>
+        
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>86+</b><span class="ps-unit">个模型</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">合并</span><b class="ps-fact-value">3 个来源</b></li><li><span class="ps-fact-label">已入库</span><b class="ps-fact-value">12</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜索模型关键词，如 qwen / lora / flux" aria-label="搜索模型关键词，如 qwen / lora / flux"></label><div class="ps-chips" role="group" aria-label="来源"><button type="button" class="ps-chip on">全部<b>86</b></button><button type="button" class="ps-chip">Hugging Face<b>42</b></button><button type="button" class="ps-chip">ModelScope<b>26</b></button><button type="button" class="ps-chip">Civitai<b>18</b></button></div><div class="ps-chips" role="group" aria-label="任务"><button type="button" class="ps-chip">文生图<b>48</b></button><button type="button" class="ps-chip">文生视频<b>12</b></button><button type="button" class="ps-chip">LoRA<b>26</b></button></div><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>综合</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button><div class="ps-view" role="group" aria-label="视图切换"><button type="button" class="on" title="网格视图">▦</button><button type="button" title="列表视图">☰</button></div></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">发现页以前把唯一一个数量塞进页头右侧：换一次筛选，页头跟着抖，而且和「这是哪一页」混在一起。现在数量固定在状态条；来源不再写在 hint 里，而是变成第一组 chips —— 能点的来源就不该只是一句说明。结果未取完时主读数保留「+」，与现有分页语义一致。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-workflow-mine">
+            <div class="proto-anchor-head"><b>工作流 · 本地库</b><span>主读数 = 已筛 / 全部 · 事实 = 占用 / 分组 / 缺依赖 · 三行收成两行</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Workflows</p>
+          <h1>工作流</h1>
+          
+        </div>
+        <div class="ui-page-actions"><button type="button">分组管理</button><button type="button" class="primary">发现工作流</button></div>
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>42</b><span class="ps-total">/ 128</span><span class="ps-unit">个工作流</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">占用</span><b class="ps-fact-value">2.4 GB</b></li><li><span class="ps-fact-label">分组</span><b class="ps-fact-value">14</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜索名称、原文件名或分组" aria-label="搜索名称、原文件名或分组"></label><div class="ps-chips" role="group" aria-label="分组"><button type="button" class="ps-chip on">全部<b>128</b></button><button type="button" class="ps-chip">人物<b>24</b></button><button type="button" class="ps-chip">电商<b>18</b></button><button type="button" class="ps-chip">影视<b>12</b></button><button type="button" class="ps-chip">未分组<b>9</b></button></div><div class="ps-chips" role="group" aria-label="状态"><button type="button" class="ps-chip is-warn">缺依赖<b>6</b></button><button type="button" class="ps-chip">就绪<b>24</b></button><button type="button" class="ps-chip">API 格式<b>7</b></button><button type="button" class="ps-chip">无法解析<b>5</b></button></div><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>最近修改</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button><div class="ps-view" role="group" aria-label="视图切换"><button type="button" class="on" title="网格视图">▦</button><button type="button" title="列表视图">☰</button></div></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">这一页原来是三段：读数条、分组行、工具行，各自带一条边框；分组管理还占在读数条里。现在读数和事实合并成状态行，搜索 / 分组 / 状态 / 排序 / 视图合并成筛选行；分组管理是数据动作，回到页头。健康度只在状态 chips 里报一次（缺依赖 / 就绪 / 无法解析），事实槽不再重复同一个数字；再点一次已选中的状态就退回全部，不必额外放一个「全部」chip。「42 / 128」只在筛选生效时出现 —— 没有筛选时不该先让人读一个斜杠。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-workflow-discover">
+            <div class="proto-anchor-head"><b>工作流 · 发现</b><span>主读数 = 结果数 · 事实 = 来源 / 已入库 · 来源从 hint 变成 chips</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Workflows · Discover</p>
+          <h1>发现工作流</h1>
+          
+        </div>
+        
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>128</b><span class="ps-unit">个工作流</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">来源</span><b class="ps-fact-value">6 个</b></li><li><span class="ps-fact-label">文件</span><b class="ps-fact-value">214 个</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜索工作流，如 flux / wan / minimax" aria-label="搜索工作流，如 flux / wan / minimax"></label><div class="ps-chips" role="group" aria-label="来源"><button type="button" class="ps-chip on">全部<b>128</b></button><button type="button" class="ps-chip">官方模板<b>32</b></button><button type="button" class="ps-chip">ComfyHub<b>41</b></button><button type="button" class="ps-chip">Hugging Face<b>12</b></button><button type="button" class="ps-chip">ModelScope<b>8</b></button><button type="button" class="ps-chip">Civitai<b>21</b></button><button type="button" class="ps-chip">GitHub<b>14</b></button></div><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>热门</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button><div class="ps-view" role="group" aria-label="视图切换"><button type="button" class="on" title="网格视图">▦</button><button type="button" title="列表视图">☰</button></div></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">这一页原来连数量都没有，六个来源写成页头的一句 hint —— 用户看完既不知道有多少结果，也不能只挑一个源。现在数量进状态条、来源进 chips；hint 删除。发现页与本地工作流终于共享同一条顶部，只换读数与筛选项。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-node-mine">
+            <div class="proto-anchor-head"><b>节点 · 本地管理</b><span>主读数 = 已安装 · 事实 = 节点类 / 清单 · 4 个统计盒收成一行 · 检测进页头</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Nodes</p>
+          <h1>节点管理</h1>
+          
+        </div>
+        <div class="ui-page-actions"><button type="button">检测缺失<b class="ps-badge is-warn">6</b></button><button type="button" class="primary">发现节点</button></div>
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>3</b><span class="ps-unit">个已安装</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">可用节点类</span><b class="ps-fact-value">143</b></li><li><span class="ps-fact-label">清单规模</span><b class="ps-fact-value">6,045</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜索已装扩展或目录" aria-label="搜索已装扩展或目录"></label><div class="ps-chips" role="group" aria-label="状态"><button type="button" class="ps-chip on">全部<b>3</b></button><button type="button" class="ps-chip">已启用<b>3</b></button><button type="button" class="ps-chip">已禁用<b>0</b></button></div><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>按名称</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">四个统计盒是这一轮最大的「顶部占用」：每个数字各占一个带边框的盒子，下面再接一整块检测面板。现在四个数字收进一行 —— 主读数「3 个已安装」，事实「143 个可用节点类 · 6,045 个清单」。检测是低频动作，回到页头，用「6」的警示徽标保留结果；它不再和扩展列表抢页面主位。页面标题下的解释句删除：解释只在空态出现。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-node-discover">
+            <div class="proto-anchor-head"><b>节点 · 发现</b><span>主读数 = 清单总量 · 事实 = 节点类 / 已安装 · 数量与排序各归其位</span></div>
+            <div class="ps-demo">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">Nodes · Discover</p>
+          <h1>发现节点</h1>
+          
+        </div>
+        
+      </header>
+      <section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        <p class="ps-count"><b>6,045</b><span class="ps-unit">个扩展</span></p>
+        <ul class="ps-facts"><li><span class="ps-fact-label">节点类</span><b class="ps-fact-value">45,849</b></li><li><span class="ps-fact-label">已安装</span><b class="ps-fact-value">3</b></li></ul>
+        <div class="ps-status-actions">
+          
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg></button>
+        </div>
+      </div>
+      <div class="ps-filters"><label class="ps-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg><input type="search" placeholder="搜扩展名或节点名，如 impact / sam / controlnet" aria-label="搜扩展名或节点名，如 impact / sam / controlnet"></label><div class="ps-chips" role="group" aria-label="类型"><button type="button" class="ps-chip on">全部<b>6045</b></button><button type="button" class="ps-chip">工具<b>3408</b></button><button type="button" class="ps-chip">文生图<b>496</b></button><button type="button" class="ps-chip">文本<b>381</b></button><button type="button" class="ps-chip">音频<b>372</b></button><button type="button" class="ps-chip">更多 3</button></div><div class="ps-tools"><button class="ps-select" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg><span>按节点数</span><svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg></button></div></div>
+    </section>
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true"><span class="ps-ghost"></span><span class="ps-ghost"></span><span class="ps-ghost"></span></div>
+    </div>
+            <p class="proto-caption">清单页的规模是它唯一的强信号，所以主读数就是「6,045 个扩展」，节点类总数紧跟在事实槽。原来这句读数被压在面板底部、和排序挤在同一行，翻页时还会跟着面板走；现在它固定在状态条。「刷新清单」是重新读数，收成状态条右端的刷新图标；分类与排序留在筛选行。</p>
+          </div>
+
+          <div class="proto-anchor" id="ps-rules">
+            <div class="proto-anchor-head"><b>归一规则</b><span>层级、读数、事实、工具各归各位</span></div>
+            <div class="ac-diff">
+              <div>
+                <b>三层各司其职</b>
+                <dl>
+                  <dt>页头</dt><dd>身份 + 全局动作；数量永远不进来</dd>
+                  <dt>状态条</dt><dd>当前集合的读数与只读事实</dd>
+                  <dt>筛选条</dt><dd>搜索 → 分面 → 排序 / 视图</dd>
+                  <dt>分隔</dt><dd>一条 panel-2 底，中间一条 border-soft；不叠外框</dd>
+                </dl>
+              </div>
+              <div>
+                <b>读数与事实</b>
+                <dl>
+                  <dt>读数</dt><dd>20px/600 + 11.5px 单位；筛选时 42 / 128</dd>
+                  <dt>事实</dt><dd>2–3 条，只读聚合；异常才用语义色</dd>
+                  <dt>加载</dt><dd>保留 46px 高度，写「读取中…」，不跳版</dd>
+                  <dt>空态</dt><dd>空库隐藏状态条，交给空态说明</dd>
+                </dl>
+              </div>
+              <div>
+                <b>工具归位</b>
+                <dl>
+                  <dt>刷新</dt><dd>状态条右端 · 重新读数</dd>
+                  <dt>排序</dt><dd>筛选条右端 · 怎么看</dd>
+                  <dt>视图</dt><dd>筛选条右端；只有一种视图时不出现</dd>
+                  <dt>数据动作</dt><dd>扫描 / 分组 / 检测 → 页头</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>

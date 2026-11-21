@@ -37,6 +37,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { parseHtml, cloneNode, findAll, findFirst, elementChildren } from './vis-dom.mjs';
+import { PROTO_DEFS } from './prototypes/_defs.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
@@ -608,9 +609,10 @@ function build() {
   }
 
   /* 导航块：P 映射 + NAV（一级 = 章，二级 = 各节页） */
+  const protos = PROTO_DEFS.filter((d) => d.status === 'active');
   const pEntries = [
     `    overview: 'vis-reference.html',`,
-    `    cards: 'prototypes/cards.html',`,
+    ...protos.map((d) => `    '${d.id}': '${d.file}',`),
   ];
   const navLines = [];
   for (const ch of chapters) {
@@ -640,7 +642,7 @@ ${pEntries.join('\n')}
 
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
-    { type: 'link', page: 'cards', label: '资产卡片原型', icon: 'prototype' },
+    ${protos.map((d) => `{ type: 'link', page: '${d.id}', label: ${JSON.stringify(d.navLabel || d.data.head.title)}, icon: 'prototype' },`).join('\n    ')}
 ${navLines.join(',\n')}
   ];
   `;
@@ -741,15 +743,17 @@ function check() {
     if ([...l].length > 6) problems.push(`导航标签超过 6 字（${[...l].length}）: ${l}`);
   }
 
-  /* 6. 原型页入口必须在「总览」之后紧邻 —— 排在 12 个章之后就等于「找不到了」 */
+  /* 6. 所有在架原型入口必须在「总览」之后紧邻 —— 排在 12 个章之后就等于「找不到了」 */
   const navArr = shell.slice(shell.indexOf('var NAV = ['), shell.indexOf('];', shell.indexOf('var NAV = [')));
   const topLevel = [...navArr.matchAll(/type:\s*'link',\s*page:\s*'([^']+)'/g)].map((m) => m[1]);
+  const wantProtos = PROTO_DEFS.filter((d) => d.status === 'active').map((d) => d.id);
   if (topLevel.length) {
     if (topLevel[0] !== 'overview') {
       problems.push(`导航第一个一级项应为 overview，实为 ${topLevel[0]}`);
     }
-    if (topLevel[1] !== 'cards') {
-      problems.push(`原型页入口应紧跟在「总览」之后（topLevel[1]=cards），实为 ${topLevel[1] || '(无)'} —— 排在章之后等于找不到了`);
+    const gotProtos = topLevel.slice(1);
+    if (gotProtos.join(',') !== wantProtos.join(',')) {
+      problems.push(`原型页入口应紧跟在「总览」之后且按注册表顺序（期望 ${wantProtos.join(' / ')}，实为 ${gotProtos.join(' / ') || '(无)'}）—— 排在章之后等于找不到了`);
     }
   }
 

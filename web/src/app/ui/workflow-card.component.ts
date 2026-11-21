@@ -91,9 +91,9 @@ interface StateView {
       <div class="acard-body">
         <h3 class="wc-name acard-name" [title]="it.path">{{ it.title || it.name }}</h3>
 
-        <!-- 类别行：更新于什么时候 + 文件格式（UI / API） -->
+        <!-- 类别行：只留文件格式（UI / API）。时间已按原型撤掉 ——
+             它不是「这条资产是什么」，而且每张卡都不同，扫视时只会变成噪声。 -->
         <p class="wc-meta acard-meta">
-          <span class="wc-time">{{ agoText() }}</span>
           @if (it.format === 'ui' || it.format === 'api') {
             <span class="wc-fmt" [class.api]="it.format === 'api'"
                   [title]="it.format === 'api' ? '只有节点与连线，没有坐标，载不进画布' : '含节点坐标与连线，可直接载入画布'">
@@ -456,13 +456,4 @@ export class WorkflowCardComponent {
     return (b / 1000 / 1000).toFixed(1) + ' MB';
   }
 
-  agoText(): string {
-    const t = this.it.mtime * 1000;
-    const days = Math.floor((Date.now() - t) / 86400000);
-    if (days <= 0) return '今天';
-    if (days === 1) return '昨天';
-    if (days < 30) return days + ' 天前';
-    if (days < 365) return Math.floor(days / 30) + ' 个月前';
-    return Math.floor(days / 365) + ' 年前';
-  }
 }

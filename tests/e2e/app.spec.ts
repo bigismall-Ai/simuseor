@@ -376,11 +376,11 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/models');
     await expect(page.locator('md-library-card')).toHaveCount(3);
-    // 右侧筛选默认收起：右缘只有一枚浮标
-    await expect(page.locator('.rail-fab')).toBeVisible();
+    // 筛选入口在状态条下的筛选行里，右缘不再有第二枚浮标
+    await expect(page.locator('.rail-fab')).toHaveCount(0);
     await expect(page.locator('.rail.open')).toHaveCount(0);
     // 展开后是浮层，四个可多选分面都在
-    await page.locator('.rail-fab').click();
+    await page.getByRole('button', { name: /^筛选/ }).click();
     await expect(page.locator('.rail.open')).toBeVisible();
     await expect(page.locator('.rail .facet')).toHaveCount(4);
     // 发布方是独立于家族的分面：取消 openai 后 gpt2 消失，重置后回来
@@ -1116,7 +1116,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('.nd-card').nth(1).getByText('已禁用').first()).toBeVisible();
     await expect(page.locator('.nd-card').nth(1).getByText('清单未收录').first()).toBeVisible();
 
-    await page.getByRole('button', { name: '开始检测' }).click();
+    await page.getByRole('button', { name: /检测缺失/ }).click();
     await expect(page.getByText('5 个工作流里有 1 个缺节点')).toBeVisible();
     await expect(page.getByText('JPS Custom Nodes for ComfyUI').first()).toBeVisible();
     // 明细默认折叠，展开后能看到「清单未收录」的节点名
@@ -1309,7 +1309,7 @@ test.describe('Model Downloader Web UI', () => {
     const drawerZ = await page.locator('.dr').evaluate((el) => Number(getComputedStyle(el).zIndex));
     expect(sortZ).toBeLessThan(drawerZ);
     const sortCovered = await page.evaluate(() => {
-      const btn = document.querySelector('.wf-sort-wrap > .wf-chip');
+      const btn = document.querySelector('.wf-sort-wrap > .cb-select');
       if (!btn) return false;
       const r = btn.getBoundingClientRect();
       const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
@@ -1527,7 +1527,7 @@ test.describe('Model Downloader Web UI', () => {
   test('我的工作流：列表视图与卡片功能对齐', async ({ page }) => {
     await mockLocalWorkflows(page);
     await page.goto('/workflows');
-    await page.getByRole('button', { name: '列表' }).click();
+    await page.getByRole('button', { name: '列表视图' }).click();
 
     const row = page.locator('.lw-row').first();
     await expect(row).toBeVisible();
@@ -1584,7 +1584,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(bar).toBeVisible();
     // 分组 chip 的数字是「这个组有几条」，未分组单独一个入口。
     // 顺序按拼音排（电商在 人像 前），不是按写入元数据的先后。
-    await expect(bar.locator('.wf-chip')).toHaveText([
+    await expect(bar.locator('.cb-chip')).toHaveText([
       /\s*全部\s*4$/,
       /\s*电商\s*1$/,
       /\s*人像\s*2$/,
@@ -1593,7 +1593,8 @@ test.describe('Model Downloader Web UI', () => {
 
     await bar.getByRole('button', { name: /^人像/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(2);
-    await expect(page.locator('.lw-count')).toHaveText('2 / 4 个工作流');
+    await expect(page.locator('.cb-count')).toContainText('2');
+    await expect(page.locator('.cb-count')).toContainText('4');
 
     await bar.getByRole('button', { name: /^未分组/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(1);
@@ -1601,9 +1602,9 @@ test.describe('Model Downloader Web UI', () => {
 
     // 分组与状态是交集，chip 数字按「其他条件已生效」重算
     await bar.getByRole('button', { name: /^全部/ }).click();
-    await page.locator('.wf-tools').getByRole('button', { name: /^缺依赖/ }).click();
+    await page.locator('[data-testid="lw-status"]').getByRole('button', { name: /^缺依赖/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(1);
-    await expect(bar.locator('.wf-chip')).toHaveText([
+    await expect(bar.locator('.cb-chip')).toHaveText([
       /\s*全部\s*1$/,
       /\s*电商\s*0$/,
       /\s*人像\s*1$/,
@@ -1930,26 +1931,27 @@ test.describe('Model Downloader Web UI', () => {
     expect(await tag.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
     expect(await tag.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe('none');
     // UI | API 双段紧跟在分组标签之后
-    await expect(page.locator('app-workflow-card .wc-meta > :nth-child(2)')).toHaveClass(/wc-fmt/);
+    await expect(page.locator('app-workflow-card .wc-meta > :first-child')).toHaveClass(/wc-fmt/);
     await page.screenshot({ path: ART + '/51-workflow-no-group-tag.png', fullPage: true });
 
-    await page.getByRole('button', { name: '列表' }).click();
+    await page.getByRole('button', { name: '列表视图' }).click();
     const listTag = page.locator('.lw-grp.is-none');
     await expect(listTag).toHaveText('未分组');
     expect(await listTag.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe('none');
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
-  test('我的工作流：工具栏视图切换前置、排序可选择、数量与规格是标签', async ({ page }) => {
+  test('我的工作流：搜索在前、排序与视图收右、数量是标签', async ({ page }) => {
     await mockLocalWorkflows(page);
     await page.goto('/workflows');
 
-    const tools = page.locator('.wf-tools');
-    // 视图切换在搜索框之前
-    await expect(tools.locator('> :first-child')).toHaveAttribute('aria-label', '视图切换');
+    const filters = page.locator('.cb-filters');
+    // 统一骨架固定顺序：搜索在最前，排序 / 视图收在右端
+    await expect(filters.locator('> :first-child')).toHaveClass(/cb-search/);
+    await expect(filters.locator('.cb-tools .cb-view')).toBeVisible();
 
     // 分组数量是小标签，不是跟在名字后的裸数字
-    const badge = page.getByTestId('lw-groups').locator('.wf-chip b').first();
+    const badge = page.getByTestId('lw-groups').locator('.cb-chip b').first();
     expect(await badge.evaluate((el) => getComputedStyle(el).borderRadius)).not.toBe('0px');
 
     // 点排序弹选择，选完收起、按钮显示当前项
@@ -1983,7 +1985,7 @@ test.describe('Model Downloader Web UI', () => {
     });
     expect(tagStyle.h).toBe('16px');
     expect(tagStyle.r).toMatch(/999px|^50%$/);
-    expect(await chipSpec(page.getByTestId('lw-groups').locator('.wf-chip b').first())).not.toBe(
+    expect(await chipSpec(page.getByTestId('lw-groups').locator('.cb-chip b').first())).not.toBe(
       await chipSpec(tag),
     );
     await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });

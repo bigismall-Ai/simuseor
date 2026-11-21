@@ -438,7 +438,7 @@ export class NodeCardComponent {
 
   /** 状态槽右侧：节点没有磁盘大小，规模就是它提供多少节点类 */
   get sizeText(): string {
-    return `${this.nodeCount} 节点类`;
+    return `${this.nodeCount.toLocaleString('en-US')} 节点类`;
   }
 
   /**
@@ -472,7 +472,7 @@ export class NodeCardComponent {
     const nodes = this.item?.nodes || [];
     const count = this.nodeCount;
     if (!count) return { text: '管理面板', more: 0, mono: false };
-    if (!nodes.length) return { text: `${count} 个节点类`, more: 0, mono: true };
+    if (!nodes.length) return { text: `${count.toLocaleString('en-US')} 个节点类`, more: 0, mono: true };
     return { text: nodes[0], more: count - 1, mono: true };
   }
 

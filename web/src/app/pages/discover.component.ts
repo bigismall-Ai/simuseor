@@ -4,9 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { DiscoverCacheService } from '../core/discover-cache.service';
-import { RepoInfo, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
+import { RepoInfo, RemoteFile, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { sourceTaskLabel } from '../core/task-labels';
+import { matchedWeightFiles, weightFiles } from '../core/weight-files';
 import { BadgeComponent } from '../ui/badge.component';
+import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { ModelCardComponent } from '../ui/model-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -27,40 +29,17 @@ interface DownloadDialog {
   active: number;
   repo: RepoInfo | null;
   selected: Set<string>;
-  /** 落盘目录（ComfyUI 模型分类），由后端建议、用户可改 */
-  folder: string;
+  /** 仓库里全部真实权重（非权重文件不进入下载清单） */
+  allWeights: RemoteFile[];
+  /** 默认展示的匹配权重：主权重 / 非量化版本，其余折叠 */
+  matchedWeights: RemoteFile[];
+  /** 是否展开「全部权重」 */
+  showAllWeights: boolean;
   loading: boolean;
   creating: boolean;
   done: boolean;
   error: string;
 }
-
-/** ComfyUI 模型目录；顺序与后端 model_dirs.py 保持一致 */
-const FOLDER_OPTIONS: { key: string; label: string }[] = [
-  { key: 'checkpoints', label: 'checkpoints · 主模型' },
-  { key: 'diffusion_models', label: 'diffusion_models · 扩散主干' },
-  { key: 'text_encoders', label: 'text_encoders · 文本编码器' },
-  { key: 'vae', label: 'vae · VAE' },
-  { key: 'loras', label: 'loras · LoRA' },
-  { key: 'controlnet', label: 'controlnet · ControlNet' },
-  { key: 'upscale_models', label: 'upscale_models · 放大模型' },
-  { key: 'embeddings', label: 'embeddings · TextualInversion' },
-  { key: 'clip_vision', label: 'clip_vision · 视觉编码' },
-  { key: 'style_models', label: 'style_models · 风格模型' },
-  { key: 'model_patches', label: 'model_patches · 模型补丁' },
-  { key: 'photomaker', label: 'photomaker · PhotoMaker' },
-  { key: 'vae_approx', label: 'vae_approx · 预览 VAE' },
-  { key: 'hypernetworks', label: 'hypernetworks · 超网络' },
-  { key: 'gligen', label: 'gligen · GLIGEN' },
-  { key: 'sams', label: 'sams · SAM 分割' },
-  { key: 'ultralytics', label: 'ultralytics · YOLO 检测' },
-  { key: 'rmbg', label: 'rmbg · 背景移除' },
-  { key: 'audio_encoders', label: 'audio_encoders · 音频编码' },
-  { key: 'configs', label: 'configs · 配置' },
-  { key: 'diffusers', label: 'diffusers · Diffusers 目录' },
-  { key: 'onnx', label: 'onnx · ONNX' },
-  { key: 'workflows', label: 'workflows · 工作流' },
-];
 
 interface SourceError {
   label: string;
@@ -87,59 +66,78 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
 @Component({
   selector: 'app-discover',
   standalone: true,
-  imports: [FormsModule, BadgeComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, BadgeComponent, CollectionBarComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
       kicker="Models · Discover"
       title="发现模型"
-      hint="跨源搜索合并为一个列表。同一模型在多个来源时，卡片上会并列标出来源，下载时再选走哪一边。"
-    >
-      <span class="head-count">{{ rows.length }}{{ done ? '' : '+' }} 个模型</span>
-    </ui-page-header>
+      hint="跨源搜索合并为一个列表；同一模型多来源时，卡片上并列标出。"
+    />
 
-    <ui-panel>
-      <div class="toolbar">
-        <input
-          class="grow"
-          [(ngModel)]="q"
-          placeholder="搜索模型关键词，如 qwen / lora / flux"
-          (input)="onQInput()"
-          (keyup.enter)="searchNow()"
-          data-testid="search-input"
-        />
-        <button class="primary" (click)="searchNow()" [disabled]="loading" data-testid="search-btn">搜索</button>
-      </div>
+    <!-- 列表顶部统一骨架：读数 + 搜索 / 来源 / 任务 / 排序 / 视图 -->
+    @if (rows.length > 0 || loading) {
+      <ui-collection-bar
+        [count]="loading && rows.length === 0 ? null : rows.length + (done ? '' : '+')"
+        unit="个模型"
+        [facts]="facts"
+        [loading]="loading && rows.length === 0"
+        [progress]="loading && rows.length ? '检索中…' : ''"
+        refreshLabel="重新检索"
+        (refresh)="searchNow()"
+      >
+        <div class="cb-field">
+          <label class="cb-search">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4" />
+              <path d="M10.3 10.3 13.6 13.6" />
+            </svg>
+            <input
+              [(ngModel)]="q"
+              placeholder="搜索模型关键词，如 qwen"
+              (input)="onQInput()"
+              (keyup.enter)="searchNow()"
+              data-testid="search-input"
+            />
+          </label>
+          <button class="primary cb-go" (click)="searchNow()" [disabled]="loading" data-testid="search-btn">搜索</button>
+        </div>
 
-      <div class="toolbar mt">
-        <div class="segmented">
+        <div class="cb-chips" role="group" aria-label="来源">
           @for (t of sourceTabs; track t.key) {
-            <button [class.active]="source === t.key" (click)="setSource(t.key)">{{ t.label }}</button>
+            <button class="cb-chip" [class.on]="source === t.key" (click)="setSource(t.key)">{{ t.label }}</button>
           }
         </div>
-        <span class="grow"></span>
-        <div class="segmented">
-          <button [class.active]="sort === 'trending'" (click)="setSort('trending')" title="按站点默认推荐">综合</button>
-          <button [class.active]="sort === 'downloads'" (click)="setSort('downloads')" title="按下载量">下载量</button>
-          <button [class.active]="sort === 'likes'" (click)="setSort('likes')" title="按点赞">点赞</button>
-          <button [class.active]="sort === 'recent'" (click)="setSort('recent')" title="最新更新">最新</button>
-        </div>
-        <div class="segmented view-toggle">
-          <button [class.active]="view === 'grid'" (click)="setView('grid')" title="网格视图">▦</button>
-          <button [class.active]="view === 'list'" (click)="setView('list')" title="列表视图">☰</button>
-        </div>
-      </div>
 
-      @if (taskChips.length > 1 || task) {
-        <div class="chip-row mt">
-          <button class="filter-chip" [class.active]="task === ''" (click)="setTask('')">全部类型</button>
-          @for (c of taskChips; track c.key) {
-            <button class="filter-chip" [class.active]="task === c.key" (click)="setTask(c.key)">
-              {{ taskLabel(c.key) }} <span class="chip-count">{{ c.count }}</span>
-            </button>
-          }
+        @if (taskChips.length > 1 || task) {
+          <div class="cb-chips" role="group" aria-label="任务类型">
+            <button class="cb-chip" [class.on]="task === ''" (click)="setTask('')">全部类型</button>
+            @for (c of taskChips; track c.key) {
+              <button class="cb-chip" [class.on]="task === c.key" (click)="setTask(c.key)">
+                {{ taskLabel(c.key) }}<b>{{ c.count }}</b>
+              </button>
+            }
+          </div>
+        }
+
+        <div class="cb-tools">
+          <label class="cb-select" title="排序">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+            </svg>
+            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
+              <option value="trending">综合</option>
+              <option value="downloads">下载量</option>
+              <option value="likes">点赞</option>
+              <option value="recent">最新</option>
+            </select>
+          </label>
+          <div class="cb-view" role="group" aria-label="视图切换">
+            <button type="button" [class.on]="view === 'grid'" (click)="setView('grid')" title="网格视图" aria-label="网格视图">▦</button>
+            <button type="button" [class.on]="view === 'list'" (click)="setView('list')" title="列表视图" aria-label="列表视图">☰</button>
+          </div>
         </div>
-      }
-    </ui-panel>
+      </ui-collection-bar>
+    }
 
     @for (e of errors; track e.label) {
       <div class="notice err">{{ e.label }} 搜索失败：{{ e.message }}</div>
@@ -298,69 +296,85 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
             }
             @if (dlg.repo) {
               <div class="toolbar mb">
-                <span class="muted">存放目录</span>
-                <select [(ngModel)]="dlg.folder" data-testid="dialog-folder">
-                  @for (f of folders; track f.key) {
-                    <option [value]="f.key">{{ f.label }}</option>
-                  }
-                </select>
-                <span class="muted mono">models/{{ dlg.folder }}/{{ dlg.repo.display_name }}</span>
-              </div>
-              <div class="toolbar mb">
-                <span class="muted">
-                  共 {{ dlg.repo.files.length }} 个文件 · 已选 {{ dlg.selected.size }} 个 /
-                  {{ fmtSize(dlgSize()) }}
-                </span>
-                <span class="grow"></span>
-                <button (click)="toggleAllDlg()">
-                  {{ dlg.selected.size === dlg.repo.files.length ? '取消全选' : '全选' }}
-                </button>
-              </div>
-              <div class="table-wrap dlg-files" data-testid="dialog-files">
-                <table>
-                  <tbody>
-                    @for (f of dlg.repo.files; track f.path) {
-                      <tr>
-                        <td class="col-check">
-                          <input
-                            type="checkbox"
-                            [checked]="dlg.selected.has(f.path)"
-                            (change)="toggleDlgFile(f.path, $event)"
-                          />
-                        </td>
-                        <td class="mono">{{ f.path }}</td>
-                        <td class="col-size">{{ fmtSize(f.size) }}</td>
-                      </tr>
+                <span class="muted">保存位置（自动）</span>
+                @if (dlgFolderPlan().length) {
+                  <span class="pill-row">
+                    @for (g of dlgFolderPlan(); track g.id) {
+                      <span class="pill" [title]="g.id">{{ g.id }} · {{ g.count }}</span>
                     }
-                  </tbody>
-                </table>
+                  </span>
+                } @else {
+                  <span class="muted">按文件自动归类</span>
+                }
               </div>
-              <div class="toolbar mt">
-                <button
-                  class="primary"
-                  data-testid="dialog-create"
-                  (click)="createTask()"
-                  [disabled]="dlg.selected.size === 0 || dlg.creating"
-                >
-                  {{ dlg.creating ? '创建中…' : '创建下载任务' }}
-                </button>
-                <span class="muted">策略：{{ dlgStrategy }}</span>
-              </div>
+
+              @if (dlg.allWeights.length === 0) {
+                <div class="notice">
+                  这个仓库里没有可下载的权重文件。config / tokenizer / README 等非权重文件已隐藏。
+                </div>
+              } @else {
+                @if (dlg.matchedWeights.length === 0 && !dlg.showAllWeights) {
+                  <div class="notice">
+                    这个仓库的权重是 Diffusers 分片格式（如 model-00001-of-00014），ComfyUI 不能直接加载，默认没有勾选。
+                    可展开全部权重手动选择，或回发现页找同一模型的 Comfy-Org 单文件版本。
+                    <button (click)="toggleAllWeights()">查看全部权重 ({{ dlg.allWeights.length }})</button>
+                  </div>
+                }
+                <div class="toolbar mb">
+                  <span class="muted">
+                    {{ dlg.showAllWeights ? '全部权重' : '匹配权重' }} {{ currentFiles().length }} 个 ·
+                    已选 {{ dlg.selected.size }} 个 / {{ fmtSize(dlgSize()) }}
+                  </span>
+                  <span class="grow"></span>
+                  @if (dlg.allWeights.length > dlg.matchedWeights.length) {
+                    <button (click)="toggleAllWeights()">
+                      {{ dlg.showAllWeights ? '只看匹配权重' : '查看全部权重 (' + dlg.allWeights.length + ')' }}
+                    </button>
+                  }
+                  <button (click)="toggleAllDlg()">{{ allVisibleSelected() ? '取消全选' : '全选' }}</button>
+                </div>
+                @if (currentFiles().length) {
+                  <div class="table-wrap dlg-files" data-testid="dialog-files">
+                    <table>
+                      <tbody>
+                        @for (f of currentFiles(); track f.path) {
+                          <tr>
+                            <td class="col-check">
+                              <input
+                                type="checkbox"
+                                [checked]="dlg.selected.has(f.path)"
+                                (change)="toggleDlgFile(f.path, $event)"
+                              />
+                            </td>
+                            <td class="mono">{{ f.path }}</td>
+                            <td class="col-size">{{ fmtSize(f.size) }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+                <div class="toolbar mt">
+                  <button
+                    class="primary"
+                    data-testid="dialog-create"
+                    (click)="createTask()"
+                    [disabled]="dlg.selected.size === 0 || dlg.creating"
+                  >
+                    {{ dlg.creating ? '创建中…' : '下载所选 · ' + fmtSize(dlgSize()) }}
+                  </button>
+                  <span class="muted">目录自动归类 · 策略：{{ dlgStrategy }}</span>
+                </div>
+              }
             }
           }
         </div>
       </div>
     }
   `,
+  styleUrls: ['../ui/collection-bar.css'],
   styles: [
     `
-      .head-count {
-        font: 500 11px/1 "Cascadia Mono", Consolas, monospace;
-        color: var(--muted);
-        letter-spacing: 0.02em;
-        font-variant-numeric: tabular-nums;
-      }
-
       /* 骨架用海报卡的形状，加载完不会从「一列文本」跳成「一格格海报」 */
       .skel-card {
         display: flex;
@@ -412,7 +426,6 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   dlgStrategy = 'direct';
 
   readonly hotKeywords = HOT_KEYWORDS;
-  readonly folders = FOLDER_OPTIONS;
   readonly skeletons = [1, 2, 3, 4, 5];
 
   private rawItems: SearchItem[] = [];
@@ -728,6 +741,18 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   // ---------- 派生展示 ----------
 
+  /** 事实槽：当前结果里实际出现的来源数 + 已在库条数（只读，不抢筛选控制） */
+  get facts(): CollectionFact[] {
+    const sources = new Set(this.rows.flatMap((r) => r.items.map((i) => i.source))).size;
+    const inLib = this.rows.filter((r) => r.inLibrary).length;
+    return [
+      { label: '合并', value: `${sources} 个来源`, title: '当前结果覆盖的来源数' },
+      inLib
+        ? { label: '已入库', value: String(inLib), tone: 'ok' as const }
+        : { label: '已入库', value: '0' },
+    ];
+  }
+
   get taskChips(): { key: string; count: number }[] {
     const counts = new Map<string, number>();
     for (const item of this.rawItems) {
@@ -775,7 +800,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       active: 0,
       repo: null,
       selected: new Set(),
-      folder: '',
+      allWeights: [],
+      matchedWeights: [],
+      showAllWeights: false,
       loading: true,
       creating: false,
       done: false,
@@ -793,6 +820,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.dlg.active = index;
     this.dlg.repo = null;
     this.dlg.selected = new Set();
+    this.dlg.allWeights = [];
+    this.dlg.matchedWeights = [];
+    this.dlg.showAllWeights = false;
     this.dlg.error = '';
     this.dlg.done = false;
     this.loadRepo();
@@ -807,9 +837,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.api.resolve(item.source, item.id, '', item.task).subscribe({
       next: (repo) => {
         if (!this.dlg || this.dlg !== dialog || this.dlg.active !== dialog.active) return;
+        const allWeights = weightFiles(repo.files);
+        const matchedWeights = matchedWeightFiles(repo.files, repo.display_name || repo.repo_id);
         this.dlg.repo = repo;
-        this.dlg.folder = repo.target_folder || 'checkpoints';
-        this.dlg.selected = new Set(repo.files.map((f) => f.path));
+        this.dlg.allWeights = allWeights;
+        this.dlg.matchedWeights = matchedWeights;
+        this.dlg.showAllWeights = false;
+        // 默认只下匹配权重；config / tokenizer / README 等非权重文件不进入勾选集
+        this.dlg.selected = new Set(matchedWeights.map((f) => f.path));
         this.dlg.loading = false;
       },
       error: (err) => {
@@ -838,10 +873,40 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     else this.dlg.selected.delete(path);
   }
 
+  currentFiles(): RemoteFile[] {
+    if (!this.dlg) return [];
+    return this.dlg.showAllWeights ? this.dlg.allWeights : this.dlg.matchedWeights;
+  }
+
+  allVisibleSelected(): boolean {
+    const files = this.currentFiles();
+    return files.length > 0 && files.every((f) => !!this.dlg?.selected.has(f.path));
+  }
+
+  toggleAllWeights(): void {
+    if (!this.dlg) return;
+    this.dlg.showAllWeights = !this.dlg.showAllWeights;
+  }
+
+  /** 自动归类结果：每个 ComfyUI 目录会落几个文件（只统计当前视图里的权重） */
+  dlgFolderPlan(): { id: string; count: number }[] {
+    const counts = new Map<string, number>();
+    for (const f of this.currentFiles()) {
+      const key = f.folder || 'checkpoints';
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    return [...counts.entries()].map(([id, count]) => ({ id, count }));
+  }
+
   toggleAllDlg(): void {
-    if (!this.dlg?.repo) return;
-    if (this.dlg.selected.size === this.dlg.repo.files.length) this.dlg.selected.clear();
-    else this.dlg.selected = new Set(this.dlg.repo.files.map((f) => f.path));
+    const dialog = this.dlg;
+    const files = this.currentFiles();
+    if (!dialog || !files.length) return;
+    if (files.every((f) => dialog.selected.has(f.path))) {
+      for (const f of files) dialog.selected.delete(f.path);
+    } else {
+      for (const f of files) dialog.selected.add(f.path);
+    }
   }
 
   createTask(): void {
@@ -856,7 +921,6 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         revision: this.dlg.repo.revision,
         files: [...this.dlg.selected],
         strategy: this.dlgStrategy,
-        target_folder: this.dlg.folder,
         task: item.task,
       })
       .subscribe({

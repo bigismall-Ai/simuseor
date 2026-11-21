@@ -37,7 +37,7 @@
             <div><b>① 封面</b><span>铺满整张卡。有真实图就铺图，没有就用家族色 + 几何纹样兜底。</span></div>
             <div><b>② 身份行</b><span>32×32 标识块，内部图形 24×24；右侧「厂名 / 作者」上下两行。</span></div>
             <div><b>③ 原站</b><span>右上角固定为原站链接，本地库与发现页同一个位置、同一种样式。</span></div>
-            <div><b>④ 状态槽</b><span>左状态 · 半透明白线 · 右大小（权重 / 磁盘 / 节点类数）。</span></div>
+            <div><b>④ 状态槽</b><span>左状态 · 半透明白线 · 右 = 本地磁盘大小 / 发现点赞 / 工作流文件大小 / 节点类数。</span></div>
             <div><b>⑤ 分类标签</b><span>只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = **它提供什么**（节点类代表名 + 「+N」；一个节点类都不提供的给「管理面板」）。</span></div>
             <div><b>⑥ 动作行</b><span>⋯ 在左，主按钮在右。危险、补齐依赖等次要操作收进菜单。</span></div>
           </div>
@@ -138,7 +138,7 @@
           </div>
 
           <div class="proto-anchor" id="pc-model-discover">
-            <div class="proto-anchor-head"><b>模型 · 发现</b><span>真实封面 / 兜底封面 · 白线左侧换成下载量</span></div>
+            <div class="proto-anchor-head"><b>模型 · 发现</b><span>真实封面 / 兜底封面 · 白线左侧换成下载量，右侧换成点赞</span></div>
             <div class="ac-grid">
 
               <article class="ac on-shot">
@@ -163,7 +163,7 @@
                 <div class="ac-body">
                   <h3 class="ac-name">FLUX.1-dev.safetensors</h3>
                   <p class="ac-meta"><span>文生图</span></p>
-                  <div class="ac-slot"><span>↓ 86,200</span><span class="ac-rule"></span><span class="ac-size">12.0 GB</span></div>
+                  <div class="ac-slot"><span>↓ 86,200</span><span class="ac-rule"></span><span class="ac-size">♥ 1,200</span></div>
                   <div class="ac-tags"><span class="pill">Checkpoint</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
@@ -190,7 +190,7 @@
                 <div class="ac-body">
                   <h3 class="ac-name">hunyuan-video-1.5.safetensors</h3>
                   <p class="ac-meta"><span>文生视频</span></p>
-                  <div class="ac-slot"><span>↓ 41,600</span><span class="ac-rule"></span><span class="ac-size">13.2 GB</span></div>
+                  <div class="ac-slot"><span>↓ 41,600</span><span class="ac-rule"></span><span class="ac-size">♥ 840</span></div>
                   <div class="ac-tags"><span class="pill">Checkpoint</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
@@ -199,7 +199,7 @@
                 </div>
               </article>
             </div>
-            <p class="proto-caption">发现页与本地库完全同构：右上角同样是原站链接，只有白线左侧从「在库 / 权重缺失」换成「下载量」；标签同样只标文件类型。</p>
+            <p class="proto-caption">发现页与本地库完全同构：右上角同样是原站链接，白线左侧从「在库 / 权重缺失」换成「下载量」，右侧从「磁盘大小」换成「点赞」。搜索接口暂时不返回文件大小，不拿「—」占位 —— 下载量回答「有多少人用」，点赞回答「用过的人认不认」，两者同一层但不是同一件事。标签同样只标文件类型。</p>
           </div>
 
           <div class="proto-anchor" id="pc-workflow">
@@ -492,7 +492,7 @@
           </div>
 
           <div class="proto-anchor" id="pc-diff">
-            <div class="proto-anchor-head"><b>本地库 vs 发现页</b><span>只有白线左侧与主按钮换内容</span></div>
+            <div class="proto-anchor-head"><b>本地库 vs 发现页</b><span>左侧换状态，右侧换第二信号，主按钮换动作</span></div>
             <div class="ac-diff">
               <div>
                 <b>本地库 · 我有的</b>
@@ -507,7 +507,7 @@
                 <b>发现页 · 去找</b>
                 <dl>
                   <dt>右上</dt><dd>原站链接：HF / MS / Civitai / GitHub ↗</dd>
-                  <dt>状态槽</dt><dd>下载量 · 右侧大小</dd>
+                  <dt>状态槽</dt><dd>下载量 · 右侧点赞</dd>
                   <dt>标签行</dt><dd>模型文件类型 / 工作流分组 / 节点安装方式</dd>
                   <dt>主按钮</dt><dd>下载 / 导入 / 安装</dd>
                 </dl>

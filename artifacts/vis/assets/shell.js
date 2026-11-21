@@ -38,7 +38,8 @@
   /* BEGIN nav-data */
   var P = {
     overview: 'vis-reference.html',
-    cards: 'prototypes/cards.html',
+    'cards': 'prototypes/cards.html',
+    'page-status': 'prototypes/page-status.html',
     'brand': 'reference/brand/index.html',
     'brand/s-51': 'reference/brand/s-51.html',
     'brand/s-52': 'reference/brand/s-52.html',
@@ -113,7 +114,8 @@
 
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
-    { type: 'link', page: 'cards', label: '资产卡片原型', icon: 'prototype' },
+    { type: 'link', page: 'cards', label: "资产卡片原型", icon: 'prototype' },
+    { type: 'link', page: 'page-status', label: "页面状态原型", icon: 'prototype' },
     {
       type: 'group', key: 'brand', page: 'brand', label: "标识", icon: 'brand', keys: ['brand'],
       items: [

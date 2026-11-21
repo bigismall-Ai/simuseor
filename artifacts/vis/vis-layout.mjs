@@ -70,9 +70,15 @@ function pageList() {
   }
   for (const extra of [
     { abs: path.join(SITE, 'vis-reference.html'), rel: 'vis-reference.html', kind: 'overview' },
-    { abs: path.join(SITE, 'prototypes', 'cards.html'), rel: 'prototypes/cards.html', kind: 'prototype' },
   ]) {
     if (fs.existsSync(extra.abs)) pages.push(extra);
+  }
+  /* 原型页：注册表里的在架展示面全部纳入（不做白名单，防止新原型漏检） */
+  const protoDir = path.join(SITE, 'prototypes');
+  if (fs.existsSync(protoDir)) {
+    for (const f of fs.readdirSync(protoDir).filter((x) => x.endsWith('.html')).sort()) {
+      pages.push({ abs: path.join(protoDir, f), rel: 'prototypes/' + f, kind: 'prototype' });
+    }
   }
   return pages;
 }

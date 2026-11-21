@@ -196,6 +196,136 @@ function anchorBlock(sec, indent = '          ') {
 }
 
 /* --------------------------------------------------------------------------
+ * 形状 5.5 · page-status —— 列表顶部统一骨架（页头 / 状态条 / 筛选条）
+ * -------------------------------------------------------------------------- */
+
+const PS_ICON = {
+  funnel: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12l-4.6 5.6V13l-2.8 1.4V8.6z"/></svg>',
+  sort: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.2h10M3 8h7M3 11.8h4"/></svg>',
+  caret: '<svg class="caret" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.4 6.4 3.6 3.4 3.6-3.4"/></svg>',
+  refresh: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6"/><path d="M13.3 3.6v3.9H9.4"/></svg>',
+  search: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.6 13.6"/></svg>',
+};
+
+function psCount(s) {
+  const head = s.filtered
+    ? `<b>${s.filtered.visible}</b><span class="ps-total">/ ${s.filtered.total}</span>`
+    : `<b>${s.count}</b>`;
+  return `<p class="ps-count">${head}<span class="ps-unit">${s.unit}</span></p>`;
+}
+
+function psFacts(facts = []) {
+  if (!facts.length) return '';
+  const items = facts.map((f) => {
+    const tone = f.tone ? ` is-${f.tone}` : '';
+    return `<li><span class="ps-fact-label">${f.label}</span>` +
+      `<b class="ps-fact-value${tone}">${f.value}</b></li>`;
+  }).join('');
+  return `<ul class="ps-facts">${items}</ul>`;
+}
+
+function psSearch(placeholder) {
+  return `<label class="ps-search">${PS_ICON.search}` +
+    `<input type="search" placeholder="${placeholder}" aria-label="${placeholder}">` +
+    '</label>';
+}
+
+function psChips(group) {
+  const chips = group.chips.map((c) => {
+    const cls = ['ps-chip', c.on ? 'on' : '', c.tone ? `is-${c.tone}` : '']
+      .filter(Boolean).join(' ');
+    const count = c.count != null ? `<b>${c.count}</b>` : '';
+    return `<button type="button" class="${cls}">${c.text}${count}</button>`;
+  }).join('');
+  const label = group.label ? ` role="group" aria-label="${group.label}"` : '';
+  return `<div class="ps-chips"${label}>${chips}</div>`;
+}
+
+function psTools(t = {}) {
+  const L = ['<div class="ps-tools">'];
+  if (t.filter) {
+    const badge = t.filterCount != null ? `<b class="ps-badge">${t.filterCount}</b>` : '';
+    L.push(`<button class="ps-select" type="button">${PS_ICON.funnel}<span>${t.filter}</span>${badge}</button>`);
+  }
+  if (t.sort) {
+    L.push(`<button class="ps-select" type="button">${PS_ICON.sort}<span>${t.sort}</span>${PS_ICON.caret}</button>`);
+  }
+  if (t.view) {
+    const grid = t.view === 'grid' ? ' class="on"' : '';
+    const list = t.view === 'list' ? ' class="on"' : '';
+    L.push('<div class="ps-view" role="group" aria-label="视图切换">' +
+      `<button type="button"${grid} title="网格视图">▦</button>` +
+      `<button type="button"${list} title="列表视图">☰</button>` +
+      '</div>');
+  }
+  L.push('</div>');
+  return L.join('');
+}
+
+function psBar(s) {
+  const filters = s.filters
+    ? `<div class="ps-filters">${s.filters.search ? psSearch(s.filters.search) : ''}` +
+      `${(s.filters.groups || []).map((g) => psChips(g)).join('')}` +
+      `${psTools(s.filters.tools)}</div>`
+    : '';
+  const progress = s.progress ? `<span class="ps-progress">${s.progress}</span>` : '';
+  return `<section class="ps-bar" aria-label="列表状态与筛选">
+      <div class="ps-status">
+        ${psCount(s)}
+        ${psFacts(s.facts)}
+        <div class="ps-status-actions">
+          ${progress}
+          <button class="ps-icon" type="button" aria-label="刷新" title="刷新">${PS_ICON.refresh}</button>
+        </div>
+      </div>
+      ${filters}
+    </section>`;
+}
+
+function psDemo(sec) {
+  const h = sec.header;
+  const actions = (h.actions || []).map((a) => {
+    const badge = a.badge != null
+      ? `<b class="ps-badge${a.tone ? ` is-${a.tone}` : ''}">${a.badge}</b>`
+      : '';
+    return `<button type="button"${a.primary ? ' class="primary"' : ''}>${a.text}${badge}</button>`;
+  }).join('');
+  const header = `<header class="ui-page-header">
+        <div class="ui-page-heading">
+          <p class="ui-page-kicker">${h.kicker}</p>
+          <h1>${h.title}</h1>
+          ${h.hint ? `<p class="ui-page-hint">${h.hint}</p>` : ''}
+        </div>
+        ${actions ? `<div class="ui-page-actions">${actions}</div>` : ''}
+      </header>`;
+  const ghosts = '<span class="ps-ghost"></span>'.repeat(3);
+  return `<div class="ps-demo">
+      ${header}
+      ${psBar(sec.status)}
+      <p class="ps-content-cap">内容区 · 沿用资产卡统一骨架（见「资产卡片」原型）</p>
+      <div class="ps-content" aria-hidden="true">${ghosts}</div>
+    </div>`;
+}
+
+function psSection(sec, indent = '          ') {
+  return [
+    `${indent}<div class="proto-anchor" id="${sec.id}">`,
+    `${indent}  <div class="proto-anchor-head"><b>${sec.title}</b><span>${sec.sub}</span></div>`,
+    `${indent}  ${psDemo(sec)}`,
+    sec.caption ? `${indent}  <p class="proto-caption">${sec.caption}</p>` : '',
+    `${indent}</div>`,
+  ].filter(Boolean).join('\n');
+}
+
+function psMatrix(rows, indent = '          ') {
+  const head = '<div class="tbl-wrap"><table class="t"><thead><tr>' +
+    '<th>页面</th><th>现在的顶部</th><th>归一后的顶部</th></tr></thead><tbody>';
+  const body = rows.map(([page, before, after]) =>
+    `<tr><td><b>${page}</b></td><td>${before}</td><td>${after}</td></tr>`).join('');
+  return `${indent}${head}${body}</tbody></table></div>`;
+}
+
+/* --------------------------------------------------------------------------
  * 形状 0 · shell —— 页面壳（所有原型页共用）
  * -------------------------------------------------------------------------- */
 function shell(def, body, ctx) {
@@ -265,6 +395,32 @@ export const TYPES = {
       return shell(def, L.join('\n'), ctx);
     },
   },
+
+  /* 列表顶部样张页：同一个页头 / 状态条 / 筛选条，六页只换内容 */
+  'page-status': {
+    render(def, ctx) {
+      const d = def.data;
+      const L = [];
+      L.push(specList(d.spec));
+      L.push('');
+      L.push('          <div class="proto-anchor" id="ps-before">');
+      L.push('            <div class="proto-anchor-head"><b>现在六页的顶部</b><span>同一个位置，六种写法 · 归一后只保留三层</span></div>');
+      L.push(psMatrix(d.before));
+      L.push('          </div>');
+      for (const sec of d.sections) {
+        L.push('');
+        L.push(psSection(sec));
+      }
+      if (d.diff) {
+        L.push('');
+        L.push('          <div class="proto-anchor" id="ps-rules">');
+        L.push('            <div class="proto-anchor-head"><b>归一规则</b><span>层级、读数、事实、工具各归各位</span></div>');
+        L.push(diffColumns(d.diff.columns));
+        L.push('          </div>');
+      }
+      return shell(def, L.join('\n'), ctx);
+    },
+  },
 };
 
-export { assetCard, cardGrid, specList, diffColumns, anchorBlock, shell };
+export { assetCard, cardGrid, specList, diffColumns, anchorBlock, shell, psBar, psSection, psMatrix };

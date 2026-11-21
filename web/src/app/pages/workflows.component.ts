@@ -7,6 +7,7 @@ import { proxied } from '../core/cover';
 import { focusFirst, trapTab } from '../core/a11y';
 import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
+import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { FamilyMarkComponent } from '../ui/family-mark.component';
 import { HubCardComponent } from '../ui/hub-card.component';
@@ -81,13 +82,18 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     '(document:click)': 'closeSortMenu()',
   },
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, HubCardComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, CollectionBarComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, HubCardComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
     <ui-page-header
       [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
       [title]="tab === 'discover' ? '发现工作流' : '工作流'"
-      [hint]="tab === 'discover' ? '官方模板 / ComfyHub / HF / ModelScope / Civitai / GitHub' : ''"
-    />
+      hint=""
+    >
+      @if (tab === 'mine') {
+        <button type="button" (click)="openGroupManager()" data-testid="lw-groups-manage">分组管理</button>
+        <button class="primary" routerLink="/workflows/discover">发现工作流</button>
+      }
+    </ui-page-header>
 
     @if (tab === 'mine') {
       <!-- 动作结果走右下角悬浮 toast，不在页面里插一段会顶走列表的文字 -->
@@ -101,102 +107,102 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
           </ui-empty>
         </ui-panel>
       } @else {
-        <div class="lw-bar">
-          <span class="lw-count" [title]="localDir">
-            {{ localLoading ? '读取中…' : filtered.length + ' / ' + local.length + ' 个工作流' }}
-          </span>
-          <div class="lw-actions">
-            <button class="btn-xs lw-act" (click)="openGroupManager()" title="分组管理"
-                    data-testid="lw-groups-manage">
-              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
-                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M2 5.1a1.4 1.4 0 0 1 1.4-1.4h2.7l1.3 1.5h5.2A1.4 1.4 0 0 1 14 6.6v5.7a1.4 1.4 0 0 1-1.4 1.4H3.4A1.4 1.4 0 0 1 2 12.3z" />
-              </svg>
-              分组管理
-            </button>
-            <button class="btn-xs lw-act" (click)="loadLocal()" [disabled]="localLoading" title="刷新">
-              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
-                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M13.2 7.4a5.3 5.3 0 1 0-.3 2.6" /><path d="M13.3 3.6v3.9H9.4" />
-              </svg>
-              刷新
-            </button>
-          </div>
-        </div>
+        <ui-collection-bar
+          [count]="localLoading && !local.length ? null : filtered.length"
+          [total]="hasLocalFilter ? local.length : null"
+          unit="个工作流"
+          [facts]="localFacts"
+          [loading]="localLoading"
+          [progress]="localLoading && local.length ? '读取中…' : ''"
+          refreshLabel="重新读取工作流目录"
+          (refresh)="loadLocal()"
+        >
+          <label class="cb-search" [title]="localDir">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4" />
+              <path d="M10.3 10.3 13.6 13.6" />
+            </svg>
+            <input
+              [(ngModel)]="localQ"
+              placeholder="搜索名称、原文件名或分组"
+              data-testid="lw-search"
+            />
+          </label>
 
-        <!-- 分组筛选：独立一行。分组名来自侧车里设的名称，一条都没分组时整行不出现
-             —— 空的分组栏只会让人以为哪里坏了。 -->
-        @if (groupNames.length) {
-          <div class="wf-groups" role="group" aria-label="按分组筛选" data-testid="lw-groups">
-            <span class="wf-glabel">分组</span>
-            <div class="wf-chips">
-              <button class="wf-chip" [class.on]="groupFilter === null" (click)="setGroup(null)">
+          <!-- 分组筛选：分组名来自侧车里设的名称，一条都没分组时整组不出现
+               —— 空的分组栏只会让人以为哪里坏了。 -->
+          @if (groupNames.length) {
+            <div class="cb-chips" role="group" aria-label="按分组筛选" data-testid="lw-groups">
+              <button class="cb-chip" [class.on]="groupFilter === null" (click)="setGroup(null)">
                 全部<b>{{ allCount }}</b>
               </button>
               @for (g of groupNames; track g.name) {
-                <button class="wf-chip" [class.on]="groupFilter === g.name" (click)="setGroup(g.name)">
+                <button class="cb-chip" [class.on]="groupFilter === g.name" (click)="setGroup(g.name)">
                   {{ g.name }}<b>{{ groupCount(g.name) }}</b>
                 </button>
               }
               @if (ungroupedCount) {
-                <button class="wf-chip" [class.on]="groupFilter === UNGROUPED" (click)="setGroup(UNGROUPED)">
+                <button class="cb-chip" [class.on]="groupFilter === UNGROUPED" (click)="setGroup(UNGROUPED)">
                   未分组<b>{{ groupCount(UNGROUPED) }}</b>
                 </button>
               }
             </div>
-          </div>
-        }
+          }
 
-        <!-- 工具栏：视图切换 → 搜索 → 状态筛选 → 排序。视图放最前，切的是整个列表的呈现。 -->
-        <div class="wf-tools">
-          <div class="wf-chips" role="group" aria-label="视图切换">
-            <button class="wf-chip" [class.on]="view === 'card'" (click)="setView('card')">卡片</button>
-            <button class="wf-chip" [class.on]="view === 'list'" (click)="setView('list')">列表</button>
-          </div>
-          <input
-            class="grow"
-            [(ngModel)]="localQ"
-            placeholder="搜索名称、原文件名或分组"
-            data-testid="lw-search"
-          />
-          <div class="wf-chips">
+          <!-- 健康度只在这里报一次：再点一次已选中的状态就退回全部。
+               两组 chips 各自有底色，不再插分隔线 —— 换行时分隔线会孤零零留在行尾。 -->
+          <div class="cb-chips" role="group" aria-label="按状态筛选" data-testid="lw-status">
             @for (s of statusFilters; track s.key) {
-              <button class="wf-chip" [class.on]="statusFilter === s.key" (click)="setStatus(s.key)">
-                {{ s.label }}<b>{{ countOf(s.key) }}</b>
+              @if (s.key !== 'all') {
+                <button
+                  class="cb-chip"
+                  [class.on]="statusFilter === s.key"
+                  [class.is-warn]="s.key === 'missing'"
+                  [class.is-err]="s.key === 'broken'"
+                  (click)="toggleStatus(s.key)"
+                >
+                  {{ s.label }}<b>{{ countOf(s.key) }}</b>
+                </button>
+              }
+            }
+          </div>
+
+          <div class="cb-tools">
+            <!-- 排序不再点一下换一个：展开一个选择，当前项有对勾 -->
+            <div class="wf-sort-wrap">
+              <button class="cb-select" [class.on]="sortMenu" (click)="toggleSortMenu($event)"
+                      data-testid="lw-sort" aria-haspopup="menu" [attr.aria-expanded]="sortMenu" title="排序方式">
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+                </svg>
+                {{ sortLabel }}
+                <svg class="caret" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m4.4 6.4 3.6 3.4 3.6-3.4" />
+                </svg>
               </button>
-            }
+              @if (sortMenu) {
+                <div class="wf-sort-menu" role="menu" data-testid="lw-sort-menu">
+                  @for (s of localSorts; track s.key) {
+                    <button role="menuitem" [class.on]="sortKey === s.key" (click)="setSortKey(s.key)">
+                      <span>{{ s.label }}</span>
+                      @if (sortKey === s.key) {
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                             stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                          <path d="M3.2 8.4 6.4 11.6 12.8 5.2" />
+                        </svg>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="cb-view" role="group" aria-label="视图切换">
+              <button type="button" [class.on]="view === 'card'" (click)="setView('card')" title="卡片视图">▦</button>
+              <button type="button" [class.on]="view === 'list'" (click)="setView('list')" title="列表视图" aria-label="列表视图">☰</button>
+            </div>
           </div>
-          <!-- 排序不再点一下换一个：展开一个选择，当前项有对勾 -->
-          <div class="wf-sort-wrap">
-            <button class="wf-chip" [class.on]="sortMenu" (click)="toggleSortMenu($event)"
-                    data-testid="lw-sort" aria-haspopup="menu" [attr.aria-expanded]="sortMenu" title="排序方式">
-              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
-                   stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-                <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-              </svg>
-              {{ sortLabel }}
-              <svg class="caret" viewBox="0 0 16 16" width="10" height="10" fill="none"
-                   stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                <path d="m4.4 6.4 3.6 3.4 3.6-3.4" />
-              </svg>
-            </button>
-            @if (sortMenu) {
-              <div class="wf-sort-menu" role="menu" data-testid="lw-sort-menu">
-                @for (s of localSorts; track s.key) {
-                  <button role="menuitem" [class.on]="sortKey === s.key" (click)="setSortKey(s.key)">
-                    <span>{{ s.label }}</span>
-                    @if (sortKey === s.key) {
-                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor"
-                           stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-                        <path d="M3.2 8.4 6.4 11.6 12.8 5.2" />
-                      </svg>
-                    }
-                  </button>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        </ui-collection-bar>
 
         @if (!filtered.length) {
           <ui-panel>
@@ -276,60 +282,72 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       }
     } @else {
 
-    <ui-panel>
-      <div class="toolbar">
-        <input
-          class="grow"
-          [(ngModel)]="q"
-          (keyup.enter)="search()"
-          placeholder="搜索工作流，如 flux / wan / minimax，留空看热门"
-          data-testid="wf-search"
-        />
-        <button class="primary" (click)="search()" [disabled]="loading">
-          {{ loading ? '检索中…' : '搜索' }}
-        </button>
-      </div>
+    @if (items.length || loading) {
+      <ui-collection-bar
+        [count]="loading && !items.length ? null : items.length + (done ? '' : '+')"
+        unit="个工作流"
+        [facts]="hubFacts"
+        [loading]="loading && !items.length"
+        [progress]="loading && items.length ? '检索中…' : ''"
+        refreshLabel="重新检索各站工作流"
+        (refresh)="search()"
+      >
+        <div class="cb-field">
+          <label class="cb-search">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4" />
+              <path d="M10.3 10.3 13.6 13.6" />
+            </svg>
+            <input
+              [(ngModel)]="q"
+              (keyup.enter)="search()"
+              placeholder="搜索工作流，如 flux / wan"
+              data-testid="wf-search"
+            />
+          </label>
+          <button class="primary cb-go" (click)="search()" [disabled]="loading">
+            {{ loading ? '检索中…' : '搜索' }}
+          </button>
+        </div>
 
-      <div class="wf-filters">
-        <div class="chip-row">
+        <div class="cb-chips" role="group" aria-label="来源">
           @for (s of sources; track s.key) {
-            <button class="filter-chip" [class.active]="source === s.key" (click)="setSource(s.key)">
+            <button class="cb-chip" [class.on]="source === s.key" (click)="setSource(s.key)">
               {{ s.label }}
             </button>
           }
         </div>
-        <div class="wf-sort">
-          @for (s of sorts; track s.key) {
-            <button class="filter-chip" [class.active]="sort === s.key" (click)="setSort(s.key)">
-              {{ s.label }}
-            </button>
-          }
-        </div>
-        <!-- 视图切换：网格（卡）/ 列表。与模型发现页同一组控件、同一套位置。 -->
-        <div class="segmented view-toggle" role="group" aria-label="视图切换">
-          <button [class.active]="hubView === 'grid'" (click)="setHubView('grid')" title="网格视图">▦</button>
-          <button [class.active]="hubView === 'list'" (click)="setHubView('list')" title="列表视图">☰</button>
-        </div>
-      </div>
 
-      @if (errorText) {
-        <div class="notice err">{{ errorText }}</div>
-      }
-      @if (sourceErrors.length) {
-        <div class="notice err">
-          @for (e of sourceErrors; track e.label) {
-            <div>{{ e.label }}：{{ e.message }}</div>
-          }
+        <div class="cb-tools">
+          <label class="cb-select" title="排序">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+            </svg>
+            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
+              @for (s of sorts; track s.key) {
+                <option [value]="s.key">{{ s.label }}</option>
+              }
+            </select>
+          </label>
+          <!-- 视图切换：网格（卡）/ 列表。与模型发现页同一组控件、同一套位置。 -->
+          <div class="cb-view" role="group" aria-label="视图切换">
+            <button type="button" [class.on]="hubView === 'grid'" (click)="setHubView('grid')" title="网格视图" aria-label="网格视图">▦</button>
+            <button type="button" [class.on]="hubView === 'list'" (click)="setHubView('list')" title="列表视图" aria-label="列表视图">☰</button>
+          </div>
         </div>
-      }
-      @if (loading && !items.length) {
-        <div class="notice info">正在检索各站工作流…</div>
-      }
-      @if (loading && items.length) {
-        <!-- 已有内容时切换筛选/翻页：不能白屏，但必须让人看见在动 -->
-        <div class="wf-progress" role="progressbar" aria-label="正在刷新"></div>
-      }
-    </ui-panel>
+      </ui-collection-bar>
+    }
+
+    @if (errorText) {
+      <div class="notice err">{{ errorText }}</div>
+    }
+    @if (sourceErrors.length) {
+      <div class="notice err">
+        @for (e of sourceErrors; track e.label) {
+          <div>{{ e.label }}：{{ e.message }}</div>
+        }
+      </div>
+    }
 
     @if (!loading && !items.length && !errorText) {
       <ui-empty title="没有找到工作流" hint="换个关键词，或切换来源再试。" />
@@ -715,6 +733,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       </div>
     }
   `,
+  styleUrls: ['../ui/collection-bar.css'],
   styles: `
     /* 列表上方一条读数：共几条、目录在哪、刷新。目录用等宽字截断，路径长也不换行 */
     /* ---- 卡片视图工具栏 ---- */
@@ -792,18 +811,9 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     /* 排序按钮独立于 chip 组，给它自己的边框与下拉层。
        层级留在抽屉（40/41）之下：抽屉打开时它是模态的，任何页内浮层都不该压上去。 */
     .wf-sort-wrap { position: relative; z-index: 30; flex: none; }
-    .wf-sort-wrap > .wf-chip {
-      height: 29px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--panel);
-      padding: 0 9px;
-      color: var(--text-2);
-    }
-    .wf-sort-wrap > .wf-chip:hover,
-    .wf-sort-wrap > .wf-chip.on { border-color: var(--border-strong); color: var(--text); }
-    .wf-sort-wrap > .wf-chip.on { box-shadow: inset 0 0 0 1px var(--accent-line); }
-    .wf-sort-wrap > .wf-chip svg.caret { opacity: 0.6; }
+    .wf-sort-wrap > .cb-select:hover,
+    .wf-sort-wrap > .cb-select.on { border-color: var(--border-strong); color: var(--text); }
+    .wf-sort-wrap > .cb-select.on { box-shadow: inset 0 0 0 1px var(--accent-line); }
     .wf-sort-menu {
       position: absolute;
       right: 0;
@@ -1774,7 +1784,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   /* ---- 卡片视图的筛选与视图状态 ---- */
   localQ = '';
-  statusFilter: 'all' | 'missing' | 'ready' | 'broken' = 'all';
+  statusFilter: 'all' | 'missing' | 'ready' | 'api' | 'broken' = 'all';
   /** 分组筛选：null = 不过滤；UNGROUPED = 只看没分组的 */
   groupFilter: string | null = null;
   readonly UNGROUPED = '__ungrouped__';
@@ -1786,6 +1796,7 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     { key: 'all' as const, label: '全部' },
     { key: 'missing' as const, label: '缺依赖' },
     { key: 'ready' as const, label: '就绪' },
+    { key: 'api' as const, label: 'API 格式' },
     { key: 'broken' as const, label: '无法解析' },
   ];
   /** 依赖抽屉：当前展开的那条 */
@@ -2000,15 +2011,46 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     if (!alive) this.groupFilter = null;
   }
 
-  countOf(key: 'all' | 'missing' | 'ready' | 'broken'): number {
+  countOf(key: 'all' | 'missing' | 'ready' | 'api' | 'broken'): number {
     const rows = this.searched().filter((it) => this.inGroup(it));
     if (key === 'all') return rows.length;
     return rows.filter((it) => this.stateOf(it) === key).length;
   }
 
-  setStatus(key: 'all' | 'missing' | 'ready' | 'broken'): void {
+  setStatus(key: 'all' | 'missing' | 'ready' | 'api' | 'broken'): void {
     this.statusFilter = key;
     this.savePrefs();
+  }
+
+  /** 状态 chips 不带「全部」：再点一次当前状态就退回全部，少一个重复项 */
+  toggleStatus(key: 'missing' | 'ready' | 'api' | 'broken'): void {
+    this.setStatus(this.statusFilter === key ? 'all' : key);
+  }
+
+  /** 有搜索词 / 分组 / 状态收窄时，读数才写成「42 / 128」 */
+  get hasLocalFilter(): boolean {
+    return !!this.localQ.trim() || this.groupFilter !== null || this.statusFilter !== 'all';
+  }
+
+  /** 事实槽：只读聚合，随当前结果走；健康度在状态 chips 里，不在这里重复 */
+  get localFacts(): CollectionFact[] {
+    const rows = this.filtered;
+    const size = rows.reduce((sum, it) => sum + (it.size || 0), 0);
+    const groups = new Set(rows.map((it) => (it.group || '').trim()).filter(Boolean)).size;
+    return [
+      { label: '占用', value: fmtSize(size), title: '当前结果的文件总大小' },
+      { label: '分组', value: String(groups), title: '当前结果覆盖的分组数' },
+    ];
+  }
+
+  /** 发现页事实：当前结果覆盖几个来源、合计多少个文件 */
+  get hubFacts(): CollectionFact[] {
+    const sources = new Set(this.items.map((it) => it.source)).size;
+    const files = this.items.reduce((sum, it) => sum + (it.file_count || 0), 0);
+    return [
+      { label: '来源', value: `${sources} 个`, title: '当前结果覆盖的来源数' },
+      { label: '文件', value: `${files} 个`, title: '当前结果里列出的文件总数' },
+    ];
   }
 
   setView(view: 'card' | 'list'): void {

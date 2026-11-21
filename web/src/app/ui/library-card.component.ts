@@ -121,11 +121,6 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
           }
         </span>
 
-        <!-- 形态角标（参数 / 精度）：留在封面上，不进底部信息区 -->
-        @if (specLine) {
-          <span class="spec" [title]="'规格：' + specLine">{{ specLine }}</span>
-        }
-
         @if (sourceHref) {
           <a
             class="origin acard-origin"
@@ -146,7 +141,8 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
       <!-- 底部信息区：压在封面上的遮罩 -->
       <div class="acard-body">
         <h3 class="mname acard-name" [title]="model.name">{{ model.name }}</h3>
-        <p class="acard-meta">{{ taskLabel }}</p>
+        <!-- 类别行：任务 + 规格。文件类型已经在标签位，只有回落成任务时才需要在这里说一次 -->
+        <p class="acard-meta" [title]="metaLine">{{ metaLine }}</p>
 
         <!-- ④ 状态槽：左状态 · 半透明白线 · 右磁盘大小 -->
         <div class="acard-slot">
@@ -397,21 +393,6 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         color: #fff;
       }
 
-      /* ---- 形态角标（参数 / 精度）：留在封面上，不进底部信息区 ---- */
-      .spec {
-        flex: 0 1 auto;
-        min-width: 0;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        color: var(--plate-strong);
-        opacity: 0.82;
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
       /* ---- 残缺卡：斜纹底 + 居中警示 + 红底标题 + 中性底详情 ---- */
       .broken-plate {
         background: repeating-linear-gradient(
@@ -523,6 +504,11 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
     return [this.model.precision, this.model.params].filter(Boolean).join(' · ');
   }
 
+  /** 类别行：任务 + 规格。任务永远在这里说一次，标签位只放文件类型 */
+  get metaLine(): string {
+    return [this.taskLabel, this.specLine].filter(Boolean).join(' · ');
+  }
+
   /** 任务类型：拿来干什么（文生图 / 文本生成…），是卡上的「类别」 */
   get taskLabel(): string {
     return this.model.taskLabel || '未标注';
@@ -536,13 +522,14 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
    */
   get fileTypeLabel(): string {
     if (this.model.isDemo) return 'DEMO';
-    return this.model.folderLabel || this.taskLabel;
+    return this.model.folderLabel || '模型';
   }
 
   get fileTypeTip(): string {
-    return this.model.isDemo
-      ? '离线演示占位文件，权重内容为假'
-      : `存放类型：${this.model.folderLabel || '未分类'}`;
+    if (this.model.isDemo) return '离线演示占位文件，权重内容为假';
+    return this.model.folderLabel
+      ? `存放类型：${this.model.folderLabel}`
+      : '文件类型未标注（存放目录不在已知分类里）';
   }
 
   /**

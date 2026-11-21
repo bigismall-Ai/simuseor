@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, Input, inject, output } from '@ang
 import { CoverMeta, coverMeta } from '../core/cover';
 import { sourceLabel, sourceShort } from '../core/source-links';
 import { ThemeService } from '../core/theme.service';
-import { SearchItem, fmtNum, fmtSize } from '../core/types';
+import { SearchItem, fmtInt } from '../core/types';
 import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { CoverPlateComponent } from './cover-plate.component';
 
@@ -22,15 +22,7 @@ const FILE_TYPES = new Set([
   'Aesthetic Gradient', 'Poses', 'Wildcards', 'ComfyWorkflows', 'LLM',
 ]);
 
-/**
- * 发现页条目可能带的文件大小（字节）。
- *
- * 共享类型 SearchItem 里没有这个字段，但各源的搜索列表接口都可能补上，
- * 所以按可选字段接住，不改共享类型（core/types.ts 不归本组件动）。
- */
-interface SizedItem extends SearchItem {
-  size?: number;
-}
+
 
 /**
  * 模型卡：资产卡统一骨架的模型版。
@@ -39,7 +31,7 @@ interface SizedItem extends SearchItem {
  *   ① 封面   铺满整卡的铭牌（只贡献底图与蒙版）
  *   ② 身份行 32×32 标识块 + 厂名 / 作者
  *   ③ 原站   右上角一条原站链接
- *   ④ 状态槽 左下载量 · 一根白线 · 右大小
+ *   ④ 状态槽 左下载量 · 一根白线 · 右点赞
  *   ⑤ 标签   恰好一枚（文件类型）
  *   ⑥ 动作行 ⋯ 在左，主按钮在右
  *
@@ -124,13 +116,16 @@ interface SizedItem extends SearchItem {
              高度固定 —— 规格不是每张卡都有，行高不一致整墙卡片就会参差。 -->
         <p class="card-meta acard-meta" [title]="metaLine">{{ metaLine }}</p>
 
-        <!-- ④ 状态槽：左状态 · 一根白线 · 右大小。
-             发现页的「状态」是下载量：它是唯一能证明「有人跑通过」的硬信号，
-             排序功能也按它排，视觉权重必须跟排序依据一致。 -->
+        <!-- ④ 状态槽：左下载量 · 一根白线 · 右点赞。
+             发现页的搜索接口不返回文件大小，所以右侧不拿「—」占位：
+             换成本页已有的第二个质量信号「点赞」。下载量回答「有多少人用」，
+             点赞回答「用过的人认不认」，两者同一层但不是同一件事。 -->
         <div class="card-slot acard-slot">
-          <span [title]="'下载量：' + maxDownloads">↓ {{ fmtNum(maxDownloads) }}</span>
+          <span [title]="'下载量：' + fmtInt(maxDownloads)">↓ {{ fmtInt(maxDownloads) }}</span>
           <span class="acard-rule"></span>
-          <span class="acard-size">{{ sizeText }}</span>
+          <span class="card-likes acard-size" [title]="'点赞：' + fmtInt(maxLikes)">
+            ♥ {{ fmtInt(maxLikes) }}
+          </span>
         </div>
 
         <!-- ⑤ 分类标签：恰好一枚。站点入口归右上角与 ⋯ 菜单，不再占标签位。 -->
@@ -461,48 +456,41 @@ export class ModelCardComponent {
   }
 
   /**
-   * 分类标签：恰好一枚。文件类型优先，没有就退到任务类别，再没有就是「模型」。
+   * 分类标签：恰好一枚，只回答「这是什么文件」。
+   *
+   * 认不出文件类型就写「模型」—— 不拿任务类别顶替：
+   * 任务已经在上面的类别行，标签位再写一次就是同一个事实说两遍。
    */
   get tagText(): string {
-    return this.fileType || this.categoryLabel || '模型';
+    return this.fileType || '模型';
   }
 
   get tagTitle(): string {
-    if (this.fileType) return `文件类型：${this.fileType}`;
-    if (this.categoryLabel) return `类别：${this.categoryLabel}`;
-    return '模型';
+    return this.fileType ? `文件类型：${this.fileType}` : '文件类型未标注';
   }
 
   /**
    * 类别行：类别 + 规格（参数 / 量化）。
    *
-   * 类别只在标签位放文件类型时才出现 —— 同一个事实不说两遍；
-   * 规格原先印在铭牌顶行上，那块地归了身份行，挪到这里。
+   * 类别永远在这里说一次；标签位只放文件类型。规格原先印在铭牌顶行上，
+   * 那块地归了身份行，挪到这里。
    */
   get metaLine(): string {
     const parts: string[] = [];
-    if (this.fileType) {
-      const cat = this.categoryLabel;
-      if (cat) parts.push(cat);
-    }
+    if (this.categoryLabel) parts.push(this.categoryLabel);
     for (const s of this.meta.specs) parts.push(`${s.k} ${s.v}`);
-    return parts.join(' · ');
+    return parts.length ? parts.join(' · ') : '未标注';
   }
 
-  /**
-   * 状态槽右侧：文件大小。
-   *
-   * 发现页的条目现在没有大小字段（HF / MS / Civitai 的搜索列表都不给），
-   * 所以按可选字段接住：后端补上就直接显示，没补就显示「—」——
-   * 不拿点赞之类的别的东西凑数，那会把这个槽位的含义换掉。
-   */
-  get sizeText(): string {
-    const bytes = Math.max(...this.items.map((i) => (i as SizedItem).size || 0), 0);
-    return bytes > 0 ? fmtSize(bytes) : '—';
-  }
+
 
   get maxDownloads(): number {
     return Math.max(...this.items.map((i) => i.downloads || 0), 0);
+  }
+
+  /** 同一模型多来源时取最高点赞：与下载量同口径，不让合并行看起来比单源还冷 */
+  get maxLikes(): number {
+    return Math.max(...this.items.map((i) => i.likes || 0), 0);
   }
 
   /** ⋯ 菜单开关。点外面 / Esc 收起。 */
@@ -523,5 +511,5 @@ export class ModelCardComponent {
     this.menuOpen = false;
   }
 
-  fmtNum = fmtNum;
+  fmtInt = fmtInt;
 }

@@ -263,6 +263,17 @@ export function fmtNum(n: number): string {
   return String(n);
 }
 
+/**
+ * 整数读数：保留千分位，不缩写。
+ *
+ * 用在「规模本身就是信息」的地方（下载量、节点类数、清单条目）——
+ * 86,200 比 86.2k 多两位，但读者不用在脑子里换算；卡片状态槽的宽度也放得下。
+ */
+export function fmtInt(n: number): string {
+  if (!n && n !== 0) return '-';
+  return Math.round(n).toLocaleString('en-US');
+}
+
 export function fmtSize(bytes: number): string {
   if (!bytes && bytes !== 0) return '-';
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];

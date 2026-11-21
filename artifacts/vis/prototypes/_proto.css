@@ -421,6 +421,359 @@ body { background: var(--bg); }
   font-size: 9.5px;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   列表顶部统一骨架（原型）
+   页头 / 状态条 / 筛选条：六页只换事实槽与筛选项，不换层级。
+
+   状态条不是「统计卡」也不是「工具栏」：
+   · 状态行只回答「现在看到的是多少、多大、什么规模」——只读；
+   · 筛选行只回答「怎么缩小范围」——可点；
+   · 刷新属于「重新读数」，留在状态行右端；
+   · 排序 / 视图属于「怎么看」，留在筛选行右端。
+   ══════════════════════════════════════════════════════════════ */
+.ref .ps-demo {
+  padding: 16px 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.ref .ps-demo .ui-page-header {
+  margin-bottom: 16px;
+}
+
+.ref .ps-bar {
+  margin: 0 0 14px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+
+/* ---- 状态行：主读数 · 事实 · 刷新 ---- */
+.ref .ps-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+/* 没有筛选行时，状态行就是整条，底边不画 */
+.ref .ps-status:last-child { border-bottom: 0; }
+
+.ref .ps-count {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ref .ps-count b {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.ref .ps-total {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--faint);
+}
+.ref .ps-unit {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* 事实槽：只放只读聚合。可点的一律去筛选行，避免「看着能点」 */
+.ref .ps-facts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+.ref .ps-facts li {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ref .ps-facts li + li {
+  padding-left: 12px;
+  border-left: 1px solid var(--border-strong);
+}
+.ref .ps-fact-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--faint);
+}
+.ref .ps-fact-value {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+}
+.ref .ps-fact-value.is-ok { color: var(--ok); }
+.ref .ps-fact-value.is-warn { color: var(--warn); }
+.ref .ps-fact-value.is-err { color: var(--err); }
+
+.ref .ps-status-actions {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ref .ps-progress {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.ref .ps-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+.ref .ps-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- 筛选行：搜索 · 分面 · 排序 / 视图 ---- */
+.ref .ps-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+}
+.ref .ps-search {
+  flex: 1 1 220px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--muted);
+}
+.ref .ps-search svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.ref .ps-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+.ref .ps-search input::placeholder { color: var(--muted); }
+
+.ref .ps-chips {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-3);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.ref .ps-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ref .ps-chip:hover { color: var(--text); }
+.ref .ps-chip.on {
+  background: var(--panel);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.ref .ps-chip b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-xs);
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ref .ps-chip.on b {
+  background: var(--accent-line);
+  color: var(--accent);
+  box-shadow: none;
+}
+.ref .ps-chip.is-warn { color: var(--warn); }
+.ref .ps-chip.is-err { color: var(--err); }
+
+.ref .ps-tools {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ref .ps-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 29px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ref .ps-select svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ref .ps-select svg.caret { opacity: 0.6; width: 10px; height: 10px; }
+.ref .ps-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-line);
+  color: var(--accent);
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ref .ps-badge.is-warn { background: var(--warn-soft); color: var(--warn); }
+.ref .ps-badge.is-err { background: var(--err-soft); color: var(--err); }
+.ref .ps-view {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-3);
+}
+.ref .ps-view button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 23px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ref .ps-view button.on {
+  background: var(--panel);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+/* ---- 内容脚印：只说明列表从哪开始，不抢顶部的戏 ---- */
+.ref .ps-content-cap {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.ref .ps-content {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.ref .ps-ghost {
+  position: relative;
+  height: 104px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+.ref .ps-ghost::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-soft);
+  box-shadow:
+    0 16px 0 var(--border-soft),
+    0 32px 0 var(--border-soft);
+}
+.ref .ps-ghost::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 18px;
+  border-radius: var(--radius-xs);
+  background: var(--border-soft);
+}
+
 /* ---- 页内骨架说明 ---- */
 .ref .ac-spec {
   display: grid;

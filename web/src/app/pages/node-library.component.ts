@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { errMsg, fmtNum, InstalledNode, MissingProvider, NodeMissingReport, NodeStats } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
+import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -12,45 +14,75 @@ import { PanelComponent } from '../ui/panel.component';
 @Component({
   selector: 'app-node-library',
   standalone: true,
-  imports: [RouterLink, EmptyComponent, NodeCardComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, RouterLink, CollectionBarComponent, EmptyComponent, NodeCardComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
       kicker="Nodes"
       title="节点管理"
-      hint="节点装在 workspace/custom_nodes，所有实例共享；禁用只改目录后缀，代码还在，随时能开回来。"
     >
-      <button routerLink="/nodes/discover">发现节点</button>
+      <button type="button" (click)="check()" [disabled]="checking || loading">
+        {{ checking ? '检测中…' : '检测缺失' }}
+        @if (report?.missing_files) {
+          <b class="cb-badge is-warn">{{ report?.missing_files }}</b>
+        }
+      </button>
+      <button class="primary" routerLink="/nodes/discover">发现节点</button>
     </ui-page-header>
 
-    <div class="nl-stats">
-      <div class="nl-stat">
-        <span>已安装</span>
-        <strong>{{ stats?.installed ?? installed.length }}</strong>
-      </div>
-      <div class="nl-stat">
-        <span>已禁用</span>
-        <strong>{{ stats?.disabled ?? disabledCount }}</strong>
-      </div>
-      <div class="nl-stat">
-        <span>可用节点</span>
-        <strong>{{ fmtNum(availableNodes) }}</strong>
-      </div>
-      <div class="nl-stat">
-        <span>清单规模</span>
-        <strong>{{ fmtNum(stats?.catalog ?? 0) }}</strong>
-      </div>
-    </div>
+    @if (installed.length || loading) {
+      <ui-collection-bar
+        [count]="loading && !installed.length ? null : visibleInstalled.length"
+        [total]="hasFilter ? installed.length : null"
+        unit="个已安装"
+        [facts]="listFacts"
+        [loading]="loading"
+        [progress]="loading && installed.length ? '读取中…' : ''"
+        refreshLabel="重新读取已装节点"
+        (refresh)="load()"
+      >
+        <label class="cb-search">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.4" />
+            <path d="M10.3 10.3 13.6 13.6" />
+          </svg>
+          <input [(ngModel)]="q" placeholder="搜索已装扩展或目录" />
+        </label>
 
-    <ui-panel
-      title="缺节点检测"
-      hint="扫工作流库，把用到的节点和已装的扩展比一遍；装完新节点需要重启实例才生效。"
-    >
-      <div panel-actions>
-        <button class="primary btn-xs" (click)="check()" [disabled]="checking || loading">
-          {{ checking ? '检测中…' : '开始检测' }}
-        </button>
-      </div>
+        <div class="cb-chips" role="group" aria-label="按状态筛选">
+          <button class="cb-chip" [class.on]="statusFilter === 'all'" (click)="statusFilter = 'all'">
+            全部<b>{{ installed.length }}</b>
+          </button>
+          <button class="cb-chip" [class.on]="statusFilter === 'on'" (click)="statusFilter = 'on'">
+            已启用<b>{{ installed.length - disabledCount }}</b>
+          </button>
+          <button class="cb-chip" [class.on]="statusFilter === 'off'" (click)="statusFilter = 'off'">
+            已禁用<b>{{ disabledCount }}</b>
+          </button>
+        </div>
 
+        <div class="cb-tools">
+          <label class="cb-select" title="排序">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+            </svg>
+            <select [(ngModel)]="sort" aria-label="排序">
+              <option value="name">按名称</option>
+              <option value="nodes">按节点数</option>
+              <option value="size">按大小</option>
+            </select>
+          </label>
+        </div>
+      </ui-collection-bar>
+    }
+
+    @if (checking || report || errorText || notice) {
+      <ui-panel
+        title="缺节点检测"
+        hint="扫工作流库，把用到的节点和已装的扩展比一遍；装完新节点需要重启实例才生效。"
+      >
+      @if (checking) {
+        <div class="notice info">正在扫描工作流并比对节点…</div>
+      }
       @if (errorText) {
         <div class="notice err">{{ errorText }}</div>
       }
@@ -126,64 +158,39 @@ import { PanelComponent } from '../ui/panel.component';
           </details>
         }
       }
-    </ui-panel>
+      </ui-panel>
+    }
 
-    <ui-panel title="已安装" [hint]="loading ? '读取中…' : installed.length + ' 个扩展'">
-      <div panel-actions>
-        <button class="btn-xs" (click)="load()" [disabled]="loading">刷新</button>
-      </div>
-
-      @if (!loading && !installed.length) {
+    @if (!loading && !installed.length) {
+      <ui-panel>
         <ui-empty
           title="还没装任何节点"
           hint="去「发现节点」挑需要的扩展；也可以把手工 clone 的仓库放进 workspace/custom_nodes。"
         />
-      }
-
-      @if (installed.length) {
-        <div class="nl-list">
-          @for (it of installed; track it.dir) {
-            <md-node-card
-              mode="library"
-              [item]="it"
-              [busy]="busy === it.dir"
-              (toggle)="toggle(it)"
-              (remove)="remove(it)"
-            />
-          }
-        </div>
-      }
-    </ui-panel>
+      </ui-panel>
+    } @else if (visibleInstalled.length) {
+      <div class="nl-list">
+        @for (it of visibleInstalled; track it.dir) {
+          <md-node-card
+            mode="library"
+            [item]="it"
+            [busy]="busy === it.dir"
+            (toggle)="toggle(it)"
+            (remove)="remove(it)"
+          />
+        }
+      </div>
+    } @else if (!loading) {
+      <ui-panel>
+        <ui-empty
+          title="没有匹配的节点"
+          hint="换个关键词，或把状态筛选切回「全部」。"
+        />
+      </ui-panel>
+    }
   `,
+  styleUrls: ['../ui/collection-bar.css'],
   styles: `
-    .nl-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .nl-stat {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .nl-stat span { font-size: 11px; color: var(--muted); }
-    .nl-stat strong {
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .nl-hint {
-      margin: 4px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
     .nl-providers {
       display: flex;
       flex-direction: column;
@@ -285,7 +292,6 @@ import { PanelComponent } from '../ui/panel.component';
     }
 
     @media (max-width: 760px) {
-      .nl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .nl-list { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     }
   `,
@@ -304,6 +310,11 @@ export class NodeLibraryComponent implements OnInit, OnDestroy {
   notice = '';
   errorText = '';
 
+  /* ---- 列表顶部：搜索 / 状态 / 排序 ---- */
+  q = '';
+  statusFilter: 'all' | 'on' | 'off' = 'all';
+  sort: 'name' | 'nodes' | 'size' = 'name';
+
   get disabledCount(): number {
     return this.installed.filter((i) => i.disabled).length;
   }
@@ -311,6 +322,40 @@ export class NodeLibraryComponent implements OnInit, OnDestroy {
   /** 已装扩展提供的节点数（禁用的不算，它们不会被加载） */
   get availableNodes(): number {
     return this.installed.filter((i) => !i.disabled).reduce((sum, i) => sum + (i.node_count || 0), 0);
+  }
+
+  get hasFilter(): boolean {
+    return !!this.q.trim() || this.statusFilter !== 'all';
+  }
+
+  /** 当前搜索结果：搜索 → 状态 → 排序，与工作流库同一套口径 */
+  get visibleInstalled(): InstalledNode[] {
+    const q = this.q.trim().toLowerCase();
+    let rows = this.installed;
+    if (q) {
+      rows = rows.filter((it) =>
+        `${it.title || ''} ${it.name} ${it.dir || ''} ${it.id || ''}`.toLowerCase().includes(q),
+      );
+    }
+    if (this.statusFilter !== 'all') {
+      rows = rows.filter((it) => (this.statusFilter === 'off' ? it.disabled : !it.disabled));
+    }
+    return rows.slice().sort((a, b) => {
+      if (this.sort === 'nodes') return (b.node_count || 0) - (a.node_count || 0);
+      if (this.sort === 'size') return (b.size || 0) - (a.size || 0);
+      return (a.title || a.name).localeCompare(b.title || b.name, 'zh');
+    });
+  }
+
+  /** 事实槽：可用节点类 + 清单规模；「已禁用」只在状态 chip 里报一次 */
+  get listFacts(): CollectionFact[] {
+    const nodes = this.visibleInstalled
+      .filter((i) => !i.disabled)
+      .reduce((sum, i) => sum + (i.node_count || 0), 0);
+    return [
+      { label: '可用节点类', value: this.fmtInt(nodes), title: '当前结果里启用中的扩展提供的节点类数' },
+      { label: '清单规模', value: this.fmtInt(this.stats?.catalog ?? 0), title: 'ComfyUI-Manager 清单里的扩展总数' },
+    ];
   }
 
   ngOnInit(): void {
@@ -416,4 +461,5 @@ export class NodeLibraryComponent implements OnInit, OnDestroy {
   }
 
   fmtNum = fmtNum;
+  readonly fmtInt = (n: number) => (n || 0).toLocaleString('en-US');
 }

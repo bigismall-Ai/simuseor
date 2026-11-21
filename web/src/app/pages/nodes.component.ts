@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { errMsg, fmtNum, NodeItem } from '../core/types';
+import { errMsg, fmtNum, NodeItem, NodeStats } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
 import { BadgeComponent } from '../ui/badge.component';
+import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -25,8 +25,8 @@ const SORTS = [
   standalone: true,
   imports: [
     FormsModule,
-    RouterLink,
     BadgeComponent,
+    CollectionBarComponent,
     EmptyComponent,
     NodeCardComponent,
     PageHeaderComponent,
@@ -36,73 +36,76 @@ const SORTS = [
     <ui-page-header
       kicker="Nodes · Discover"
       title="发现节点"
-      hint="清单来自 ComfyUI-Manager，代码按清单里的仓库地址从 GitHub 克隆到 workspace/custom_nodes，所有实例共用，删实例不会丢。"
-    >
-      <button routerLink="/nodes">节点管理</button>
-    </ui-page-header>
+    />
 
-    <ui-panel>
-      <div class="toolbar">
-        <input
-          class="grow"
-          [(ngModel)]="q"
-          (keyup.enter)="search()"
-          placeholder="搜扩展名或节点名，如 impact / sam / controlnet，留空看规模最大的"
-          data-testid="node-search"
-        />
-        <button class="primary" (click)="search()" [disabled]="loading">搜索</button>
-        <button (click)="refreshCatalog()" [disabled]="refreshing" title="重新拉取 ComfyUI-Manager 清单">
-          {{ refreshing ? '刷新中…' : '刷新清单' }}
-        </button>
-      </div>
+    @if (items.length || loading) {
+      <ui-collection-bar
+        [count]="loading && !items.length ? null : fmtInt(total)"
+        unit="个扩展"
+        [facts]="facts"
+        [loading]="loading && !items.length"
+        [progress]="refreshing ? '刷新清单中…' : loading && items.length ? '加载中…' : ''"
+        refreshLabel="重新拉取 ComfyUI-Manager 清单"
+        (refresh)="refreshCatalog()"
+      >
+        <div class="cb-field">
+          <label class="cb-search">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4" />
+              <path d="M10.3 10.3 13.6 13.6" />
+            </svg>
+            <input
+              [(ngModel)]="q"
+              (keyup.enter)="search()"
+              placeholder="搜扩展名或节点名，如 impact"
+              data-testid="node-search"
+            />
+          </label>
+          <button class="primary cb-go" (click)="search()" [disabled]="loading">搜索</button>
+        </div>
 
-      <div class="nd-filters">
-        <div class="chip-row">
-          <button class="filter-chip" [class.active]="!category" (click)="setCategory('')">全部</button>
+        <div class="cb-chips" role="group" aria-label="类型">
+          <button class="cb-chip" [class.on]="!category" (click)="setCategory('')">全部</button>
           @for (c of topCategories; track c.id) {
-            <button class="filter-chip" [class.active]="category === c.id" (click)="setCategory(c.id)">
-              {{ c.label }}
-              <span class="chip-count">{{ c.count }}</span>
+            <button class="cb-chip" [class.on]="category === c.id" (click)="setCategory(c.id)">
+              {{ c.label }}<b>{{ fmtInt(c.count) }}</b>
             </button>
           }
           @if (moreCategories.length) {
-            <button class="filter-chip" (click)="showAllCategories = !showAllCategories">
-              更多 {{ moreCategories.length }} {{ showAllCategories ? '▴' : '▾' }}
+            <button class="cb-chip" (click)="showAllCategories = !showAllCategories">
+              更多 {{ moreCategories.length }}
             </button>
           }
           @if (showAllCategories) {
             @for (c of moreCategories; track c.id) {
-              <button class="filter-chip" [class.active]="category === c.id" (click)="setCategory(c.id)">
-                {{ c.label }}
-                <span class="chip-count">{{ c.count }}</span>
+              <button class="cb-chip" [class.on]="category === c.id" (click)="setCategory(c.id)">
+                {{ c.label }}<b>{{ fmtInt(c.count) }}</b>
               </button>
             }
           }
         </div>
-      </div>
 
-      @if (errorText) {
-        <div class="notice err">{{ errorText }}</div>
-      }
-      @if (notice) {
-        <div class="notice ok">{{ notice }}</div>
-      }
-      @if (loading && !items.length) {
-        <div class="notice info">正在读取节点清单…</div>
-      }
-      <div class="nd-sum">
-        @if (!loading && items.length) {
-          <span>共 {{ fmtNum(total) }} 个扩展 · 其中 {{ installedCount }} 个已安装</span>
-        }
-        <div class="nd-sort">
-          @for (s of sorts; track s.key) {
-            <button class="filter-chip" [class.active]="sort === s.key" (click)="setSort(s.key)">
-              {{ s.label }}
-            </button>
-          }
+        <div class="cb-tools">
+          <label class="cb-select" title="排序">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
+            </svg>
+            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
+              @for (s of sorts; track s.key) {
+                <option [value]="s.key">{{ s.label }}</option>
+              }
+            </select>
+          </label>
         </div>
-      </div>
-    </ui-panel>
+      </ui-collection-bar>
+    }
+
+    @if (errorText) {
+      <div class="notice err">{{ errorText }}</div>
+    }
+    @if (notice) {
+      <div class="notice ok">{{ notice }}</div>
+    }
 
     <!-- 安装进度和日志：任务只有一个，放在列表上方，翻页也不会跟丢 -->
     @if (install.job) {
@@ -160,6 +163,7 @@ const SORTS = [
       </div>
     }
   `,
+  styleUrls: ['../ui/collection-bar.css'],
   styles: `
     .nd-filters {
       display: flex;
@@ -260,11 +264,33 @@ export class NodesComponent implements OnInit, OnDestroy {
   page = 1;
   total = 0;
   installedCount = 0;
+  stats: NodeStats | null = null;
   notice = '';
   errorText = '';
 
+  /** 事实槽：节点类总量（清单统计）+ 已安装数；刷新走状态条右端 */
+  get facts(): CollectionFact[] {
+    return [
+      {
+        label: '节点类',
+        value: this.stats ? this.fmtInt(this.stats.node_classes) : '—',
+        title: 'ComfyUI-Manager 清单里的节点类总数',
+      },
+      {
+        label: '已安装',
+        value: this.fmtInt(this.installedCount),
+        tone: this.installedCount ? 'ok' : undefined,
+        title: '当前清单里已安装的扩展数',
+      },
+    ];
+  }
+
   ngOnInit(): void {
     this.load(1);
+    this.api.nodeStats().subscribe({
+      next: (res) => (this.stats = res),
+      error: () => (this.stats = null),
+    });
     this.install.resume();
     // 装完 / 装失败都要重新取一次：已装标记与「未安装」筛选都依赖它
     this.sub = this.install.finished.subscribe((job) => {
@@ -372,4 +398,6 @@ export class NodesComponent implements OnInit, OnDestroy {
   }
 
   fmtNum = fmtNum;
+  /** 节点规模用千分位，不缩写：6,045 比 6.0k 更能说明「这是多大的清单」 */
+  readonly fmtInt = (n: number) => (n || 0).toLocaleString('en-US');
 }
