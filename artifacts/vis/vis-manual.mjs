@@ -622,14 +622,16 @@ ${items},
       ],
     }`);
   }
-  navLines.push(`    { type: 'link', page: 'cards', label: '资产卡片', icon: 'prototype' }`);
-
+  /* 原型页入口排在「总览」之后（而不是 12 个章之后）——
+   * 它不是规范的第 13 章（VIS §3.12 生命周期口径），但排在最后就等于「找不到了」。
+   * 标签自带「原型」二字，读者一眼知道它不在规范分章里。 */
   const pBlock = `  var P = {
 ${pEntries.join('\n')}
   };
 
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
+    { type: 'link', page: 'cards', label: '资产卡片原型', icon: 'prototype' },
 ${navLines.join(',\n')}
   ];
   `;
@@ -722,6 +724,18 @@ function check() {
   }
   for (const l of navLabels) {
     if ([...l].length > 6) problems.push(`导航标签超过 6 字（${[...l].length}）: ${l}`);
+  }
+
+  /* 6. 原型页入口必须在「总览」之后紧邻 —— 排在 12 个章之后就等于「找不到了」 */
+  const navArr = shell.slice(shell.indexOf('var NAV = ['), shell.indexOf('];', shell.indexOf('var NAV = [')));
+  const topLevel = [...navArr.matchAll(/type:\s*'link',\s*page:\s*'([^']+)'/g)].map((m) => m[1]);
+  if (topLevel.length) {
+    if (topLevel[0] !== 'overview') {
+      problems.push(`导航第一个一级项应为 overview，实为 ${topLevel[0]}`);
+    }
+    if (topLevel[1] !== 'cards') {
+      problems.push(`原型页入口应紧跟在「总览」之后（topLevel[1]=cards），实为 ${topLevel[1] || '(无)'} —— 排在章之后等于找不到了`);
+    }
   }
 
   console.log('章节 ' + chapters.length + ' / 节页 ' + chapters.reduce((a, c) => a + c.items.length, 0));

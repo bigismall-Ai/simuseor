@@ -113,6 +113,7 @@
 
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
+    { type: 'link', page: 'cards', label: '资产卡片原型', icon: 'prototype' },
     {
       type: 'group', key: 'brand', page: 'brand', label: "标识", icon: 'brand', keys: ['brand'],
       items: [
@@ -230,8 +231,7 @@
       items: [
         { page: 'audit/s-61', label: "口径声明" },
       ],
-    },
-    { type: 'link', page: 'cards', label: '资产卡片', icon: 'prototype' }
+    }
   ];
   /* END nav-data */
 
