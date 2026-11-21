@@ -685,7 +685,7 @@ const isAccent = (r, g, b) =&gt; {
   <ul class="small">
     <li><strong>落地</strong>：<code>web/src/styles.css</code> 与 VIS 手册站 <code>artifacts/vis/assets/vis.css</code> 的 <code>body</code> 同款接线 —— <code>background-image: var(--texture-site-paper), var(--grad-site-wash), var(--grad-site-glow)</code> + <code>background-blend-mode: multiply, normal, normal</code>（深色 <code>screen, normal, normal</code>）+ 三层都 <code>background-attachment: fixed</code>。</li>
     <li><strong>浓度口径</strong>：色场 70% / 纸纹 60% 是原型页 <code>prototypes/backgrounds.html</code> 两个滑杆的当前值，且该页默认值已与产品对齐 —— <strong>页面上的值 = 线上值</strong>；滑到 100% 是设计上限，不是现状。</li>
-    <li><strong>八条硬约束</strong>：① 峰值 α ≤ 0.07，底仍读作中性灰；② 纸纹中性无彩（不带黄、不带暖）；③ 深色<strong>换噪声图</strong>而非反相；④ <strong>禁把标识铺成底纹</strong>（蝉形线稿平铺 2026-11-21 已否）；⑤ 底纹不计入 §3.4 的「中性表面 ≥85%」；⑥ 导出物 / 分享卡 / 打印<strong>不带</strong>底纹；⑦ 两层都 <code>background-attachment: fixed</code>；⑧ 噪声一次性栅格化，若实测掉帧改 <code>scroll</code> 而不是删底纹。</li>
+    <li><strong>八条硬约束</strong>：① 峰值 α ≤ 0.07，底仍读作中性灰；② 纸纹中性无彩（不带黄、不带暖）；③ 深色<strong>换噪声图</strong>而非反相；④ <strong>禁把标识铺成底纹</strong>（蝉形线稿平铺 2026-11-21 已否）；⑤ 底纹不计入 §3.4 的「中性表面 ≥85%」；⑥ 导出物 / 分享卡 / 打印<strong>不带</strong>底纹；⑦ 两层都 <code>background-attachment: fixed</code>；⑧ 噪声一次性栅格化，若实测掉帧改 <code>scroll</code> 而不是删底纹；⑨ <strong>侧栏透明渐变</strong> —— 左缘实面给文字、右缘化到透明，站点底纹从内容区铺进导航栏，窄屏横条改竖向 180deg 向下化开，侧栏不加投影。</li>
     <li><strong>变体集</strong>：渐变共 6 个变体（v2 单束柔光<strong>已定稿</strong> / v1 暖弧 / v3 靛紫场 / v4 晨光竖落 / v5 对角双光 / v6 色带横铺），同屏对比见 <code>prototypes/backgrounds.html</code>。<strong>纯色、单独渐变、单独纸纹三形态均不采用</strong>。</li>
   </ul>
 </section>

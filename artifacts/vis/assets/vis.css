@@ -2405,7 +2405,14 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 
 /* ---- 全页应用壳：左侧固定导航 + 右侧内容 ---- */
 .app-shell { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
-.app-side { position: sticky; top: 0; height: 100vh; overflow: auto; display: flex; flex-direction: column; padding: 14px 12px; background: var(--panel); border-right: 1px solid var(--border); }
+.app-side { position: sticky; top: 0; height: 100vh; overflow: auto; display: flex; flex-direction: column; padding: 14px 12px;
+  /* 侧栏透明渐变（VIS §3.10）：与产品同一套处理 —— 左缘实面、右缘化进页面底 */
+  background: linear-gradient(100deg,
+    var(--panel) 0%,
+    color-mix(in oklab, var(--panel) 94%, transparent) 54%,
+    color-mix(in oklab, var(--panel) 58%, transparent) 88%,
+    transparent 100%);
+  border-right: 1px solid color-mix(in oklab, var(--border) 40%, transparent); }
 .app-brand { display: flex; align-items: center; gap: 9px; padding: 2px 4px 14px; border-bottom: 1px solid var(--border-soft); }
 .app-brand .brand-mark { display: block; flex: none; width: 34px; height: 30px; }
 .app-brand .brand-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }

@@ -176,7 +176,14 @@
 .mock { display: grid; grid-template-columns: 196px minmax(0, 1fr); height: 100%; }
 .mock-side {
   display: flex; flex-direction: column; gap: 2px;
-  padding: 12px 10px; background: var(--panel); border-right: 1px solid var(--border);
+  padding: 12px 10px;
+  /* 与产品 / 手册站同一套侧栏透明渐变 */
+  background: linear-gradient(100deg,
+    var(--panel) 0%,
+    color-mix(in oklab, var(--panel) 94%, transparent) 54%,
+    color-mix(in oklab, var(--panel) 58%, transparent) 88%,
+    transparent 100%);
+  border-right: 1px solid color-mix(in oklab, var(--border) 40%, transparent);
 }
 .mock-brand { display: flex; align-items: center; gap: 7px; padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid var(--border-soft); }
 .mock-brand img { width: 26px; height: 13px; }

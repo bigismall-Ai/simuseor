@@ -211,8 +211,16 @@ body {
   display: flex;
   flex-direction: column;
   padding: 16px 12px 12px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
+  /* 侧栏改成透明渐变（VIS §3.10 站点底纹）：左缘留实面给文字，
+     右缘化进页面底 —— 纸纹与那束光从内容区一路铺到导航栏下，
+     两侧不再是一块实色板拼起来的接缝。
+     渐变末端透明 → 站点底纹（--bg + 色场 + 纸纹）直接透出来。 */
+  background: linear-gradient(100deg,
+    var(--panel) 0%,
+    color-mix(in oklab, var(--panel) 94%, transparent) 54%,
+    color-mix(in oklab, var(--panel) 58%, transparent) 88%,
+    transparent 100%);
+  border-right: 1px solid color-mix(in oklab, var(--border) 40%, transparent);
 }
 
 .content { flex: 1; min-width: 0; }
@@ -1755,7 +1763,12 @@ details.files[open] summary::before { transform: rotate(90deg); }
     gap: 4px;
     padding: 8px 12px;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    /* 窄屏侧栏变成横条：渐变改为竖向（180deg），向下化进内容区 */
+    background: linear-gradient(180deg,
+      var(--panel) 0%,
+      color-mix(in oklab, var(--panel) 94%, transparent) 62%,
+      transparent 100%);
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 40%, transparent);
     /* 不能留 overflow: auto——一个方向设 auto，另一个方向的 visible 会被算成 auto，
        外观弹层向下弹时就会被侧栏边界切掉。导航项已改成换行，不需要横向滚动 */
     overflow: visible;
