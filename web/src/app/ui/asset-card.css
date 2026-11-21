@@ -92,6 +92,14 @@
 }
 .acard-mark img,
 .acard-mark svg { width: 24px; height: 24px; }
+/* 有照片时，标识块的底衬换成半透明深色、文字翻白 ——
+   浅底压照片会发灰，且底衬本来就该让位给照片上的字。
+   这条三家组件（模型卡 / 库卡 / 发现卡）原本各写一份，现收到共享文件里。 */
+.acard.on-shot .acard-mark {
+  background: rgb(10 12 18 / 0.42);
+  box-shadow: none;
+  color: #fff;
+}
 /* 厂名在上、作者在下；两者都可截断，不把右上角链接挤出去 */
 .acard-ident {
   flex: 0 1 auto;

@@ -608,6 +608,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <tr><td>节点</td><td><strong>它提供什么</strong></td><td>代表节点类名 + 「+N」（<code>ImpactWildcardProcessor</code> +17）；<strong>一个节点类都不提供的给「管理面板」</strong> —— ComfyUI-Manager 的 <code>NODE_CLASS_MAPPINGS</code> 是空的，节点类数恒为 0，<strong>不要拿数字硬凑</strong></td></tr>
   </table>
   <p class="small"><strong>本地库 vs 发现页</strong>：<strong>只换 ④ 左侧与 ⑥ 主按钮</strong>，其余完全一样。<strong>随本轮撤掉的</strong>：库卡的<strong>显存压力条</strong>（<code>.gauge</code>）—— 「本机跑不跑得动」改由状态槽的浮层说明承担。</p>
+  <p class="small"><strong>发现页有两视图</strong>（模型 / 工作流 / 节点三处口径一致）：<strong>网格 = 统一骨架卡</strong>（与本地库同一套外壳，只换 ④ 左侧与 ⑥ 主按钮）；<strong>列表 = 细节行</strong>（下载量 / 文件数 / 依赖清单 / 文件预览都在那一行里，是网格给不出的信息）。两视图用 <code>segmented view-toggle</code>（▦ / ☰）切换，<strong>默认网格</strong>。</p>
   <div class="notice ink">
     <p style="margin:0"><strong>卡片 hover 描边统一画在 <code>::after</code>，不画在本体</strong> —— 现在这条由共享几何 <code>.acard::after</code> 一处给，四张卡天然一致。<br>
     本体的 <strong>inset</strong> 描边在<strong>铺满型封面</strong>下会被盖住：封面是 <code>position:absolute; inset:0</code> 铺满整卡 → hover 视觉上毫无反应（实测顶部 20px 的 accent 像素 <strong>off=37 / on=37，完全不变</strong>）。<br>

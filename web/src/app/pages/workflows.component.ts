@@ -9,6 +9,7 @@ import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg,
 import { BadgeComponent } from '../ui/badge.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { FamilyMarkComponent } from '../ui/family-mark.component';
+import { HubCardComponent } from '../ui/hub-card.component';
 import { WorkflowCardComponent } from '../ui/workflow-card.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -80,7 +81,7 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     '(document:click)': 'closeSortMenu()',
   },
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, HubCardComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
     <ui-page-header
       [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
@@ -304,6 +305,11 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
             </button>
           }
         </div>
+        <!-- 视图切换：网格（卡）/ 列表。与模型发现页同一组控件、同一套位置。 -->
+        <div class="segmented view-toggle" role="group" aria-label="视图切换">
+          <button [class.active]="hubView === 'grid'" (click)="setHubView('grid')" title="网格视图">▦</button>
+          <button [class.active]="hubView === 'list'" (click)="setHubView('list')" title="列表视图">☰</button>
+        </div>
       </div>
 
       @if (errorText) {
@@ -329,57 +335,67 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       <ui-empty title="没有找到工作流" hint="换个关键词，或切换来源再试。" />
     }
 
-    <div class="wf-list">
-      @for (it of items; track it.source + '/' + it.id) {
-        <article class="wf-row">
-          <app-cover-plate class="wf-thumb" size="wide" [model]="plateOf(it)" />
+    <!-- 网格视图：资产卡统一骨架（md-hub-card），与模型发现页同一套卡。
+         列表视图原样留着：依赖清单、文件预览、更新时间这些网格给不出的信息都在那一行里。 -->
+    @if (hubView === 'grid') {
+      <div class="wf-hub-grid" data-testid="wf-hub-grid">
+        @for (it of items; track it.source + '/' + it.id) {
+          <md-hub-card [item]="it" [busy]="busy === keyOf(it)" (download)="download($event)" />
+        }
+      </div>
+    } @else {
+      <div class="wf-list">
+        @for (it of items; track it.source + '/' + it.id) {
+          <article class="wf-row">
+            <app-cover-plate class="wf-thumb" size="wide" [model]="plateOf(it)" />
 
-          <div class="wf-body">
-            <div class="wf-head">
-              <h3 class="wf-title" [title]="it.id">{{ it.name }}</h3>
-              <ui-badge [tone]="toneOf(it.source)">{{ labelOf(it.source) }}</ui-badge>
-              <a class="mc-link" [href]="it.url" target="_blank" rel="noreferrer">来源 ↗</a>
-            </div>
-            <div class="wf-meta">
-              @if (it.author) {
-                <span>{{ it.author }}</span>
-              }
-              @if (it.updated_at) {
-                <span>↻ {{ it.updated_at }}</span>
-              }
-              <span>↓ {{ fmtNum(it.downloads) }}</span>
-              <span>{{ it.file_count }} 个文件</span>
-            </div>
-            @if (it.description) {
-              <p class="wf-desc">{{ it.description }}</p>
-            }
-            @if ((it.requires?.length || 0) + it.tags.length > 0) {
-              <div class="wf-tags">
-                @for (r of it.requires || []; track r) {
-                  <span class="wf-req">{{ r }}</span>
-                }
-                @for (t of it.tags.slice(0, 4); track t) {
-                  <span class="wf-tag">{{ t }}</span>
-                }
+            <div class="wf-body">
+              <div class="wf-head">
+                <h3 class="wf-title" [title]="it.id">{{ it.name }}</h3>
+                <ui-badge [tone]="toneOf(it.source)">{{ labelOf(it.source) }}</ui-badge>
+                <a class="mc-link" [href]="it.url" target="_blank" rel="noreferrer">来源 ↗</a>
               </div>
-            }
-            <p class="wf-files" [title]="it.files.join('\n')">{{ previewFiles(it) }}</p>
-          </div>
+              <div class="wf-meta">
+                @if (it.author) {
+                  <span>{{ it.author }}</span>
+                }
+                @if (it.updated_at) {
+                  <span>↻ {{ it.updated_at }}</span>
+                }
+                <span>↓ {{ fmtNum(it.downloads) }}</span>
+                <span>{{ it.file_count }} 个文件</span>
+              </div>
+              @if (it.description) {
+                <p class="wf-desc">{{ it.description }}</p>
+              }
+              @if ((it.requires?.length || 0) + it.tags.length > 0) {
+                <div class="wf-tags">
+                  @for (r of it.requires || []; track r) {
+                    <span class="wf-req">{{ r }}</span>
+                  }
+                  @for (t of it.tags.slice(0, 4); track t) {
+                    <span class="wf-tag">{{ t }}</span>
+                  }
+                </div>
+              }
+              <p class="wf-files" [title]="it.files.join('\n')">{{ previewFiles(it) }}</p>
+            </div>
 
-          <div class="wf-actions">
-            <button
-              class="primary btn-xs"
-              (click)="download(it)"
-              [disabled]="busy === keyOf(it)"
-              title="下载到工作流库，所有 ComfyUI 实例共用"
-              [attr.data-testid]="'wf-download-' + it.source"
-            >
-              @if (busy === keyOf(it)) { 正在创建… } @else { 下载到工作流库 }
-            </button>
-          </div>
-        </article>
-      }
-    </div>
+            <div class="wf-actions">
+              <button
+                class="primary btn-xs"
+                (click)="download(it)"
+                [disabled]="busy === keyOf(it)"
+                title="下载到工作流库，所有 ComfyUI 实例共用"
+                [attr.data-testid]="'wf-download-' + it.source"
+              >
+                @if (busy === keyOf(it)) { 正在创建… } @else { 下载到工作流库 }
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
 
     @if (items.length && !done) {
       <div class="mc-more">
@@ -1606,6 +1622,19 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     @media (prefers-reduced-motion: reduce) {
       .wf-progress::after { animation-duration: 2.4s; }
     }
+    /* 发现页的卡片栅格：列宽与模型发现页一致（全局 .grid 登记的 minmax(250px,1fr)）。
+       align-items: stretch —— 同一行的卡必须等高；卡内 .acard-body 用 margin-top:auto 贴底，
+       正文几行就落在同一条基线上。 */
+    .wf-hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    /* 视图切换按钮只有符号，padding 收紧一点才不会占掉半条工具栏 */
+    .view-toggle button { padding: 0 8px; letter-spacing: 0.02em; }
+
     .wf-list {
       display: flex;
       flex-direction: column;
@@ -1801,6 +1830,9 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   q = '';
   source = 'all';
   sort = 'downloads';
+  /** 发现页的视图：网格（卡）/ 列表。默认网格 —— 与模型发现页同一默认。
+   * 跟「我的工作流」那个 view 分开：两个页签各切各的，不共用一个状态。 */
+  hubView: 'grid' | 'list' = 'grid';
   items: WorkflowItem[] = [];
   loading = false;
   done = true;
@@ -2776,6 +2808,11 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   setSort(sort: string): void {
     this.sort = sort;
     this.load(1);
+  }
+
+  /** 发现页的视图切换。只改呈现，不重新检索 —— 切视图不该再等一次网络。 */
+  setHubView(view: 'grid' | 'list'): void {
+    this.hubView = view;
   }
 
   loadMore(): void {

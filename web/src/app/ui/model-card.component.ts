@@ -199,11 +199,6 @@ interface SizedItem extends SearchItem {
         box-shadow: inset 0 0 0 1px var(--border-strong);
         color: var(--text);
       }
-      .acard.on-shot .acard-mark {
-        background: rgb(10 12 18 / 0.42);
-        box-shadow: none;
-        color: #fff;
-      }
       .acard-mark img {
         object-fit: contain;
         transform: scale(var(--logo-scale, 1));

@@ -148,7 +148,11 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByRole('button', { name: 'ComfyHub' })).toBeVisible();
     await page.getByRole('button', { name: 'ComfyHub' }).click();
     await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
+    // 发现页默认网格视图 = 统一骨架卡；依赖清单收在 ⋯ 菜单里（⑤ 标签位只放一枚分组标签）
+    await expect(page.locator('md-hub-card')).toHaveCount(1);
+    await page.locator('md-hub-card .acard-kebab').click();
     await expect(page.getByText('模型:Flux')).toBeVisible();
+    await page.locator('md-hub-card .acard-kebab').click();
 
     await page.locator('[data-testid="wf-download-comfyhub"]').click();
     await expect(page.getByText(/已创建下载任务/)).toBeVisible();
@@ -174,7 +178,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.goto('/workflows/discover');
     await page.getByRole('button', { name: 'ComfyHub' }).click();
     await page.waitForTimeout(2000);
-    await expect(page.locator('.wf-row')).toHaveCount(1);
+    await expect(page.locator('md-hub-card')).toHaveCount(1);
     await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
     await expect(page.getByText('旧响应不该出现')).toHaveCount(0);
   });
