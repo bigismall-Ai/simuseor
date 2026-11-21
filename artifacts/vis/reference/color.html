@@ -12,12 +12,12 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.8</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.7 · 2026</small>
+      <small>VIS v2.8 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
@@ -992,6 +992,11 @@
     ② 明暗<strong>换整套色，不翻色板</strong>（浅底在深色页面上会整块发亮）。
     唯一出处 <code>web/src/app/core/model-tone.ts</code>，封面组件也走这一份，改颜色只改这里一处。
   </p>
+  <p class="notice">
+    <strong>家族色 / 任务色的组数以本节为唯一口径源</strong>（家族色 <strong>25</strong> 组 / 任务色 <strong>12</strong> 组 / 中性 1 组）。
+    其他页面（布局页的铭牌样张等）可做<strong>节选</strong>，但必须标明「节选」并回链本节，<strong>不得另立数字</strong>。
+    数量由本脚本从 <code>model-tone.ts</code> 现场统计，改家族即改数字，不会漂。
+  </p>
   <p class="hint">
     下面色块的<strong>四段色带</strong>就是该家族自己的 ramp（底 → 字 → 强调 → 纹样），
     左侧值 = 浅色主题、右侧值 = 深色主题（按右上角「切换主题」看整页翻转）。
@@ -1368,7 +1373,7 @@
   <p class="lead">
     「克制」不是形容词。下面每一条都能被量出来：要么数面积、要么算比值、要么查色相与彩度。
     <strong>区间里的数字全部来自实测</strong>（家族色 25 组 / 任务色 12 组 / 明暗两套，
-    脚本 <code>artifacts/vis/_work/measure_color_domain.py</code>），不是经验值。
+    脚本 <code>artifacts/vis/vis-color-domain.py</code>），不是经验值。
   </p>
   <table class="t">
     <thead><tr><th style="width:56px">#</th><th style="width:160px">维度</th><th>约束（可判定）</th><th style="width:230px">依据 / 实测</th></tr></thead>

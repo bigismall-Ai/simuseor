@@ -22,7 +22,7 @@ import { LocalWorkflow } from '../core/types';
  *     开发者在这里看到的就是产品里真正在跑的东西
  *
  * 两者内容同源：数值都从 web/src/styles.css 与组件 scoped 样式来，
- * 静态版由 artifacts/vis/_work/build.mjs 现场解析生成。
+ * 静态版是一次性快照（原生成脚本已不存在），有差异以产品源码为准。
  *
  * 路由：/lab/vis —— 与 /lab/primeng、/lab/tailwind 同级，
  * 属实验区，**不属于产品导航**。

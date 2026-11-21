@@ -215,7 +215,7 @@
  * 结果是「渐变有事实、无口径」：谁改谁都漂，改一处不知道会撞掉哪条对比度。
  * 本层把渐变收口成 **4 级 12 枚 token**，色域要求与可判定约束见
  * artifacts/vis/reference/color.html §s-19（色域实测脚本：
- * artifacts/vis/_work/measure_color_domain.py）。
+ * artifacts/vis/vis-color-domain.py）。
  *
  * 【声明位置】12 枚 --grad-* 声明在 §2 的 :root 里，深色覆写（仅 --grad-accent）
  * 在 §3 的 :root[data-theme="dark"] 里 —— **不另开 :root 块**：

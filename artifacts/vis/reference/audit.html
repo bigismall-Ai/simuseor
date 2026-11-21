@@ -12,12 +12,12 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.8</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.7 · 2026</small>
+      <small>VIS v2.8 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
@@ -134,7 +134,7 @@
 
   <h3 id="s-61">本页自身的口径声明</h3>
   <ul style="font-size:12.5px;color:var(--muted);line-height:1.7">
-    <li>本页所有数值由 <code>artifacts/vis/_work/build.mjs</code> 从 <code>web/src/styles.css</code>、<code>web/src/vis-tokens.css</code>、<code>web/src/app/ui/*.ts</code> 现场解析，<strong>不手抄</strong>。</li>
+    <li>本页所有数值取自 <code>web/src/styles.css</code>、<code>web/src/vis-tokens.css</code>、<code>web/src/app/ui/*.ts</code>，是一次性<strong>快照</strong>（本页无自动生成脚本，原引用的生成器已不存在）；<strong>真值在产品源码</strong>，源码改动以源码为准。</li>
     <li>组件复刻规则加 <code>.ref</code> 作用域前缀，选择器与声明体<strong>逐条搬入真实源码</strong>；静态样张（卡片、面板、弹层）已标注。</li>
     <li>色值全部走 CSS 变量；<strong>唯一的字面色值集中登记在 <code>:root</code> 的「字面色值集中登记」块里</strong>（共 148 枚），规则里一律 <code>var(--lit-*)</code> 引用。</li>
     <li>圆角只用 12 / 8 / 5（弹层 16、胶囊 999 为 VIS 登记例外）。</li>
