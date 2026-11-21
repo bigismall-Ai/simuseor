@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>本页自身的口径声明 · SiMuseor VIS</title>
-<meta name="description" content="SiMuseor 视觉规范：本页自身的口径声明">
+<meta name="nav-label" content="口径声明">
+  <meta name="description" content="SiMuseor 视觉规范：本页自身的口径声明">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="audit/s-61" data-root="../../">
@@ -12,22 +13,23 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.12 · 2026</small>
+      <small>VIS v2.13 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.12</p>
-  <h1>本页自身的口径声明</h1>
+  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <h1 id="s-61">本页自身的口径声明</h1>
   <p class="doc-sub">AUDIT 规范 vs 实现 · 本章共 1 节</p>
 </div>
-<h3 id="s-61">本页自身的口径声明</h3>
+
+  <section id="sec-audit-s-61">
   <ul style="font-size:12.5px;color:var(--muted);line-height:1.7">
     <li>本页所有数值取自 <code>web/src/styles.css</code>、<code>web/src/vis-tokens.css</code>、<code>web/src/app/ui/*.ts</code>，是一次性<strong>快照</strong>（本页无自动生成脚本，原引用的生成器已不存在）；<strong>真值在产品源码</strong>，源码改动以源码为准。</li>
     <li>组件复刻规则加 <code>.ref</code> 作用域前缀，选择器与声明体<strong>逐条搬入真实源码</strong>；静态样张（卡片、面板、弹层）已标注。</li>
@@ -38,6 +40,7 @@
     <li>组件 scoped 样式已搬入 <strong>92.3%</strong>（203 / 220 个选择器，覆盖 model-card / workflow-card / family-mark 全部，library-card 82.1%，cover-plate 93.4%）。未搬入的是封面铭牌的内部尺寸档（<code>sz-mini</code> / <code>sz-row</code> / <code>sz-wide</code>）与破卡细部 —— 这些形态参考页没有样张，搬进来也不会被看到。</li>
   </ul>
 </section>
+  </section>
 
     </div>
   </main>

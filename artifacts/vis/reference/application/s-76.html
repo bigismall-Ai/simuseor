@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>E2E 保护清单 · SiMuseor VIS</title>
-<meta name="description" content="SiMuseor 视觉规范：E2E 保护清单">
+<meta name="nav-label" content="E2E清单">
+  <meta name="description" content="SiMuseor 视觉规范：E2E 保护清单">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="application/s-76" data-root="../../">
@@ -12,22 +13,23 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.12 · 2026</small>
+      <small>VIS v2.13 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.12</p>
-  <h1>E2E 保护清单</h1>
+  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <h1 id="s-76">E2E 保护清单</h1>
   <p class="doc-sub">07 应用系统 · 本章共 6 节</p>
 </div>
-<h3 id="s-76">E2E 保护清单</h3>
+
+  <section id="sec-application-s-76">
   <p class="hint">
     <code>.nav &gt; a[href="/models"]</code>（<strong>不是 /library</strong>）、<code>test.describe('Model Downloader Web UI')</code> 保留、
     首个 <code>ui-badge</code> 必须是环境卡徽章、「安装实例」全页唯一、<code>data-testid</code> 全清单、placeholder 文本、
@@ -37,6 +39,7 @@
     <strong>禁止新增可访问名含「模型 / 安装 / 下载任务 / 设置」的元素</strong>，禁止给现有元素加覆盖性 <code>aria-label</code>。
   </p>
 </section>
+  </section>
 
     </div>
   </main>

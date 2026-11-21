@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>模型卡与模型库卡 · SiMuseor VIS</title>
-<meta name="description" content="SiMuseor 视觉规范：模型卡与模型库卡">
+<meta name="nav-label" content="模型卡">
+  <meta name="description" content="SiMuseor 视觉规范：模型卡与模型库卡">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="components/s-38" data-root="../../">
@@ -12,22 +13,23 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.12 · 2026</small>
+      <small>VIS v2.13 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.12</p>
-  <h1>模型卡与模型库卡</h1>
+  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <h1 id="s-38">模型卡与模型库卡</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
-<h3 id="s-38">模型卡与模型库卡</h3>
+
+  <section id="sec-components-s-38">
   <p class="lead">
     三种卡共用同一套卡片话术：<strong>左上 = 厂牌标识 + 作者胶囊</strong>（工作流卡没有作者字段，只放类型），
     <strong>类型胶囊只在底部出现一次</strong>。模型卡的类型在 <code>.card-tags</code> 首位，
@@ -114,6 +116,7 @@
     左上为类型胶囊，正文放分组与 UI / API。三卡的 hover 描边都画在 <code>::after</code>，
     z-index 分别是 2 / 3 / — —— 本体 inset 描边会被铺满型封面盖住（§3.7.3 实测 off=37 / on=37）。
   </p>
+  </section>
 
     </div>
   </main>

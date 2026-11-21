@@ -47,6 +47,11 @@ const CHAPTER_ICONS = {
   decisions: 'gavel', audit: 'audit',
 };
 
+/* 章 -> 一级导航短名（页面标题可以长，导航不行；<=6 字） */
+const CHAPTER_NAV_LABELS = {
+  audit: '审计',
+};
+
 const NAV_BEGIN = '/* BEGIN nav-data */';
 const NAV_END = '/* END nav-data */';
 
@@ -143,8 +148,15 @@ function scanSections() {
     const files = fs.readdirSync(d).filter((f) => f.endsWith('.html') && f !== 'index.html').sort();
     const items = files.map((f) => {
       const t = fs.readFileSync(path.join(d, f), 'utf8');
-      const m = t.match(/<h1>([\s\S]*?)<\/h1>/);
-      return { file: f, title: m ? m[1].replace(/\s+/g, ' ').trim() : f };
+      const h1 = t.match(/<h1>([\s\S]*?)<\/h1>/);
+      const nav = t.match(/<meta name="nav-label" content="([^"]*)"/);
+      return {
+        file: f,
+        title: h1 ? h1[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : f,
+        /* 短导航标签：页面自己声明（<meta name="nav-label">），<=6 字；
+           没声明就退回标题前 6 字 —— 宁可截断也不让导航变长 */
+        label: nav ? nav[1].trim() : (h1 ? h1[1].replace(/<[^>]+>/g, '').trim().slice(0, 6) : f),
+      };
     });
     const idxPath = path.join(d, 'index.html');
     const chapterTitle = fs.existsSync(idxPath)
@@ -162,27 +174,21 @@ function build() {
   const version = specVersion();
   const chapters = scanSections();
 
-  /* 章首页：章标题 + 该章各节目录 */
+  /* 章首页：章标题与导语是**手写内容**（保留），只重生成目录（标记区间） */
   for (const ch of chapters) {
     const d = path.join(REF, ch.dir);
-    const shellSrc = fs.readFileSync(path.join(d, ch.items[0].file), 'utf8');
-    const { head, tail } = shellOf(shellSrc);
-    const head2 = head.replace(/data-page="[^"]*"/, `data-page="${ch.dir}"`);
+    const idxPath = path.join(d, 'index.html');
+    if (!fs.existsSync(idxPath)) continue;
+    const idx = fs.readFileSync(idxPath, 'utf8');
     const list = ch.items.map((it) =>
-      `      <a class="proto-index-card" href="${it.file}"><b>${it.title}</b><em>${ch.dir}/${it.file}</em></a>`
+      `    <a class="proto-index-card" href="${it.file}"><b>${it.label}</b><span>${it.title}</span><em>${ch.dir}/${it.file}</em></a>`
     ).join('\n');
-    const body = `<div class="doc-head">
-  <p class="kicker">SiMuseor · VIS ${version}</p>
-  <h1>${ch.chapterTitle}</h1>
-  <p class="doc-sub">本章共 ${ch.items.length} 节 · 每节一页</p>
-</div>
-
-  <h3 id="s-{ch}-toc">本章目录</h3>
-  <div class="proto-index">
-${list}
-  </div>
-`;
-    fs.writeFileSync(path.join(d, 'index.html'), head2 + body + tail, 'utf8');
+    const toc = `  <!-- BEGIN toc -->\n  <h3 id="toc-${ch.dir}">本章目录</h3>\n  <div class="proto-index">\n${list}\n  </div>\n  <!-- END toc -->`;
+    const i = idx.indexOf('<!-- BEGIN toc -->');
+    const j = idx.indexOf('<!-- END toc -->');
+    if (i === -1 || j === -1) { console.log('  !! 章首页缺目录标记: ' + ch.dir); continue; }
+    const out = idx.slice(0, i) + toc + idx.slice(j + '<!-- END toc -->'.length);
+    fs.writeFileSync(idxPath, out, 'utf8');
   }
 
   /* 导航块：P 映射 + NAV（一级 = 章，二级 = 各节页） */
@@ -200,10 +206,10 @@ ${list}
   }
   for (const ch of chapters) {
     const items = ch.items.map((it) =>
-      `        { page: '${ch.dir}/${it.file.replace(/\.html$/, '')}', label: ${JSON.stringify(it.title)} }`
+      `        { page: '${ch.dir}/${it.file.replace(/\.html$/, '')}', label: ${JSON.stringify(it.label)} }`
     ).join(',\n');
     navLines.push(`    {
-      type: 'group', key: '${ch.dir}', page: '${ch.dir}', label: ${JSON.stringify(ch.chapterTitle)}, icon: '${CHAPTER_ICONS[ch.dir] || 'overview'}', keys: ['${ch.dir}'],
+      type: 'group', key: '${ch.dir}', page: '${ch.dir}', label: ${JSON.stringify(CHAPTER_NAV_LABELS[ch.dir] || ch.chapterTitle)}, icon: '${CHAPTER_ICONS[ch.dir] || 'overview'}', keys: ['${ch.dir}'],
       items: [
 ${items},
       ],
@@ -289,11 +295,19 @@ function check() {
         if (!t.includes(`href="${it.file}"`)) {
           problems.push(`章首页目录缺项: ${ch.dir}/index.html -> ${it.file}`);
         }
-      }
-    }
+      }    }
   } finally {
     fs.writeFileSync(SHELL, shellBak, 'utf8');
     fs.rmSync(tmp, { recursive: true, force: true });
+  }
+
+  /* 5. 导航标签长度：二级项 <= 6 字 */
+  const navLabels = [];
+  for (const m of shell.matchAll(/label:\s*(?:'([^']*)'|"([^"]*)")/g)) {
+    navLabels.push(m[1] !== undefined ? m[1] : m[2]);
+  }
+  for (const l of navLabels) {
+    if ([...l].length > 6) problems.push(`导航标签超过 6 字（${[...l].length}）: ${l}`);
   }
 
   console.log('章节 ' + chapters.length + ' / 节页 ' + chapters.reduce((a, c) => a + c.items.length, 0));

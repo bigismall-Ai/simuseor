@@ -12,34 +12,56 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.12 · 2026</small>
+      <small>VIS v2.13 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <p class="kicker">SiMuseor · VIS v2.13</p>
   <h1>色彩</h1>
   <p class="doc-sub">本章共 9 节 · 每节一页</p>
 </div>
 
-  <h3 id="s-{ch}-toc">本章目录</h3>
+  <section id="sec-color">
+<h2><span class="num">COLOR</span>色彩</h2>
+  <p class="lead">
+    VIS §3.1 裁决 A：<strong>分层双轨</strong>。品牌层（纸墨）不进高频 UI；产品层（zinc 中性 + 靛紫）供全站界面。
+    §3.7.5 的 token 分层把产品层再拆成三层：<strong>primitive</strong>（原始值）→ <strong>semantic</strong>（用途语义）→
+    <strong>component</strong>（组件槽位）。明暗只发生在 semantic 层，primitive 一套共用。
+    <strong>v2.6 补齐两处缺口</strong>：① 产品里本就存在的<strong>模型卡美术色域</strong>（家族色 / 任务色 37 组四槽色）此前
+    无文档（§s-16）；② 全站 6 类渐变此前<strong>既无 token 也无口径</strong>，本轮收口为 4 级 12 枚
+    <code>--grad-*</code>（§s-19）。
+  </p>
+  <p class="hint">
+    <strong>怎么读本页：</strong>每枚色块下方左值 = 浅色主题，右值（靛紫）= 深色主题。两值相同时只显示一个。
+    切换右上角「切换主题」可看整页翻转。
+    <br />
+    <strong>四张表分工：</strong>§s-11～§s-15 是<strong>色板</strong>（有什么值）→ §s-16 是<strong>模型卡美术色域</strong>
+    （家族 / 任务色有什么值）→ §s-17 是<strong>色域约束总表</strong>（什么不许做，13 条可判定）→
+    §s-18 是<strong>国际色彩锚点</strong>（Pantone / 红点给我们的外部标尺）→ §s-19 是<strong>渐变层</strong>（渐变怎么用，9 条硬约束）。
+  </p>
+
+                            <!-- BEGIN toc -->
+  <h3 id="toc-color">本章目录</h3>
   <div class="proto-index">
-      <a class="proto-index-card" href="s-11.html"><b>primitive 层 —— 原始值（--pri-*）</b><em>color/s-11.html</em></a>
-      <a class="proto-index-card" href="s-12.html"><b>semantic 层 —— 用途语义（--sem-*）</b><em>color/s-12.html</em></a>
-      <a class="proto-index-card" href="s-13.html"><b>component 层 —— 组件槽位（--cmp-*）</b><em>color/s-13.html</em></a>
-      <a class="proto-index-card" href="s-14.html"><b>品牌层 —— 纸墨六枚（主题不变）</b><em>color/s-14.html</em></a>
-      <a class="proto-index-card" href="s-15.html"><b>语义色实算对比度</b><em>color/s-15.html</em></a>
-      <a class="proto-index-card" href="s-16.html"><b>模型卡美术色域 —— 家族色 / 任务色（--plate-*）</b><em>color/s-16.html</em></a>
-      <a class="proto-index-card" href="s-17.html"><b>色域约束总表（可判定）</b><em>color/s-17.html</em></a>
-      <a class="proto-index-card" href="s-18.html"><b>国际色彩锚点（Pantone / Red Dot）</b><em>color/s-18.html</em></a>
-      <a class="proto-index-card" href="s-19.html"><b>渐变层（--grad-*）〔本轮新增〕</b><em>color/s-19.html</em></a>
+    <a class="proto-index-card" href="s-11.html"><b>原始层</b><span>s-11.html</span><em>color/s-11.html</em></a>
+    <a class="proto-index-card" href="s-12.html"><b>语义层</b><span>s-12.html</span><em>color/s-12.html</em></a>
+    <a class="proto-index-card" href="s-13.html"><b>组件层</b><span>s-13.html</span><em>color/s-13.html</em></a>
+    <a class="proto-index-card" href="s-14.html"><b>纸墨层</b><span>s-14.html</span><em>color/s-14.html</em></a>
+    <a class="proto-index-card" href="s-15.html"><b>对比度</b><span>s-15.html</span><em>color/s-15.html</em></a>
+    <a class="proto-index-card" href="s-16.html"><b>色域</b><span>s-16.html</span><em>color/s-16.html</em></a>
+    <a class="proto-index-card" href="s-17.html"><b>约束表</b><span>s-17.html</span><em>color/s-17.html</em></a>
+    <a class="proto-index-card" href="s-18.html"><b>国际锚点</b><span>s-18.html</span><em>color/s-18.html</em></a>
+    <a class="proto-index-card" href="s-19.html"><b>渐变层</b><span>s-19.html</span><em>color/s-19.html</em></a>
   </div>
+  <!-- END toc -->
+  </section>
 
     </div>
   </main>
