@@ -358,11 +358,12 @@ import { FAMILY_TONE, FAMILY_TONE_DARK } from '../core/model-tone';
       }
 
       /* 照片上的白底芯片：缩写必须用深色（深色主题下 --plate-ink 是浅色，
-         直接继承会在白底上看不见）。 */
+         直接继承会在白底上看不见）。芯片底恒为白，故用与主题无关的
+         --plate-chip-ink / --plate-chip-line（产品层 token，两主题同值）。 */
       .plate.on-shot .brand.mono {
         width: 22px;
-        color: #3b3a35;
-        border-color: rgb(0 0 0 / 0.18);
+        color: var(--plate-chip-ink);
+        border-color: var(--plate-chip-line);
       }
 
       .label {

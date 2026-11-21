@@ -639,8 +639,13 @@ const ROLES: Record<string, string> = {
     }
     .btn:hover:not(:disabled) { border-color: var(--border-strong); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: default; }
-    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+    /* 实心填充态用 --primary / --on-primary，不用 --accent：
+       --accent 是**文字 / 描边 / 图标态**，深色下提亮成 #a5b4fc，
+       白字压上去只有 1.99:1；--primary 两主题同为 #4f46e5，白字 6.29:1（VIS §3.3）。
+       hover 同全局 button.primary：**不改用 --primary-hover**（深色 #6366f1 上白字
+       4.47:1，差 0.03 不达 AA），可点性靠描边 + cursor + :focus-visible 承担。 */
+    .btn.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+    .btn.primary:hover:not(:disabled) { background: var(--primary); border-color: var(--accent); color: var(--on-primary); }
     .btn.danger:hover { color: var(--err); border-color: var(--err); }
 
     /* ---------------- 提示条 ---------------- */

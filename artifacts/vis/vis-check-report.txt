@@ -1,15 +1,15 @@
 ====================================================================================================
  SiMuseor VIS · 视觉规范校验报告  (vis-check.mjs v2 · 合规判定版)
- 生成时间: 2026-11-18T05:31:27.838Z
- 项目根  : E:/Projects/wt-vis-gate
+ 生成时间: 2026-11-21T07:31:47.129Z
+ 项目根  : E:/Projects/model-downloader
  模式    : 只读 + --write-report（写 artifacts/vis/vis-check-report.txt）
 ====================================================================================================
 
 [0] 扫描范围
-    styles.css          : web/src/styles.css  (1787 行)
-    app/**/*.ts         : 36 个文件
-    token 文件（设计层）: artifacts/vis/vis-tokens.css  (232 行)
-    token 文件（生效层）: web/src/vis-tokens.css  (623 行)
+    styles.css          : web/src/styles.css  (1823 行)
+    app/**/*.ts         : 38 个文件
+    token 文件（设计层）: artifacts/vis/vis-tokens.css  (311 行)
+    token 文件（生效层）: web/src/vis-tokens.css  (679 行)
     口径: 先剥离 /*...*/ 与 //... 注释（保留换行以维持行号），再按正则/规则块扫描。
 
     判定语义分类：
@@ -31,13 +31,13 @@
       web/src/app/pages/workflow-editor.component.ts:606   font-weight: 650
       web/src/app/pages/workflow-editor.component.ts:617   font-weight: 550
       web/src/app/pages/workflow-editor.component.ts:637   font-weight: 550
-      web/src/app/pages/workflow-editor.component.ts:655   font-weight: 650
-      web/src/app/pages/workflow-editor.component.ts:686   font-weight: 550
-      web/src/app/pages/workflow-editor.component.ts:776   font-weight: 550
-      web/src/app/pages/workflow-editor.component.ts:792   font-weight: 550
-      web/src/app/pages/workflow-editor.component.ts:796   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:660   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:691   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:781   font-weight: 550
+      web/src/app/pages/workflow-editor.component.ts:797   font-weight: 550
       web/src/app/pages/workflow-editor.component.ts:801   font-weight: 650
-      web/src/app/pages/workflow-editor.component.ts:848   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:806   font-weight: 650
+      web/src/app/pages/workflow-editor.component.ts:853   font-weight: 650
       web/src/app/ui/library-card.component.ts:511         font-weight: 650
       白名单 400/500/600/700；550->500，620/640/650/660/680->600（Phase1 §4.2）
       [合规判定] styles.css 内 0 处（必须 0）
@@ -49,26 +49,26 @@
         web/src/app/pages/workflow-editor.component.ts|font-weight:550 x5
         web/src/app/ui/library-card.component.ts|font-weight:650 x1
     1.2 color: var(--faint|--placeholder) 文本用法 -> 23 处 = styles.css 0（--faint 0 / --placeholder 0） + 组件 scoped 23
-      web/src/app/pages/library.component.ts:254           color: var(--faint)
-      web/src/app/pages/library.component.ts:312           color: var(--faint)
-      web/src/app/pages/library.component.ts:339           color: var(--faint)
-      web/src/app/pages/library.component.ts:365           color: var(--faint)
-      web/src/app/pages/library.component.ts:368           color: var(--faint)
+      web/src/app/pages/library.component.ts:255           color: var(--faint)
+      web/src/app/pages/library.component.ts:313           color: var(--faint)
+      web/src/app/pages/library.component.ts:340           color: var(--faint)
+      web/src/app/pages/library.component.ts:366           color: var(--faint)
+      web/src/app/pages/library.component.ts:369           color: var(--faint)
       web/src/app/pages/workflow-editor.component.ts:607   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:689   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:717   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:720   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:726   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:728   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:761   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:763   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:797   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:798   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:801   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:804   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:817   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:694   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:722   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:725   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:731   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:733   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:766   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:768   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:802   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:803   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:806   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:809   color: var(--faint)
       web/src/app/pages/workflow-editor.component.ts:822   color: var(--faint)
-      web/src/app/pages/workflow-editor.component.ts:835   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:827   color: var(--faint)
+      web/src/app/pages/workflow-editor.component.ts:840   color: var(--faint)
       web/src/app/ui/library-card.component.ts:493         color: var(--faint)
       web/src/app/ui/library-card.component.ts:531         color: var(--faint)
       web/src/app/ui/workflow-card.component.ts:450        color: var(--faint)
@@ -96,17 +96,19 @@
         web/src/app/pages/workflows.component.ts|.cm-cell-tag x1
     1.3b 白字实心填充通用枚举（修复 1.3 只匹配 --accent* 的漏检盲区）
         规则 @行                                      填充变量           浅        深        判定
-        button.primary @650                           --primary          6.29:1    6.29:1    [PASS]
-        button.primary:hover @658                     --primary          6.29:1    6.29:1    [PASS]
-        .segmented button.active @773                 --primary          6.29:1    6.29:1    [PASS]
-        .segmented button.active:hover @778           --primary          6.29:1    6.29:1    [PASS]
-        .filter-chip.active @792                      --primary          6.29:1    6.29:1    [PASS]
-        .filter-chip.active:hover @800                --primary          6.29:1    6.29:1    [PASS]
-        .step-row.active .step-dot @1600              --primary          6.29:1    6.29:1    [PASS]
+        button.primary @681                           --primary          6.29:1    6.29:1    [PASS]
+        button.primary:hover @689                     --primary          6.29:1    6.29:1    [PASS]
+        .segmented button.active @804                 --primary          6.29:1    6.29:1    [PASS]
+        .segmented button.active:hover @809           --primary          6.29:1    6.29:1    [PASS]
+        .filter-chip.active @823                      --primary          6.29:1    6.29:1    [PASS]
+        .filter-chip.active:hover @831                --primary          6.29:1    6.29:1    [PASS]
+        .step-row.active .step-dot @1631              --primary          6.29:1    6.29:1    [PASS]
+        .btn.primary @647                             --primary          6.29:1    6.29:1    [PASS]
+        .btn.primary:hover:not(:disabled) @648        --primary          6.29:1    6.29:1    [PASS]
         .cm-cell-tag @1283                            --accent           6.29:1    1.99:1    [FAIL 旧债·待修]
         .lw-primary @1528                             --primary          6.29:1    6.29:1    [PASS]
         .wc-primary @458                              --primary          6.29:1    6.29:1    [PASS]
-        -> 10 条白字实心填充规则；<4.5 不达 AA = 1 条（登记基线 1 条）
+        -> 12 条白字实心填充规则；<4.5 不达 AA = 1 条（登记基线 1 条）
         M 项描述（ux-designer / visual-architect 一致）：不达 AA 的实心填充承载白字
           （--accent / --accent-hover / --primary-hover）；§8 仍 15 项，不新增第 16 项。
         边界: lab-theme.ts 已显式跳过；其「亮靛紫底 + contrastColor 深字」由 1.10 正向验收，不报 FAIL。
@@ -117,33 +119,33 @@
       [合规判定] 全仓必须 0
       判定: [PASS] 全仓零 invert，反白走双份 SVG + :host-context
     1.5 brand-wordmark 字面（项目源码） -> 2 个
-      web/src/styles.css:238                               brand-wordmark
+      web/src/styles.css:269                               brand-wordmark
       web/src/app/app.component.ts:32                      brand-wordmark
         模板实例（TS class="brand-wordmark"）: 1 个 -> web/src/app/app.component.ts:32
-        CSS 规则（.brand-wordmark 选择器）  : 1 个 -> web/src/styles.css:238
+        CSS 规则（.brand-wordmark 选择器）  : 1 个 -> web/src/styles.css:269
         目标态（Phase2 §1.1）：全站 .brand-wordmark 有且仅有 1 个实例，且是 .sidebar > .brand 的子元素
       [合规判定] 模板实例必须恰好 1 个
       判定: [PASS] 模板实例恰好 1 个（M2 已落地）
     1.6 圆角中间档 border-radius: 6/9/4/10px -> 21 处 = styles.css 0 + 组件 scoped 21
       web/src/app/lab/lab-primeng.component.ts:344         border-radius: 10px
-      web/src/app/pages/library.component.ts:218           border-radius: 10px
-      web/src/app/pages/library.component.ts:319           border-radius: 6px
-      web/src/app/pages/library.component.ts:351           border-radius: 6px
+      web/src/app/pages/library.component.ts:219           border-radius: 10px
+      web/src/app/pages/library.component.ts:320           border-radius: 6px
+      web/src/app/pages/library.component.ts:352           border-radius: 6px
       web/src/app/pages/workflow-editor.component.ts:610   border-radius: 4px
       web/src/app/pages/workflow-editor.component.ts:614   border-radius: 9px
       web/src/app/pages/workflow-editor.component.ts:625   border-radius: 4px
-      web/src/app/pages/workflow-editor.component.ts:666   border-radius: 9px
-      web/src/app/pages/workflow-editor.component.ts:706   border-radius: 10px
-      web/src/app/pages/workflow-editor.component.ts:723   border-radius: 4px
-      web/src/app/pages/workflow-editor.component.ts:755   border-radius: 6px
-      web/src/app/pages/workflow-editor.component.ts:758   border-radius: 6px
-      web/src/app/pages/workflow-editor.component.ts:802   border-radius: 6px
-      web/src/app/pages/workflow-editor.component.ts:810   border-radius: 6px
-      web/src/app/pages/workflow-editor.component.ts:811   border-radius: 6px
-      web/src/app/pages/workflow-editor.component.ts:813   border-radius: 6px
-      web/src/app/ui/cover-plate.component.ts:148          border-radius: 6px
-      web/src/app/ui/cover-plate.component.ts:319          border-radius: 6px
-      web/src/app/ui/cover-plate.component.ts:371          border-radius: 4px
+      web/src/app/pages/workflow-editor.component.ts:671   border-radius: 9px
+      web/src/app/pages/workflow-editor.component.ts:711   border-radius: 10px
+      web/src/app/pages/workflow-editor.component.ts:728   border-radius: 4px
+      web/src/app/pages/workflow-editor.component.ts:760   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:763   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:807   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:815   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:816   border-radius: 6px
+      web/src/app/pages/workflow-editor.component.ts:818   border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:160          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:344          border-radius: 6px
+      web/src/app/ui/cover-plate.component.ts:427          border-radius: 4px
       web/src/app/ui/library-card.component.ts:374         border-radius: 6px
       web/src/app/ui/library-card.component.ts:418         border-radius: 4px
       Phase1 §6.4 待收敛：.brand-mark 9px(随 C 删除) / .btn-xs 6px / .tp-swatch 4px / .skel-line 4px / .step-row 6px
@@ -170,10 +172,10 @@
         web/src/app/ui/library-card.component.ts|border-radius:6px x1
         web/src/app/ui/library-card.component.ts|border-radius:4px x1
     1.7 prefers-reduced-motion 规则 -> 4 处
-      web/src/styles.css:1775                              prefers-reduced-motion: reduce
+      web/src/styles.css:1811                              prefers-reduced-motion: reduce
       web/src/app/pages/workflows.component.ts:1606        prefers-reduced-motion: reduce
       web/src/app/ui/library-card.component.ts:645         prefers-reduced-motion: reduce
-      web/src/app/ui/model-card.component.ts:149           prefers-reduced-motion: reduce
+      web/src/app/ui/model-card.component.ts:150           prefers-reduced-motion: reduce
       [现状快照] 目标态需全局 @media reduce（P3-7）：7 个动画停止，spinner 降级为静态 + role=status 文字
     1.8 @font-face（项目源码，不含 token 文件） -> 0 条
         生效层 web/src/vis-tokens.css 生效 @font-face: 1 条（Barlow Condensed 400；Inter 按 M0 暂缓裁决以注释块保留，未生效）
@@ -194,7 +196,7 @@
         web/src/app/pages/workflows.component.ts:1335 --border-control
         web/src/app/pages/workflows.component.ts:1350 --border-control
       --radius-lg      引用 1 处  [已落地]
-        web/src/styles.css:1041 --radius-lg
+        web/src/styles.css:1072 --radius-lg
       口径: M2-d 之后「引用数 > 0」即视为已落地（v1 判「=== 0 = 零落地证据」已过时）。
       [落地进度] 只报进度，不判定、不阻塞。
     1.10 lab-theme.ts 裁决 G 边界（Phase1 v1.1 §7.3 / Phase2 v1.2 新增验收项）
@@ -232,21 +234,19 @@
                 ERNIE 深端 #0439B5 等），剥离注释后命中数为 0，因此保持受检 —— 将来若在
                 此写入真实色值会被当场抓住。
 
-      [豁免命中明细]（273 处，不计入违规）
-        web/src/app/core/model-tone.ts  232 处
+      [豁免命中明细]（345 处，不计入违规）
+        web/src/app/core/model-tone.ts  304 处
         web/src/app/lab/fixtures.ts  4 处
         web/src/app/lab/lab-primeng.component.ts  13 处
         web/src/app/lab/lab-theme.ts  24 处
 
-      [组件 scoped 样式块内] 110 处
+      [组件 scoped 样式块内] 108 处
         web/src/app/pages/workflow-editor.component.ts:613   #fee2e2
-        web/src/app/pages/workflow-editor.component.ts:642   #fff
-        web/src/app/pages/workflow-editor.component.ts:643   #fff
-        web/src/app/pages/workflow-editor.component.ts:653   #fef2f2
-        web/src/app/pages/workflow-editor.component.ts:846   #fef2f2
-        web/src/app/pages/workflow-editor.component.ts:710   rgb(0 0 0 / 0.4)
-        web/src/app/pages/workflow-editor.component.ts:711   rgb(0 0 0 / 0.35)
-        web/src/app/pages/workflow-editor.component.ts:865   rgb(0 0 0 / 0.55)
+        web/src/app/pages/workflow-editor.component.ts:658   #fef2f2
+        web/src/app/pages/workflow-editor.component.ts:851   #fef2f2
+        web/src/app/pages/workflow-editor.component.ts:715   rgb(0 0 0 / 0.4)
+        web/src/app/pages/workflow-editor.component.ts:716   rgb(0 0 0 / 0.35)
+        web/src/app/pages/workflow-editor.component.ts:870   rgb(0 0 0 / 0.55)
         web/src/app/pages/workflows.component.ts:933         #fff
         web/src/app/pages/workflows.component.ts:800         rgb(0 0 0 / 0.55)
         web/src/app/pages/workflows.component.ts:859         rgb(0 0 0 / 0.34)
@@ -256,35 +256,35 @@
         web/src/app/pages/workflows.component.ts:1022        rgb(0 0 0 / 0.6)
         web/src/app/pages/workflows.component.ts:1035        rgb(0 0 0 / 0.6)
         web/src/app/pages/workflows.component.ts:1378        rgb(0 0 0 / 0.55)
-        web/src/app/ui/cover-plate.component.ts:247          #ffffff
-        web/src/app/ui/cover-plate.component.ts:395          #fff
-        web/src/app/ui/cover-plate.component.ts:400          #fff
-        web/src/app/ui/cover-plate.component.ts:435          #000
-        web/src/app/ui/cover-plate.component.ts:435          #000
-        web/src/app/ui/cover-plate.component.ts:436          #000
-        web/src/app/ui/cover-plate.component.ts:436          #000
-        web/src/app/ui/cover-plate.component.ts:470          #000
-        web/src/app/ui/cover-plate.component.ts:470          #000
-        web/src/app/ui/cover-plate.component.ts:471          #000
-        web/src/app/ui/cover-plate.component.ts:471          #000
-        web/src/app/ui/cover-plate.component.ts:679          #f2f1ed
-        web/src/app/ui/cover-plate.component.ts:680          #6b6a63
-        web/src/app/ui/cover-plate.component.ts:681          #57564f
-        web/src/app/ui/cover-plate.component.ts:682          #b3b2aa
-        web/src/app/ui/cover-plate.component.ts:783          #232321
-        web/src/app/ui/cover-plate.component.ts:784          #b0afa6
-        web/src/app/ui/cover-plate.component.ts:785          #d7d6cd
-        web/src/app/ui/cover-plate.component.ts:786          #b3b2aa
-        web/src/app/ui/cover-plate.component.ts:248          rgba(255, 255, 255, 0.76)
-        web/src/app/ui/cover-plate.component.ts:253          rgba(8, 10, 16, 0.52)
-        web/src/app/ui/cover-plate.component.ts:253          rgba(8, 10, 16, 0)
-        web/src/app/ui/cover-plate.component.ts:256          rgba(8, 10, 16, 0.94)
-        web/src/app/ui/cover-plate.component.ts:257          rgba(8, 10, 16, 0.66)
-        web/src/app/ui/cover-plate.component.ts:258          rgba(8, 10, 16, 0)
-        web/src/app/ui/cover-plate.component.ts:274          rgb(0 0 0 / 0.5)
-        web/src/app/ui/cover-plate.component.ts:320          rgba(255, 255, 255, 0.94)
-        web/src/app/ui/cover-plate.component.ts:394          rgba(255, 255, 255, 0.18)
-        web/src/app/ui/cover-plate.component.ts:399          rgba(255, 255, 255, 0.28)
+        web/src/app/ui/cover-plate.component.ts:259          #ffffff
+        web/src/app/ui/cover-plate.component.ts:451          #fff
+        web/src/app/ui/cover-plate.component.ts:456          #fff
+        web/src/app/ui/cover-plate.component.ts:491          #000
+        web/src/app/ui/cover-plate.component.ts:491          #000
+        web/src/app/ui/cover-plate.component.ts:492          #000
+        web/src/app/ui/cover-plate.component.ts:492          #000
+        web/src/app/ui/cover-plate.component.ts:526          #000
+        web/src/app/ui/cover-plate.component.ts:526          #000
+        web/src/app/ui/cover-plate.component.ts:527          #000
+        web/src/app/ui/cover-plate.component.ts:527          #000
+        web/src/app/ui/cover-plate.component.ts:789          #f2f1ed
+        web/src/app/ui/cover-plate.component.ts:790          #6b6a63
+        web/src/app/ui/cover-plate.component.ts:791          #57564f
+        web/src/app/ui/cover-plate.component.ts:792          #b3b2aa
+        web/src/app/ui/cover-plate.component.ts:947          #232321
+        web/src/app/ui/cover-plate.component.ts:948          #b0afa6
+        web/src/app/ui/cover-plate.component.ts:949          #d7d6cd
+        web/src/app/ui/cover-plate.component.ts:950          #b3b2aa
+        web/src/app/ui/cover-plate.component.ts:260          rgba(255, 255, 255, 0.76)
+        web/src/app/ui/cover-plate.component.ts:265          rgba(8, 10, 16, 0.52)
+        web/src/app/ui/cover-plate.component.ts:265          rgba(8, 10, 16, 0)
+        web/src/app/ui/cover-plate.component.ts:268          rgba(8, 10, 16, 0.94)
+        web/src/app/ui/cover-plate.component.ts:269          rgba(8, 10, 16, 0.66)
+        web/src/app/ui/cover-plate.component.ts:270          rgba(8, 10, 16, 0)
+        web/src/app/ui/cover-plate.component.ts:286          rgb(0 0 0 / 0.5)
+        web/src/app/ui/cover-plate.component.ts:345          rgba(255, 255, 255, 0.94)
+        web/src/app/ui/cover-plate.component.ts:450          rgba(255, 255, 255, 0.18)
+        web/src/app/ui/cover-plate.component.ts:455          rgba(255, 255, 255, 0.28)
         web/src/app/ui/family-mark.component.ts:59           rgb(0 0 0 / 0.28)
         web/src/app/ui/library-card.component.ts:268         #000
         web/src/app/ui/library-card.component.ts:268         #000
@@ -327,15 +327,15 @@
         web/src/app/ui/library-card.component.ts:592         rgb(255 0 0 / 0.5)
         web/src/app/ui/library-card.component.ts:597         rgb(234 179 8 / 0.5)
         web/src/app/ui/library-card.component.ts:597         rgb(234 179 8 / 0.5)
-        web/src/app/ui/model-card.component.ts:225           #fff
-        web/src/app/ui/model-card.component.ts:267           #fff
-        web/src/app/ui/model-card.component.ts:122           rgb(0 0 0 / 0.16)
-        web/src/app/ui/model-card.component.ts:219           rgb(255 255 255 / 0.14)
-        web/src/app/ui/model-card.component.ts:220           rgb(255 255 255 / 0.88)
-        web/src/app/ui/model-card.component.ts:224           rgb(255 255 255 / 0.24)
-        web/src/app/ui/model-card.component.ts:268           rgb(0 0 0 / 0.5)
-        web/src/app/ui/model-card.component.ts:270           rgb(255 255 255 / 0.8)
-        web/src/app/ui/model-card.component.ts:271           rgb(255 255 255 / 0.28)
+        web/src/app/ui/model-card.component.ts:226           #fff
+        web/src/app/ui/model-card.component.ts:268           #fff
+        web/src/app/ui/model-card.component.ts:123           rgb(0 0 0 / 0.16)
+        web/src/app/ui/model-card.component.ts:220           rgb(255 255 255 / 0.14)
+        web/src/app/ui/model-card.component.ts:221           rgb(255 255 255 / 0.88)
+        web/src/app/ui/model-card.component.ts:225           rgb(255 255 255 / 0.24)
+        web/src/app/ui/model-card.component.ts:269           rgb(0 0 0 / 0.5)
+        web/src/app/ui/model-card.component.ts:271           rgb(255 255 255 / 0.8)
+        web/src/app/ui/model-card.component.ts:272           rgb(255 255 255 / 0.28)
         web/src/app/ui/workflow-card.component.ts:267        #fff
         web/src/app/ui/workflow-card.component.ts:284        #fff
         web/src/app/ui/workflow-card.component.ts:320        #fff
@@ -357,10 +357,9 @@
         web/src/app/pages/workflow-editor.component.ts:71    #059669
         web/src/app/pages/workflow-editor.component.ts:72    #71717a
         web/src/app/pages/workflow-editor.component.ts:231   #4f46e5
-        现状 110 处 / 登记基线 110 处
-        判定: [PASS] 无新增违规；已登记旧债 110 处仍在（只降不升，不阻塞）
+        现状 108 处 / 登记基线 108 处
+        判定: [PASS] 无新增违规；已登记旧债 108 处仍在（只降不升，不阻塞）
         web/src/app/pages/workflow-editor.component.ts|#fee2e2 x1
-        web/src/app/pages/workflow-editor.component.ts|#fff x2
         web/src/app/pages/workflow-editor.component.ts|#fef2f2 x2
         web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.4) x1
         web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.35) x1
@@ -516,11 +515,11 @@
 ----------------------------------------------------------------------------------------------------
 
   3A 设计层 —— artifacts/vis/vis-tokens.css
-    赋值 --* 变量: 18 个（浅 :root 18 / 深 :root[data-theme=dark] 4）
+    赋值 --* 变量: 33 个（浅 :root 33 / 深 :root[data-theme=dark] 6）
     [3.1 零覆盖] 与 web/src/styles.css 赋值变量名的交集: 0 个 
     判定: [PASS] ZERO-OVERRIDE / 零覆盖承诺
     自身完整性自检：
-      [PASS] CSS 注释配对                                        open=37 close=37
+      [PASS] CSS 注释配对                                        open=42 close=42
       [PASS] @font-face 恰好 2 条（Barlow + Inter 均生效）       2 条
       [PASS] Barlow 仅声明 font-weight:400                       
       [PASS] Inter 声明 font-weight:100 900                      
@@ -532,11 +531,11 @@
       [PASS] 生效 CSS 无实验稿字形/月桂引用                      
 
   3B 生效层 —— web/src/vis-tokens.css
-    赋值 --* 变量: 136 个（浅 :root 136 / 深 :root[data-theme=dark] 44）
+    赋值 --* 变量: 151 个（浅 :root 151 / 深 :root[data-theme=dark] 46）
     [3.1 零覆盖] 与 web/src/styles.css 赋值变量名的交集: 0 个 
     判定: [PASS] ZERO-OVERRIDE / 零覆盖承诺
     自身完整性自检：
-      [PASS] CSS 注释配对                                        open=151 close=151
+      [PASS] CSS 注释配对                                        open=155 close=155
       [PASS] @font-face 恰好 1 条生效（Barlow Condensed 400）    1 条生效
       [PASS] Inter 声明以注释块保留、未生效（M0 暂缓 · 主理人裁决 2）
       [PASS] Barlow 仅声明 font-weight:400                       
@@ -560,12 +559,46 @@
     注：接入片段（.brand-wordmark / :host-context 反白切换）全部写在注释中，
         因此 token 文件不会被误当成已落地的组件实现。
 
+----------------------------------------------------------------------------------------------------
+[3.5] 违规热力（棘轮债务分布 · 修复优先级）
+----------------------------------------------------------------------------------------------------
+  按规则（超基线优先，其次旧债条数）
+    规则          现状   基线   超基线  旧债   可收敛  状态
+    ------------------------------------------------------------------------
+    1.12-scoped   108    108    0       108    0       [提示] 旧债仍在 -> 可排期
+    1.2r          23     23     0       23     0       [提示] 旧债仍在 -> 可排期
+    1.6r          21     21     0       21     0       [提示] 旧债仍在 -> 可排期
+    1.1r          11     11     0       11     0       [提示] 旧债仍在 -> 可排期
+    1.12-literal  7      7      0       7      0       [提示] 旧债仍在 -> 可排期
+    1.3           1      1      0       1      0       [提示] 旧债仍在 -> 可排期
+    1.3b          1      1      0       1      0       [提示] 旧债仍在 -> 可排期
+    1.9a          1      1      0       1      0       [提示] 旧债仍在 -> 可排期
+
+  超基线明细（阻塞项 · 必须先修）
+    （无）
+
+  按文件（旧债集中处 · 一次改动消掉多条）
+    文件                                                  旧债   超基线  涉及规则
+    ------------------------------------------------------------------------------------------------
+    web/src/app/pages/workflow-editor.component.ts        51     0       1.12-literal,1.12-scoped,1.1r,1.2r,1.6r,1.9a
+    web/src/app/ui/library-card.component.ts              46     0       1.12-scoped,1.1r,1.2r,1.6r
+    web/src/app/ui/cover-plate.component.ts               32     0       1.12-scoped,1.6r
+    web/src/app/ui/workflow-card.component.ts             14     0       1.12-scoped,1.2r
+    web/src/app/pages/workflows.component.ts              11     0       1.12-scoped,1.3,1.3b
+    web/src/app/ui/model-card.component.ts                9      0       1.12-scoped
+    web/src/app/pages/library.component.ts                8      0       1.2r,1.6r
+    web/src/app/lab/lab-primeng.component.ts              1      0       1.6r
+    web/src/app/ui/family-mark.component.ts               1      0       1.12-scoped
+
+  建议：旧债最集中的是 web/src/app/pages/workflow-editor.component.ts（51 处）—— 先修它，一次改动消掉的违规最多。
+
+
 ====================================================================================================
 [4] SUMMARY
 ====================================================================================================
   合规判定（违规必须 0 / 目标态精确成立）: 全部 PASS
   棘轮超基线（新增违规，只降不升）: 无新增违规
-  棘轮旧债（已登记、仍在）: 175 处（仅提示，退出码 1）
+  棘轮旧债（已登记、仍在）: 173 处（仅提示，退出码 1）
   交付物校验（两份 token 文件 + 交叉校验）: 全部 PASS
   对比度实算: PASS 19 / FAIL 7 / INFO 1（共 27 组，不参与退出码）
 
@@ -583,7 +616,7 @@
     1.9b 新增 token 引用 = 落地进度(>0 即已落地)
     1.10 lab 裁决 G 正向验收 = 合规判定(PASS 型，不变)
     1.11 --primary-hover token 值 = 合规判定(PASS 型，不变)
-    1.12 硬编码色值 = 棘轮(scoped 基线 110 / literal 基线 7)
+    1.12 硬编码色值 = 棘轮(scoped 基线 108 / literal 基线 7)
 
   退出码约定: 0=全通过 / 1=仅现状基线 FAIL（旧债仍在，不阻塞） /
               2=合规类 FAIL（新违规或合规项不达标，阻塞） / 3=脚本自身出错

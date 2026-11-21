@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SiMuseor · VIS 视觉识别系统 v2.8</title>
+<title>SiMuseor · VIS 视觉识别系统 v2.9</title>
 <style>
 /* ============================================================
    SiMuseor VIS 手册样式
@@ -180,7 +180,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
 <div class="wrap">
 <nav class="toc" aria-label="目录">
   <div class="tc-brand">SiMuseor</div>
-  <div class="tc-sub">Visual Identity System · v2.8</div>
+  <div class="tc-sub">Visual Identity System · v2.9</div>
   <ol>
     <li><a href="#s0">卷首 · 状态声明</a></li>
     <li><a href="#s1">品牌内核</a></li>
@@ -210,7 +210,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <h1>视觉识别系统</h1>
     <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
     <dl class="meta">
-      <div><dt>版本</dt><dd>v2.8 · 2026-11-21</dd></div>
+      <div><dt>版本</dt><dd>v2.9 · 2026-11-21</dd></div>
       <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
       <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
       <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
@@ -495,7 +495,9 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <tr><td>语义色 fg</td><td><code>#15803d / #b45309 / #b91c1c</code></td><td><code>#4ade80 / #fbbf24 / #f87171</code></td><td>浅底用深档、深底用亮档；不用 500 荧光档</td></tr>
     <tr><td>语义色 soft</td><td>实色 <code>#f0fdf4 / #fffbeb / #fef2f2</code></td><td><code>rgb(… / .12)</code> 半透明</td><td>深色下实色 soft 会成荧光块</td></tr>
     <tr><td>新增控件边界</td><td colspan="2"><code>--border-control #8b8b94</code>（浅 3.38:1 / 深 5.44:1）</td><td>仅 input / select / textarea / .radio-row 静止边框，不覆盖 <code>--border</code></td></tr>
+    <tr><td>铭牌芯片<span class="pill v2">v2.9 新增</span></td><td colspan="2"><code>--plate-chip-ink #3b3a35</code> + <code>--plate-chip-line rgb(0 0 0 / .18)</code>（两主题同值，<strong>不翻</strong>）</td><td>封面铭牌照片上的白底芯片：芯片底恒为白，故与主题无关</td></tr>
   </table>
+  <p class="small"><strong>填充型与文字型不得混用</strong>：实心填充一律 <code>--primary</code> + <code>--on-primary</code>（两主题同为 <code>#4f46e5</code>，白字 6.29:1）；<code>--accent</code> 是<strong>文字 / 描边 / 图标态</strong>（深色提亮成 <code>#a5b4fc</code>），白字压上去只有 <strong>1.99:1</strong>、<code>--accent-hover</code> 更差（1.49:1）。全局 <code>button.primary</code> 与组件 scoped 的 <code>.btn.primary</code> 都必须走 <code>--primary</code>；<strong>hover 亦然</strong> —— 只改 <code>border-color</code>，不改背景（§8.5 裁决 5 / M1-d）。</p>
 
   <h3>3.4 使用比例与禁止组合</h3>
   <div class="cols">
@@ -919,7 +921,8 @@ const isAccent = (r, g, b) =&gt; {
     <tr><td>圆角中间档 / 交互亮色白字填充</td><td class="bad">5 处 / 4 处；其中圆角 3 处属 <code>cover-plate</code> 适用域外（§6.2，不收敛），第 4 处白字填充为 <code>button.primary:hover</code>（§8.5 裁决 5），与登记值吻合</td></tr>
     <tr><td><code>@font-face</code> / 源码引用新增 token</td><td class="bad">0 条 / 0 处 —— 印证基线字体未生效、本轮零落地</td></tr>
     <tr><td><code>filter:invert()</code> / <code>.brand-wordmark</code> / reduced-motion</td><td>0 / 0 / 仅 1 处（<code>model-card.component.ts</code>，作全仓范本）</td></tr>
-    <tr><td>对比度实算</td><td><strong>PASS 18 / FAIL 8 / INFO 1（共 27 组）</strong>。8 个 FAIL = 6 个已登记现状违规 + 1 个「白字 on indigo 400 = 2.98:1」禁止组合示例 + 1 个 <code>button.primary:hover</code> 走 <code>--primary-hover</code> 的 4.47:1（§8-M 未列举实例，已纳入 M1-d）；INFO 1 组是 lab 深字方案说明，不是缺陷</td></tr>
+    <tr><td>对比度实算</td><td><strong>PASS 19 / FAIL 7 / INFO 1（共 27 组）</strong>。7 个 FAIL = 4 个已登记现状违规（浅 <code>--faint</code> 2.56 / 浅 <code>--placeholder</code> 2.56 / 浅 <code>--border</code> 1.27 / 深 <code>--faint</code> 2.91）+ 2 个「白字 on <code>--accent</code> / <code>--accent-hover</code>」禁止组合（1.99 / 1.49）+ 1 个「白字 on indigo 400 = 2.98:1」禁止组合示例；INFO 1 组是 <code>--brand-line</code> 1px 装饰细线（非文本，豁免）</td></tr>
+    <tr><td>违规热力<span class="pill v2">v2.9 新增</span></td><td>报告新增 <strong>[3.5] 违规热力</strong> 分节：按规则（超基线优先 → 旧债条数）+ <strong>按文件</strong>（旧债集中处 = 一次改动消掉最多的地方）两套排序，直接给出「先修哪个」。棘轮从「过 / 不过」变成「排优先级」</td></tr>
     <tr><td>裁决 G 边界正向验收</td><td class="ok">5 项全部 PASS —— <code>lab-theme.ts:72 contrastColor</code> 深字方案未被误报为 FAIL</td></tr>
     <tr><td>退出码</td><td><code>1</code>（预期：现状基线违规，非脚本或交付物缺陷）</td></tr>
   </table>
@@ -1077,8 +1080,9 @@ const isAccent = (r, g, b) =&gt; {
   <p class="small"><strong>v2.6（2026-11-19 · 蝉形与 favicon 手工重制）</strong>：① <strong>蝉形三帧换稿</strong> —— <code>cicada-{max,mid,min}.svg</code> 改为主理人手工重绘（max 82 / mid 57 / min 36 个面片 + 4 条触角 path，纯色 class 上色、零渐变）；深色与浅色共用同一份彩色资产，纯反白改用线稿 <code>cicada-max-lineart{-b}.svg</code>。② <strong>favicon 重做</strong> —— 七档方形画布（16 / 24 / 32 / 48 / 64 / 128 / 256）逐档独立出图、透明底，产品侧为合并 ICO + PNG 备用档 + 256 档内嵌 SVG；旧的 2:1 长方形画布与 16px x 压缩作废。③ <strong>旧管线退役</strong> —— <code>_flat_*.svg</code>、<code>add_facet_gradients.py</code>、<code>vectorize.py</code>、<code>make_favicon_l3.py</code>、<code>-mono</code> 剪影、<code>png/</code> 与 <code>ico/</code> 旧导出全部删除。</p>
   <p class="small"><strong>v2.7（2026-11-21 · 渐变层 / 色域约束 / 站点底纹）</strong>：① <strong>§3.8 渐变层</strong> —— 全站 6 类渐变收口成 4 级 12 枚 <code>--grad-*</code> token（设计层 + 生效层同步声明，取值逐字一致）。② <strong>§3.9 色域约束摘要</strong> —— 完整 13 条约束表与 Pantone / 红点国际锚点落在 <code>reference/color.html</code> §s-17 / §s-18。③ <strong>§3.10 站点背景与底纹</strong> —— 站点底定稿 v2 单束柔光（色场 70% / 纸纹 60%），含 9 条硬约束（第 9 条为侧栏透明渐变）；配套实验稿 <code>prototypes/backgrounds.html</code>。④ 色彩规范页新增 §s-16…§s-19 四节（家族色模型卡美术色域 / 约束总表 / 国际锚点 / 渐变层）。</p>
   <p class="small"><strong>v2.8（2026-11-21 · 资产守门员 + 事实更正）</strong>：① <strong>§3.11 新增「资产守门员 <code>vis-asset-guard.mjs</code>」</strong> —— 「SVG 是唯一图片资产真值」的可机检契约：4 子命令（<code>normalize</code> / <code>fingerprint</code> / <code>assert</code> / <code>report</code>）、8 条断言（A1–A8）、<strong>与 <code>vis-check.mjs</code> 同一套棘轮口径</strong>（等于基线退出 1 仅提示，超基线退出 2 阻塞）；A8 按 WCAG 1.4.11 免除 logo 的规定，对品牌标记主色对比度<strong>报 INFO 不阻塞</strong>。工具落位 <code>artifacts/vis/vis-asset-guard.mjs</code>，验证 <code>tests/vis-asset-guard.mjs</code>（26 条断言全通过），台账 <code>artifacts/vis/asset-ledger.json</code>。② <strong>§3.7.4 事实更正</strong> —— 上色方式原写 <code>.cls-1…cls-86</code>，实测为 <strong>max 44 个类 / 86 次引用</strong>（引用数 ≠ 类数，86 = 82 polygon + 4 path），mid 45 类 / min 21 类；定义与使用<strong>零差集</strong>。③ <strong>§3.8 G0 事实更正</strong> —— 「蝉形 82 条面片微渐变」作废：蝉形自 v2.6 手工重制后为 <strong>82 面片纯色、零渐变</strong>，G0 现只承载 favicon 5 档色带。</p>
+  <p class="small"><strong>v2.9（2026-11-21 · 棘轮清零 + 违规热力）</strong>：① <strong>§8.3 M1 落地一条</strong> —— 组件 scoped 的 <code>.btn.primary</code> 原用 <code>--accent</code> 当填充底色 + 裸 <code>#fff</code> 字色，深色主题下白字压 <code>--accent</code> #a5b4fc 仅 <strong>1.99:1</strong>、hover 的 <code>--accent-hover</code> #c7d2fe 仅 <strong>1.49:1</strong>（均不达 AA，且属裸色值）。按 §3.3「填充型用 <code>--primary</code>」与 §8.5 裁决 5 / M1-d 既定裁决改为 <code>--primary</code> + <code>--on-primary</code>，hover 保持 <code>background: var(--primary)</code> 只改 <code>border-color</code>，四态实测 <strong>6.29:1</strong>（浅深一致）。② <strong>§3.3 产品层新增两枚 token</strong> —— <code>--plate-chip-ink #3b3a35</code> / <code>--plate-chip-line rgb(0 0 0 / .18)</code>（封面铭牌照片上的白底芯片，<strong>与主题无关、两主题同值</strong>），原先内联在 <code>cover-plate.component.ts</code> 的两个裸色值上提，改值零、视觉零变化。③ <strong><code>vis-check.mjs</code> 新增 [3.5] 违规热力</strong> —— 棘轮逐 key 的超基线 / 可收敛明细，按规则与按文件两套排序，直接排出「先修哪个」；并据此把 1.12 基线由 110 收紧至 <strong>108</strong>（只降不升）。④ 超基线清零：<code>vis-check</code> 退出码由 2 回到 <strong>1</strong>（旧债仍在，按设计不阻塞 CI）。⑤ <strong>§8.2 对比度实算数字更正</strong> —— 实跑为 PASS 19 / FAIL 7 / INFO 1，原文「18 / 8」为旧数。</p>
   <footer>
-    SiMuseor · Visual Identity System v2.8 · 2026-11-21<br>
+    SiMuseor · Visual Identity System v2.9 · 2026-11-21<br>
     编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
     本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
   </footer>

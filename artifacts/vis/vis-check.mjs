@@ -130,7 +130,6 @@ const BASELINE_1_9A = {
 const BASELINE_1_12_SCOPED = {
   'web/src/app/pages/workflow-editor.component.ts|#fee2e2': 1,
   'web/src/app/pages/workflow-editor.component.ts|#fef2f2': 2,
-  'web/src/app/pages/workflow-editor.component.ts|#fff': 2,
   'web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.35)': 1,
   'web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.4)': 1,
   'web/src/app/pages/workflow-editor.component.ts|rgb(0 0 0 / 0.55)': 1,
@@ -291,19 +290,31 @@ let regressionFail = 0;
 let debtCount = 0;
 let deliverableFail = 0;
 
+/* 棘轮债务台账：每条棘轮规则一行，供「违规热力」排修复优先级 */
+const HEAT = [];
+
 /* 棘轮判定：actual / baseline 都是 { 'file|value': n } 形态
-   返回 { regression, debt, improvement } */
+   返回 { regression, debt, improvement, over, under }
+   over  = 逐 key 的超基线明细（实际 n > 基线 b），用于「违规热力」排出修复优先级
+   under = 逐 key 的可收敛明细（实际 n < 基线 b），用于提示基线可以收紧 */
 function ratchet(actual, baseline) {
   let regression = 0, debt = 0, improvement = 0;
+  const over = [], under = [];
   for (const [k, n] of Object.entries(actual)) {
     const b = baseline[k] || 0;
-    if (n > b) regression += n - b;
-    else { debt += n; improvement += b - n; }
+    if (n > b) {
+      regression += n - b;
+      over.push({ key: k, actual: n, base: b, delta: n - b });
+    } else {
+      debt += n;
+      improvement += b - n;
+      if (n < b) under.push({ key: k, actual: n, base: b });
+    }
   }
   for (const [k, b] of Object.entries(baseline)) {
-    if (!(k in actual)) improvement += b;
+    if (!(k in actual)) { improvement += b; under.push({ key: k, actual: 0, base: b }); }
   }
-  return { regression, debt, improvement };
+  return { regression, debt, improvement, over, under };
 }
 
 /* 把 actual 变成棘轮用的 { 'file|value': n } */
@@ -318,6 +329,11 @@ function reportRatchet(label, kind, actual, baseline, detailLines) {
   const r = ratchet(actual, baseline);
   const total = Object.values(actual).reduce((a, b) => a + b, 0);
   const baseTotal = Object.values(baseline).reduce((a, b) => a + b, 0);
+  HEAT.push({
+    label, total, baseTotal,
+    regression: r.regression, debt: r.debt, improvement: r.improvement,
+    over: r.over, under: r.under, actual, baseline,
+  });
   say('        现状 ' + total + ' 处 / 登记基线 ' + baseTotal + ' 处');
   if (r.regression > 0) {
     say('        判定: ' + verdict(false) + ' 新增违规 ' + r.regression +
@@ -804,7 +820,7 @@ say(HR2);
 /* --------------------------------------------------------------------------
  * 1.12 硬编码色值（新增）
  *   范围：web/src/app 下所有 .ts —— 组件 scoped 样式块 + TS 字面量
- *   判定：棘轮（登记基线 scoped 110 处 / literal 7 处，只降不升）
+ *   判定：棘轮（登记基线 scoped 108 处 / literal 7 处，只降不升）
  * ------------------------------------------------------------------------ */
 {
   say('    1.12 硬编码色值（新增）：web/src/app/**/*.ts 内的裸 hex / rgb() / rgba()');
@@ -1146,6 +1162,89 @@ say('        因此 token 文件不会被误当成已落地的组件实现。');
 say('');
 
 /* ==========================================================================
+ * 3.5 违规热力（棘轮债务分布 · 修复优先级）
+ * --------------------------------------------------------------------------
+ * 棘轮只说「超基线 / 等基线」，不说「先修哪个最划算」。
+ * 这里把每条规则的旧债条数与超基线条数摊平，再按文件聚合 ——
+ * 旧债集中在哪个文件，就先修哪个文件（一次改动消掉多条）。
+ * ========================================================================== */
+say(HR2);
+say('[3.5] 违规热力（棘轮债务分布 · 修复优先级）');
+say(HR2);
+{
+  const heatRows = HEAT.slice().sort((a, b) =>
+    (b.regression - a.regression) || (b.debt - a.debt) || a.label.localeCompare(b.label));
+
+  say('  按规则（超基线优先，其次旧债条数）');
+  say('    ' + pad('规则', 14) + pad('现状', 7) + pad('基线', 7) + pad('超基线', 8) +
+    pad('旧债', 7) + pad('可收敛', 8) + '状态');
+  say('    ' + '-'.repeat(72));
+  for (const r of heatRows) {
+    const st = r.regression > 0 ? '[阻塞] 超基线 -> 必须修'
+      : (r.debt > 0 ? '[提示] 旧债仍在 -> 可排期' : '[PASS] 已清零');
+    say('    ' + pad(r.label, 14) + pad(String(r.total), 7) + pad(String(r.baseTotal), 7) +
+      pad(String(r.regression), 8) + pad(String(r.debt), 7) + pad(String(r.improvement), 8) + st);
+  }
+
+  const overs = heatRows.filter((r) => r.regression > 0);
+  say('');
+  say('  超基线明细（阻塞项 · 必须先修）');
+  if (!overs.length) say('    （无）');
+  for (const r of overs) {
+    say('    ' + r.label + ' 超基线 ' + r.regression + ' 处：');
+    for (const o of r.over) {
+      say('      ' + o.key + '  现状 ' + o.actual + ' > 基线 ' + o.base + '（+' + o.delta + '）');
+    }
+  }
+
+  /* 按文件聚合：旧债集中在哪个文件，先修哪个 */
+  const byFile = new Map();
+  for (const r of HEAT) {
+    for (const [k, n] of Object.entries(r.actual)) {
+      const file = k.split('|')[0];
+      const e = byFile.get(file) || { file, debt: 0, regression: 0, rules: new Set() };
+      e.debt += n;
+      e.rules.add(r.label);
+      byFile.set(file, e);
+    }
+    for (const o of r.over) {
+      const e = byFile.get(o.key.split('|')[0]);
+      if (e) e.regression += o.delta;
+    }
+  }
+  const fileRows = [...byFile.values()].sort((a, b) =>
+    (b.regression - a.regression) || (b.debt - a.debt));
+  say('');
+  say('  按文件（旧债集中处 · 一次改动消掉多条）');
+  say('    ' + pad('文件', 54) + pad('旧债', 7) + pad('超基线', 8) + '涉及规则');
+  say('    ' + '-'.repeat(96));
+  for (const f of fileRows) {
+    say('    ' + pad(f.file, 54) + pad(String(f.debt), 7) + pad(String(f.regression), 8) +
+      [...f.rules].sort().join(','));
+  }
+  const topDebt = fileRows.reduce((a, b) => (b.debt > a.debt ? b : a), { debt: 0, file: '' });
+  if (topDebt.debt > 0) {
+    say('');
+    say('  建议：旧债最集中的是 ' + topDebt.file + '（' + topDebt.debt + ' 处）—— 先修它，一次改动消掉的违规最多。');
+  }
+  const tightenable = heatRows.reduce((a, r) => a + r.under.length, 0);
+  if (tightenable > 0) {
+    say('');
+    say('  基线可收紧明细（实际值已低于登记基线 —— 修完应同步下调基线，只降不升）');
+    for (const r of heatRows) {
+      if (!r.under.length) continue;
+      for (const u of r.under) {
+        say('    ' + r.label + '  ' + u.key + '  实际 ' + u.actual + ' < 基线 ' + u.base +
+          '（可降 ' + (u.base - u.actual) + '）');
+      }
+    }
+    say('  基线可收紧：共 ' + tightenable + ' 个 key 的实际值已低于登记基线。');
+  }
+  say('');
+}
+say('');
+
+/* ==========================================================================
  * 4. SUMMARY
  * ========================================================================== */
 say(HR);
@@ -1175,7 +1274,7 @@ say('    1.9a stroke-width:1.6 = 棘轮(基线 1)');
 say('    1.9b 新增 token 引用 = 落地进度(>0 即已落地)');
 say('    1.10 lab 裁决 G 正向验收 = 合规判定(PASS 型，不变)');
 say('    1.11 --primary-hover token 值 = 合规判定(PASS 型，不变)');
-say('    1.12 硬编码色值 = 棘轮(scoped 基线 110 / literal 基线 7)');
+say('    1.12 硬编码色值 = 棘轮(scoped 基线 108 / literal 基线 7)');
 say('');
 say('  退出码约定: 0=全通过 / 1=仅现状基线 FAIL（旧债仍在，不阻塞） /');
 say('              2=合规类 FAIL（新违规或合规项不达标，阻塞） / 3=脚本自身出错');
