@@ -57,7 +57,6 @@ interface EdgeView {
   link: GraphLink;
   d: string;
   color: string;
-  long: boolean;
   supply: boolean;
   hot: boolean;
   dim: boolean;
@@ -189,10 +188,17 @@ const ROLES: Record<string, string> = {
                   (click)="toggleSupply()"
                   title="加载器、模型、采样器等配置连线默认收起；选中相关节点时会自动出现"
                 >供给线{{ showSupplyLinks ? ' · 开' : '' }}</button>
+                <button
+                  data-testid="wf-bus-route"
+                  [class.on]="busRouting"
+                  [attr.aria-pressed]="busRouting"
+                  (click)="busRouting = !busRouting"
+                  title="需要拐弯的线走顶部/底部总线桥架；关闭后只有跨列长线走总线，短连线在列间走圆角折线"
+                >总线走线{{ busRouting ? ' · 开' : '' }}</button>
               </div>
               <span class="hint">
-                @if (mode === 'pipeline') { 选中节点亮起直接上下游；供给线默认收起 }
-                @else { 拖动节点移动，滚轮缩放；选中节点看直接上下游 }
+                @if (mode === 'pipeline') { 拐弯走上下总线；选中节点看直接上下游 }
+                @else { 拖动节点移动，滚轮缩放；拐弯走上下总线 }
               </span>
             </div>
 
@@ -222,7 +228,6 @@ const ROLES: Record<string, string> = {
                     [class.hot]="edge.hot"
                     [class.dim]="edge.dim"
                     [class.supply]="edge.supply"
-                    [class.long]="edge.long"
                     [attr.d]="edge.d"
                     [attr.stroke]="edge.color"
                   ></path>
@@ -695,17 +700,16 @@ const ROLES: Record<string, string> = {
 
     .stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
     .wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
-    .wire { fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; transition: opacity 0.14s, stroke-width 0.14s; }
+    .wire { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0.62; transition: opacity 0.14s, stroke-width 0.14s; }
     .wire.on { opacity: 1; stroke-width: 2.4; }
-    .wire.supply { stroke-dasharray: 4 4; opacity: 0.4; }
-    .wire.long { opacity: 0.24; }
+    .wire.supply { stroke-dasharray: 4 4; opacity: 0.45; }
     .wire.hot { opacity: 0.95; stroke-width: 2.2; stroke-dasharray: none; }
     .wire.dim { opacity: 0.06; }
     .wire.temp { opacity: 0.9; stroke-dasharray: 4 4; stroke-width: 1.8; }
     .wire-hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
-    .bus-tray { fill: color-mix(in oklab, var(--panel-2) 82%, transparent); stroke: var(--border-soft); stroke-width: 1; }
-    .bus-rail { fill: none; stroke: var(--border-strong); stroke-width: 1.5; stroke-linecap: round; opacity: 0.7; }
-    .bus-label { font: 9.5px/1 'Cascadia Mono', Consolas, monospace; letter-spacing: 0.08em; fill: var(--muted); }
+    .bus-tray { fill: color-mix(in oklab, var(--panel-2) 82%, transparent); stroke: var(--border-soft); stroke-width: 1; pointer-events: none; }
+    .bus-rail { fill: none; stroke: var(--border-strong); stroke-width: 1.5; stroke-linecap: round; opacity: 0.8; pointer-events: none; }
+    .bus-label { font: 9.5px/1 'Cascadia Mono', Consolas, monospace; letter-spacing: 0.08em; fill: var(--muted); pointer-events: none; }
 
     .node {
       position: absolute; border-radius: 10px; background: var(--panel);
@@ -908,6 +912,8 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
   hoverId: number | null = null;
   /** 加载器、图片输入这类「供料」连线默认收起，选中相关节点时自动出现 */
   showSupplyLinks = false;
+  /** 所有需要拐弯的线都走顶部/底部总线；关闭后退回列间圆角折线 */
+  busRouting = true;
   issues: GraphIssue[] = [];
 
   positions: Record<number, [number, number]> = {};
@@ -1083,10 +1089,10 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
   /** 当前真正被收起的供给线数量（选中节点时它的直连会临时出现，不算收起） */
   get hiddenSupplyCount(): number {
     if (!this.graph || this.showSupplyLinks) return 0;
-    const focus = this.focusId;
+    const selected = this.selectedId;
     return this.edges().filter((edge) => {
       if (!edge.supply) return false;
-      return !(focus != null && (edge.link.from === focus || edge.link.to === focus));
+      return !(selected != null && (edge.link.from === selected || edge.link.to === selected));
     }).length;
   }
 
@@ -1217,7 +1223,17 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
       })
       .filter((item): item is NonNullable<typeof item> => item !== null);
 
-    const topItems = items.filter((item) => item.span > BUS_SPAN && (item.sy + item.ey) / 2 < centerY);
+    const useBus = (item: { sy: number; ey: number; span: number }): boolean =>
+      this.busRouting ? Math.abs(item.ey - item.sy) >= 2 : item.span > BUS_SPAN;
+    // 供给线只在「选中」时揭示，不跟悬停走：避免鼠标划过节点时整条总线跳车道。
+    const selected = this.selectedId;
+    const isVisible = (item: { link: GraphLink; from: GraphNode; to: GraphNode }): boolean => {
+      const portType = (item.link.type || item.to.inputs[item.link.toSlot]?.type || '').toUpperCase();
+      const supply = isSupplyNode(item.from) || SUPPLY_LINK_TYPES.has(portType);
+      if (!supply || this.showSupplyLinks) return true;
+      return selected != null && (item.link.from === selected || item.link.to === selected);
+    };
+    const topItems = items.filter((item) => isVisible(item) && useBus(item) && (item.sy + item.ey) / 2 < centerY);
     const topBase = Math.max(10, bounds.minY - BUS_OFFSET - topItems.length * BUS_GAP);
     const bottomBase = bounds.maxY + BUS_OFFSET;
     let topLane = 0;
@@ -1225,10 +1241,15 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
     const out: EdgeView[] = [];
 
     for (const item of items) {
-      const { link, from, to, sx, sy, ex, ey, span } = item;
+      const { link, from, to, sx, sy, ex, ey } = item;
       const portType = (link.type || to.inputs[link.toSlot]?.type || '').toUpperCase();
+      const supply = isSupplyNode(from) || SUPPLY_LINK_TYPES.has(portType);
+      if (!isVisible(item)) {
+        out.push({ link, d: '', color: this.roleOf(from), supply, hot: false, dim: false });
+        continue;
+      }
       let points: Array<[number, number]>;
-      if (span <= BUS_SPAN) {
+      if (!useBus(item)) {
         // 相邻列：在列间空隙里走一个圆角 Z，不碰卡片
         const jitter = ((link.id % 5) - 2) * 3;
         const midX = (sx + ex) / 2 + (Math.abs(ey - sy) < 2 ? 0 : jitter);
@@ -1246,8 +1267,7 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
         link,
         d: roundedPath(points),
         color: this.roleOf(from),
-        long: false,
-        supply: isSupplyNode(from) || SUPPLY_LINK_TYPES.has(portType),
+        supply,
         hot: false,
         dim: false,
       });
@@ -1261,11 +1281,9 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
     const bounds = this.nodeBounds();
     if (!graph || !bounds) return [];
     const centerY = (bounds.minY + bounds.maxY) / 2;
-    const focus = this.focusId;
+    const selected = this.selectedId;
     let top = 0;
     let bottom = 0;
-    let topVisible = 0;
-    let bottomVisible = 0;
     for (const link of graph.links) {
       const from = nodeById(graph, link.from);
       const to = nodeById(graph, link.to);
@@ -1274,30 +1292,27 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
       const sy = this.outputY(from, link.fromSlot);
       const ex = this.left(to);
       const ey = this.inputY(to, link.toSlot);
-      if (Math.abs(ex - sx) <= BUS_SPAN) continue;
+      const span = Math.abs(ex - sx);
+      const bus = this.busRouting ? Math.abs(ey - sy) >= 2 : span > BUS_SPAN;
+      if (!bus) continue;
       const portType = (link.type || to.inputs[link.toSlot]?.type || '').toUpperCase();
       const supply = isSupplyNode(from) || SUPPLY_LINK_TYPES.has(portType);
-      const direct = focus != null && (link.from === focus || link.to === focus);
+      const direct = selected != null && (link.from === selected || link.to === selected);
       const visible = !supply || this.showSupplyLinks || direct;
-      const isTop = (sy + ey) / 2 < centerY;
-      if (isTop) {
-        top += 1;
-        if (visible) topVisible += 1;
-      } else {
-        bottom += 1;
-        if (visible) bottomVisible += 1;
-      }
+      if (!visible) continue;
+      if ((sy + ey) / 2 < centerY) top += 1;
+      else bottom += 1;
     }
     const x1 = bounds.minX - 40;
     const x2 = bounds.maxX + 40;
     const rails: Array<{ kind: 'top' | 'bottom'; d: string; x: number; y: number; width: number; count: number }> = [];
-    if (topVisible) {
+    if (top) {
       const y = Math.max(10, bounds.minY - BUS_OFFSET - top * BUS_GAP);
-      rails.push({ kind: 'top', d: `M ${x1} ${y} L ${x2} ${y}`, x: x1, y, width: x2 - x1, count: topVisible });
+      rails.push({ kind: 'top', d: `M ${x1} ${y} L ${x2} ${y}`, x: x1, y, width: x2 - x1, count: top });
     }
-    if (bottomVisible) {
+    if (bottom) {
       const y = bounds.maxY + BUS_OFFSET;
-      rails.push({ kind: 'bottom', d: `M ${x1} ${y} L ${x2} ${y}`, x: x1, y, width: x2 - x1, count: bottomVisible });
+      rails.push({ kind: 'bottom', d: `M ${x1} ${y} L ${x2} ${y}`, x: x1, y, width: x2 - x1, count: bottom });
     }
     return rails;
   }
@@ -1320,11 +1335,13 @@ export class WorkflowEditorComponent implements OnInit, OnDestroy {
 
   visibleEdges(): EdgeView[] {
     const focus = this.focusId;
+    const selected = this.selectedId;
     const out: EdgeView[] = [];
     for (const edge of this.edges()) {
-      const direct = focus != null && (edge.link.from === focus || edge.link.to === focus);
-      if (edge.supply && !this.showSupplyLinks && !direct) continue;
-      out.push({ ...edge, hot: direct, dim: focus != null && !direct });
+      const selectedDirect = selected != null && (edge.link.from === selected || edge.link.to === selected);
+      if (edge.supply && !this.showSupplyLinks && !selectedDirect) continue;
+      const hot = focus != null && (edge.link.from === focus || edge.link.to === focus);
+      out.push({ ...edge, hot, dim: focus != null && !hot });
     }
     return out;
   }

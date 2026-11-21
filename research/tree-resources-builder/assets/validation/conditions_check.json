@@ -1,0 +1,291 @@
+{
+  "kind": "conditions_check",
+  "generated_by": "harness/conditions.py --demo",
+  "scene_source": "generate_assets.generate_all()",
+  "resolution": [
+    512,
+    512
+  ],
+  "camera": {
+    "eye": [
+      4.6,
+      -11.5,
+      1.35
+    ],
+    "target": [
+      -1.2,
+      2.0,
+      1.1
+    ],
+    "fov_y": 53.13
+  },
+  "timing_ms": {
+    "rasterize": 70.85,
+    "depth": 1.05,
+    "normal": 5.9,
+    "seg": 5.28,
+    "total_render_conditions": 83.24,
+    "demo_total": 1006.17
+  },
+  "budget_ms": 1500.0,
+  "within_budget": true,
+  "foreground_px": {
+    "total": 262144,
+    "visible": 235824,
+    "hidden_cars": 235090
+  },
+  "hidden_test": {
+    "rule": "隐藏所有车相关几何（名字以 car 开头，或语义类别属于载具部件）后重渲 depth",
+    "car_closeup_camera": {
+      "foreground_before": 145017,
+      "foreground_after": 120750,
+      "reduced_by": 24267,
+      "reduction_ratio": 0.1673,
+      "note": "低机位贴近 car_a，车轮廓压在天空上：隐藏后这部分前景变成背景"
+    },
+    "street_camera": {
+      "foreground_before": 235824,
+      "foreground_after": 235090,
+      "reduced_by": 734,
+      "reduction_ratio": 0.0031,
+      "note": "街景主视角：车后面紧挨着路面/建筑，所以前景总数只小幅下降"
+    },
+    "car_pov_camera": {
+      "foreground_before": 260284,
+      "foreground_after": 253811,
+      "reduced_by": 6473,
+      "reduction_ratio": 0.0249,
+      "note": "POV 相机在 car_a 车壳内部：不隐藏时车壳铺满画面，隐藏后只剩外部世界"
+    },
+    "isolated_cars": {
+      "foreground_before": 4681,
+      "foreground_after": 0,
+      "reduction_ratio": 1.0,
+      "note": "只渲染车：隐藏后前景必须归零，是隐藏是否生效的最强判据"
+    },
+    "hidden_mesh_count": 2
+  },
+  "depth": {
+    "encoding": "depth = (z - z_near_fg) / (z_far_fg - z_near_fg) ∈ [0,1]（z = 相机空间前向轴距离/米，0=最近，1=最远）；背景像素固定为 background_depth = 1.0",
+    "background_value": 1.0,
+    "foreground_min": 0.0,
+    "foreground_max": 1.0,
+    "background_unique": true,
+    "near_far_m": [
+      2.6165,
+      40.165
+    ]
+  },
+  "normal": {
+    "encoding": "c = (n_world * 0.5 + 0.5) ∈ [0,1]^3；存 16bit: v16 = round(c * 65535)；反解: n = normalize(v16 / 65535 * 2 - 1)；背景像素固定为 (0,0,0)",
+    "space": "world",
+    "decode_max_error_float": 6.673608765606076e-08,
+    "decode_max_error_png16": 1.845783568160675e-05,
+    "threshold": 0.001,
+    "pass": true,
+    "note": "法线图为面法线（flat），前景逐像素常量；背景固定 (0,0,0)"
+  },
+  "seg": {
+    "encoding": "seg = 固定调色板[label]；背景像素固定为 (0,0,0)",
+    "palette": {
+      "building": [
+        198,
+        106,
+        68
+      ],
+      "character": [
+        226,
+        112,
+        200
+      ],
+      "crowd": [
+        214,
+        158,
+        116
+      ],
+      "foliage": [
+        120,
+        186,
+        92
+      ],
+      "ground": [
+        141,
+        166,
+        110
+      ],
+      "road": [
+        70,
+        70,
+        78
+      ],
+      "sidewalk": [
+        163,
+        163,
+        170
+      ],
+      "tree": [
+        86,
+        140,
+        62
+      ],
+      "vehicle": [
+        52,
+        108,
+        214
+      ]
+    },
+    "duplicate_colors": {},
+    "labels_used": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "categories": {
+      "ground": "ground",
+      "road": "road",
+      "sidewalk": "sidewalk",
+      "building": "building",
+      "vehicle": "vehicle",
+      "tree": "tree",
+      "foliage": "foliage",
+      "character": "character",
+      "crowd": "crowd"
+    }
+  },
+  "semantic_map": {
+    "direct": {
+      "body": "body",
+      "cabin": "cabin",
+      "door": "door",
+      "door_left": "door",
+      "door_right": "door",
+      "door_front_left": "door",
+      "door_front_right": "door",
+      "door_rear_left": "door",
+      "door_rear_right": "door",
+      "door_handle": "door",
+      "window": "window",
+      "side_window": "window",
+      "rear_window": "window",
+      "windshield": "windshield",
+      "wheel": "wheel",
+      "wheel_front_left": "wheel",
+      "wheel_front_right": "wheel",
+      "wheel_rear_left": "wheel",
+      "wheel_rear_right": "wheel",
+      "tire": "wheel",
+      "headlight": "headlight",
+      "taillight": "taillight",
+      "light": "light",
+      "mirror": "mirror",
+      "bumper": "bumper",
+      "hood": "hood",
+      "roof": "roof",
+      "trunk": "trunk",
+      "seat": "seat",
+      "dashboard": "dashboard",
+      "steering_wheel": "steering_wheel",
+      "engine": "engine",
+      "chassis": "chassis",
+      "vehicle": "vehicle",
+      "building": "building",
+      "tree": "tree",
+      "foliage": "foliage",
+      "character": "character",
+      "crowd": "crowd",
+      "ground": "ground",
+      "road": "road",
+      "sidewalk": "sidewalk",
+      "clothing": "clothing",
+      "prop": "prop",
+      "animal": "animal",
+      "water": "water",
+      "sky": "sky",
+      "fx": "fx",
+      "other": "other"
+    },
+    "prefix": {
+      "building": "building",
+      "tree_canopy": "foliage",
+      "tree": "tree",
+      "crowd": "crowd",
+      "person": "crowd",
+      "hero": "character",
+      "car": "vehicle",
+      "boat": "vehicle",
+      "vehicle": "vehicle",
+      "truck": "vehicle",
+      "bus": "vehicle",
+      "bike": "vehicle",
+      "bicycle": "vehicle",
+      "motorcycle": "vehicle",
+      "ground": "ground",
+      "road": "road",
+      "sidewalk": "sidewalk",
+      "jacket": "clothing",
+      "clothing": "clothing",
+      "shirt": "clothing",
+      "crate": "prop",
+      "prop": "prop",
+      "barrel": "prop",
+      "deer": "animal",
+      "fox": "animal",
+      "animal": "animal",
+      "creature": "animal",
+      "water": "water",
+      "sky": "sky",
+      "fx": "fx",
+      "debris": "fx",
+      "door": "door",
+      "wheel": "wheel",
+      "tire": "wheel",
+      "headlight": "headlight",
+      "taillight": "taillight",
+      "mirror": "mirror",
+      "seat": "seat",
+      "windshield": "windshield",
+      "window": "window",
+      "body": "body",
+      "cabin": "cabin"
+    },
+    "other": "other",
+    "categories_used": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ]
+  },
+  "hidden_meshes": [],
+  "outputs": {
+    "cond_depth": "assets\\previews\\cond_depth.png",
+    "cond_normal": "assets\\previews\\cond_normal.png",
+    "cond_seg": "assets\\previews\\cond_seg.png",
+    "cond_normal_r16": "assets\\previews\\cond_normal_r16.png",
+    "cond_normal_g16": "assets\\previews\\cond_normal_g16.png",
+    "cond_normal_b16": "assets\\previews\\cond_normal_b16.png",
+    "cond_car_depth": "assets\\previews\\cond_car_depth.png",
+    "cond_car_normal": "assets\\previews\\cond_car_normal.png",
+    "cond_car_seg": "assets\\previews\\cond_car_seg.png",
+    "cond_car_normal_r16": "assets\\previews\\cond_car_normal_r16.png",
+    "cond_car_normal_g16": "assets\\previews\\cond_car_normal_g16.png",
+    "cond_car_normal_b16": "assets\\previews\\cond_car_normal_b16.png",
+    "cond_pov_depth": "assets\\previews\\cond_pov_depth.png",
+    "cond_pov_normal": "assets\\previews\\cond_pov_normal.png",
+    "cond_pov_seg": "assets\\previews\\cond_pov_seg.png",
+    "cond_pov_normal_r16": "assets\\previews\\cond_pov_normal_r16.png",
+    "cond_pov_normal_g16": "assets\\previews\\cond_pov_normal_g16.png",
+    "cond_pov_normal_b16": "assets\\previews\\cond_pov_normal_b16.png"
+  }
+}

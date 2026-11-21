@@ -1,0 +1,170 @@
+{
+  "kind": "agentic_loop_demo",
+  "iterations": [
+    {
+      "iteration": 0,
+      "params": {
+        "height": 2.45,
+        "arm_offset": 0.16
+      },
+      "result": {
+        "asset": "character_iter0",
+        "pass": false,
+        "checks": [
+          {
+            "code": "MESH_WATERTIGHT",
+            "ok": true,
+            "message": "22/22 个部件水密",
+            "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+          },
+          {
+            "code": "MESH_VOLUME",
+            "ok": true,
+            "message": "总体积 0.2246 m^3",
+            "hint": "体积近零通常意味着面反转或截面退化"
+          },
+          {
+            "code": "DEGENERATE_FACES",
+            "ok": true,
+            "message": "退化面 0 个",
+            "hint": "清理零面积三角形"
+          },
+          {
+            "code": "SCALE_Z",
+            "ok": false,
+            "message": "z 尺寸 2.436 m，期望 1.6–1.86 m",
+            "hint": "按比例调整参数使 z 落入区间"
+          },
+          {
+            "code": "COMPONENT_LIMIT",
+            "ok": true,
+            "message": "部件数 22，上限 40",
+            "hint": "合并相邻部件或减少细节件"
+          },
+          {
+            "code": "FLOATING_PART",
+            "ok": true,
+            "message": "最大部件间隙 0.005 m（阈值 0.06）",
+            "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+          },
+          {
+            "code": "GROUND_CONTACT",
+            "ok": true,
+            "message": "最低点 z=0.0007 m",
+            "hint": "沿 Z 平移使最低点贴地"
+          }
+        ],
+        "metrics": {
+          "components": 22,
+          "watertight_ratio": 1.0,
+          "faces": 3344,
+          "vertices": 1716,
+          "volume_m3": 0.2246,
+          "bbox_min": [
+            -1.0154,
+            -0.1568,
+            0.0007
+          ],
+          "bbox_max": [
+            1.0154,
+            0.2835,
+            2.4367
+          ],
+          "size_m": {
+            "x": 2.0308,
+            "y": 0.4403,
+            "z": 2.436
+          },
+          "max_part_gap_m": 0.0049
+        }
+      }
+    },
+    {
+      "iteration": 1,
+      "params": {
+        "height": 1.75,
+        "arm_offset": 0.0
+      },
+      "actions": [
+        {
+          "action": "set_param",
+          "param": "height",
+          "value": 1.75,
+          "reason": "z 尺寸 2.436 m，期望 1.6–1.86 m"
+        }
+      ],
+      "result": {
+        "asset": "character_iter1",
+        "pass": true,
+        "checks": [
+          {
+            "code": "MESH_WATERTIGHT",
+            "ok": true,
+            "message": "22/22 个部件水密",
+            "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+          },
+          {
+            "code": "MESH_VOLUME",
+            "ok": true,
+            "message": "总体积 0.0819 m^3",
+            "hint": "体积近零通常意味着面反转或截面退化"
+          },
+          {
+            "code": "DEGENERATE_FACES",
+            "ok": true,
+            "message": "退化面 0 个",
+            "hint": "清理零面积三角形"
+          },
+          {
+            "code": "SCALE_Z",
+            "ok": true,
+            "message": "z 尺寸 1.740 m，期望 1.6–1.86 m",
+            "hint": "按比例调整参数使 z 落入区间"
+          },
+          {
+            "code": "COMPONENT_LIMIT",
+            "ok": true,
+            "message": "部件数 22，上限 40",
+            "hint": "合并相邻部件或减少细节件"
+          },
+          {
+            "code": "FLOATING_PART",
+            "ok": true,
+            "message": "最大部件间隙 0.004 m（阈值 0.06）",
+            "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+          },
+          {
+            "code": "GROUND_CONTACT",
+            "ok": true,
+            "message": "最低点 z=0.0005 m",
+            "hint": "沿 Z 平移使最低点贴地"
+          }
+        ],
+        "metrics": {
+          "components": 22,
+          "watertight_ratio": 1.0,
+          "faces": 3344,
+          "vertices": 1716,
+          "volume_m3": 0.0819,
+          "bbox_min": [
+            -0.611,
+            -0.112,
+            0.0005
+          ],
+          "bbox_max": [
+            0.611,
+            0.2025,
+            1.7405
+          ],
+          "size_m": {
+            "x": 1.222,
+            "y": 0.3145,
+            "z": 1.74
+          },
+          "max_part_gap_m": 0.0035
+        }
+      }
+    }
+  ],
+  "note": "反馈信号来自 CPU 验证器（尺度 + 部件间隙），无需 GPU/渲染模型"
+}

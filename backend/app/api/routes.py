@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -21,7 +22,7 @@ from .. import nodes as node_service
 from .. import workflow_covers as wf_covers
 from .. import workflow_edit
 from .. import workflows as workflow_service
-from ..library_meta import describe_model, flush_meta_cache
+from ..library_meta import describe_model, flush_meta_cache, gpu_snapshot
 from ..library_match import match_origin
 from ..library_origin import detect_origin
 from ..weight_class import all_folders, all_tasks
@@ -221,10 +222,10 @@ def resolve(body: ResolveRequest) -> dict:
 # ---------------- ComfyUI 模型目录 ----------------
 @router.get("/folders")
 def folders() -> list[dict]:
-    """可选的 ComfyUI 模型目录（核心目录 + 扩展目录），给下载页的目录下拉用。
+    """可选的 ComfyUI 模型目录（核心目录 + 扩展目录）。
 
-    前端不该自己维护一份 —— 上次就是因为前端写死了 3 个目录，和 ComfyUI 的
-    25 个核心目录对不上。
+    下载任务已按文件自动归类，前端不再让用户选目录；保留端点给需要
+    显式指定 target_folder 的调用方。
     """
     return all_folders()
 
@@ -629,15 +630,47 @@ def list_library(
     return models
 
 
+@router.get("/device")
+def device_capabilities() -> dict:
+    """本机硬件能力 + 下载目录的实时可用空间。
+
+    硬件来自启动时的一次性快照（换硬件必然重启服务），磁盘余量现读 ——
+    下载会改变它，不能冻在快照里。发现页用它判断权重能不能装下。
+    """
+    from ..comfy.probe import hardware_snapshot
+
+    report = hardware_snapshot()
+    save_dir = Path(load_settings()["download"]["save_dir"])
+    # 下载目录可能还没建：往上找到第一个存在的父目录再读磁盘
+    probe_path = save_dir
+    while not probe_path.exists() and probe_path.parent != probe_path:
+        probe_path = probe_path.parent
+    try:
+        usage = shutil.disk_usage(probe_path)
+        disk = {
+            "path": str(probe_path),
+            "total_gb": round(usage.total / 1024**3, 1),
+            "free_gb": round(usage.free / 1024**3, 1),
+        }
+    except OSError:
+        disk = {"path": str(probe_path), "total_gb": 0.0, "free_gb": 0.0}
+
+    payload = report.model_dump()
+    # 环境部分不发给发现页：Python 清单 / 实例 / 磁盘留给环境页自己取
+    for key in ("pythons", "instances", "disks", "raw"):
+        payload.pop(key, None)
+    payload["gpu"] = gpu_snapshot()
+    payload["save_dir"] = str(save_dir)
+    payload["save_disk"] = disk
+    return payload
+
+
 @router.get("/library/gpu")
 def library_gpu() -> dict:
     """本机独显显存 —— 权重压力标志的分母。
 
-    单独一个端点而不是塞进 /library 的响应：
-    /library 返回的是 list，套对象会破坏前端契约。
+    与 /device、环境页共用同一份启动时硬件快照。
     """
-    from ..library_meta import gpu_snapshot
-
     return gpu_snapshot()
 
 

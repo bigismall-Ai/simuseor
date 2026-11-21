@@ -1,22 +1,17 @@
-"""模型库的两级本地缓存。
+"""模型库的缓存行为。
 
-一次 `probe_primary_gpu()` 要跑 nvidia-smi / CIM（约 0.38 s）；模型库列表对
-**每个模型**都会问一次显存，facets 又从头算一遍。`describe_model()` 还要 glob
-权重文件 + 读文件头。缓存分两层：
-
-- 内存：挡住同一进程内的重复请求；
-- 本地文件（var/data/gpu.json、var/data/library_meta.json）：挡住**重启后的
-  第一次**，否则每次开服务都要先等半秒才出第一张卡。
-
-这里锁住两个前提：同一进程只探一次；文件事实按 mtime/size 失效，不会拿旧规格。
+- 硬件快照是进程级单例：启动时探一次，模型库 / 环境页 / 发现页共用；
+- 文件事实（权重规格 / 分类）按 mtime/size 失效，不会拿旧规格。
 """
 from __future__ import annotations
 
 import json
+import os
 import struct
 
 from app import library_meta
 from app.comfy import probe as probe_mod
+from app.comfy.models import DeviceReport, GpuInfo
 
 
 def _make_safetensors(path, header: dict, payload: bytes = b""):
@@ -27,9 +22,23 @@ def _make_safetensors(path, header: dict, payload: bytes = b""):
     return path
 
 
-def _isolate_gpu_cache(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(library_meta, "_GPU_CACHE_PATH", tmp_path / "gpu.json")
-    library_meta.clear_gpu_snapshot()
+def _warm_hardware(monkeypatch, gpu: GpuInfo | None) -> dict:
+    """把启动时的后台探测替换成假数据，并真正跑一次 warm。"""
+    calls = {"n": 0}
+
+    def fake_probe():
+        calls["n"] += 1
+        return DeviceReport(
+            os="windows",
+            gpus=[gpu] if gpu else [],
+            primary_gpu=gpu,
+            probed_at="2026-01-01T00:00:00+08:00",
+        )
+
+    monkeypatch.setattr(probe_mod, "_probe_hardware", fake_probe)
+    probe_mod.reset_hardware_snapshot()
+    probe_mod.warm_hardware()
+    return calls
 
 
 def _isolate_meta_cache(monkeypatch, tmp_path) -> None:
@@ -40,23 +49,12 @@ def _isolate_meta_cache(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(library_meta, "_gpu_vram_mb", lambda: 16384)
 
 
-# ---------------------------------------------------------------- 显存快照
+# ---------------------------------------------------------------- 硬件快照
 
 
-def test_gpu_snapshot_is_probed_once(monkeypatch, tmp_path):
-    _isolate_gpu_cache(monkeypatch, tmp_path)
-    calls = {"n": 0}
-
-    class FakeGpu:
-        name = "Test GPU"
-        vendor = "nvidia"
-        vram_mb = 16384
-
-    def fake_probe():
-        calls["n"] += 1
-        return FakeGpu()
-
-    monkeypatch.setattr(probe_mod, "probe_primary_gpu", fake_probe)
+def test_gpu_snapshot_is_probed_once(monkeypatch):
+    gpu = GpuInfo(vendor="nvidia", name="Test GPU", vram_mb=16384)
+    calls = _warm_hardware(monkeypatch, gpu)
     try:
         first = library_meta.gpu_snapshot()
         second = library_meta.gpu_snapshot()
@@ -66,51 +64,41 @@ def test_gpu_snapshot_is_probed_once(monkeypatch, tmp_path):
         assert first["vramText"] == "16 GB"
         assert calls["n"] == 1
 
-        # describe_model 里的显存查询也必须命中同一份缓存
+        # describe_model 里的显存查询也必须命中同一份快照
         assert library_meta._gpu_vram_mb() == 16384
         assert calls["n"] == 1
     finally:
-        library_meta.clear_gpu_snapshot()
+        probe_mod.reset_hardware_snapshot()
 
 
-def test_gpu_snapshot_survives_memory_reset(monkeypatch, tmp_path):
-    """模拟重启：内存清空、磁盘文件还在时，不能再跑一次探测。"""
-    _isolate_gpu_cache(monkeypatch, tmp_path)
-    calls = {"n": 0}
-
-    class FakeGpu:
-        name = "Cached GPU"
-        vendor = "nvidia"
-        vram_mb = 24576
-
-    def fake_probe():
-        calls["n"] += 1
-        return FakeGpu()
-
-    monkeypatch.setattr(probe_mod, "probe_primary_gpu", fake_probe)
+def test_device_report_reuses_hardware_snapshot(monkeypatch):
+    """环境页拿完整报告时，硬件只读快照；实例 / Python / 磁盘现扫。"""
+    gpu = GpuInfo(vendor="nvidia", name="Cached GPU", vram_mb=24576)
+    calls = _warm_hardware(monkeypatch, gpu)
+    monkeypatch.setattr(probe_mod, "_collect_pythons", lambda ctx: [])
+    monkeypatch.setattr(probe_mod, "_collect_disks", lambda os_name: [])
+    monkeypatch.setattr(probe_mod, "_collect_instances", lambda ctx: [])
     try:
-        library_meta.gpu_snapshot()
-        assert calls["n"] == 1
+        first = probe_mod.current_device_report()
+        second = probe_mod.current_device_report()
 
-        library_meta._vram_cache.update(at=0.0, snapshot=None)  # 进程重启
-        snap = library_meta.gpu_snapshot()
-
-        assert snap["vramMb"] == 24576
+        assert first.primary_gpu is not None
+        assert first.primary_gpu.vram_mb == 24576
+        assert second.primary_gpu is not None
         assert calls["n"] == 1
     finally:
-        library_meta.clear_gpu_snapshot()
+        probe_mod.reset_hardware_snapshot()
 
 
-def test_gpu_snapshot_no_gpu(monkeypatch, tmp_path):
-    _isolate_gpu_cache(monkeypatch, tmp_path)
-    monkeypatch.setattr(probe_mod, "probe_primary_gpu", lambda: None)
+def test_gpu_snapshot_no_gpu(monkeypatch):
+    _warm_hardware(monkeypatch, None)
     try:
         snap = library_meta.gpu_snapshot()
         assert snap["vramMb"] == 0
         assert snap["vramText"] == "未检测到"
         assert library_meta._gpu_vram_mb() is None
     finally:
-        library_meta.clear_gpu_snapshot()
+        probe_mod.reset_hardware_snapshot()
 
 
 # ---------------------------------------------------------------- 文件事实
@@ -179,6 +167,10 @@ def test_describe_model_cache_invalidates_on_file_change(monkeypatch, tmp_path):
     _make_safetensors(weight, {
         "w": {"dtype": "F32", "shape": [20, 20], "data_offsets": [0, 800]},
     })
+    # 两次写的文件长度相同，Windows 的时钟粒度可能让 mtime 不变；
+    # 显式推进一毫秒，才能稳定测到「文件变了 → 键变了」。
+    st = weight.stat()
+    os.utime(weight, ns=(st.st_atime_ns, st.st_mtime_ns + 1_000_000))
     second = library_meta.describe_model(str(model_dir), "qwen-image", [])
 
     assert second["precision"] == "FP32"

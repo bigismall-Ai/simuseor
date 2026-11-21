@@ -3,7 +3,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/api.service';
-import { AppSettings, RepoInfo, Task, errMsg, fmtSize, pct, proxyUrl } from '../core/types';
+import { AppSettings, RemoteFile, RepoInfo, Task, errMsg, fmtSize, pct, proxyUrl } from '../core/types';
+import { matchedWeightFiles, weightFiles } from '../core/weight-files';
 import { BadgeTone, BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
@@ -26,10 +27,10 @@ import { PanelComponent } from '../ui/panel.component';
     <ui-page-header
       kicker="Downloads"
       title="下载任务"
-      hint="解析仓库 → 勾选文件 → aria2 下载。进度每秒刷新，断点续传由 .aria2 文件维护。"
+      hint="解析仓库 → 自动挑权重 → aria2 下载。进度每秒刷新，断点续传由 .aria2 文件维护。"
     />
 
-    <ui-panel kicker="New task" title="新建下载" hint="填模型 ID 即可解析文件清单，再挑要下的那几个。">
+    <ui-panel kicker="New task" title="新建下载" hint="填模型 ID 即可解析；默认只列真实权重并自动归类，其他权重可展开。">
       <div class="form-grid">
         <ui-field label="下载源">
           <select [(ngModel)]="source" (ngModelChange)="onSourceChange()">
@@ -49,14 +50,6 @@ import { PanelComponent } from '../ui/panel.component';
             <option value="direct">direct - aria2 直连</option>
             <option value="mirror">mirror - 多站点分片</option>
             <option value="sdk">sdk - 官方下载 SDK</option>
-          </select>
-        </ui-field>
-        <ui-field label="目标目录">
-          <select [(ngModel)]="targetFolder">
-            <option value="">自动（按文件归类）</option>
-            @for (f of folders; track f.id) {
-              <option [value]="f.id">{{ f.id }} · {{ f.label }}</option>
-            }
           </select>
         </ui-field>
         <ui-field label="保存目录（可选，留空用设置值）">
@@ -84,7 +77,7 @@ import { PanelComponent } from '../ui/panel.component';
             <div class="repo-id">
               <strong>{{ repo.display_name }}</strong>
               <ui-badge tone="blue">{{ repo.source }}</ui-badge>
-              <span class="muted">{{ repo.files.length }} 个文件</span>
+              <span class="muted">{{ visibleFiles().length }} 个权重</span>
             </div>
             <span class="grow"></span>
             <span class="pill-row">
@@ -92,44 +85,64 @@ import { PanelComponent } from '../ui/panel.component';
                 <span class="pill" [title]="g.id">{{ g.id }} · {{ g.count }}</span>
               }
             </span>
+            @if (allWeights.length > matchedWeights.length) {
+              <button (click)="toggleAllWeights()">
+                {{ showAllWeights ? '只看匹配权重' : '查看全部权重 (' + allWeights.length + ')' }}
+              </button>
+            }
             <span class="muted picked">已选 {{ selectedCount() }} 个 · {{ fmtSize(selectedSize()) }}</span>
             <button class="primary" (click)="startDownload()" [disabled]="selectedCount() === 0 || starting">
               {{ starting ? '创建中…' : '开始下载' }}
             </button>
           </div>
 
-          <div class="table-wrap mt file-table">
-            <table>
-              <thead>
-                <tr>
-                  <th class="col-check"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
-                  <th>文件</th>
-                  <th class="col-folder">目录</th>
-                  <th class="col-size">大小</th>
-                  <th class="col-progress">候选站点</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (file of repo.files; track file.path) {
-                  <tr>
-                    <td><input type="checkbox" [checked]="isSelected(file.path)" (change)="toggleOne(file.path, $event)"></td>
-                    <td>
-                      <div class="mono">{{ file.path }}</div>
-                      <div class="mono muted cell-path">
-                        @for (c of file.candidates.slice(0, 2); track c) {
-                          <span>{{ hostOf(c) }}</span>@if (!$last) { · }
-                        }
-                        @if (file.candidates.length > 2) { +{{ file.candidates.length - 2 }} }
-                      </div>
-                    </td>
-                    <td><span class="pill">{{ file.folder || '—' }}</span></td>
-                    <td class="muted">{{ fmtSize(file.size) }}</td>
-                    <td class="muted">{{ file.candidates.length }} 个</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+          @if (allWeights.length === 0) {
+            <div class="notice mt">
+              这个仓库里没有可下载的权重文件。config / tokenizer / README 等非权重文件已隐藏。
+            </div>
+          } @else {
+            @if (matchedWeights.length === 0 && !showAllWeights) {
+              <div class="notice mt">
+                这个仓库的权重是 Diffusers 分片格式（如 model-00001-of-00014），ComfyUI 不能直接加载，默认没有勾选。
+                可展开全部权重手动选择，或回发现页找同一模型的 Comfy-Org 单文件版本。
+                <button (click)="toggleAllWeights()">查看全部权重 ({{ allWeights.length }})</button>
+              </div>
+            }
+            @if (visibleFiles().length) {
+              <div class="table-wrap mt file-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="col-check"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
+                      <th>文件</th>
+                      <th class="col-folder">目录</th>
+                      <th class="col-size">大小</th>
+                      <th class="col-progress">候选站点</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (file of visibleFiles(); track file.path) {
+                      <tr>
+                        <td><input type="checkbox" [checked]="isSelected(file.path)" (change)="toggleOne(file.path, $event)"></td>
+                        <td>
+                          <div class="mono">{{ file.path }}</div>
+                          <div class="mono muted cell-path">
+                            @for (c of file.candidates.slice(0, 2); track c) {
+                              <span>{{ hostOf(c) }}</span>@if (!$last) { · }
+                            }
+                            @if (file.candidates.length > 2) { +{{ file.candidates.length - 2 }} }
+                          </div>
+                        </td>
+                        <td><span class="pill">{{ file.folder || '—' }}</span></td>
+                        <td class="muted">{{ fmtSize(file.size) }}</td>
+                        <td class="muted">{{ file.candidates.length }} 个</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
         </div>
       }
     </ui-panel>
@@ -285,10 +298,12 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   revision = '';
   strategy = 'direct';
   saveDir = '';
-  /** 目标目录覆盖；空 = 按文件自动归类 */
-  targetFolder = '';
-  folders: { id: string; label: string }[] = [];
   repo: RepoInfo | null = null;
+  /** 仓库里全部真实权重（非权重文件不进入下载清单） */
+  allWeights: RemoteFile[] = [];
+  /** 默认展示的匹配权重：主权重 / 非量化版本，其余折叠 */
+  matchedWeights: RemoteFile[] = [];
+  showAllWeights = false;
   selected = new Set<string>();
   tasks: Task[] = [];
   taskFilter = 'all';
@@ -325,15 +340,23 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       }
       this.tryAutoResolve();
     });
-    this.api.folders().subscribe((f) => (this.folders = f));
     this.refreshTasks();
     this.timer = setInterval(() => this.refreshTasks(), 1500);
+  }
+
+  /** 当前表格里展示的权重：默认匹配权重，展开后是全部权重 */
+  visibleFiles(): RemoteFile[] {
+    return this.showAllWeights ? this.allWeights : this.matchedWeights;
+  }
+
+  toggleAllWeights(): void {
+    this.showAllWeights = !this.showAllWeights;
   }
 
   /** 解析结果里每个目标目录各几个文件（分体仓库会显示多枚） */
   get folderPlan(): { id: string; count: number }[] {
     const counts = new Map<string, number>();
-    for (const f of this.repo?.files || []) {
+    for (const f of this.visibleFiles()) {
       const key = f.folder || 'checkpoints';
       counts.set(key, (counts.get(key) || 0) + 1);
     }
@@ -378,6 +401,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   onSourceChange(): void {
     this.strategy = this.settings?.download?.strategy || this.settings?.default_strategy || 'direct';
     this.repo = null;
+    this.allWeights = [];
+    this.matchedWeights = [];
+    this.showAllWeights = false;
     this.selected.clear();
     this.error = '';
   }
@@ -407,12 +433,15 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   resolveRepo(): void {
     this.resolving = true;
-    this.targetFolder = '';
     this.error = '';
     this.api.resolve(this.source, this.repoId, this.revision).subscribe({
       next: (repo) => {
         this.repo = repo;
-        this.selected = new Set(repo.files.map((f) => f.path));
+        this.allWeights = weightFiles(repo.files);
+        this.matchedWeights = matchedWeightFiles(repo.files, repo.display_name || repo.repo_id);
+        this.showAllWeights = false;
+        // 默认只下匹配权重；config / tokenizer / README 等非权重文件不进入勾选集
+        this.selected = new Set(this.matchedWeights.map((f) => f.path));
         this.resolving = false;
       },
       error: (err) => {
@@ -433,13 +462,18 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   allSelected(): boolean {
-    return !!this.repo && this.selected.size === this.repo.files.length;
+    const files = this.visibleFiles();
+    return files.length > 0 && files.every((f) => this.selected.has(f.path));
   }
 
   toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    if (checked && this.repo) this.selected = new Set(this.repo.files.map((f) => f.path));
-    else this.selected.clear();
+    const files = this.visibleFiles();
+    if (checked) {
+      for (const f of files) this.selected.add(f.path);
+    } else {
+      for (const f of files) this.selected.delete(f.path);
+    }
   }
 
   selectedCount(): number {
@@ -463,7 +497,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         files: [...this.selected],
         strategy: this.strategy,
         save_dir: this.saveDir,
-        target_folder: this.targetFolder || undefined,
       })
       .subscribe({
         next: () => {

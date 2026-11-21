@@ -7,6 +7,11 @@
 （Windows PowerShell 用 `$env:RELOAD=1`；Git Bash 用 `RELOAD=1 ...` 前缀）
 
 也可以用命令行参数：--reload / --no-reload 覆盖环境变量。
+监听地址可用 --host 覆盖，例如：
+
+    .venv/Scripts/python backend/run.py --host 0.0.0.0
+
+launch.json 已显式传 --host 0.0.0.0。
 
 热重载不用 uvicorn 自带的 --reload：它在 Windows 上重启会卡死
 （StatReload 用 CTRL_C_EVENT 结束子进程，join() 永远不返回，
@@ -37,6 +42,19 @@ def _reload_enabled(argv: list[str]) -> bool:
     return os.environ.get("RELOAD", "").strip().lower() in ("1", "true", "yes", "on")
 
 
+def _host_from_arg(argv: list[str], default: str) -> str:
+    """`--host 0.0.0.0` 覆盖配置里的监听地址。
+
+    launch.json / 命令行可以用它显式绑定局域网地址，不依赖 settings.json。
+    """
+    for i, a in enumerate(argv):
+        if a == "--host" and i + 1 < len(argv):
+            return argv[i + 1]
+        if a.startswith("--host="):
+            return a.split("=", 1)[1]
+    return default
+
+
 def _port_from_arg(argv: list[str], default: int) -> int:
     """`--port N` 覆盖配置里的端口。
 
@@ -60,7 +78,7 @@ def _port_from_arg(argv: list[str], default: int) -> int:
 def main() -> None:
     argv = sys.argv[1:]
     cfg = load_settings()["app"]
-    host = cfg.get("host", "127.0.0.1")
+    host = _host_from_arg(argv, cfg.get("host", "0.0.0.0"))
     port = _port_from_arg(argv, int(cfg.get("port", 8000)))
     reload_enabled = _reload_enabled(argv)
 

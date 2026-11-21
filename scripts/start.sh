@@ -26,8 +26,8 @@ usage() {
   --dev         开发模式：后端热重载(8000) + 前端 dev server(4200, HMR)
   -h, --help    显示帮助
 
-无参数：一条命令起服务，Ctrl+C 停止。访问 http://127.0.0.1:8000
---dev  ：访问 http://127.0.0.1:4200（改前端即时生效，改后端自动重启）
+无参数：一条命令起服务，Ctrl+C 停止。本机 http://127.0.0.1:8000；局域网 http://<本机IP>:8000
+--dev  ：本机 http://127.0.0.1:4200；局域网 http://<本机IP>:4200（改前端即时生效，改后端自动重启）
 EOF
 }
 
@@ -66,6 +66,11 @@ except Exception:
     print(8000)
 ' "$ROOT/var/data/settings.json")
 URL="http://127.0.0.1:$PORT"
+LAN_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+if [ -z "$LAN_IP" ]; then
+  LAN_IP="$(ipconfig 2>/dev/null | awk '/IPv4/ {print $NF; exit}' | tr -d '\r')"
+fi
+LAN_URL="http://${LAN_IP:-<本机IP>}:$PORT"
 
 # 注意：/health 会被 SPA fallback 吞掉返回 index.html（假 200），必须用 /api/health
 if command -v curl >/dev/null 2>&1; then
@@ -141,7 +146,7 @@ fi
 # ---- 旧实例 ----
 if health; then
   if [ "$RESTART" = 0 ]; then
-    echo "✔ 服务已在运行：$URL （要重启请加 --restart）"
+    echo "✔ 服务已在运行：$URL （要重启请加 --restart；局域网访问需重启到 0.0.0.0）"
     if [ "$OPEN" = 1 ]; then open_browser; fi
     exit 0
   fi
@@ -163,6 +168,7 @@ fi
 if [ "$DEV" = 1 ]; then
   DEV_PORT=4200
   DEV_URL="http://127.0.0.1:$DEV_PORT"
+  DEV_LAN_URL="http://${LAN_IP:-<本机IP>}:$DEV_PORT"
 
   # 旧的 8000 / 4200 都要清掉，否则端口被占，两个服务都起不来
   for P in "$PORT" "$DEV_PORT"; do
@@ -180,7 +186,8 @@ if [ "$DEV" = 1 ]; then
   SERVER_PID=$!
 
   echo "→ 启动前端 dev server：$DEV_URL"
-  (cd "$ROOT/web" && npm start -- --host 127.0.0.1 --port "$DEV_PORT") &
+  # host/port 由 web/package.json 的 start 固定为 0.0.0.0:4200，避免重复传参
+  (cd "$ROOT/web" && npm start) &
   WEB_PID=$!
 
   cleanup() {
@@ -203,6 +210,8 @@ if [ "$DEV" = 1 ]; then
 
   echo "✔ 后端已就绪：$URL （改后端 .py 自动重启）"
   echo "✔ 前端开发地址：$DEV_URL （改前端即时生效）"
+  echo "✔ 局域网访问：$DEV_LAN_URL"
+  echo "  如果局域网仍打不开，请在防火墙放行 TCP $DEV_PORT 与 $PORT"
   if [ "$OPEN" = 1 ]; then
     "$PY" -c "import sys, webbrowser; webbrowser.open(sys.argv[1])" "$DEV_URL" >/dev/null 2>&1 &
   fi
@@ -227,5 +236,7 @@ if ! health; then
 fi
 
 echo "✔ 已就绪：$URL   （Ctrl+C 停止服务）"
+echo "✔ 局域网访问：$LAN_URL"
+echo "  如果局域网仍打不开，请在防火墙放行 TCP $PORT"
 if [ "$OPEN" = 1 ]; then open_browser; fi
 wait "$SERVER_PID"

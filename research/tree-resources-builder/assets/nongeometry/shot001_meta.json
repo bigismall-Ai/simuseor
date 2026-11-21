@@ -1,0 +1,15 @@
+{
+  "kind": "shot001_hero",
+  "backend": "anny",
+  "fps": 24,
+  "duration_s": 5.0,
+  "frames": 120,
+  "cycle_s": 2.0,
+  "root_speed_mps": 0.436,
+  "root_travel_m": -2.162,
+  "ground_offset_m": 0.0,
+  "vertices": 4505,
+  "faces": 9006,
+  "joints": 77,
+  "note": "SOMA 姿态空间直接生成步态；根节点沿 -Y（面向摄像机）前进"
+}

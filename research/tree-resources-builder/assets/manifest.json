@@ -1,0 +1,326 @@
+{
+  "kind": "manifest",
+  "root": "research/tree-resources-builder",
+  "cpu_only": true,
+  "count": 79,
+  "total_bytes": 8168502,
+  "files": [
+    {
+      "path": "assets\\geometry\\building_office.glb",
+      "bytes": 5808
+    },
+    {
+      "path": "assets\\geometry\\building_office.obj",
+      "bytes": 9219
+    },
+    {
+      "path": "assets\\geometry\\character_hero.glb",
+      "bytes": 61556
+    },
+    {
+      "path": "assets\\geometry\\character_hero.obj",
+      "bytes": 112021
+    },
+    {
+      "path": "assets\\geometry\\character_hero.stl",
+      "bytes": 167284
+    },
+    {
+      "path": "assets\\geometry\\clothing_jacket.glb",
+      "bytes": 10272
+    },
+    {
+      "path": "assets\\geometry\\creature_quadruped.glb",
+      "bytes": 21784
+    },
+    {
+      "path": "assets\\geometry\\creature_quadruped.stl",
+      "bytes": 57084
+    },
+    {
+      "path": "assets\\geometry\\crowd_block.glb",
+      "bytes": 110460
+    },
+    {
+      "path": "assets\\geometry\\fx_volume_proxy.obj",
+      "bytes": 25721
+    },
+    {
+      "path": "assets\\geometry\\prop_crate.glb",
+      "bytes": 7572
+    },
+    {
+      "path": "assets\\geometry\\prop_crate.stl",
+      "bytes": 18884
+    },
+    {
+      "path": "assets\\geometry\\scene_street.glb",
+      "bytes": 451696
+    },
+    {
+      "path": "assets\\geometry\\scene_street.usda",
+      "bytes": 999921
+    },
+    {
+      "path": "assets\\geometry\\soma_anny_adult.glb",
+      "bytes": 162876
+    },
+    {
+      "path": "assets\\geometry\\soma_anny_low.glb",
+      "bytes": 162880
+    },
+    {
+      "path": "assets\\geometry\\soma_mhr_low.glb",
+      "bytes": 162876
+    },
+    {
+      "path": "assets\\geometry\\soma_native_low.glb",
+      "bytes": 162876
+    },
+    {
+      "path": "assets\\geometry\\vegetation_tree.glb",
+      "bytes": 86596
+    },
+    {
+      "path": "assets\\geometry\\vegetation_tree_trunk.obj",
+      "bytes": 137561
+    },
+    {
+      "path": "assets\\geometry\\vehicle_boat.glb",
+      "bytes": 9944
+    },
+    {
+      "path": "assets\\geometry\\vehicle_car.glb",
+      "bytes": 72880
+    },
+    {
+      "path": "assets\\geometry\\vehicle_car.obj",
+      "bytes": 133760
+    },
+    {
+      "path": "assets\\manifest.json",
+      "bytes": 7307
+    },
+    {
+      "path": "assets\\nongeometry\\camera_path.json",
+      "bytes": 21166
+    },
+    {
+      "path": "assets\\nongeometry\\character_rig.json",
+      "bytes": 3036
+    },
+    {
+      "path": "assets\\nongeometry\\crowd_layout.json",
+      "bytes": 2270
+    },
+    {
+      "path": "assets\\nongeometry\\fx_proxy.json",
+      "bytes": 15794
+    },
+    {
+      "path": "assets\\nongeometry\\motion_walk_2s.bvh",
+      "bytes": 25877
+    },
+    {
+      "path": "assets\\nongeometry\\motion_walk_meta.json",
+      "bytes": 168
+    },
+    {
+      "path": "assets\\nongeometry\\scene_layout.json",
+      "bytes": 8013
+    },
+    {
+      "path": "assets\\nongeometry\\soma_anny_adult_joints.json",
+      "bytes": 3333
+    },
+    {
+      "path": "assets\\nongeometry\\soma_anny_adult_joints.npy",
+      "bytes": 1976
+    },
+    {
+      "path": "assets\\nongeometry\\soma_anny_joints_low.npy",
+      "bytes": 1976
+    },
+    {
+      "path": "assets\\nongeometry\\soma_joints_low.json",
+      "bytes": 2058
+    },
+    {
+      "path": "assets\\nongeometry\\soma_joints_low.npy",
+      "bytes": 1976
+    },
+    {
+      "path": "assets\\nongeometry\\vegetation_params.json",
+      "bytes": 123
+    },
+    {
+      "path": "assets\\pipeline_data.json",
+      "bytes": 41696
+    },
+    {
+      "path": "assets\\previews\\building.png",
+      "bytes": 53971
+    },
+    {
+      "path": "assets\\previews\\camera_path.png",
+      "bytes": 58496
+    },
+    {
+      "path": "assets\\previews\\character.png",
+      "bytes": 156595
+    },
+    {
+      "path": "assets\\previews\\character_front.png",
+      "bytes": 58958
+    },
+    {
+      "path": "assets\\previews\\clothing.png",
+      "bytes": 69236
+    },
+    {
+      "path": "assets\\previews\\creature.png",
+      "bytes": 51035
+    },
+    {
+      "path": "assets\\previews\\crowd.png",
+      "bytes": 57487
+    },
+    {
+      "path": "assets\\previews\\fx.png",
+      "bytes": 38527
+    },
+    {
+      "path": "assets\\previews\\motion_sheet.png",
+      "bytes": 11560
+    },
+    {
+      "path": "assets\\previews\\prop.png",
+      "bytes": 110687
+    },
+    {
+      "path": "assets\\previews\\scene_hero.png",
+      "bytes": 55047
+    },
+    {
+      "path": "assets\\previews\\scene_top.png",
+      "bytes": 33559
+    },
+    {
+      "path": "assets\\previews\\soma_anny.png",
+      "bytes": 87619
+    },
+    {
+      "path": "assets\\previews\\soma_anny_adult.png",
+      "bytes": 127414
+    },
+    {
+      "path": "assets\\previews\\soma_mhr.png",
+      "bytes": 116557
+    },
+    {
+      "path": "assets\\previews\\soma_native.png",
+      "bytes": 115688
+    },
+    {
+      "path": "assets\\previews\\vegetation.png",
+      "bytes": 63034
+    },
+    {
+      "path": "assets\\previews\\vehicle_boat.png",
+      "bytes": 55822
+    },
+    {
+      "path": "assets\\previews\\vehicle_car.png",
+      "bytes": 185994
+    },
+    {
+      "path": "assets\\validation\\_inline.js",
+      "bytes": 2002
+    },
+    {
+      "path": "assets\\validation\\exports.json",
+      "bytes": 8645
+    },
+    {
+      "path": "assets\\validation\\iter0_character.glb",
+      "bytes": 61572
+    },
+    {
+      "path": "assets\\validation\\iter0_character.png",
+      "bytes": 123529
+    },
+    {
+      "path": "assets\\validation\\iter1_character.glb",
+      "bytes": 61556
+    },
+    {
+      "path": "assets\\validation\\iter1_character.png",
+      "bytes": 114407
+    },
+    {
+      "path": "assets\\validation\\iteration_log.json",
+      "bytes": 4905
+    },
+    {
+      "path": "assets\\validation\\report_check.json",
+      "bytes": 2525
+    },
+    {
+      "path": "assets\\validation\\soma_anny_adult.json",
+      "bytes": 396
+    },
+    {
+      "path": "assets\\validation\\soma_cpu_test.json",
+      "bytes": 1950
+    },
+    {
+      "path": "assets\\validation\\soma_previews.json",
+      "bytes": 221
+    },
+    {
+      "path": "assets\\validation\\ui\\_car.png",
+      "bytes": 116655
+    },
+    {
+      "path": "assets\\validation\\ui\\_crop.png",
+      "bytes": 64650
+    },
+    {
+      "path": "assets\\validation\\ui\\arch.png",
+      "bytes": 250518
+    },
+    {
+      "path": "assets\\validation\\ui\\artifacts.png",
+      "bytes": 1272814
+    },
+    {
+      "path": "assets\\validation\\ui\\coverage.png",
+      "bytes": 153916
+    },
+    {
+      "path": "assets\\validation\\ui\\maturity.png",
+      "bytes": 205417
+    },
+    {
+      "path": "assets\\validation\\ui\\plan.png",
+      "bytes": 116676
+    },
+    {
+      "path": "assets\\validation\\ui\\somax.png",
+      "bytes": 520144
+    },
+    {
+      "path": "assets\\validation\\ui\\summary.png",
+      "bytes": 115540
+    },
+    {
+      "path": "assets\\validation\\ui\\tradeoff.png",
+      "bytes": 146133
+    },
+    {
+      "path": "assets\\validation\\validation_report.json",
+      "bytes": 28745
+    }
+  ],
+  "elapsed_s": 102.6
+}

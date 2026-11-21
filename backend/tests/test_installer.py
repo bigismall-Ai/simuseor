@@ -1169,7 +1169,7 @@ def test_env_payload_exposes_runtime(monkeypatch) -> None:
     from app.comfy import api
 
     monkeypatch.setattr(api, "_cache", {"at": 0.0, "payload": None})
-    monkeypatch.setattr(api, "probe_device", lambda: DeviceReport(os="windows"))
+    monkeypatch.setattr(api, "current_device_report", lambda: DeviceReport(os="windows"))
     monkeypatch.setattr(api, "build_plan", lambda _report: SimpleNamespace(model_dump=lambda: {}))
     monkeypatch.setattr(api, "probe_runtime", lambda: RuntimeStatus(ready=True, python_version="3.13.18"))
     payload = api.get_comfy_env(refresh=True)
@@ -1182,7 +1182,7 @@ def test_preview_does_not_wait_for_mirror_probe(monkeypatch) -> None:
     from app.comfy import api
 
     report = nvidia_report()
-    monkeypatch.setattr(api, "_device_snapshot", lambda force=False: (report, build_plan(report)))
+    monkeypatch.setattr(api, "probe_device", lambda: report)
     monkeypatch.setattr(api, "cached_mirrors", lambda *_a, **_k: None)
     warmed: list[str] = []
     monkeypatch.setattr(api, "warm_mirrors", lambda channel: warmed.append(channel))
@@ -1201,7 +1201,7 @@ def test_preview_reuses_cached_mirror_result(monkeypatch) -> None:
     from app.comfy import api
 
     report = nvidia_report()
-    monkeypatch.setattr(api, "_device_snapshot", lambda force=False: (report, build_plan(report)))
+    monkeypatch.setattr(api, "probe_device", lambda: report)
     monkeypatch.setattr(api, "cached_mirrors", lambda *_a, **_k: ["cached"])
     monkeypatch.setattr(api, "warm_mirrors", lambda channel: pytest.fail("有缓存不该预热"))
     monkeypatch.setattr(

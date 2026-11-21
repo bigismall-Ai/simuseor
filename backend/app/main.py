@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from . import hot_board
 from .api.routes import router, warm_discover, warm_workflows
 from .comfy.api import router as comfy_router
+from .comfy.probe import warm_hardware
 from .comfy.runner import stop_all as stop_comfy_instances
 from .config import ensure_workspace, get_web_dist, migrate_legacy_comfy_layout
 from .db import init_db
@@ -43,6 +44,9 @@ async def lifespan(_app: FastAPI):
     # 预热发现页首屏的三条查询。必须放后台线程：它要打三家的网络，慢起来好几秒，
     # 在 lifespan 里同步跑等于让端口晚好几秒才开始监听。
     if "pytest" not in sys.modules:
+        # 硬件是进程生命周期内的常量：启动时探一次，环境页 / 模型库 / 发现页共用，
+        # 之后不再重探（换硬件必然重启服务）。
+        threading.Thread(target=warm_hardware, name="warm-hardware", daemon=True).start()
         threading.Thread(target=sync_workflow_layout, name="sync-wf-layout", daemon=True).start()
         threading.Thread(target=warm_discover, name="warm-discover", daemon=True).start()
         # 工作流发现页同理：模板/ComfyHub 索引 + 默认查询都先跑一遍

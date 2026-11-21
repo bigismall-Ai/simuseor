@@ -313,7 +313,7 @@ function formatDuration(seconds: number): string {
               </div>
               <div class="instance-actions">
                 @if (isRunning(instance.name)) {
-                  <span class="inst-port mono" [title]="'监听 127.0.0.1:' + runningPort">{{ runningPort }}</span>
+                  <span class="inst-port mono" [title]="'监听 0.0.0.0:' + runningPort + '（本机与局域网可访问）'">{{ runningPort }}</span>
                   <button class="primary btn-xs" (click)="openInstance()">打开</button>
                   <button class="btn-xs" (click)="stopInstance(instance)">停止</button>
                 } @else {
@@ -1260,7 +1260,7 @@ export class ComfyComponent implements OnInit, OnDestroy {
 
   openInstance(): void {
     if (!this.runningPort) return;
-    window.open(`http://127.0.0.1:${this.runningPort}/`, '_blank', 'noopener');
+    window.open(`http://${location.hostname}:${this.runningPort}/`, '_blank', 'noopener');
   }
 
   /** 轮询到 running 为止：从进程拉起到 HTTP 可用通常 3–15 秒 */

@@ -1,0 +1,44 @@
+{
+  "src_quaternius": {
+    "label": "Quaternius · 动物包",
+    "license": "CC0",
+    "page": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+    "image_source": "https://quaternius.com/assets/images/fullres/ultimateanimatedanimal.jpg",
+    "path": "assets\\previews\\src_quaternius.jpg"
+  },
+  "src_kaykit": {
+    "label": "KayKit · Adventurers",
+    "license": "CC0",
+    "page": "https://kaylousberg.itch.io/kaykit-adventurers",
+    "image_source": "https://img.itch.zone/aW1nLzIzODA4Mjg4LnBuZw==/original/WI%2FL4z.png",
+    "path": "assets\\previews\\src_kaykit.jpg"
+  },
+  "src_gso": {
+    "label": "Google Scanned Objects · 扫描件",
+    "license": "CC-BY 4.0",
+    "page": "https://app.gazebosim.org/GoogleResearch/fuel/collections/Scanned%20Objects",
+    "image_source": "https://fuel.gazebosim.org/1.0/GoogleResearch/models/Weisshai_Great_White_Shark/tip/files/thumbnails/0.jpg",
+    "path": "assets\\previews\\src_gso.jpg"
+  },
+  "src_objaverse": {
+    "label": "Objaverse · 80 万+ 模型",
+    "license": "ODC-By / 逐件许可",
+    "page": "https://objaverse.allenai.org/",
+    "image_source": "https://objaverse.allenai.org/objaverse-xl/objaverse-xl.jpg",
+    "path": "assets\\previews\\src_objaverse.jpg"
+  },
+  "src_sketchfab": {
+    "label": "Sketchfab · CC0 过滤示例",
+    "license": "CC0（该模型）",
+    "page": "https://sketchfab.com/3d-models/baseball-cap-classic-34560b058ddf496aba53fe4d666c1441",
+    "image_source": "https://media.sketchfab.com/thumbnails/4c57687b657445e1b46c83b35e494ad4/1024.jpg",
+    "path": "assets\\previews\\src_sketchfab.jpg"
+  },
+  "src_renderpeople": {
+    "label": "Renderpeople · 免费样例",
+    "license": "自有免费商用许可",
+    "page": "https://renderpeople.com/free-3d-people",
+    "image_source": "https://renderpeople.com/wp-content/uploads/rp_images/rp_site_images/renderpeople_free_3d_people_2025.jpg",
+    "path": "assets\\previews\\src_renderpeople.jpg"
+  }
+}

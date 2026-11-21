@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-11-21 19:57:42",
+  "static": {
+    "bytes": 2420795,
+    "external_resource_tags": 0,
+    "css_imports": 0,
+    "data_uris": 34,
+    "svg_inline": 8,
+    "sections": [
+      "summary",
+      "method",
+      "somax",
+      "paradigms",
+      "coverage",
+      "maturity",
+      "arch",
+      "tradeoff",
+      "artifacts",
+      "shot",
+      "loop",
+      "plan",
+      "boundaries",
+      "sources"
+    ],
+    "nav_targets": [
+      "arch",
+      "artifacts",
+      "boundaries",
+      "coverage",
+      "loop",
+      "maturity",
+      "method",
+      "paradigms",
+      "plan",
+      "shot",
+      "somax",
+      "sources",
+      "summary",
+      "tradeoff"
+    ],
+    "title": "Tree Resources Builder · 白模参考资产体系调研",
+    "external_anchors": 33,
+    "cjk_ok": true,
+    "undecodable_images": 0,
+    "js_bytes": 1930
+  },
+  "js_syntax": {
+    "ok": true,
+    "stderr": ""
+  },
+  "ui": {
+    "url": "file:///E:/Projects/model-downloader/research/tree-resources-builder/report.html",
+    "errors": [],
+    "failed_requests": [],
+    "external_requests": [],
+    "shots": [
+      "summary.png",
+      "somax.png",
+      "coverage.png",
+      "maturity.png",
+      "arch.png",
+      "tradeoff.png",
+      "artifacts.png",
+      "shot.png",
+      "plan.png"
+    ],
+    "images": {
+      "total": 34,
+      "broken": 0
+    },
+    "sections": [
+      {
+        "id": "summary",
+        "height": 895
+      },
+      {
+        "id": "method",
+        "height": 618
+      },
+      {
+        "id": "somax",
+        "height": 2693
+      },
+      {
+        "id": "paradigms",
+        "height": 2054
+      },
+      {
+        "id": "coverage",
+        "height": 1415
+      },
+      {
+        "id": "maturity",
+        "height": 1970
+      },
+      {
+        "id": "arch",
+        "height": 2046
+      },
+      {
+        "id": "tradeoff",
+        "height": 1892
+      },
+      {
+        "id": "artifacts",
+        "height": 9599
+      },
+      {
+        "id": "shot",
+        "height": 872
+      },
+      {
+        "id": "loop",
+        "height": 925
+      },
+      {
+        "id": "plan",
+        "height": 1045
+      },
+      {
+        "id": "boundaries",
+        "height": 450
+      },
+      {
+        "id": "sources",
+        "height": 374
+      }
+    ],
+    "svg_count": 8,
+    "body_height": 27779,
+    "matrix_click_info": "服装 × B 图元序列：简化/代理 — 服装=板片图元",
+    "filtered_rows": 3,
+    "theme_after_click": "dark",
+    "ok": true
+  }
+}

@@ -76,8 +76,12 @@ test.describe('Model Downloader Web UI', () => {
     await page.getByPlaceholder('如 microsoft/Phi-3-mini-4k-instruct').fill('demo/text-gen-1.5');
     await page.getByRole('button', { name: '解析文件' }).click();
 
-    await expect(page.getByText('model.safetensors').first()).toBeVisible();
-    await expect(page.getByText('5 个文件')).toBeVisible();
+    const fileTable = page.locator('.file-table');
+    await expect(fileTable.getByText('model.safetensors').first()).toBeVisible();
+    // 只展示真实权重：config / tokenizer / README 等非权重文件不进下载清单
+    await expect(page.getByText('1 个权重')).toBeVisible();
+    await expect(fileTable.getByText('README.md')).toHaveCount(0);
+    await expect(fileTable.getByText('config.json')).toHaveCount(0);
     await page.screenshot({ path: ART + '/04-resolved-files.png', fullPage: true });
 
     await page.getByRole('button', { name: '开始下载' }).click();
@@ -196,7 +200,7 @@ test.describe('Model Downloader Web UI', () => {
     await page.goto('/models/discover?demo=1');
     await expect(page.getByRole('heading', { name: '发现模型' })).toBeVisible();
     await page.getByRole('button', { name: 'Demo', exact: true }).click();
-    await page.getByPlaceholder('搜索模型关键词，如 qwen / lora / flux').fill('text');
+    await page.getByTestId('search-input').fill('text');
     await page.getByTestId('search-btn').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     // URL 同步了筛选状态
@@ -206,6 +210,8 @@ test.describe('Model Downloader Web UI', () => {
     // 行内弹层：解析 → 创建任务
     await page.getByTestId('card-download').first().click();
     await expect(page.getByTestId('dialog-files')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('dialog-files').getByText('model.safetensors')).toBeVisible();
+    await expect(page.getByTestId('dialog-files').getByText('README.md')).toHaveCount(0);
     await page.getByTestId('dialog-create').click();
     await expect(page.getByText('已创建下载任务')).toBeVisible({ timeout: 15_000 });
     await page.screenshot({ path: ART + '/11-discover-to-download.png', fullPage: true });
@@ -214,6 +220,56 @@ test.describe('Model Downloader Web UI', () => {
     await page.getByTestId('dialog-goto-tasks').click();
     await expect(page).toHaveURL(/\/downloads/);
     await expect(page.locator('.task').first()).toContainText('demo/', { timeout: 15_000 });
+  });
+
+  test('下载弹层：Diffusers 分片仓库默认不勾选，可展开全部权重', async ({ page }) => {
+    const item = {
+      id: 'MiniMaxAI/MiniMax-H3-Image',
+      name: 'MiniMax-H3-Image',
+      author: 'MiniMaxAI',
+      source: 'huggingface',
+      description: '',
+      downloads: 1,
+      likes: 1,
+      tags: [],
+      task: 'text-to-image',
+      url: 'https://huggingface.co/MiniMaxAI/MiniMax-H3-Image',
+      updated_at: '2026-11-21',
+    };
+    await page.route((url) => url.pathname === '/api/search', (route) =>
+      route.fulfill({ json: { items: [item], total: 1, errors: {} } }));
+    await page.route((url) => url.pathname === '/api/covers', (route) =>
+      route.fulfill({ json: { covers: {} } }));
+    await page.route((url) => url.pathname === '/api/resolve', (route) =>
+      route.fulfill({
+        json: {
+          repo_id: item.id,
+          display_name: item.name,
+          revision: 'main',
+          source: 'huggingface',
+          target_folder: '',
+          files: [
+            { path: 'pdd_fused_heads.safetensors', size: 12_000_000, candidates: [], folder: 'checkpoints' },
+            { path: 'text_encoder/model-00001-of-00014.safetensors', size: 5_000_000_000, candidates: [], folder: 'text_encoders' },
+            { path: 'transformer/model-00001-of-00012.safetensors', size: 5_500_000_000, candidates: [], folder: 'diffusion_models' },
+            { path: 'README.md', size: 1000, candidates: [], folder: '' },
+          ],
+        },
+      }));
+
+    await page.goto('/models/discover?source=huggingface');
+    await expect(page.locator('md-model-card')).toHaveCount(1);
+    await page.getByTestId('card-download').click();
+
+    // 分片权重不是 ComfyUI 能直接加载的形态：默认不勾选、不铺表格
+    await expect(page.getByTestId('dialog-files')).toHaveCount(0);
+    await expect(page.getByText(/Diffusers 分片格式/)).toBeVisible();
+
+    // 点「查看全部权重」才展示全部真实权重；非权重文件始终不出现
+    await page.getByRole('button', { name: /查看全部权重 \(3\)/ }).first().click();
+    await expect(page.getByTestId('dialog-files')).toBeVisible();
+    await expect(page.getByTestId('dialog-files').getByText('model-00001-of-00014.safetensors')).toBeVisible();
+    await expect(page.getByTestId('dialog-files').getByText('README.md')).toHaveCount(0);
   });
 
   test('模型卡：分类标签只放一枚，来源收进右上角与 ⋯ 菜单', async ({ page }) => {
@@ -2107,6 +2163,16 @@ test.describe('Model Downloader Web UI', () => {
     await expect(wires).toHaveCount(0);
     await page.getByTestId('wf-supply').click();
     await expect(wires).toHaveCount(1);
+    // 需要拐弯的线走顶部/底部总线，且是正交折线 + 圆角，不是贝塞尔
+    await expect(page.locator('.bus-rail')).toHaveCount(1);
+    const wireD = await wires.first().getAttribute('d');
+    expect(wireD).toContain('Q');
+    expect(wireD).not.toContain('C');
+    // 关掉总线走线 → 短连线退回列间直连，不再挂总线
+    await page.getByTestId('wf-bus-route').click();
+    await expect(page.locator('.bus-rail')).toHaveCount(0);
+    await expect(wires).toHaveCount(1);
+    await page.getByTestId('wf-bus-route').click();
     await page.getByTestId('wf-supply').click();
     await expect(wires).toHaveCount(0);
 

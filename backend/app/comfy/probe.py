@@ -45,8 +45,24 @@ T = TypeVar("T")
 
 
 def probe_device() -> DeviceReport:
-    """采集本机软硬件信息，返回结构化报告。"""
+    """完整探测：硬件 + Python + 磁盘 + 实例。
+
+    每次调用都是新鲜结果，给安装预演 / CLI 用；页面和推荐走
+    `current_device_report()` —— 硬件读进程级快照，环境部分现扫。
+    """
     ctx = ProbeContext()
+    report = _probe_hardware(ctx)
+    report.pythons = _guard(ctx, "Python", lambda: _collect_pythons(ctx), [])
+    report.disks = _guard(ctx, "磁盘", lambda: _collect_disks(report.os), [])
+    report.instances = _guard(ctx, "自有实例", lambda: _collect_instances(ctx), [])
+    report.warnings = list(ctx.warnings)
+    report.raw = dict(ctx.raw)
+    return report
+
+
+def _probe_hardware(ctx: ProbeContext | None = None) -> DeviceReport:
+    """只采集进程生命周期内不变的硬件事实（GPU / 内存 / OS / 架构）。"""
+    ctx = ctx if ctx is not None else ProbeContext()
     os_name = detect_os()
 
     gpus: list[GpuInfo] = []
@@ -56,11 +72,7 @@ def probe_device() -> DeviceReport:
         ctx.warnings.append(f"GPU 探测失败: {exc}")
 
     primary = _pick_primary(gpus)
-
     os_version, os_build = _guard(ctx, "操作系统版本", lambda: _describe_os(os_name), ("", ""))
-    pythons = _guard(ctx, "Python", lambda: _collect_pythons(ctx), [])
-    disks = _guard(ctx, "磁盘", lambda: _collect_disks(os_name), [])
-    instances = _guard(ctx, "自有实例", lambda: _collect_instances(ctx), [])
     is_wsl = _guard(ctx, "WSL", lambda: _is_wsl(os_name, ctx), False)
     memory_gb = _guard(ctx, "内存", lambda: _system_memory_gb(os_name, ctx), None)
     arch = _detect_arch()
@@ -75,9 +87,6 @@ def probe_device() -> DeviceReport:
         unified_memory=_is_unified_memory(os_name, arch, gpus),
         gpus=gpus,
         primary_gpu=primary,
-        pythons=pythons,
-        disks=disks,
-        instances=instances,
         warnings=list(ctx.warnings),
         raw=dict(ctx.raw),
         probed_at=datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -93,18 +102,77 @@ def _pick_primary(gpus: list[GpuInfo]) -> GpuInfo | None:
     return primary
 
 
-def probe_primary_gpu() -> GpuInfo | None:
-    """只探测主显卡，不跑磁盘 / Python / 实例 / 内存那一圈。
+# ---------------- 进程级硬件快照 ----------------
+# 换硬件必然要重启服务，所以硬件事实在进程生命周期内是常量：启动时后台探一次
+# （main.py 的 lifespan），之后环境页 / 模型库 / 发现页读同一份，不再重探。
+# 实例、Python、磁盘余量不在这里 —— 它们会变，由 current_device_report() 现扫。
+_hardware: DeviceReport | None = None
+_hardware_ready = threading.Event()
+_hardware_lock = threading.Lock()
 
-    模型库只需要显存分母。完整 `probe_device()` 实测 0.72 s，GPU 单项 0.38 s ——
-    省掉的这半秒就是模型库首屏冷启动的可见延迟。主卡选择与 `probe_device()`
-    共用 `_pick_primary()`，不会出现两套「哪张是主卡」的判定。
-    """
+
+def _safe_probe_hardware() -> DeviceReport:
+    """探测失败也要给调用方一份可展示的报告，不能让后台线程静默死掉。"""
     try:
-        gpus = GPU_PROBES[detect_os()]().probe(ProbeContext())
-    except Exception:  # noqa: BLE001 - 探测失败按无独显处理
-        return None
-    return _pick_primary(gpus)
+        return _probe_hardware()
+    except Exception as exc:  # noqa: BLE001
+        return DeviceReport(
+            os=detect_os(),
+            warnings=[f"硬件探测失败: {exc}"],
+            probed_at=datetime.now().astimezone().isoformat(timespec="seconds"),
+        )
+
+
+def warm_hardware() -> None:
+    """后台线程入口：探测一次硬件并挂到进程上。"""
+    global _hardware
+    with _hardware_lock:
+        if _hardware is None:
+            _hardware = _safe_probe_hardware()
+    _hardware_ready.set()
+
+
+def hardware_snapshot(timeout: float = 1.5) -> DeviceReport:
+    """取进程级硬件快照。
+
+    正常直接命中启动时后台探测的结果。首个请求若抢在预热完成之前，最多等
+    timeout 秒；仍拿不到（预热线程未启动或异常，例如 pytest）就地补探一次。
+    这是启动竞态兜底，不是周期性重探 —— 硬件变了必须重启服务。
+    """
+    global _hardware
+    if _hardware is None:
+        _hardware_ready.wait(timeout)
+    with _hardware_lock:
+        if _hardware is None:
+            _hardware = _safe_probe_hardware()
+            _hardware_ready.set()
+        return _hardware
+
+
+def reset_hardware_snapshot() -> None:
+    """丢掉硬件快照，下次调用重新探测（测试 / 手动重检用）。"""
+    global _hardware
+    with _hardware_lock:
+        _hardware = None
+    _hardware_ready.clear()
+
+
+def current_device_report() -> DeviceReport:
+    """硬件读启动快照，Python / 磁盘 / 实例现扫。
+
+    环境页要看到刚装完的实例和当前磁盘余量，这些不该冻在启动快照里；
+    硬件部分则完全复用，不重复跑 nvidia-smi / CIM。
+    """
+    hw = hardware_snapshot()
+    ctx = ProbeContext()
+    report = hw.model_copy(deep=True)
+    report.pythons = _guard(ctx, "Python", lambda: _collect_pythons(ctx), [])
+    report.disks = _guard(ctx, "磁盘", lambda: _collect_disks(report.os), [])
+    report.instances = _guard(ctx, "自有实例", lambda: _collect_instances(ctx), [])
+    report.warnings = [*hw.warnings, *ctx.warnings]
+    report.raw = {**hw.raw, **ctx.raw}
+    return report
+
 
 
 def detect_os() -> str:

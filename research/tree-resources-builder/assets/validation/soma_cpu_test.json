@@ -1,0 +1,95 @@
+{
+  "cpu_only": true,
+  "torch": "2.15.0+cpu",
+  "cuda_available": false,
+  "data_root": "..\\..\\var\\soma-assets",
+  "runs": [
+    {
+      "backend": "soma",
+      "lod": "low",
+      "vertices": 4505,
+      "faces": 9006,
+      "watertight": true,
+      "bounds_m": [
+        -0.87,
+        -0.21,
+        0.0,
+        0.869,
+        0.129,
+        1.697
+      ],
+      "axis_converted_to_zup": true,
+      "ground_offset_m": -0.953,
+      "forward_ms_median": 10.26,
+      "forward_ms_all": [
+        9.93,
+        10.32,
+        10.77,
+        10.26,
+        9.74,
+        9.83
+      ],
+      "shape_components": 128,
+      "joints": 77,
+      "file": "assets\\geometry\\soma_native_low.glb"
+    },
+    {
+      "backend": "mhr",
+      "lod": "low",
+      "vertices": 4505,
+      "faces": 9006,
+      "watertight": true,
+      "bounds_m": [
+        -0.87,
+        -0.217,
+        0.0,
+        0.871,
+        0.14,
+        1.736
+      ],
+      "axis_converted_to_zup": true,
+      "ground_offset_m": -1.014,
+      "forward_ms_median": 12.92,
+      "forward_ms_all": [
+        38.89,
+        13.41,
+        12.8,
+        13.69,
+        12.92,
+        12.8
+      ],
+      "shape_components": 128,
+      "joints": 77,
+      "file": "assets\\geometry\\soma_mhr_low.glb"
+    },
+    {
+      "backend": "anny",
+      "lod": "low",
+      "vertices": 4505,
+      "faces": 9006,
+      "watertight": true,
+      "bounds_m": [
+        -0.239,
+        -0.066,
+        0.0,
+        0.24,
+        0.055,
+        0.444
+      ],
+      "axis_converted_to_zup": true,
+      "ground_offset_m": -0.189,
+      "forward_ms_median": 30.97,
+      "forward_ms_all": [
+        27.92,
+        19.31,
+        23.25,
+        34.6,
+        30.97,
+        32.08
+      ],
+      "shape_components": 128,
+      "joints": 77,
+      "file": "assets\\geometry\\soma_anny_low.glb"
+    }
+  ]
+}

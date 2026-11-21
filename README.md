@@ -8,6 +8,7 @@ AI 模型下载与本地管理工具：**aria2 为下载内核**，Rodel 式下�
 
 - **多源解析**：输入模型 ID → 列出仓库文件（路径 / 大小 / 候选下载地址）→ 勾选下载
 - **模型发现**（AbyssBeacon 式）：跨源搜索 Hugging Face / ModelScope / Civitai 模型，统一卡片列表（下载量 / 点赞 / 标签 / 任务类型），支持热门排序与关键词搜索，一键跳转下载页自动解析
+- **下载清单只列权重**：`config.json` / tokenizer / README 等非权重文件不显示；默认展示匹配权重，可一键展开全部权重；存放目录按 ComfyUI 目录规则自动归类，不再让用户手选
 - **四种下载策略**（每源可独立设置默认策略，任务级可覆盖）：
 
   | 策略 | 说明 |
@@ -35,7 +36,7 @@ Angular 19 (web/)  ──HTTP──▶  FastAPI (backend/)
 ```
 
 - 下载引擎：本机 `aria2c`（RPC 模式自动拉起，端口 6800）
-- 前端产物 `web/dist/browser` 由 FastAPI 直接托管（SPA），单一端口 `http://127.0.0.1:8000`
+- 前端产物 `web/dist/browser` 由 FastAPI 直接托管（SPA），默认绑定 `0.0.0.0:8000`：本机访问 `http://127.0.0.1:8000`，局域网访问 `http://<本机IP>:8000`
 
 ## 快速开始
 
@@ -56,10 +57,24 @@ python -m venv .venv
 # 2. 前端构建
 cd web && npm install && npm run build && cd ..
 
-# 3. 启动（前端由后端托管，打开 http://127.0.0.1:8000）
+# 3. 启动（前端由后端托管）
 .venv/Scripts/python backend/run.py
+# 本机：http://127.0.0.1:8000
+# 局域网：http://<本机IP>:8000
 # 或 Windows: scripts\start.ps1   macOS/Linux: bash scripts/start.sh
 ```
+
+### 局域网访问
+
+服务默认绑定 `0.0.0.0`。如果本机能打开、局域网仍打不开，通常是 Windows 防火墙没放行端口。以管理员身份执行：
+
+```powershell
+New-NetFirewallRule -DisplayName "Model Downloader 8000" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow
+# 开发模式前端 dev server 还需要 4200
+New-NetFirewallRule -DisplayName "Model Downloader 4200" -Direction Inbound -Protocol TCP -LocalPort 4200 -Action Allow
+```
+
+开发模式下 `ng serve` 也已改为 `--host 0.0.0.0` 并允许局域网 Host；生产模式只需放行 8000。
 
 ### Playwright UI 调试
 
@@ -103,6 +118,7 @@ cd tests && npx playwright show-report                        # 查看报告
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `/api/health` | 健康检查 |
+| GET | `/api/device` | 本机硬件能力（启动时探测一次）+ 下载目录实时可用空间 |
 | GET/PUT | `/api/settings` | 读写设置 |
 | GET | `/api/search` | 跨源模型搜索（q/source/sort/limit/page；source 空为三源合并） |
 | POST | `/api/resolve` | 解析仓库文件列表（source/repo_id/revision） |

@@ -185,7 +185,7 @@ def start(name: str, wait: float = 8.0) -> dict[str, Any]:
             str(py),
             "main.py",
             "--listen",
-            "127.0.0.1",
+            "0.0.0.0",
             "--port",
             str(port),
             "--disable-auto-launch",

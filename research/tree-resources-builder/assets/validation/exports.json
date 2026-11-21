@@ -1,0 +1,412 @@
+{
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "failed": []
+  },
+  "files": [
+    {
+      "file": "assets\\geometry\\building_office.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 252,
+      "vertices": 168,
+      "bbox_m": [
+        -6.2,
+        -4.7,
+        0.0,
+        6.2,
+        4.7,
+        25.85
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 5808,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\building_office.obj",
+      "type": "obj",
+      "ok": true,
+      "faces": 252,
+      "vertices": 168
+    },
+    {
+      "file": "assets\\geometry\\character_hero.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 3344,
+      "vertices": 1716,
+      "bbox_m": [
+        -0.611,
+        -0.112,
+        0.001,
+        0.611,
+        0.203,
+        1.74
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 61556,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\character_hero.obj",
+      "type": "obj",
+      "ok": true,
+      "faces": 3344,
+      "vertices": 1716
+    },
+    {
+      "file": "assets\\geometry\\character_hero.stl",
+      "type": "stl",
+      "ok": true,
+      "faces": 3344,
+      "watertight": false
+    },
+    {
+      "file": "assets\\geometry\\clothing_jacket.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 520,
+      "vertices": 272,
+      "bbox_m": [
+        -0.63,
+        -0.145,
+        0.877,
+        0.63,
+        0.145,
+        1.52
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 10272,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\creature_quadruped.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 1140,
+      "vertices": 608,
+      "bbox_m": [
+        -0.32,
+        -1.074,
+        0.0,
+        0.32,
+        1.544,
+        1.624
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 21784,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\creature_quadruped.stl",
+      "type": "stl",
+      "ok": true,
+      "faces": 1140,
+      "watertight": false
+    },
+    {
+      "file": "assets\\geometry\\crowd_block.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 12,
+      "geometries": 12,
+      "faces": 13776,
+      "vertices": 7416,
+      "bbox_m": [
+        -4.804,
+        2.669,
+        -0.017,
+        0.03,
+        5.862,
+        1.83
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 110460,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\fx_volume_proxy.obj",
+      "type": "obj",
+      "ok": true,
+      "faces": 832,
+      "vertices": 418
+    },
+    {
+      "file": "assets\\geometry\\prop_crate.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 376,
+      "vertices": 192,
+      "bbox_m": [
+        -0.34,
+        -0.352,
+        -0.01,
+        0.34,
+        0.352,
+        0.697
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 7572,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\prop_crate.stl",
+      "type": "stl",
+      "ok": true,
+      "faces": 376,
+      "watertight": false
+    },
+    {
+      "file": "assets\\geometry\\scene_street.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 22,
+      "geometries": 22,
+      "faces": 39302,
+      "vertices": 20790,
+      "bbox_m": [
+        -30.0,
+        -30.0,
+        -0.035,
+        30.0,
+        30.0,
+        25.85
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 451696,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": false
+    },
+    {
+      "file": "assets\\geometry\\scene_street.usda",
+      "type": "usda",
+      "ok": true,
+      "prims": 21,
+      "types": {
+        "Xform": 2,
+        "Mesh": 8,
+        "Camera": 1,
+        "": 2,
+        "Skeleton": 1,
+        "Sphere": 7
+      },
+      "camera_focal_mm": 45.0,
+      "skeleton_joints": 22,
+      "up_axis": "Z"
+    },
+    {
+      "file": "assets\\geometry\\soma_anny_adult.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 9006,
+      "vertices": 4505,
+      "bbox_m": [
+        -0.551,
+        -0.231,
+        0.0,
+        0.55,
+        0.122,
+        1.776
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 162876,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\soma_anny_low.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 9006,
+      "vertices": 4505,
+      "bbox_m": [
+        -0.239,
+        -0.066,
+        0.0,
+        0.24,
+        0.055,
+        0.444
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 162880,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\soma_mhr_low.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 9006,
+      "vertices": 4505,
+      "bbox_m": [
+        -0.87,
+        -0.217,
+        0.0,
+        0.871,
+        0.14,
+        1.736
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 162876,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\soma_native_low.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 9006,
+      "vertices": 4505,
+      "bbox_m": [
+        -0.87,
+        -0.21,
+        0.0,
+        0.869,
+        0.129,
+        1.697
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 162876,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\vegetation_tree.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 4592,
+      "vertices": 2556,
+      "bbox_m": [
+        -0.964,
+        -1.62,
+        -0.035,
+        2.658,
+        3.108,
+        5.734
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 86596,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\vegetation_tree_trunk.obj",
+      "type": "obj",
+      "ok": true,
+      "faces": 3872,
+      "vertices": 2178
+    },
+    {
+      "file": "assets\\geometry\\vehicle_boat.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 504,
+      "vertices": 260,
+      "bbox_m": [
+        -1.0,
+        -3.2,
+        -0.304,
+        1.0,
+        3.2,
+        2.371
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 9944,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\vehicle_car.glb",
+      "type": "glb",
+      "ok": true,
+      "nodes": 1,
+      "geometries": 1,
+      "faces": 3988,
+      "vertices": 2016,
+      "bbox_m": [
+        -2.15,
+        -0.97,
+        0.0,
+        2.15,
+        0.97,
+        1.44
+      ],
+      "magic": "glTF",
+      "version": 2,
+      "declared_bytes": 72880,
+      "json_chunk": "JSON",
+      "has_nodes": true,
+      "has_meshes": true
+    },
+    {
+      "file": "assets\\geometry\\vehicle_car.obj",
+      "type": "obj",
+      "ok": true,
+      "faces": 3988,
+      "vertices": 2016
+    },
+    {
+      "file": "assets/nongeometry/motion_walk_2s.bvh",
+      "type": "bvh",
+      "ok": true,
+      "frames": 48,
+      "joints": 21,
+      "frame_time": 0.041667
+    }
+  ]
+}

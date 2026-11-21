@@ -1,3 +1,5 @@
+> ⚠️ **已被取代（2026-11-19 · v2.6）**：蝉形与 favicon 已改为主理人手工重绘的矢量稿，本文记录的渐变面片管线（`_flat_*.svg` / `add_facet_gradients.py` / `vectorize.py`）、旧 favicon 生成脚本与 `png/` `ico/` `-mono` 导出均已删除，仅作历史分析留档，现行口径见 `SiMuseor-VIS.md` §2.0.4 / §3.7.1 / §3.7.4。
+
 # SiMuseor 蝉形辅助图形 · 应用与体验规范
 
 > 阶段：Phase 2 补充（蝉形辅助图形接入）　·　编制：体验设计

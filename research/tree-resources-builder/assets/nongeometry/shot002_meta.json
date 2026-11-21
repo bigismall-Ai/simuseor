@@ -1,0 +1,15 @@
+{
+  "kind": "shot002_bvh_retarget",
+  "source_bvh": "assets/nongeometry/motion_walk_2s.bvh",
+  "backend": "anny",
+  "fps": 24,
+  "duration_s": 2.0,
+  "frames": 48,
+  "root_speed_mps": 0.235,
+  "root_travel_m": 0.459,
+  "vertices": 4505,
+  "faces": 9006,
+  "joints": 77,
+  "method": "semantic_replay",
+  "note": "BVH 的髋/膝/踝角度按语义复制到 SOMA；手臂用 A-pose 基座 + 对侧腿反向摆动；根位移用踝关节脚锁"
+}

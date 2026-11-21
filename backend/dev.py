@@ -189,4 +189,4 @@ def run(host: str, port: int) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(run("127.0.0.1", 8000))
+    raise SystemExit(run("0.0.0.0", 8000))

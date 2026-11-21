@@ -1,0 +1,767 @@
+{
+  "kind": "public_decimated",
+  "generated_at": "2026-11-21T13:54:11Z",
+  "cpu_only": true,
+  "tools": {
+    "trimesh": "5.2.1",
+    "numpy": "2.5.4",
+    "fast_simplification": "0.2.0"
+  },
+  "targets": {
+    "ToyCar": 30000,
+    "island_tree_01": 60000,
+    "ambulance": 1500
+  },
+  "min_part_faces": 12,
+  "decimation_policy": "per-part；每部件保底 12 面，避免跨部件折叠与最小件塌陷",
+  "assets": [
+    {
+      "name": "ToyCar",
+      "category": "vehicle",
+      "status": "ok",
+      "source": "var\\public-assets\\khronos\\ToyCar.glb",
+      "source_url": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/ToyCar",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "© 2020 Guido Odendahl（模型）/ Eric Chadwick（扩展与场景）",
+      "target_faces": 30000,
+      "notes": "含 ToyCar / Glass / Fabric(摄影棚布景) 三个网格；白模导出剥离全部纹理。",
+      "parts": [
+        {
+          "name": "Glass",
+          "faces": 2494,
+          "vertices": 1519
+        },
+        {
+          "name": "Fabric",
+          "faces": 17605,
+          "vertices": 8959
+        },
+        {
+          "name": "ToyCar",
+          "faces": 88837,
+          "vertices": 66951
+        }
+      ],
+      "faces": {
+        "original": 108936,
+        "after_weld": 108936,
+        "decimated": 29998
+      },
+      "vertices": {
+        "original": 77429,
+        "after_weld": 56394,
+        "decimated": 15658
+      },
+      "watertight": {
+        "original": false,
+        "decimated": false
+      },
+      "source_bundle_bytes": 5422412,
+      "parted": false,
+      "parted_parts": [],
+      "has_door": false,
+      "parted_detail": {
+        "surface_parts": [
+          "Glass"
+        ],
+        "door_parts": [],
+        "geometry_count": 3,
+        "component_count": 7,
+        "labels": {
+          "glass": [
+            "Glass"
+          ],
+          "other": [
+            "Fabric#0",
+            "Fabric#1",
+            "Fabric#2",
+            "Fabric#3"
+          ],
+          "wheel_front_left": [
+            "Fabric#4"
+          ],
+          "body": [
+            "ToyCar"
+          ]
+        },
+        "reason": "只有玻璃/车窗类独立件（Glass），车身仍是单网格；玻璃学不出车门，不能治门漂移"
+      },
+      "method": "fast_simplification.simplify per part (quadric edge collapse, CPU); 每部件面数下限 12",
+      "fallback_used": false,
+      "attempts": [
+        {
+          "name": "Glass",
+          "faces_before": 2494,
+          "faces_after": 686,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 686
+            }
+          ]
+        },
+        {
+          "name": "Fabric",
+          "faces_before": 17605,
+          "faces_after": 4848,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 4848
+            }
+          ]
+        },
+        {
+          "name": "ToyCar",
+          "faces_before": 88837,
+          "faces_after": 24464,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 24464
+            }
+          ]
+        }
+      ],
+      "decimate_stats": {
+        "faces_before": 108936,
+        "target_total": 30000,
+        "min_faces": 12,
+        "parts": [
+          {
+            "name": "Glass",
+            "faces_before": 2494,
+            "faces_after": 686,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 686
+              }
+            ]
+          },
+          {
+            "name": "Fabric",
+            "faces_before": 17605,
+            "faces_after": 4848,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 4848
+              }
+            ]
+          },
+          {
+            "name": "ToyCar",
+            "faces_before": 88837,
+            "faces_after": 24464,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 24464
+              }
+            ]
+          }
+        ],
+        "faces_after": 29998
+      },
+      "output": "assets\\public_normalized\\ToyCar.glb",
+      "reduction_pct": 72.46,
+      "target_reached": true,
+      "bbox": {
+        "min": [
+          -0.036692,
+          -0.036981,
+          0.0
+        ],
+        "max": [
+          0.036692,
+          0.036981,
+          0.028858
+        ],
+        "size_m": [
+          0.073385,
+          0.073962,
+          0.028858
+        ]
+      },
+      "placement": {
+        "up": "Z",
+        "units": "m",
+        "rotation": "Y-up → Z-up (+90° about X)",
+        "centered_xy": true,
+        "translation": [
+          -0.001697,
+          0.0,
+          0.016217
+        ]
+      },
+      "files": {
+        "source_bundle_bytes": 5422412,
+        "output_bytes": 549936
+      },
+      "verify": {
+        "reload_ok": true,
+        "faces": 29998,
+        "geometries": 3,
+        "geometry_names": [
+          "Fabric",
+          "Glass",
+          "ToyCar"
+        ]
+      },
+      "elapsed_s": 0.34
+    },
+    {
+      "name": "island_tree_01",
+      "category": "vegetation",
+      "status": "ok",
+      "source": "var\\public-assets\\polyhaven\\island_tree_01\\island_tree_01_1k.gltf",
+      "source_url": "https://polyhaven.com/a/island_tree_01",
+      "license": "CC0 1.0",
+      "license_url": "https://polyhaven.org/license",
+      "credit": "Poly Haven",
+      "target_faces": 60000,
+      "notes": "约 160 万面，3 个网格（树干/枝叶）；白模导出剥离全部纹理。",
+      "parts": [
+        {
+          "name": "island_trees_01_blockout_cleaned",
+          "faces": 34787,
+          "vertices": 19345
+        },
+        {
+          "name": "island_trees_01_blockout_cleaned_1",
+          "faces": 1060032,
+          "vertices": 927528
+        },
+        {
+          "name": "island_trees_01_blockout_cleaned_2",
+          "faces": 504584,
+          "vertices": 357055
+        }
+      ],
+      "faces": {
+        "original": 1599403,
+        "after_weld": 1585827,
+        "decimated": 74097
+      },
+      "vertices": {
+        "original": 1303928,
+        "after_weld": 1205504,
+        "decimated": 88301
+      },
+      "watertight": {
+        "original": false,
+        "decimated": false
+      },
+      "source_bundle_bytes": 66337268,
+      "parted": false,
+      "parted_parts": [],
+      "has_door": false,
+      "parted_detail": {
+        "surface_parts": [],
+        "door_parts": [],
+        "geometry_count": 3,
+        "component_count": 3,
+        "labels": {
+          "other": [
+            "island_trees_01_blockout_cleaned",
+            "island_trees_01_blockout_cleaned_1",
+            "island_trees_01_blockout_cleaned_2"
+          ]
+        },
+        "reason": "单网格且无独立结构件"
+      },
+      "method": "fast_simplification.simplify per part (quadric edge collapse, CPU); 每部件面数下限 12",
+      "fallback_used": false,
+      "attempts": [
+        {
+          "name": "island_trees_01_blockout_cleaned",
+          "faces_before": 34787,
+          "faces_after": 1315,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 1315
+            }
+          ]
+        },
+        {
+          "name": "island_trees_01_blockout_cleaned_1",
+          "faces_before": 1050841,
+          "faces_after": 53857,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 124198
+            },
+            {
+              "agg": 10.0,
+              "faces": 58096
+            },
+            {
+              "agg": 10.0,
+              "faces": 53857
+            }
+          ]
+        },
+        {
+          "name": "island_trees_01_blockout_cleaned_2",
+          "faces_before": 500199,
+          "faces_after": 18925,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 18925
+            }
+          ]
+        }
+      ],
+      "decimate_stats": {
+        "faces_before": 1585827,
+        "target_total": 60000,
+        "min_faces": 12,
+        "parts": [
+          {
+            "name": "island_trees_01_blockout_cleaned",
+            "faces_before": 34787,
+            "faces_after": 1315,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 1315
+              }
+            ]
+          },
+          {
+            "name": "island_trees_01_blockout_cleaned_1",
+            "faces_before": 1050841,
+            "faces_after": 53857,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 124198
+              },
+              {
+                "agg": 10.0,
+                "faces": 58096
+              },
+              {
+                "agg": 10.0,
+                "faces": 53857
+              }
+            ]
+          },
+          {
+            "name": "island_trees_01_blockout_cleaned_2",
+            "faces_before": 500199,
+            "faces_after": 18925,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 18925
+              }
+            ]
+          }
+        ],
+        "faces_after": 74097
+      },
+      "output": "assets\\public_normalized\\island_tree_01.glb",
+      "reduction_pct": 95.37,
+      "target_reached": false,
+      "target_note": "按部件减面后 74097 面 > 目标 60000；这是「保结构」的代价：整网格减面能压到目标以下，但会跨部件塌陷",
+      "bbox": {
+        "min": [
+          -2.368209,
+          -2.394411,
+          0.0
+        ],
+        "max": [
+          2.368209,
+          2.394411,
+          4.985662
+        ],
+        "size_m": [
+          4.736419,
+          4.788823,
+          4.985662
+        ]
+      },
+      "placement": {
+        "up": "Z",
+        "units": "m",
+        "rotation": "Y-up → Z-up (+90° about X)",
+        "centered_xy": true,
+        "translation": [
+          -0.023764,
+          -0.163892,
+          0.018248
+        ]
+      },
+      "files": {
+        "source_bundle_bytes": 66337268,
+        "output_bytes": 1950984
+      },
+      "verify": {
+        "reload_ok": true,
+        "faces": 74097,
+        "geometries": 3,
+        "geometry_names": [
+          "island_trees_01_blockout_cleaned",
+          "island_trees_01_blockout_cleaned_1",
+          "island_trees_01_blockout_cleaned_2"
+        ]
+      },
+      "elapsed_s": 7.64
+    },
+    {
+      "name": "ambulance",
+      "category": "vehicle",
+      "status": "ok",
+      "source": "var\\public-assets\\kenney\\car-kit\\Models\\GLB format\\ambulance.glb",
+      "source_url": "https://kenney.nl/assets/car-kit",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "© Kenney (kenney.nl) — Car Kit",
+      "target_faces": 1500,
+      "notes": "Kenney Car Kit 救护车：7 个 geometry（body + door-left/door-right + 四轮），是少数「车门独立」的载具，可用于验证分件链路。",
+      "parts": [
+        {
+          "name": "door-left",
+          "faces": 24,
+          "vertices": 38
+        },
+        {
+          "name": "door-right",
+          "faces": 24,
+          "vertices": 38
+        },
+        {
+          "name": "wheel-back-left",
+          "faces": 428,
+          "vertices": 672
+        },
+        {
+          "name": "wheel-back-right",
+          "faces": 428,
+          "vertices": 672
+        },
+        {
+          "name": "wheel-front-left",
+          "faces": 428,
+          "vertices": 672
+        },
+        {
+          "name": "wheel-front-right",
+          "faces": 428,
+          "vertices": 672
+        },
+        {
+          "name": "body",
+          "faces": 1044,
+          "vertices": 1564
+        }
+      ],
+      "faces": {
+        "original": 2804,
+        "after_weld": 2786,
+        "decimated": 1497
+      },
+      "vertices": {
+        "original": 4328,
+        "after_weld": 1746,
+        "decimated": 860
+      },
+      "watertight": {
+        "original": false,
+        "decimated": false
+      },
+      "source_bundle_bytes": 233612,
+      "parted": true,
+      "parted_parts": [
+        "door-left",
+        "door-right",
+        "wheel-back-left",
+        "wheel-back-right",
+        "wheel-front-left",
+        "wheel-front-right"
+      ],
+      "has_door": true,
+      "parted_detail": {
+        "surface_parts": [],
+        "door_parts": [
+          "door-left",
+          "door-right"
+        ],
+        "geometry_count": 7,
+        "component_count": 7,
+        "labels": {
+          "door_left": [
+            "door-left"
+          ],
+          "door_right": [
+            "door-right"
+          ],
+          "wheel_rear_left": [
+            "wheel-back-left"
+          ],
+          "wheel_rear_right": [
+            "wheel-back-right"
+          ],
+          "wheel_front_left": [
+            "wheel-front-left"
+          ],
+          "wheel_front_right": [
+            "wheel-front-right"
+          ],
+          "body": [
+            "body"
+          ]
+        },
+        "reason": "存在独立结构件（门/轮/灯），参考图里能出现可学的车门结构"
+      },
+      "method": "fast_simplification.simplify per part (quadric edge collapse, CPU); 每部件面数下限 12",
+      "fallback_used": false,
+      "attempts": [
+        {
+          "name": "door-left",
+          "faces_before": 24,
+          "faces_after": 12,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 12
+            }
+          ]
+        },
+        {
+          "name": "door-right",
+          "faces_before": 24,
+          "faces_after": 12,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 12
+            }
+          ]
+        },
+        {
+          "name": "wheel-back-left",
+          "faces_before": 427,
+          "faces_after": 230,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 230
+            }
+          ]
+        },
+        {
+          "name": "wheel-back-right",
+          "faces_before": 427,
+          "faces_after": 230,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 230
+            }
+          ]
+        },
+        {
+          "name": "wheel-front-left",
+          "faces_before": 427,
+          "faces_after": 230,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 230
+            }
+          ]
+        },
+        {
+          "name": "wheel-front-right",
+          "faces_before": 427,
+          "faces_after": 230,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 230
+            }
+          ]
+        },
+        {
+          "name": "body",
+          "faces_before": 1030,
+          "faces_after": 553,
+          "floored": false,
+          "passes": [
+            {
+              "agg": 7.0,
+              "faces": 553
+            }
+          ]
+        }
+      ],
+      "decimate_stats": {
+        "faces_before": 2786,
+        "target_total": 1500,
+        "min_faces": 12,
+        "parts": [
+          {
+            "name": "door-left",
+            "faces_before": 24,
+            "faces_after": 12,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 12
+              }
+            ]
+          },
+          {
+            "name": "door-right",
+            "faces_before": 24,
+            "faces_after": 12,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 12
+              }
+            ]
+          },
+          {
+            "name": "wheel-back-left",
+            "faces_before": 427,
+            "faces_after": 230,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 230
+              }
+            ]
+          },
+          {
+            "name": "wheel-back-right",
+            "faces_before": 427,
+            "faces_after": 230,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 230
+              }
+            ]
+          },
+          {
+            "name": "wheel-front-left",
+            "faces_before": 427,
+            "faces_after": 230,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 230
+              }
+            ]
+          },
+          {
+            "name": "wheel-front-right",
+            "faces_before": 427,
+            "faces_after": 230,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 230
+              }
+            ]
+          },
+          {
+            "name": "body",
+            "faces_before": 1030,
+            "faces_after": 553,
+            "floored": false,
+            "passes": [
+              {
+                "agg": 7.0,
+                "faces": 553
+              }
+            ]
+          }
+        ],
+        "faces_after": 1497
+      },
+      "output": "assets\\public_normalized\\ambulance.glb",
+      "reduction_pct": 46.61,
+      "target_reached": true,
+      "bbox": {
+        "min": [
+          -0.75,
+          -1.625,
+          0.0
+        ],
+        "max": [
+          0.75,
+          1.625,
+          1.8
+        ],
+        "size_m": [
+          1.5,
+          3.25,
+          1.8
+        ]
+      },
+      "placement": {
+        "up": "Z",
+        "units": "m",
+        "rotation": "Y-up → Z-up (+90° about X)",
+        "centered_xy": true,
+        "translation": [
+          -0.0,
+          -0.025,
+          0.0
+        ]
+      },
+      "files": {
+        "source_bundle_bytes": 233612,
+        "output_bytes": 23444
+      },
+      "verify": {
+        "reload_ok": true,
+        "faces": 1497,
+        "geometries": 7,
+        "geometry_names": [
+          "body",
+          "door-left",
+          "door-right",
+          "wheel-back-left",
+          "wheel-back-right",
+          "wheel-front-left",
+          "wheel-front-right"
+        ]
+      },
+      "elapsed_s": 0.08
+    }
+  ]
+}

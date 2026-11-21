@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "start": "ng serve --port 4200 --host 127.0.0.1",
+    "start": "ng serve --port 4200 --host 0.0.0.0",
     "build": "ng build",
     "vis:check": "node ../artifacts/vis/vis-check.mjs",
     "vis:report": "node ../artifacts/vis/vis-check.mjs --write-report"

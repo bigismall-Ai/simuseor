@@ -35,31 +35,15 @@ from .installer import (
 from . import runner
 from .names import clean_alias, validate_instance_name
 from .plan import build_plan
-from .probe import cached_mirrors, probe_device, probe_mirrors, probe_runtime, warm_mirrors
+from .probe import cached_mirrors, current_device_report, probe_device, probe_mirrors, probe_runtime, warm_mirrors
 
 router = APIRouter(prefix="/api/comfy", tags=["comfy"])
 
 # 一次探测要跑 nvidia-smi / CIM 等子进程（约 0.3–1s）。前端每次进页面都会调，
-# 加 60 秒缓存；用户点「重新检测」时带 refresh=true 绕过。
+# 加 60 秒缓存；用户点「重新检测」时带 refresh=true 绕过。硬件本身走进程级
+# 快照（probe.hardware_snapshot），这里缓存的是「硬件 + 当前环境」的整份响应。
 CACHE_SECONDS = 60
 _cache: dict[str, Any] = {"at": 0.0, "payload": None}
-# 探测结果单独留一份原始对象：/env 与「点开安装弹层」共用，省掉重复的 nvidia-smi
-_probe_cache: dict[str, Any] = {"at": 0.0, "report": None, "plan": None}
-
-
-def _device_snapshot(force: bool = False) -> tuple[Any, Any]:
-    """取设备报告与基础方案，60 秒内复用，避免每次点安装都重跑一遍探测。"""
-    now = time.time()
-    if (
-        not force
-        and _probe_cache["report"] is not None
-        and now - float(_probe_cache["at"]) < CACHE_SECONDS
-    ):
-        return _probe_cache["report"], _probe_cache["plan"]
-    report = probe_device()
-    plan = build_plan(report)
-    _probe_cache.update(at=now, report=report, plan=plan)
-    return report, plan
 
 # 安装任务：同时只允许一个在跑，避免两个进程抢同一个目录
 _jobs: dict[str, dict[str, Any]] = {}
@@ -273,7 +257,8 @@ def get_comfy_env(refresh: bool = False) -> dict[str, Any]:
             "running_instance": runner.active(),
         }
 
-    report, plan = _device_snapshot(force=refresh)
+    report = current_device_report()
+    plan = build_plan(report)
     payload = {
         "device": report.model_dump(),
         "plan": plan.model_dump(),
@@ -477,7 +462,10 @@ def _make_spec(
     if kind == JOB_KIND_INSTANCE and not probe_runtime().ready:
         raise HTTPException(status_code=409, detail="请先安装基础环境，再创建 ComfyUI 实例")
 
-    report, plan = _device_snapshot()
+    # 安装要按真实磁盘余量与 Python 清单出方案，所以这里走完整新鲜探测；
+    # 页面展示用的硬件快照不参与安装目录选择。
+    report = probe_device()
+    plan = build_plan(report)
     # 测速要读几个源的真实 wheel（实测量级 2–6 秒），绝不能在「点开弹层」这条
     # 路径上等它：有缓存就用实测结果，没有就先按默认源出计划、后台预热，
     # 等用户看完步骤点「确认安装」时缓存通常已经热了。

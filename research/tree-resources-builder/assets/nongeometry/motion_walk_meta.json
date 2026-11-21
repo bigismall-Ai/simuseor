@@ -1,0 +1,7 @@
+{
+  "kind": "motion_meta",
+  "frames": 48,
+  "fps": 24,
+  "source": "procedural_keyframe_bake",
+  "retarget": "SOMA-X 77 关节 / SMAL 四足需独立重定向"
+}

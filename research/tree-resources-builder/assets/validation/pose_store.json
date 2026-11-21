@@ -1,0 +1,98 @@
+{
+  "kind": "pose_store",
+  "generated_at": "2026-11-21T21:53:21",
+  "python": "E:\\Projects\\model-downloader\\var\\soma-venv\\Scripts\\python.exe",
+  "render_python": "E:\\Projects\\model-downloader\\.venv\\Scripts\\python.exe",
+  "sequences": {
+    "pose": "assets\\nongeometry\\shot003_pose.npz",
+    "baked": "assets\\nongeometry\\shot003_hero.npz"
+  },
+  "rebuild": {
+    "frames": 120,
+    "vertices": 4505,
+    "rebuild_seconds": 4.39,
+    "max_err_vs_direct_forward_m": 0.0,
+    "limit_m": 1e-06,
+    "pass": true,
+    "max_err_vs_baked_npz_m": 2.384185791015625e-07,
+    "baked_identical": false
+  },
+  "size": {
+    "pose_bytes": 131723,
+    "baked_bytes": 6036009,
+    "ratio": 45.82,
+    "limit": 40.0,
+    "pass": true
+  },
+  "render": {
+    "frames": 24,
+    "psnr_db_min": 81.06,
+    "psnr_db_mean": 81.06,
+    "identical_frames": 23,
+    "max_pixel_diff": 2.0,
+    "limit_db": 35.0,
+    "pose_render_seconds": 224.9,
+    "baked_render_seconds": 195.1,
+    "pass": true
+  },
+  "rescore_pose": {
+    "kind": "shot003_pose",
+    "fps": 24,
+    "duration_s": 5.0,
+    "frames": 120,
+    "resolution": [
+      720,
+      404
+    ],
+    "root_speed_mps": 0.436,
+    "foot_slide_mean_m": 0.0044,
+    "foot_slide_max_m": 0.0302,
+    "foot_slide_note": "仅统计连续两帧同一支撑脚（较低踝）的位移",
+    "ground_min_z": 0.0,
+    "subject_inside_min": 1.0,
+    "subject_height_ratio_mean": 0.52,
+    "pass": true,
+    "frames_dir": "shots/shot003_pose/frames",
+    "mp4": null
+  },
+  "guarded_files": {
+    "before": {
+      "assets\\nongeometry\\shot001_hero.npz": {
+        "size": 6034555,
+        "mtime": 1795261361.5861769
+      },
+      "assets\\nongeometry\\shot002_hero.npz": {
+        "size": 2452369,
+        "mtime": 1795262855.001433
+      },
+      "shots\\shot_001\\previs.mp4": {
+        "size": 1145852,
+        "mtime": 1795262060.5736103
+      },
+      "assets\\validation\\shot_001.json": {
+        "size": 22348,
+        "mtime": 1795262121.6059532
+      }
+    },
+    "after": {
+      "assets\\nongeometry\\shot001_hero.npz": {
+        "size": 6034555,
+        "mtime": 1795261361.5861769
+      },
+      "assets\\nongeometry\\shot002_hero.npz": {
+        "size": 2452369,
+        "mtime": 1795262855.001433
+      },
+      "shots\\shot_001\\previs.mp4": {
+        "size": 1145852,
+        "mtime": 1795262060.5736103
+      },
+      "assets\\validation\\shot_001.json": {
+        "size": 22348,
+        "mtime": 1795262121.6059532
+      }
+    },
+    "unchanged": true
+  },
+  "pass": true
+}

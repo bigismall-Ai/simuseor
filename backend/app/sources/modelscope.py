@@ -27,10 +27,15 @@ class ModelScopeAdapter(SourceAdapter):
     def resolve(self, repo_id: str, revision: str, cfg: dict) -> RepoInfo:
         cfg = cfg or {}
         revision = revision or "master"
-        url = f"{API}/api/v1/models/{repo_id}/repo/files?Revision={quote(revision)}&Root="
+        url = f"{API}/api/v1/models/{repo_id}/repo/files"
+        # Recursive=true 返回扁平 Path（含子目录文件）；不加时顶层 folder 不带
+        # Children，walk() 会把 text_encoder/ transformer/ 里的权重整段漏掉，
+        # 只剩根目录的 pdd_fused_heads.safetensors 这种文件。
+        params = {"Revision": revision, "Root": "", "Recursive": "true"}
         try:
             resp = httpx.get(
                 url,
+                params=params,
                 headers=self._headers(cfg),
                 timeout=30,
                 follow_redirects=True,
@@ -51,8 +56,13 @@ class ModelScopeAdapter(SourceAdapter):
             for item in items:
                 name = item.get("Name") or item.get("Path") or ""
                 path = item.get("Path") or f"{prefix}{name}"
-                if item.get("Type") == "folder" or item.get("IsFolder"):
-                    walk(item.get("Files") or item.get("Children") or [], prefix=f"{path}/")
+                kind = (item.get("Type") or "").lower()
+                if kind in ("folder", "tree") or item.get("IsFolder"):
+                    # Recursive=true 时子目录是扁平条目（Path 已带目录），
+                    # 没有 Children 可递归；目录本身不是文件。
+                    children = item.get("Files") or item.get("Children") or []
+                    if children:
+                        walk(children, prefix=f"{path}/")
                     continue
                 size = int(item.get("Size") or 0)
                 dl = f"{API}/api/v1/models/{repo_id}/repo?Revision={quote(revision)}&FilePath={quote(path, safe='/')}"

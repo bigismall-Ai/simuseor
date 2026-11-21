@@ -1,0 +1,8 @@
+{
+  "kind": "vegetation_params",
+  "seed": 11,
+  "levels": 4,
+  "branches": 3,
+  "tips": 162,
+  "trunk_parts": 121
+}

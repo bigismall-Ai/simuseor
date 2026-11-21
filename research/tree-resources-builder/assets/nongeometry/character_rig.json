@@ -1,0 +1,203 @@
+{
+  "kind": "rig",
+  "joints": [
+    {
+      "name": "Root",
+      "parent": null,
+      "rest": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Hips",
+      "parent": "Root",
+      "rest": [
+        0.0,
+        0.0,
+        0.98
+      ]
+    },
+    {
+      "name": "Spine",
+      "parent": "Hips",
+      "rest": [
+        0.0,
+        0.0,
+        1.11
+      ]
+    },
+    {
+      "name": "Chest",
+      "parent": "Spine",
+      "rest": [
+        0.0,
+        0.0,
+        1.29
+      ]
+    },
+    {
+      "name": "Neck",
+      "parent": "Chest",
+      "rest": [
+        0.0,
+        0.0,
+        1.47
+      ]
+    },
+    {
+      "name": "Head",
+      "parent": "Neck",
+      "rest": [
+        0.0,
+        0.0,
+        1.62
+      ]
+    },
+    {
+      "name": "L_Shoulder",
+      "parent": "Chest",
+      "rest": [
+        0.19,
+        0.0,
+        1.43
+      ]
+    },
+    {
+      "name": "L_Elbow",
+      "parent": "L_Shoulder",
+      "rest": [
+        0.42,
+        0.01,
+        1.16
+      ]
+    },
+    {
+      "name": "L_Wrist",
+      "parent": "L_Elbow",
+      "rest": [
+        0.58,
+        0.04,
+        0.91
+      ]
+    },
+    {
+      "name": "L_Hand",
+      "parent": "L_Wrist",
+      "rest": [
+        0.61,
+        0.07,
+        0.82
+      ]
+    },
+    {
+      "name": "R_Shoulder",
+      "parent": "Chest",
+      "rest": [
+        -0.19,
+        0.0,
+        1.43
+      ]
+    },
+    {
+      "name": "R_Elbow",
+      "parent": "R_Shoulder",
+      "rest": [
+        -0.42,
+        0.01,
+        1.16
+      ]
+    },
+    {
+      "name": "R_Wrist",
+      "parent": "R_Elbow",
+      "rest": [
+        -0.58,
+        0.04,
+        0.91
+      ]
+    },
+    {
+      "name": "R_Hand",
+      "parent": "R_Wrist",
+      "rest": [
+        -0.61,
+        0.07,
+        0.82
+      ]
+    },
+    {
+      "name": "L_Hip",
+      "parent": "Hips",
+      "rest": [
+        0.1,
+        0.0,
+        0.93
+      ]
+    },
+    {
+      "name": "L_Knee",
+      "parent": "L_Hip",
+      "rest": [
+        0.11,
+        0.01,
+        0.5
+      ]
+    },
+    {
+      "name": "L_Ankle",
+      "parent": "L_Knee",
+      "rest": [
+        0.11,
+        0.02,
+        0.08
+      ]
+    },
+    {
+      "name": "L_Toe",
+      "parent": "L_Ankle",
+      "rest": [
+        0.11,
+        0.16,
+        0.04
+      ]
+    },
+    {
+      "name": "R_Hip",
+      "parent": "Hips",
+      "rest": [
+        -0.1,
+        0.0,
+        0.93
+      ]
+    },
+    {
+      "name": "R_Knee",
+      "parent": "R_Hip",
+      "rest": [
+        -0.11,
+        0.01,
+        0.5
+      ]
+    },
+    {
+      "name": "R_Ankle",
+      "parent": "R_Knee",
+      "rest": [
+        -0.11,
+        0.02,
+        0.08
+      ]
+    },
+    {
+      "name": "R_Toe",
+      "parent": "R_Ankle",
+      "rest": [
+        -0.11,
+        0.16,
+        0.04
+      ]
+    }
+  ]
+}

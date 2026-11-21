@@ -31,95 +31,19 @@ VRAM_FACTOR = {
 DEFAULT_VRAM_FACTOR = 1.6
 
 
-# 一次探测要跑 nvidia-smi / CIM（实测 0.38 s）。列表接口对**每个模型**都会
-# 调一次显存，facets 又从头算一遍 —— 内存缓存挡住同一进程内的重复探测，
-# 磁盘缓存（var/data/gpu.json）挡住**重启后的第一次**：否则每次开服务都要
-# 先等半秒才出第一张卡。
-_VRAM_TTL = 3600.0
-_GPU_CACHE_PATH = DATA_DIR / "gpu.json"
-_vram_cache: dict[str, object] = {"at": 0.0, "snapshot": None}
-_vram_lock = threading.Lock()
-
-
+# 本机显存来自进程级硬件快照（启动时后台探测一次），不再维护自己的 TTL /
+# gpu.json；换硬件必然重启服务，缓存没有失效问题。
 def _gpu_vram_mb() -> int | None:
-    """本机独显显存。走 gpu_snapshot() 的缓存，不是每个模型都探一次。"""
+    """本机独显显存。硬件快照是进程级单例，不是每个模型都探一次。"""
     mb = int(gpu_snapshot().get("vramMb") or 0)
     return mb or None
 
 
 def gpu_snapshot() -> dict:
-    """本机独显快照 —— 权重压力标志的分母。
+    """本机独显快照 —— 与环境页共用启动时探测的那一份硬件快照。"""
+    from .comfy.probe import hardware_snapshot
 
-    前端要拿它算「这个模型占我显存百分之几」，所以给结构化数据而不是文本。
-    查找顺序：进程内缓存 → 本地文件缓存 → 真正探测。并发请求用锁挡住，
-    避免列表 / 分面 / gpu 三个接口同时各跑一次探测。
-    """
-    now = time.time()
-    cached = _vram_cache["snapshot"]
-    if cached is not None and now - float(_vram_cache["at"]) < _VRAM_TTL:
-        return cached  # type: ignore[return-value]
-
-    with _vram_lock:
-        now = time.time()
-        cached = _vram_cache["snapshot"]
-        if cached is not None and now - float(_vram_cache["at"]) < _VRAM_TTL:
-            return cached  # type: ignore[return-value]
-
-        snap = _load_gpu_disk()
-        if snap is None:
-            snap = _probe_gpu_snapshot()
-            _save_gpu_disk(snap)
-        _vram_cache.update(at=now, snapshot=snap)
-        return snap
-
-
-def clear_gpu_snapshot() -> None:
-    """丢掉内存与磁盘快照，下次调用重新探测（测试 / 手动重新检测用）。"""
-    with _vram_lock:
-        _vram_cache.update(at=0.0, snapshot=None)
-    try:
-        _GPU_CACHE_PATH.unlink()
-    except OSError:
-        pass
-
-
-def _load_gpu_disk() -> dict | None:
-    try:
-        data = json.loads(_GPU_CACHE_PATH.read_text("utf-8"))
-    except (OSError, ValueError):
-        return None
-    if not isinstance(data, dict):
-        return None
-    snap = data.get("snapshot")
-    if not isinstance(snap, dict):
-        return None
-    if time.time() - float(data.get("at") or 0) > _VRAM_TTL:
-        return None
-    return snap
-
-
-def _save_gpu_disk(snap: dict) -> None:
-    try:
-        _GPU_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        tmp = _GPU_CACHE_PATH.with_suffix(".tmp")
-        tmp.write_text(
-            json.dumps({"at": time.time(), "snapshot": snap}, ensure_ascii=False),
-            "utf-8",
-        )
-        tmp.replace(_GPU_CACHE_PATH)
-    except OSError:
-        pass  # 缓存写不进去不该让请求失败
-
-
-def _probe_gpu_snapshot() -> dict:
-    try:
-        # 只要显存分母，不跑完整设备报告（磁盘 / Python / 实例那圈要 0.3 s 以上）
-        from .comfy.probe import probe_primary_gpu
-
-        gpu = probe_primary_gpu()
-    except Exception:
-        # 探测失败不该拖垮整个列表
-        gpu = None
+    gpu = hardware_snapshot().primary_gpu
     if gpu is None:
         return {"name": "", "vendor": "", "vramMb": 0, "vramGb": 0, "vramText": "未检测到"}
     mb = int(gpu.vram_mb or 0)
@@ -130,6 +54,13 @@ def _probe_gpu_snapshot() -> dict:
         "vramGb": round(mb / 1024, 2),
         "vramText": f"{mb / 1024:.0f} GB" if mb else "未检测到",
     }
+
+
+def clear_gpu_snapshot() -> None:
+    """丢掉硬件快照，下次调用重新探测（测试 / 手动重检用）。"""
+    from .comfy.probe import reset_hardware_snapshot
+
+    reset_hardware_snapshot()
 
 
 def _family_of(name: str) -> str:

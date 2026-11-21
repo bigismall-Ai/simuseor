@@ -1,0 +1,10 @@
+{
+  "kind": "retarget_bvh",
+  "frames": 48,
+  "duration_s": 2.0,
+  "foot_slide_mean_m": 0.0135,
+  "foot_slide_max_m": 0.0663,
+  "ground_min_z": 0.0,
+  "method": "semantic_replay",
+  "native_comparison": "shot_001: 0.47 cm mean / 3.03 cm max"
+}

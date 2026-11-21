@@ -10,13 +10,13 @@
  *  3. 拿不到就不显示，不做估算。「参数 3B」如果是按家族常见规模猜出来的，
  *     用户会拿它跟真实文件对不上号，那比留白更糟。
  *
- * 家族标识是「槽位 + 降级」三段：
- *  - 有官方资产（public/families/{id}.svg）时填品牌标，22px 完整呈现、不裁切、不改色。
+ * 家族标识是「槽位 + 降级」两段：
+ *  - 有资产（官方矢量或按官方位图临摹的 SVG，public/families/{id}.svg）时填品牌标，
+ *    22px 完整呈现、不裁切、不改色。位图临摹 / 重绘资产由本项目单独维护，不追上游更新。
  *    这是指称性使用（用标识指代该模型家族本身），合规；但**绝不能**放大成背景水印或改配色，
  *    那会脱离指称语境变成装饰图案，也从「标识该模型」变成「用它的标装饰我们的界面」。
- *  - 没有资产时退回自绘几何标记，尺寸与位置一致，所以两种状态版式不跳。
- *  - 连自绘标记也没有（认不出家族）时，退回发布方缩写（1–3 字）：它回答的是
- *    「谁发的」，不是伪造的厂牌标，详见 publisher.ts。
+ *  - 没有资产时用家族码 / 发布方缩写（1–3 字）：它回答的是「谁发的」，
+ *    不是伪造的厂牌标，详见 publisher.ts。只有连作者都取不到才留空。
  *
  * 家族色不在这里：色值写在组件里 9 个 `.f-*` 类 × 明暗两套。这里曾经有 hue / strength
  * 两个字段，但从来没人消费——颜色早就搬进 CSS 了。留着只会让后来的人以为改它有用。
@@ -34,7 +34,10 @@ export interface FamilySpec {
   id: FamilyId;
   /** 字牌上的家族码，3-4 字符，等宽显示 */
   code: string;
-  /** 24×24 单路径标记，无官方资产时的降级图形 */
+  /**
+   * 24×24 单路径标记。保留的降级通道：当前所有家族都有矢量或位图临摹资产，
+   * 认不出家族时走家族码 / 发布方缩写，不再画几何占位符。
+   */
   mark: string;
   /** 实心还是描边 */
   filled: boolean;
@@ -121,7 +124,7 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'noobai',
     code: 'NOOB',
-    // NoobAI XL：取 noobaixl.org 的官方 512×512 图标（棕底米白像素 N），原图嵌入
+    // NoobAI XL：noobaixl.org 的 512×512 棕底米白像素 N，按位图重绘为纯矢量（无内嵌位图）
     logo: 'families/noobai.svg',
     logoDark: 'families/noobai-dark.svg',
     mark: '',
@@ -149,9 +152,14 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'pony',
     code: 'PONY',
-    mark: 'M12 4L21 19H3Z',
+    /*
+     * 作者没有发布矢量标，但 Civitai 头像是紫色独角兽角位图（450×450）。
+     * 按位图临摹为 SVG（非官方矢量），连深色底一起保留 —— 深色角落在浅色卡上没有对比。
+     */
+    logo: 'families/pony.svg',
+    logoDark: 'families/pony-dark.svg',
+    mark: '',
     filled: true,
-    // 作者没有任何品牌资产，Civitai 页只有效果图，任何「Pony 标」都是二创
     test: /pony/i,
   },
   {
@@ -220,23 +228,27 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'ltx',
     code: 'LTX',
-    mark: 'M4 7h6v10H4Z M14 7h6v10h-6Z',
+    /*
+     * 官方只有「LtX」字标，但 ModelScope 图标是位图涂抹标。
+     * 按位图临摹为 SVG（非官方矢量），深色主题用反白版。
+     */
+    logo: 'families/ltx.svg',
+    logoDark: 'families/ltx-dark.svg',
+    mark: '',
     filled: true,
-    // 官方只有「LtX」字标、没有符号；75×32 塞进方槽后高只剩 7.7px，且与字牌重复
     test: /\bltx[\s.-]?v?\b/i,
   },
   {
     id: 'wan',
     code: 'WAN',
     /*
-     * 两道同基线、同圆心的半圆拱（外 9/6.2、内 4.4/2.2，拱脚垂直落地）。
-     * 旧标记是 2.4px 描边的双弧，22px 下只有 8px 高、墨水覆盖 16%，
-     * 和官方实心标差了整整一档；改成闭合填充后 26%，与 pony / ltx 同档。
-     * 内拱外径与外拱内径留 1.8 的缝，22px 下约 1.65px，仍能读出是「两拱」而不是一块。
+     * 官方仓库 assets/logo.png 是「符号 + 字标」位图；取左侧 symbol 临摹为 SVG
+     * （非官方矢量），保留白色通道。深色版只把紫色渐变提亮，白通道不变。
      */
-    mark: 'M3 19.4V13.4A9 9 0 0 1 21 13.4V19.4H18.2V13.4A6.2 6.2 0 0 0 5.8 13.4V19.4Z M7.6 19.4V13.4A4.4 4.4 0 0 1 16.4 13.4V19.4H14.2V13.4A2.2 2.2 0 0 0 9.8 13.4V19.4Z',
+    logo: 'families/wan.svg',
+    logoDark: 'families/wan-dark.svg',
+    mark: '',
     filled: true,
-    // 官方只有 assets/logo.png 位图，描摹成 SVG 属于重绘，形状不可靠
     test: /\bwan[\s._-]?2|\bwan\b|wan2|万相/i,
   },
   {
@@ -304,7 +316,7 @@ export const FAMILIES: FamilySpec[] = [
   {
     id: 'mochi',
     code: 'MOCHI',
-    // Genmo Mochi：官方仓库无 logo，取 genmo.ai 字标 PNG 里的三色 symbol（原图嵌入，非重绘）
+    // Genmo Mochi：官方仓库无 logo，按 genmo.ai 字标里的三色 symbol 位图重绘为纯矢量
     logo: 'families/mochi.svg',
     logoDark: 'families/mochi-dark.svg',
     mark: '',

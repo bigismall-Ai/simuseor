@@ -33,6 +33,11 @@ if (Test-Path $settingsPath) {
     if ($port -le 0) { $port = 8000 }
 }
 $url = "http://127.0.0.1:$port"
+$lanIp = (Get-NetIPConfiguration -ErrorAction SilentlyContinue |
+    Where-Object { $_.IPv4DefaultGateway -and $_.NetAdapter.Status -eq 'Up' } |
+    ForEach-Object { $_.IPv4Address.IPAddress } |
+    Select-Object -First 1)
+$lanUrl = if ($lanIp) { "http://${lanIp}:$port" } else { "http://<本机IP>:$port" }
 
 function Test-Health {
     # /health 会被 SPA fallback 吞掉返回 index.html（假 200），必须用 /api/health
@@ -99,6 +104,7 @@ if ($needBuild) {
 # ---- 旧实例 ----
 $devPort = 4200
 $devUrl = "http://127.0.0.1:$devPort"
+$devLanUrl = if ($lanIp) { "http://${lanIp}:$devPort" } else { "http://<本机IP>:$devPort" }
 
 if ($Dev) {
     # 开发模式下每次都是「重启」：8000 与 4200 都清掉。
@@ -114,7 +120,7 @@ if ($Dev) {
 } else {
     $running = Test-Health
     if ($running -and -not $Restart) {
-        Write-Host "✔ 服务已在运行：$url （要重启请加 -Restart）"
+        Write-Host "✔ 服务已在运行：$url （要重启请加 -Restart；局域网访问需重启到 0.0.0.0）"
         if (-not $NoOpen) { Start-Process $url }
         exit 0
     }
@@ -142,7 +148,7 @@ if ($Dev) {
 
     Write-Host "→ 启动前端 dev server：$devUrl"
     # 端口不在这里传：web/package.json 的 start 已经是
-    # `ng serve --port 4200 --host 127.0.0.1`，再传一遍 Angular 会警告
+    # `ng serve --port 4200 --host 0.0.0.0`，再传一遍 Angular 会警告
     # 「Option 'port' has been specified multiple times」。$devPort 必须与它保持一致。
     $webProc = Start-Process -FilePath 'npm.cmd' `
         -ArgumentList @('start') `
@@ -159,6 +165,8 @@ if ($Dev) {
 
         Write-Host "✔ 后端已就绪：$url （改后端 .py 自动重启）"
         Write-Host "✔ 前端开发地址：$devUrl （改前端即时生效，Ctrl+C 一起停）"
+        Write-Host "✔ 局域网访问：$devLanUrl"
+        Write-Host "  如果局域网仍打不开，请在 Windows 防火墙放行 TCP $devPort 与 $port"
         if (-not $NoOpen) { Start-Process $devUrl }
         Wait-Process -Id $server.Id
     } finally {
@@ -183,6 +191,8 @@ try {
     if (-not $ready) { throw '等待 /api/health 超时（40s）' }
 
     Write-Host "✔ 已就绪：$url   （Ctrl+C 停止服务）"
+    Write-Host "✔ 局域网访问：$lanUrl"
+    Write-Host "  如果局域网仍打不开，请在 Windows 防火墙放行 TCP $port"
     if (-not $NoOpen) { Start-Process $url }
     Wait-Process -Id $proc.Id
 } finally {

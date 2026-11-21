@@ -61,7 +61,8 @@ WEB_DIST_CANDIDATES = [ROOT / "web" / "dist" / "browser", ROOT / "web" / "dist"]
 # 镜像 ≠ 代理：镜像是境内直连的另一条通路，套代理会绕回原路（HF 镜像会 308 跳回官方），
 # 所以 direct / proxy 两种策略都会**排除镜像地址**。
 DEFAULT_SETTINGS: dict = {
-    "app": {"host": "127.0.0.1", "port": 8000},
+    # 0.0.0.0：本机与局域网都可访问；仅本机使用可改回 127.0.0.1
+    "app": {"host": "0.0.0.0", "port": 8000},
     "aria2": {
         "rpc_port": 6800,
         "rpc_secret": "mdl-secret",

@@ -1,0 +1,251 @@
+{
+  "summary": {
+    "total": 9,
+    "bytes": 117181316,
+    "licenses": [
+      "CC-BY",
+      "CC-BY 4.0",
+      "CC0 1.0"
+    ]
+  },
+  "assets": [
+    {
+      "name": "island_tree_01",
+      "category": "vegetation",
+      "source": "Poly Haven",
+      "page": "https://polyhaven.com/a/island_tree_01",
+      "license": "CC0 1.0",
+      "license_url": "https://polyhaven.com/license",
+      "files": [
+        "polyhaven\\island_tree_01\\island_tree_01_1k.gltf",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_nor_gl_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_diff_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_arm_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_leaves_nor_gl_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_leaves_diff_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_leaves_arm_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_branches_nor_gl_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_branches_diff_1k.jpg",
+        "polyhaven\\island_tree_01\\textures\\island_tree_01_branches_arm_1k.jpg",
+        "polyhaven\\island_tree_01\\island_tree_01.bin"
+      ],
+      "bytes": 66337268,
+      "sha256": "78e905a40670bfabb2760601d4d9a6c17193a50d68e6271c66893eb7bd75906d",
+      "stats": {
+        "geometries": 3,
+        "faces": 1599403,
+        "vertices": 1303928,
+        "size_m": [
+          4.755,
+          5.027,
+          4.818
+        ]
+      },
+      "note": "1k glTF bundle（含纹理，用于白模时需剥离材质）"
+    },
+    {
+      "name": "old_military_crate",
+      "category": "prop",
+      "source": "Poly Haven",
+      "page": "https://polyhaven.com/a/old_military_crate",
+      "license": "CC0 1.0",
+      "license_url": "https://polyhaven.com/license",
+      "files": [
+        "polyhaven\\old_military_crate\\old_military_crate_1k.gltf",
+        "polyhaven\\old_military_crate\\textures\\old_military_crate_nor_gl_1k.jpg",
+        "polyhaven\\old_military_crate\\textures\\old_military_crate_diff_1k.jpg",
+        "polyhaven\\old_military_crate\\textures\\old_military_crate_arm_1k.jpg",
+        "polyhaven\\old_military_crate\\old_military_crate.bin"
+      ],
+      "bytes": 2495423,
+      "sha256": "ef4b69dca61542c4d724c4807233161129150220695742b5137ed65d8d2e1f24",
+      "stats": {
+        "geometries": 5,
+        "faces": 10476,
+        "vertices": 8317,
+        "size_m": [
+          1.815,
+          0.301,
+          0.976
+        ]
+      },
+      "note": "1k glTF bundle（含纹理，用于白模时需剥离材质）"
+    },
+    {
+      "name": "ArmChair_01",
+      "category": "prop",
+      "source": "Poly Haven",
+      "page": "https://polyhaven.com/a/ArmChair_01",
+      "license": "CC0 1.0",
+      "license_url": "https://polyhaven.com/license",
+      "files": [
+        "polyhaven\\ArmChair_01\\ArmChair_01_1k.gltf",
+        "polyhaven\\ArmChair_01\\textures\\Armchair_01_diff_1k.jpg",
+        "polyhaven\\ArmChair_01\\ArmChair_01.bin",
+        "polyhaven\\ArmChair_01\\textures\\Armchair_01_nor_gl_1k.jpg",
+        "polyhaven\\ArmChair_01\\textures\\Armchair_01_arm_1k.jpg"
+      ],
+      "bytes": 769144,
+      "sha256": "91e39d5b35f36c8074b7b6432f6fd77f5f1a257c4d6af3924c0b263eb674286b",
+      "stats": {
+        "geometries": 1,
+        "faces": 5626,
+        "vertices": 3758,
+        "size_m": [
+          0.848,
+          1.065,
+          0.766
+        ]
+      },
+      "note": "1k glTF bundle（含纹理，用于白模时需剥离材质）"
+    },
+    {
+      "name": "MakeHuman shirts01",
+      "category": "clothing",
+      "source": "MakeHuman Community",
+      "page": "https://static.makehumancommunity.org/assets/assetpacks/shirts01.html",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "makehuman\\shirts01\\clothes\\elvs_crude_t-shirt_male\\crude_male_shirt.obj",
+        "makehuman\\shirts01_cc0.zip"
+      ],
+      "bytes": 24560423,
+      "sha256": "3389b981a826396213cce2e69f40b3d9eca6cdfadcfcbee2774acb1dfb322fa7",
+      "stats": {
+        "geometries": 1,
+        "faces": 2068,
+        "vertices": 1150,
+        "size_m": [
+          5.639,
+          5.268,
+          2.496
+        ]
+      },
+      "note": "MHCLO 服装包（71 文件），需配合人体底座与 MPFB"
+    },
+    {
+      "name": "Kenney car-kit",
+      "category": "vehicle",
+      "source": "Kenney",
+      "page": "https://kenney.nl/assets/car-kit",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "kenney\\car-kit\\Models\\GLB format\\ambulance.glb",
+        "kenney\\car-kit.zip"
+      ],
+      "bytes": 5047849,
+      "sha256": "9e429e2b6202c0d78d0c38b2adbaae6b77716bb2a0f6fbb2811556e1fb31edba",
+      "stats": {
+        "geometries": 7,
+        "faces": 2804,
+        "vertices": 4328,
+        "size_m": [
+          1.5,
+          1.8,
+          3.25
+        ]
+      },
+      "note": "zip 内共 100 个网格文件；低模、风格化"
+    },
+    {
+      "name": "Kenney nature-kit",
+      "category": "vegetation",
+      "source": "Kenney",
+      "page": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "kenney\\nature-kit\\Models\\GLTF format\\bed.glb",
+        "kenney\\nature-kit.zip"
+      ],
+      "bytes": 10556629,
+      "sha256": "ed064d4d9e6cf0c87f9146cb38a652d0df5427b60d0486fed190ab74d9510df4",
+      "stats": {
+        "geometries": 3,
+        "faces": 268,
+        "vertices": 1272,
+        "size_m": [
+          0.335,
+          0.274,
+          0.747
+        ]
+      },
+      "note": "zip 内共 658 个网格文件；低模、风格化"
+    },
+    {
+      "name": "CAR Model - Free Model By Ignition Labs",
+      "category": "vehicle",
+      "source": "Poly Pizza",
+      "page": "https://poly.pizza/m/5zUWP5UsLg-",
+      "license": "CC-BY",
+      "license_url": "https://creativecommons.org/licenses/by/3.0",
+      "files": [
+        "polypizza\\5zUWP5UsLg-.glb"
+      ],
+      "bytes": 1829316,
+      "sha256": "c04bb20bce55ea878e4b340ed23492a1d6834bd40fdafc5512c06abd7c7079eb",
+      "stats": {
+        "geometries": 6,
+        "faces": 10252,
+        "vertices": 8563,
+        "size_m": [
+          230.203,
+          117.553,
+          489.441
+        ]
+      },
+      "note": "页面直下 GLB；使用需保留署名（CC-BY 时）"
+    },
+    {
+      "name": "Fox",
+      "category": "creature",
+      "source": "Khronos glTF Sample Assets",
+      "page": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox",
+      "license": "CC-BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "files": [
+        "khronos\\Fox.glb"
+      ],
+      "bytes": 162852,
+      "sha256": "d97044e701822bac5a62696459b27d7b375aada5de8574ed4362edbba94771f7",
+      "stats": {
+        "geometries": 1,
+        "faces": 576,
+        "vertices": 1728,
+        "size_m": [
+          25.185,
+          79.029,
+          154.72
+        ]
+      },
+      "note": "© 2014 tomkranis；动画 © 2017 @AsoboStudio & @scurest"
+    },
+    {
+      "name": "ToyCar",
+      "category": "vehicle",
+      "source": "Khronos glTF Sample Assets",
+      "page": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/ToyCar",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "khronos\\ToyCar.glb"
+      ],
+      "bytes": 5422412,
+      "sha256": "01a60862de55cd4b9f3acfab0b0def86451800f9c42467fcd61052c16cb9838c",
+      "stats": {
+        "geometries": 3,
+        "faces": 108936,
+        "vertices": 77429,
+        "size_m": [
+          0.073,
+          0.029,
+          0.074
+        ]
+      },
+      "note": "© 2020 Guido Odendahl（模型）/ Eric Chadwick（扩展与场景）"
+    }
+  ],
+  "root": "var\\public-assets"
+}

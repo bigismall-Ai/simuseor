@@ -1,6 +1,6 @@
 {
-  "$note": "厂牌标识来源登记表 —— 唯一权威。来源从哪来、什么颜色、官方规范在哪、当前资产指纹是什么，全在这里。",
-  "$workflow": "新增家族：先在 families 里登记 → 放资产 → node scripts/fetch-family-assets.mjs --approve <id> 写入指纹 → cd tests && node families-assets.mjs 校验。资产改动后必须重新 --approve，否则校验会报「与登记不符」。",
+  "$note": "厂牌标识来源登记表 —— 唯一权威。来源从哪来、什么颜色、官方规范在哪、当前资产指纹是什么，全在这里。非 SVG 资产（位图临摹 / 重绘 / 原图嵌入）由本项目单独维护，不追上游标识更新；厂牌标缺失、既无 SVG 也无重绘资产时，由家族码 / 发布方缩写兜底。",
+  "$workflow": "新增家族：先在 families 里登记 → 放资产（官方 SVG，或本项目自行维护的位图重绘）→ node scripts/fetch-family-assets.mjs --approve <id> 写入指纹 → cd tests && node families-assets.mjs 校验。资产改动后必须重新 --approve，否则校验会报「与登记不符」。manual 资产不参与上游漂移检测。",
   "version": 1,
   "families": [
     {
@@ -167,6 +167,18 @@
       "guidelines": "https://ltx.video/",
       "assets": [
         {
+          "path": "families/ltx.svg",
+          "variant": "light",
+          "sha256": "7d21dcff52c856f7d8b7a3853eaa2bebc2ef760bd9862a438f9e75a2eac62386",
+          "sig": "8ee533ef7ff881fd"
+        },
+        {
+          "path": "families/ltx-dark.svg",
+          "variant": "dark",
+          "sha256": "cbab4e1b8f48e2ccbef70dc1ff2e114cf45068b709feabb206713fada619d5a2",
+          "sig": "0ea299e3152ff20d"
+        },
+        {
           "path": "families/_candidates/ltx-wordmark-white.svg",
           "variant": "candidate",
           "sha256": "c1a7c3c65dfc04a76db828d511e469cccccff89b9c0d63c5de27757c1b27d948",
@@ -175,28 +187,70 @@
       ],
       "source": {
         "kind": "manual",
-        "note": "官方只有字标（75×32），没有 symbol。塞进 22px 方槽后高只剩 7.7px 且与家族码重复，所以没启用。ltx.video 对脚本返回 403（机器人防护），**用真实浏览器访问也在 45s 内加载不完**（2026-11-16 实测，0 个 svg 响应）。GitHub Lightricks/LTX-Video 仓库根目录没有任何图形资产。",
-        "hint": "若哪天出现横排槽位（卡片头部），可直接启用候选区这份字标。"
+        "note": "官方只有字标（75×32），没有矢量 symbol。ModelScope 图标位图（400×400）给出涂抹形标，按位图临摹为 SVG（非官方矢量），深色主题用反白版。字标候选仍留在 _candidates/，横排槽位可用。",
+        "hint": "位图来源 var/tmp/ms-assets/ltx.png。ltx.video 对脚本返回 403，GitHub Lightricks/LTX-Video 仓库根目录没有图形资产。"
       }
     },
     {
       "id": "wan",
       "code": "WAN",
       "guidelines": "https://github.com/Wan-Video/Wan2.1",
-      "assets": [],
+      "assets": [
+        {
+          "path": "families/wan.svg",
+          "variant": "light",
+          "sha256": "7f3315856a329fe7131cebbf19c89fdb4d3b2cf930cbd2055aedc0244d40e95c",
+          "sig": "4a98c56fa4e22750"
+        },
+        {
+          "path": "families/wan-dark.svg",
+          "variant": "dark",
+          "sha256": "cdf7c10e5e003a715657ce7f343ef99f35a4d01c658219247568eefec0eedd13",
+          "sig": "64651d38e166de6f"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "官方仓库 assets/ 里只有 logo.png（56KB 位图），没有任何 SVG。位图描摹成 SVG 属重绘、形状不可靠 → 保持留白，只给家族码。"
+        "kind": "manual",
+        "foundUrls": [
+          {
+            "url": "https://raw.githubusercontent.com/Wan-Video/Wan2.1/204f899b6436fe2e1705a0b67c464b30b8137799/assets/logo.png",
+            "what": "官方仓库 logo.png（1108×443，symbol + 字标）",
+            "usable": true,
+            "why": "仓库没有任何 SVG；取左侧 symbol（约 415×411）按位图临摹为 SVG。白色通道保留，紫色渐变取 #7265E6 → #6330D8。"
+          }
+        ],
+        "note": "官方只有位图。按官方 logo.png 的 symbol 位图临摹为 SVG（非官方矢量），深色版仅提亮紫色渐变。"
       }
     },
     {
       "id": "pony",
       "code": "PONY",
-      "guidelines": "",
-      "assets": [],
+      "guidelines": "https://civitai.com/models/257749",
+      "assets": [
+        {
+          "path": "families/pony.svg",
+          "variant": "light",
+          "sha256": "ffc8080732cb5b1731ebdd4d90ea78dd6b843f1c556126b352710b04e519bbed",
+          "sig": "d27bd6bd84ff49f3"
+        },
+        {
+          "path": "families/pony-dark.svg",
+          "variant": "dark",
+          "sha256": "ffc8080732cb5b1731ebdd4d90ea78dd6b843f1c556126b352710b04e519bbed",
+          "sig": "d27bd6bd84ff49f3"
+        }
+      ],
       "source": {
-        "kind": "none",
-        "note": "作者（PurpleSmartAI）没有发布任何品牌资产，Civitai 页只有效果图。任何「Pony 标」都是二创 → 保持留白。"
+        "kind": "manual",
+        "foundUrls": [
+          {
+            "url": "https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/60a1a061-10ef-4bf5-a081-13a1a578fbc6/width=96/PurpleSmartAI.jpeg",
+            "what": "Civitai 作者头像（紫色独角兽角 + 深紫圆角底，位图）",
+            "usable": true,
+            "why": "作者 PurpleSmartAI 没有发布矢量品牌资产；这是唯一稳定可取的位图标识，按位图临摹为 SVG（非官方矢量）。"
+          }
+        ],
+        "note": "作者没有发布矢量标。取 Civitai 头像位图临摹为 SVG，保留深色圆角底与角色条纹；深色版复用同一份几何。"
       }
     },
     {
@@ -299,24 +353,24 @@
     {
       "id": "noobai",
       "code": "NOOB",
-      "guidelines": "",
+      "guidelines": "https://noobaixl.org/",
       "assets": [
         {
           "path": "families/noobai.svg",
           "variant": "light",
-          "sha256": "b9db1281e5d186e4ae058cdcaf4038e0ab710da2a6da011617a9e38eee97a4b7",
-          "sig": "e3e5db3ca4957a30"
+          "sha256": "b40638bb8a72257ff314fbb83e27f618a805f5cc15f040bb3e4488bb03341a08",
+          "sig": "4c4f3e2ff61aac9f"
         },
         {
           "path": "families/noobai-dark.svg",
           "variant": "dark",
-          "sha256": "b9db1281e5d186e4ae058cdcaf4038e0ab710da2a6da011617a9e38eee97a4b7",
-          "sig": "e3e5db3ca4957a30"
+          "sha256": "b40638bb8a72257ff314fbb83e27f618a805f5cc15f040bb3e4488bb03341a08",
+          "sig": "4c4f3e2ff61aac9f"
         }
       ],
       "source": {
         "kind": "manual",
-        "note": "NoobAI XL（Laxhar Lab）。官方 HF 仓库没有 logo 文件；noobaixl.org 的 /logo.png（512×512，RGBA）就是这套棕底米白像素 N 的官方图标，原图以 data URI 嵌入 SVG（非描摹）。明暗共用同一份彩色图；22px 槽位内缩 1.5px 留边。"
+        "note": "NoobAI XL（Laxhar Lab）。官方 HF 仓库没有 logo 文件；noobaixl.org 的 /logo.png（512×512，RGBA）就是这套棕底米白像素 N 的官方图标。按位图重绘为纯矢量 SVG（无内嵌位图）：棕色圆角方 + 米色像素 N 路径。明暗共用同一份彩色图。"
       }
     },
     {
@@ -454,19 +508,19 @@
         {
           "path": "families/mochi.svg",
           "variant": "light",
-          "sha256": "3f9095cd648cacf54d5c0a682f1861b67e8289c9bd0bf5e3e00930e7fea01461",
-          "sig": "e3e5db3ca4957a30"
+          "sha256": "c2e4d65664566ab168374cd4fc7d1c46cef83a2648fd33f1211eab21868ae22c",
+          "sig": "cd3c513c3fce9808"
         },
         {
           "path": "families/mochi-dark.svg",
           "variant": "dark",
-          "sha256": "3f9095cd648cacf54d5c0a682f1861b67e8289c9bd0bf5e3e00930e7fea01461",
-          "sig": "e3e5db3ca4957a30"
+          "sha256": "c2e4d65664566ab168374cd4fc7d1c46cef83a2648fd33f1211eab21868ae22c",
+          "sig": "cd3c513c3fce9808"
         }
       ],
       "source": {
         "kind": "manual",
-        "note": "Genmo Mochi。官方仓库 genmoai/mochi 没有 logo 文件（assets/ 只有 mochi-factory.webp 与 grid.mp4），GitHub 组织头像是带渐变底的 Genmo 三色方块。官网 genmo.ai 的 384×91 字标 PNG（https://www.genmo.ai/media/content/714c69ee663a9adf98722d053ddcf2733d1ff5ee-384x91.png）带透明通道，裁出左侧三色 symbol 后以 data URI 原样嵌入 SVG（非描摹、非二创）。22px 槽位用 symbol 不用字标；明暗共用同一份彩色图。"
+        "note": "Genmo Mochi。官方仓库 genmoai/mochi 没有 logo 文件（assets/ 只有 mochi-factory.webp 与 grid.mp4），GitHub 组织头像是带渐变底的 Genmo 三色方块。官网 genmo.ai 的 384×91 字标 PNG 带透明通道，左侧三色 symbol 是蓝 / 黄 / 红三张倾斜圆角卡片。按位图重绘为纯矢量：三张 12.4° 斜切圆角卡 + 蓝压黄交叠区的实测混色块（用蓝卡形状 clip，避免露角）。明暗共用同一份彩色图。"
       }
     },
     {

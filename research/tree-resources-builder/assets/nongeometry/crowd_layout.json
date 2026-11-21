@@ -1,0 +1,129 @@
+{
+  "kind": "crowd_layout",
+  "count": 12,
+  "unit": "meter",
+  "clip": "motion_walk_2s.bvh",
+  "people": [
+    {
+      "id": "person_00",
+      "height": 1.56,
+      "pos": [
+        -4.2,
+        3.2
+      ],
+      "yaw_deg": 0,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_01",
+      "height": 1.63,
+      "pos": [
+        -2.95,
+        3.2
+      ],
+      "yaw_deg": 20,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_02",
+      "height": 1.7,
+      "pos": [
+        -1.7,
+        3.2
+      ],
+      "yaw_deg": 40,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_03",
+      "height": 1.77,
+      "pos": [
+        -0.45,
+        3.2
+      ],
+      "yaw_deg": 60,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_04",
+      "height": 1.84,
+      "pos": [
+        -4.2,
+        4.35
+      ],
+      "yaw_deg": 80,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_05",
+      "height": 1.56,
+      "pos": [
+        -2.95,
+        4.35
+      ],
+      "yaw_deg": 100,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_06",
+      "height": 1.63,
+      "pos": [
+        -1.7,
+        4.35
+      ],
+      "yaw_deg": 120,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_07",
+      "height": 1.7,
+      "pos": [
+        -0.45,
+        4.35
+      ],
+      "yaw_deg": 140,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_08",
+      "height": 1.77,
+      "pos": [
+        -4.2,
+        5.5
+      ],
+      "yaw_deg": 160,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_09",
+      "height": 1.84,
+      "pos": [
+        -2.95,
+        5.5
+      ],
+      "yaw_deg": 180,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_10",
+      "height": 1.56,
+      "pos": [
+        -1.7,
+        5.5
+      ],
+      "yaw_deg": 200,
+      "clip": "walk_cycle_2s"
+    },
+    {
+      "id": "person_11",
+      "height": 1.63,
+      "pos": [
+        -0.45,
+        5.5
+      ],
+      "yaw_deg": 220,
+      "clip": "walk_cycle_2s"
+    }
+  ],
+  "downstream_hint": "USD PointInstancer / glTF 实例化；远景点用 xlow LOD"
+}
