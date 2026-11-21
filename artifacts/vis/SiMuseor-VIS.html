@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SiMuseor · VIS 视觉识别系统 v2.10</title>
+<title>SiMuseor · VIS 视觉识别系统 v2.11</title>
 <style>
 /* ============================================================
    SiMuseor VIS 手册样式
@@ -184,7 +184,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
 <div class="wrap">
 <nav class="toc" aria-label="目录">
   <div class="tc-brand">SiMuseor</div>
-  <div class="tc-sub">Visual Identity System · v2.10</div>
+  <div class="tc-sub">Visual Identity System · v2.11</div>
   <p class="tc-back"><a href="vis-reference.html">← 返回手册站总览</a></p>
   <ol>
     <li><a href="#s0">卷首 · 状态声明</a></li>
@@ -214,9 +214,9 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <div class="kicker">SiMuseor / Visual Identity System</div>
     <h1>视觉识别系统</h1>
     <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
-    <p class="small" style="max-width:720px;margin:-14px 0 24px"><strong>口径：本页 = VIS 全篇（单文件通读版）。</strong>手册站另有 8 个分章页，是<strong>同一份规范</strong>的分页排版（产品 UI 层）—— <strong>内容同源、版本同号（v2.10），不是两套标准</strong>。想按章读，从 <a href="vis-reference.html">手册站总览</a> 进；侧栏底部也有「整份读」入口。</p>
+    <p class="small" style="max-width:720px;margin:-14px 0 24px"><strong>口径：本页 = VIS 全篇的单文件合订本。</strong>手册站的<strong>12 个分章页</strong>是<strong>同一份规范</strong>的分页排版（产品 UI 层，左侧两级导航：章 → 节）—— <strong>内容同源、版本同号（v2.10），不是两套标准</strong>。<strong>真值是 <code>SiMuseor-VIS.md</code></strong>；两者若有出入，以它为准。从 <a href="vis-reference.html">手册站总览</a> 进分章读。</p>
     <dl class="meta">
-      <div><dt>版本</dt><dd>v2.10 · 2026-11-21</dd></div>
+      <div><dt>版本</dt><dd>v2.11 · 2026-11-21</dd></div>
       <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
       <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
       <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
@@ -971,11 +971,11 @@ const isAccent = (r, g, b) =&gt; {
   <p class="small">M0–M2 与 LOGO 冻结解耦，可立即排期；每阶段附具体文件 + 行号 + 改动前后字符串 + 验证命令 + E2E 回归范围，详见 <code>_phase3-engineering.md</code>。字体性能：ttf → woff2 子集化、<code>font-display:swap</code>、只给品牌类声明 Barlow、按首屏取舍是否 preload。Tailwind v4 只引 theme + utilities、不引 preflight，且组件类名须加 2–3 字母前缀避免工具类命中。</p>
 
   <h3>8.4 交付物索引</h3>
-  <p class="small"><strong>口径：VIS 只有一份标准。</strong>手册站有 <strong>9 个规范渲染面</strong> —— 8 个分章页（<code>reference/*.html</code>，产品 UI 层，每页只讲一章）+ 1 个单文件通读版（<code>SiMuseor-VIS.html</code>，品牌纸墨层，可打印）。<strong>内容同源、版本同号</strong>，不是两套标准。左侧导航<strong>只列 8 个分章页</strong>；单文件版作为「另一种读法」挂在侧栏页脚的「整份读」—— 放进章节列表会看起来像第 9 章 / 另一套标准（2026-11-21 复核时发现并纠正）。<code>reference/audit.html</code> 是<strong>审计</strong>、<code>prototypes/cards.html</code> 是<strong>原型</strong>，两者都<strong>不是</strong>规范渲染面。</p>
+  <p class="small"><strong>口径：VIS 只有一份标准。</strong>手册站有 <strong>12 个分章</strong>（<code>reference/*.html</code>，产品 UI 层，每页只讲一章），左侧<strong>两级导航</strong>：一级是章，二级是章内的节（点二级项直链到那一节）。<strong>整份读 = 顺着章 → 节读下来</strong>。<code>SiMuseor-VIS.html</code> 是<strong>单文件合订本</strong>（品牌纸墨层，可打印），<strong>不再作为站点的渲染面呈现</strong> —— 放进章节列表会看起来像第 13 章 / 另一套标准（2026-11-21 复核时发现并纠正）。<strong>真值是 <code>SiMuseor-VIS.md</code></strong>；三者内容同源、版本同号。<code>reference/audit.html</code> 是<strong>审计</strong>、<code>prototypes/cards.html</code> 是<strong>原型</strong>，两者都<strong>不是</strong>规范分章。</p>
   <table>
     <tr><th style="width:250px">文件</th><th>用途</th></tr>
-    <tr><td><code>SiMuseor-VIS.html</code></td><td>本手册（可预览、可打印）—— <strong>规范全篇 · 单文件通读版</strong></td></tr>
-    <tr><td><code>SiMuseor-VIS.md</code></td><td>规范正文（版本管理 / 引用 / 复制）</td></tr>
+    <tr><td><code>SiMuseor-VIS.html</code></td><td>单文件合订本（可预览、可打印）—— <strong>非渲染面</strong>，真值见下</td></tr>
+    <tr><td><code>SiMuseor-VIS.md</code></td><td>规范正文（<strong>唯一真值</strong> / 版本管理 / 引用 / 复制）</td></tr>
     <tr><td><code>vis-tokens.css</code></td><td>独立 token 层，M0 可直接追加</td></tr>
     <tr><td><code>vis-check.mjs</code> / <code>vis-check-report.txt</code></td><td>只读校验脚本 / 主理人实跑报告</td></tr>
     <tr><td><code>_phase1-visual.md</code>（v1.1 / 620 行）</td><td>基础系统规范全文</td></tr>
@@ -1114,8 +1114,9 @@ const isAccent = (r, g, b) =&gt; {
   <p class="small"><strong>v2.8（2026-11-21 · 资产守门员 + 事实更正）</strong>：① <strong>§3.11 新增「资产守门员 <code>vis-asset-guard.mjs</code>」</strong> —— 「SVG 是唯一图片资产真值」的可机检契约：4 子命令（<code>normalize</code> / <code>fingerprint</code> / <code>assert</code> / <code>report</code>）、8 条断言（A1–A8）、<strong>与 <code>vis-check.mjs</code> 同一套棘轮口径</strong>（等于基线退出 1 仅提示，超基线退出 2 阻塞）；A8 按 WCAG 1.4.11 免除 logo 的规定，对品牌标记主色对比度<strong>报 INFO 不阻塞</strong>。工具落位 <code>artifacts/vis/vis-asset-guard.mjs</code>，验证 <code>tests/vis-asset-guard.mjs</code>（26 条断言全通过），台账 <code>artifacts/vis/asset-ledger.json</code>。② <strong>§3.7.4 事实更正</strong> —— 上色方式原写 <code>.cls-1…cls-86</code>，实测为 <strong>max 44 个类 / 86 次引用</strong>（引用数 ≠ 类数，86 = 82 polygon + 4 path），mid 45 类 / min 21 类；定义与使用<strong>零差集</strong>。③ <strong>§3.8 G0 事实更正</strong> —— 「蝉形 82 条面片微渐变」作废：蝉形自 v2.6 手工重制后为 <strong>82 面片纯色、零渐变</strong>，G0 现只承载 favicon 5 档色带。</p>
   <p class="small"><strong>v2.9（2026-11-21 · 棘轮清零 + 违规热力）</strong>：① <strong>§8.3 M1 落地一条</strong> —— 组件 scoped 的 <code>.btn.primary</code> 原用 <code>--accent</code> 当填充底色 + 裸 <code>#fff</code> 字色，深色主题下白字压 <code>--accent</code> #a5b4fc 仅 <strong>1.99:1</strong>、hover 的 <code>--accent-hover</code> #c7d2fe 仅 <strong>1.49:1</strong>（均不达 AA，且属裸色值）。按 §3.3「填充型用 <code>--primary</code>」与 §8.5 裁决 5 / M1-d 既定裁决改为 <code>--primary</code> + <code>--on-primary</code>，hover 保持 <code>background: var(--primary)</code> 只改 <code>border-color</code>，四态实测 <strong>6.29:1</strong>（浅深一致）。② <strong>§3.3 产品层新增两枚 token</strong> —— <code>--plate-chip-ink #3b3a35</code> / <code>--plate-chip-line rgb(0 0 0 / .18)</code>（封面铭牌照片上的白底芯片，<strong>与主题无关、两主题同值</strong>），原先内联在 <code>cover-plate.component.ts</code> 的两个裸色值上提，改值零、视觉零变化。③ <strong><code>vis-check.mjs</code> 新增 [3.5] 违规热力</strong> —— 棘轮逐 key 的超基线 / 可收敛明细，按规则与按文件两套排序，直接排出「先修哪个」；并据此把 1.12 基线由 110 收紧至 <strong>108</strong>（只降不升）。④ 超基线清零：<code>vis-check</code> 退出码由 2 回到 <strong>1</strong>（旧债仍在，按设计不阻塞 CI）。⑤ <strong>§8.2 对比度实算数字更正</strong> —— 实跑为 PASS 19 / FAIL 7 / INFO 1，原文「18 / 8」为旧数。</p>
   <p class="small"><strong>v2.10（2026-11-21 · 原型页生成管线 + 背景实验退役）</strong>：① <strong>§3.12 新增「原型页生成管线」</strong> —— 原型页是<strong>展示面</strong>不是手写页面，按 <strong>类型</strong>（<code>_types.mjs</code>，形状与渲染器）/ <strong>定义</strong>（<code>_defs.mjs</code>，唯一手写处）/ <strong>展示面</strong>（<code>prototypes/*.html</code>，生成物）三层拆开；新工具 <code>artifacts/vis/vis-proto.mjs</code> 提供 <code>build</code>（重新生成）与 <code>check</code>（防漂移）。② <strong>防漂移四道</strong> —— 漂移（重新渲染 ↔ 入库展示面<strong>逐字节</strong>比对）、退役（<code>status: retired</code> 的原型展示面必须已不存在）、野生文件（<code>prototypes/</code> 下有 <code>.html</code> 但注册表没有）、类覆盖（展示面用到的 class 必须在样式表有定义；家族色类 <code>f-*</code> 为开放集合，未定义 = 中性兜底）。任一阻塞项 → 退出码 2。③ <strong><code>vis-check.mjs</code> 新增 [3.6] 段</strong>调 <code>vis-proto check</code>，漂移即阻塞。④ <strong><code>cards.html</code> 改造成首个生成式原型</strong>（14 张样张 = 模型 5 / 工作流 5 / 节点 4），改造前后<strong>结构与像素完全一致</strong>（标签序列 / 可见文本 / class 集合 / 引用路径逐项比对 + 同视口 PNG 字节相同）。⑤ <strong>背景实验退役</strong> —— v2 单束柔光已定稿落产品，比选使命完成，删除 <code>prototypes/backgrounds.html</code> 与 <code>_proto-bg.css</code>，并从 <code>shell.js</code> 的 <code>P</code>/<code>NAV</code> 与总览页索引卡移除；退役记录保留在 <code>_defs.mjs</code> 作为「不许复活」的凭据。⑥ <strong>§3.10 浓度口径改写</strong> —— 浓度不再由原型页滑杆承载（该页已退役），直接写死在 <code>--grad-site-wash</code> 峰值 α0.063（上限 0.090 的 70%）与 <code>--texture-site-paper</code> opacity 0.204（60%）；六个变体的取值表固化在 §3.10。⑦ <strong>「一份标准」口径收口</strong>（§8.4）—— 复核时发现总览页把「规范页面」与「完整规范」分成两组、且左侧导航把单文件版与 8 个分章页<strong>平级</strong>，读起来像<strong>两套标准</strong>。现改为：9 个规范渲染面归入同一区并写明「同源同版」，导航只列 8 个分章页，单文件版作为「另一种读法」挂到侧栏页脚「整份读」；卷首与总览各加一句口径声明。</p>
+  <p class="small"><strong>v2.11（2026-11-21 · 两级导航 + 分章补齐）</strong>：① <strong>左侧导航改两级</strong> —— 一级是章（章头可点进章、独立箭头展开），二级是章内的节（点二级项<strong>直链到该节锚点</strong>）。<strong>「整份读」由导航层级本身实现</strong>，不再另设一个「整份读」入口（一个平级的另设入口本身就会读成「另一套标准」）。② <strong>补齐 4 个缺失分章</strong> —— 新增 <code>reference/application.html</code>（§7 应用系统，6 节）、<code>reference/engineering.html</code>（§8 工程落地，4 节）、<code>reference/acceptance.html</code>（§9 验收与治理，2 节）、<code>reference/decisions.html</code>（§10 裁决与附录，4 节），<strong>站点从此覆盖 VIS 全篇</strong>（此前 §7–§10 只存在于单文件版）。③ <strong><code>SiMuseor-VIS.html</code> 降级为「单文件合订本」</strong> —— 站点不再把它当渲染面呈现（从总览索引与导航移除），卷首写明「真值是 VIS.md；三者内容同源、版本同号」。④ 总览页由「9 个渲染面」改为「<strong>12 个分章</strong>」，导语写明「VIS 只有一份标准，就在这 12 个章里」；<strong>原型单列一区</strong>，注明不是规范的一部分。⑤ §8.4 交付物口径同步改写。</p>
   <footer>
-    SiMuseor · Visual Identity System v2.10 · 2026-11-21<br>
+    SiMuseor · Visual Identity System v2.11 · 2026-11-21<br>
     编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
     本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
   </footer>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工程落地 · SiMuseor VIS · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：工程落地（token 层 / 校验脚本 / 四阶段迁移 / 交付物）">
+<link rel="stylesheet" href="../assets/vis.css">
+</head>
+<body data-page="engineering" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.11</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.11 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+
+<section id="s-8">
+  <h2><span class="num">08</span>工程落地</h2>
+  <p class="lead">
+    规范怎么变成代码：token 层怎么加、校验脚本怎么跑、分几批迁移、交付物有哪些。
+    <strong>这一章讲的是「照着做要改哪些文件」</strong>。
+  </p>
+
+  <h3 id="s-81"><code>vis-tokens.css</code>（独立 token 层）</h3>
+  <ul class="small">
+    <li><strong>零覆盖承诺</strong>：不重新赋值 <code>styles.css:17-74 / :77-122</code> 中任何已有 <code>--*</code>。实测：现有赋值变量 <strong>39</strong> / 新增 <strong>18</strong> / 交集 <strong>0</strong> → PASS。</li>
+    <li>建议 M0 追加到 <code>angular.json</code> 的 <code>styles</code> 数组<strong>最末</strong>（<code>tailwind.css</code>、<code>styles.css</code> 之后），不写 <code>@layer</code> 避免与 Tailwind v4 层序歧义。</li>
+    <li>新增：<code>--brand-*</code> 六枚 + <code>--brand-surface/-fg/-rule</code> 语义别名（深色指向反白组）、<code>--border-control #8b8b94</code>、<code>--radius-lg:16px</code>、四个 URL 变量（占位期一律 <code>none</code>）、三个标识常量（<code>--brand-clear-space:10px</code> / <code>--brand-min-width:120px</code> / <code>--brand-icon-min:32px</code>）。</li>
+    <li>两条 <code>@font-face</code>：Barlow 仅 400 / Inter 100 900，均 <code>font-display:swap</code>。生效 CSS 只有两条 @font-face + 两个 <code>:root</code> 块；接入片段全在注释里，不会被误当成已落地组件。</li>
+    <li>字体性能：<code>pyftsubset --flavor=woff2 --unicodes=U+0020-007E</code> 子集化（Barlow 102KB → 约 14KB）；只给品牌类声明 Barlow；<code>preload</code> 只给 Barlow；<strong>M0 只落 Barlow 一个 woff2</strong>。</li>
+    <li>构建规避：Tailwind v4 不引 preflight；组件类名加 2–3 字母前缀（历史事故：工具类命中 <code>.ring</code> / <code>.grid</code> / <code>.m-2</code>）；PrimeNG Aura preset <strong>不自继承</strong> <code>--brand-*</code>，需在 <code>semantic.colorScheme.light/dark</code> 组件段显式映射；归一 <code>{primary.400}→{primary.300}</code> 只改色值、不动 <code>contrastColor</code>；<code>borderRadius 3/6/10→5/8/12</code>、<code>dialog 16</code> 保留。</li>
+  </ul>
+
+  <h3 id="s-82"><code>vis-check.mjs</code> —— 主理人独立实跑</h3>
+  <p>Node ≥ 18、无第三方依赖、只读（<code>readFileSync</code> / <code>readdirSync</code>）。退出码：<code>0</code> 全通过 / <code>1</code> 仅现状基线 FAIL（预期）/ <code>2</code> 交付物校验失败。完整报告 <code>vis-check-report.txt</code>。</p>
+  <table class="t">
+    <thead><tr><th style="width:210px">检查项</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>零覆盖 / token 文件自检</td><td><strong>全部 PASS</strong>（39 / 18 / 0；@font-face 恰好 2 条；4 URL 均 <code>none</code>；无组件实现、无 <code>filter:invert()</code>、无实验稿字形）</td></tr>
+      <tr><td>字重白名单违规</td><td><strong>全量 26 处</strong> = <code>styles.css</code> 17 + 组件 scoped 9（Phase 1/2 审计盲区）</td></tr>
+      <tr><td><code>--faint</code> 文本用法</td><td><strong>全量 39 处</strong> = <code>styles.css</code> 22 + 组件 scoped 17（非文本装饰引用按色彩章保留）</td></tr>
+      <tr><td>圆角中间档 / <code>--accent</code> 类白字填充</td><td>5 处（其中 3 处 <code>cover-plate</code> 属适用域外）/ 4 处（含 <code>button.primary:hover</code>），与登记值吻合</td></tr>
+      <tr><td>@font-face / 源码引用新增 token</td><td>0 条 / 0 处（印证基线字体未生效）</td></tr>
+      <tr><td><code>filter:invert()</code> / <code>.brand-wordmark</code> / reduced-motion</td><td>0 / 0 / 仅 1 处（作全仓范本）</td></tr>
+      <tr><td>对比度实算</td><td><strong>PASS 19 / FAIL 7 / INFO 1（共 27 组）</strong>。7 个 FAIL = 4 个已登记现状违规 + 2 个「白字 on <code>--accent</code> / <code>--accent-hover</code>」禁止组合 + 1 个「白字 on indigo 400 = 2.98:1」禁止组合示例；INFO 1 组是 <code>--brand-line</code> 1px 装饰细线（非文本，豁免）</td></tr>
+      <tr><td>违规热力</td><td>报告 <strong>[3.5] 违规热力</strong> 分节：按规则（超基线优先 → 旧债条数）+ <strong>按文件</strong>（旧债集中处 = 一次改动消掉最多的地方）两套排序，直接给出「先修哪个」</td></tr>
+      <tr><td>原型页防漂移</td><td>报告 <strong>[3.6]</strong> 段调 <code>vis-proto check</code>：漂移 / 退役 / 野生文件 / 类覆盖四道，漂移即阻塞</td></tr>
+      <tr><td>裁决 G 边界正向验收</td><td><strong>5 项全部 PASS</strong> —— <code>lab-theme.ts:72 contrastColor</code> 深字方案未被误报为 FAIL</td></tr>
+      <tr><td>退出码</td><td><strong>1</strong>（预期：现状基线违规，非脚本或交付物缺陷）</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">
+    <strong>审计盲区（全量口径补遗）</strong>：组件 scoped 样式还有字重 +9、<code>--faint</code> 文本 +17、圆角中间档 +4，共 30 处同类项 —— Phase 1/2 只审了全局 <code>styles.css</code>。落地时须按<strong>全量</strong>清点：字重 <strong>26 处</strong>、<code>--faint</code> 文本 <strong>39 处</strong>。只改登记值会让「<code>--faint</code> 永不承载文本」无法真正成立。
+  </p>
+
+  <h3 id="s-83">四阶段迁移</h3>
+  <table class="t">
+    <thead><tr><th style="width:80px">阶段</th><th style="width:150px">范围</th><th>要点</th></tr></thead>
+    <tbody>
+      <tr><td><strong>M0</strong></td><td>零风险新增</td><td>接入 <code>vis-tokens.css</code>、只转 Barlow woff2 + <code>@font-face</code>、<code>&lt;title&gt;→SiMuseor</code>、<code>data:,</code> 空 favicon、侧栏品牌位占位替换</td></tr>
+      <tr><td><strong>M1</strong></td><td>机械替换</td><td><strong>全量</strong> 26 处字重、6 处圆角（<code>cover-plate</code> 3 处适用域外不动）、3 处 hover 阴影 / 位移、<strong>4 处</strong>交互亮色白字填充、<strong>全量</strong> 39 处 <code>--faint</code> 文本引用、<code>1.6→1.5</code> 线宽、<code>lab-theme</code> 归一（<strong>只改色值、不动 <code>contrastColor</code> 深字</strong>）；<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + 白字，仅改 <code>border-color:var(--accent)</code></td></tr>
+      <tr><td><strong>M2</strong></td><td>体验与 a11y</td><td><code>aria-*</code> / <code>role</code> 批次、全局 reduced-motion、<code>scroll-padding-bottom</code>、900px 品牌位（仅隐藏副行）、焦点陷阱 / Esc / <code>T</code> 键守卫、<code>↗</code> 三处包裹</td></tr>
+      <tr><td><strong>M3</strong></td><td><strong>依赖 LOGO 冻结</strong></td><td>按标识章只改 3 处接入冻结资产、favicon 换正式图标、回写 VIS 升版号</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">M0–M2 与 LOGO 冻结解耦，可立即排期。每阶段的文件 + 行号 + 改动前后字符串 + 验证命令 + E2E 回归矩阵见 <code>_phase3-engineering.md</code>（871 行 / 11 章）。</p>
+
+  <h3 id="s-84">交付物</h3>
+  <table class="t">
+    <thead><tr><th style="width:300px">文件</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>SiMuseor-VIS.md</code></td><td><strong>规范正文（唯一真值）</strong> —— 版本管理 / 引用 / 复制都以它为准</td></tr>
+      <tr><td><code>vis-tokens.css</code></td><td>独立 token 层，M0 可追加</td></tr>
+      <tr><td><code>vis-check.mjs</code> / <code>vis-check-report.txt</code></td><td>只读校验脚本 / 实跑报告</td></tr>
+      <tr><td><code>vis-proto.mjs</code> + <code>prototypes/_types.mjs</code> / <code>_defs.mjs</code></td><td>原型页生成管线（类型 / 定义 / 展示面）+ 防漂移校验</td></tr>
+      <tr><td><code>_phase1-visual.md</code>（v1.1 / 620 行）</td><td>基础系统规范全文</td></tr>
+      <tr><td><code>_phase2-experience.md</code>（888 行 / 61 条验收项）</td><td>应用与体验规范全文</td></tr>
+      <tr><td><code>_phase3-engineering.md</code>（871 行 / 11 章）</td><td>工程落地方案全文</td></tr>
+      <tr><td><code>assets/baseline-{light,reverse}.svg</code></td><td>已锁定基线的字形可视化（非终稿 LOGO）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>
