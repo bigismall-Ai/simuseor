@@ -157,12 +157,29 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
-  background: var(--bg);
+  /* 站点整体背景（VIS §3.10）：纯中性底 + 品牌暖弧洗底 + 中性纸纹。
+   * 三层从下到上：--bg 底色 → --grad-site-wash 色场 → --texture-site-paper 肌理。
+   * 纸纹用 background-blend-mode 压在色场之上（浅底 multiply / 深底 screen），
+   * 不是给背景层叠 opacity —— 背景层没有独立 opacity，只能靠混合模式。
+   * 洗底与纸纹都 fixed 锚在视口：色场是「一束光」，不该随页面滚走；
+   * 纸纹同理，滚动时颗粒跟着走会看出在动。 */
+  background-color: var(--bg);
+  background-image: var(--texture-site-paper), var(--grad-site-wash), var(--grad-site-glow);
+  background-size: 220px 220px, cover, cover;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, fixed;
+  background-blend-mode: multiply, normal, normal;
   color: var(--text);
   font-size: 13.5px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* 深色主题：纸纹换成「白噪声 screen」（token 里换图，不是把浅色反相），
+   灰噪声在深底上只会糊成一层灰雾，颗粒感就没了。 */
+:root[data-theme="dark"] body {
+  background-blend-mode: screen, normal, normal;
 }
 
 ::selection { background: var(--accent-soft); color: var(--accent); }

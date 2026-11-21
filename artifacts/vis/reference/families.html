@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>厂牌 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：厂牌标">
+<link rel="stylesheet" href="../assets/vis.css">
+</head>
+<body data-page="families" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.7 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<section id="c-family" class="ref">
+  <h2><span class="num">FAMILY</span>厂牌</h2>
+  <p class="lead">
+    厂牌标只负责「这是哪个家族」，不承担状态。按来源分三栏：
+    <strong>官方 SVG</strong> 原样使用；<strong>只有位图</strong>的按位图临摹重绘；
+    认不出家族时用<strong>默认字标</strong>兜底（作者缩写），连作者都没有才留空。
+  </p>
+
+  <div class="fm-cols">
+    <section class="fm-col">
+      <header class="fm-col-head">
+        <h3 id="s-fam-default">默认字标 · 兜底</h3>
+        <span class="fm-count">2</span>
+      </header>
+      <p class="fm-col-note">认不出家族时取作者 / org 缩写（1–3 字母）；连作者都没有才留空槽。</p>
+      <div class="fm-list">
+        <div class="fm-card"><span class="fm-mark is-pub"><span class="fm-abbr">WBA</span></span><span class="fm-meta"><span class="fm-name">WarmBloodAban</span><span class="fm-code">— · 取作者缩写 WBA</span></span></div>
+        <div class="fm-card"><span class="fm-mark is-pub is-empty"><span class="fm-abbr">—</span></span><span class="fm-meta"><span class="fm-name">无作者</span><span class="fm-code">— · 无作者才留空</span></span></div>
+      </div>
+    </section>
+
+    <section class="fm-col">
+      <header class="fm-col-head">
+        <h3 id="s-fam-official">官方 SVG</h3>
+        <span class="fm-count">8</span>
+      </header>
+      <p class="fm-col-note">官方或官方收录的矢量资产，原样呈现，不改色、不拉伸。</p>
+      <div class="fm-list">
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/sd3.svg" alt="SD3" /><img class="logo-dark" src="../../../web/public/families/sd3-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Stable Diffusion 3</span><span class="fm-code">SD3</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/sd15.svg" alt="SD15" /><img class="logo-dark" src="../../../web/public/families/sd15-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Stable Diffusion 1.5</span><span class="fm-code">SD15</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/sdxl.svg" alt="SDXL" /><img class="logo-dark" src="../../../web/public/families/sdxl-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Stable Diffusion XL</span><span class="fm-code">SDXL</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/flux.svg" alt="FLUX" /><img class="logo-dark" src="../../../web/public/families/flux-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">FLUX</span><span class="fm-code">FLUX</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img src="../../../web/public/families/qwen.svg" alt="QWEN" /></span><span class="fm-meta"><span class="fm-name">Qwen</span><span class="fm-code">QWEN</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img src="../../../web/public/families/minimax.svg" alt="MMX" /></span><span class="fm-meta"><span class="fm-name">MiniMax</span><span class="fm-code">MMX</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img src="../../../web/public/families/hunyuan.svg" alt="HYV" /></span><span class="fm-meta"><span class="fm-name">Hunyuan</span><span class="fm-code">HYV</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/ernie.svg" alt="ERN" /><img class="logo-dark" src="../../../web/public/families/ernie-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">ERNIE</span><span class="fm-code">ERN</span></span></div>
+      </div>
+    </section>
+
+    <section class="fm-col">
+      <header class="fm-col-head">
+        <h3 id="s-fam-redraw">位图重绘</h3>
+        <span class="fm-count">17</span>
+      </header>
+      <p class="fm-col-note">官方只有位图（或没有矢量）时按官方位图 / 外观临摹重绘，全部为纯矢量路径。</p>
+      <div class="fm-list">
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/illustrious.svg" alt="ILST" /><img class="logo-dark" src="../../../web/public/families/illustrious-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Illustrious</span><span class="fm-code">ILST · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/noobai.svg" alt="NOOB" /><img class="logo-dark" src="../../../web/public/families/noobai-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">NoobAI</span><span class="fm-code">NOOB · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/pony.svg" alt="PONY" /><img class="logo-dark" src="../../../web/public/families/pony-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Pony</span><span class="fm-code">PONY · 临摹重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/krea.svg" alt="KREA" /><img class="logo-dark" src="../../../web/public/families/krea-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Krea</span><span class="fm-code">KREA · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/zimage.svg" alt="ZIMG" /><img class="logo-dark" src="../../../web/public/families/zimage-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Z-Image</span><span class="fm-code">ZIMG · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/hidream.svg" alt="HDRM" /><img class="logo-dark" src="../../../web/public/families/hidream-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">HiDream</span><span class="fm-code">HDRM · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/chroma.svg" alt="CHRM" /><img class="logo-dark" src="../../../web/public/families/chroma-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Chroma</span><span class="fm-code">CHRM · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/ltx.svg" alt="LTX" /><img class="logo-dark" src="../../../web/public/families/ltx-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">LTX</span><span class="fm-code">LTX · 临摹重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/wan.svg" alt="WAN" /><img class="logo-dark" src="../../../web/public/families/wan-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">WAN</span><span class="fm-code">WAN · 临摹重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/cogvideo.svg" alt="COG" /><img class="logo-dark" src="../../../web/public/families/cogvideo-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">CogVideo</span><span class="fm-code">COG · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/kolors.svg" alt="KOL" /><img class="logo-dark" src="../../../web/public/families/kolors-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Kolors</span><span class="fm-code">KOL · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/mochi.svg" alt="MOCHI" /><img class="logo-dark" src="../../../web/public/families/mochi-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Mochi</span><span class="fm-code">MOCHI · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/lumina.svg" alt="LUM" /><img class="logo-dark" src="../../../web/public/families/lumina-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Lumina</span><span class="fm-code">LUM · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/skyreels.svg" alt="SKY" /><img class="logo-dark" src="../../../web/public/families/skyreels-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">SkyReels</span><span class="fm-code">SKY · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/kandinsky.svg" alt="KAN" /><img class="logo-dark" src="../../../web/public/families/kandinsky-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Kandinsky</span><span class="fm-code">KAN · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/playground.svg" alt="PG" /><img class="logo-dark" src="../../../web/public/families/playground-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">Playground</span><span class="fm-code">PG · 重绘</span></span></div>
+        <div class="fm-card"><span class="fm-mark"><img class="logo-light" src="../../../web/public/families/pixart.svg" alt="PIX" /><img class="logo-dark" src="../../../web/public/families/pixart-dark.svg" alt="" /></span><span class="fm-meta"><span class="fm-name">PixArt</span><span class="fm-code">PIX · 重绘</span></span></div>
+      </div>
+    </section>
+  </div>
+
+  <p class="hint">
+    <strong>厂牌标纪律：</strong>有官方矢量就用官方矢量；只有位图的，按位图临摹重绘；
+    连位图都没有的家族才退回家族码。家族认不出但能取到作者 / org 时，用
+    <strong>1–3 个字母缩写</strong>做发布方标识（方角细框，与圆角品牌标区分；中文作者取首字）；
+    连作者都没有才留空槽，不画占位方点。深色主题优先用官方反白版；Qwen 官方紫不反白，保留识别色。
+  </p>
+</section>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>资产卡片 · SiMuseor 原型</title>
+<meta name="description" content="SiMuseor 原型页面：模型 / 工作流 / 节点共用一套资产卡骨架">
+<link rel="stylesheet" href="../assets/vis.css">
+<link rel="stylesheet" href="_proto.css">
+</head>
+<body data-page="cards" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">司梦工作台</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.6 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+      <div class="proto-view active ref" id="pv-cards">
+        <div class="proto-view-head">
+          <div>
+            <h3>资产卡片 · 统一骨架</h3>
+            <p>模型 / 工作流 / 节点 · 封面铺满整卡，底部遮罩承载信息</p>
+          </div>
+          <div class="proto-btns"><i class="ghost"></i><i></i></div>
+        </div>
+
+        <div class="proto-view-body">
+          <div class="ac-spec">
+            <div><b>① 封面</b><span>铺满整张卡。有真实图就铺图，没有就用家族色 + 几何纹样兜底。</span></div>
+            <div><b>② 身份行</b><span>32×32 标识块，内部图形 24×24；右侧「厂名 / 作者」上下两行。</span></div>
+            <div><b>③ 原站</b><span>右上角固定为原站链接，本地库与发现页同一个位置、同一种样式。</span></div>
+            <div><b>④ 状态槽</b><span>左状态 · 半透明白线 · 右大小（权重 / 磁盘 / 节点类数）。</span></div>
+            <div><b>⑤ 分类标签</b><span>只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = 安装方式。</span></div>
+            <div><b>⑥ 动作行</b><span>⋯ 在左，主按钮在右。危险、补齐依赖等次要操作收进菜单。</span></div>
+          </div>
+
+          <!-- ══════════════ 模型 · 本地库 ══════════════ -->
+          <div class="proto-anchor" id="pc-model-owned">
+            <div class="proto-anchor-head"><b>模型 · 本地库</b><span>真实封面 / 兜底封面 / 权重缺失 · 白线右侧 = 磁盘大小</span></div>
+            <div class="ac-grid">
+
+              <article class="ac on-shot">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-qwen mo-3 on-shot">
+                      <img class="photo" src="../../wf-covers/qwen-image.jpg" alt="">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark"><img src="../../../web/public/families/qwen.svg" alt="Qwen"></span>
+                  <span class="ac-ident"><b>Qwen</b><span>Comfy-Org</span></span>
+                  <a class="ac-origin" href="../reference/components.html">HF
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">Qwen-Image-Edit-2509.safetensors</h3>
+                  <p class="ac-meta"><span>图像编辑</span></p>
+                  <div class="ac-slot"><span class="is-ok">在库</span><span class="ac-rule"></span><span class="ac-size">20.4 GB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">Checkpoint</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">查找适配工作流</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-sdxl mo-1">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <img class="logo-light" src="../../../web/public/families/sdxl.svg" alt="SDXL">
+                    <img class="logo-dark" src="../../../web/public/families/sdxl-dark.svg" alt="" aria-hidden="true">
+                  </span>
+                  <span class="ac-ident"><b>SDXL</b><span>WarmBloodAban</span></span>
+                  <a class="ac-origin" href="../reference/components.html">HF
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">RealVisXL_V4.0_lightning.safetensors</h3>
+                  <p class="ac-meta"><span>文生图</span></p>
+                  <div class="ac-slot"><span class="is-ok">在库</span><span class="ac-rule"></span><span class="ac-size">6.5 GB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">Checkpoint</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">查找适配工作流</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-flux mo-2">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <img class="logo-light" src="../../../web/public/families/flux.svg" alt="FLUX">
+                    <img class="logo-dark" src="../../../web/public/families/flux-dark.svg" alt="" aria-hidden="true">
+                  </span>
+                  <span class="ac-ident"><b>FLUX.1</b><span>black-forest-labs</span></span>
+                  <a class="ac-origin" href="../reference/components.html">HF
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">flux_detail_tweaker.safetensors</h3>
+                  <p class="ac-meta"><span>文生图</span></p>
+                  <div class="ac-slot"><span class="is-err">权重缺失</span><span class="ac-rule"></span><span class="ac-size">0 B</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">LoRA</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">重新下载</button>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+            <p class="proto-caption">封面铺满整卡，底部信息压在半透明遮罩上；白线把状态和磁盘大小分开。显存压力条与本机显存全部撤掉，本地库右上角也改为原站链接。标签只保留模型文件类型（Checkpoint / LoRA），站点不在卡上重复。</p>
+          </div>
+
+          <!-- ══════════════ 模型 · 发现 ══════════════ -->
+          <div class="proto-anchor" id="pc-model-discover">
+            <div class="proto-anchor-head"><b>模型 · 发现</b><span>真实封面 / 兜底封面 · 白线左侧换成下载量</span></div>
+            <div class="ac-grid">
+
+              <article class="ac on-shot">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-flux mo-0 on-shot">
+                      <img class="photo" src="../../wf-covers/flux1-dev.jpg" alt="">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <img class="logo-light" src="../../../web/public/families/flux.svg" alt="FLUX">
+                    <img class="logo-dark" src="../../../web/public/families/flux-dark.svg" alt="" aria-hidden="true">
+                  </span>
+                  <span class="ac-ident"><b>FLUX.1</b><span>black-forest-labs</span></span>
+                  <a class="ac-origin" href="../reference/components.html">HF
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">FLUX.1-dev.safetensors</h3>
+                  <p class="ac-meta"><span>文生图</span></p>
+                  <div class="ac-slot"><span>↓ 86,200</span><span class="ac-rule"></span><span class="ac-size">12.0 GB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">Checkpoint</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">下载</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-hunyuan mo-0">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark"><img src="../../../web/public/families/hunyuan.svg" alt="Hunyuan"></span>
+                  <span class="ac-ident"><b>Hunyuan</b><span>tencent</span></span>
+                  <a class="ac-origin" href="../reference/components.html">MS
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">hunyuan-video-1.5.safetensors</h3>
+                  <p class="ac-meta"><span>文生视频</span></p>
+                  <div class="ac-slot"><span>↓ 41,600</span><span class="ac-rule"></span><span class="ac-size">13.2 GB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">Checkpoint</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">下载</button>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+            <p class="proto-caption">发现页与本地库完全同构：右上角同样是原站链接，只有白线左侧从「在库 / 权重缺失」换成「下载量」；标签同样只标文件类型。</p>
+          </div>
+
+          <!-- ══════════════ 工作流 ══════════════ -->
+          <div class="proto-anchor" id="pc-workflow">
+            <div class="proto-anchor-head"><b>工作流</b><span>本地库 / 发现 / 无法解析 · 白线右侧 = 文件大小</span></div>
+            <div class="ac-grid">
+
+              <article class="ac on-shot">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-wan mo-1 on-shot">
+                      <img class="photo" src="../../wf-covers/wf-kontext-kontext0.jpg" alt="">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true">
+                      <circle cx="4" cy="4" r="1.6"/><circle cx="12" cy="8" r="1.6"/><circle cx="4" cy="12" r="1.6"/>
+                      <path d="M5.4 4.8l5.2 2.4M5.4 11.2l5.2-2.4"/>
+                    </svg>
+                  </span>
+                  <span class="ac-ident"><b>Wan 2.2</b><span>kijai</span></span>
+                  <a class="ac-origin" href="../reference/components.html">Civitai
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">wan22-t2v-14b.json</h3>
+                  <p class="ac-meta"><span>视频生成</span></p>
+                  <div class="ac-slot"><span>12 节点 · 3 依赖</span><span class="ac-rule"></span><span class="ac-size">24.5 MB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">人物</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">编辑</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-flux mo-3">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true">
+                      <circle cx="4" cy="4" r="1.6"/><circle cx="12" cy="8" r="1.6"/><circle cx="4" cy="12" r="1.6"/>
+                      <path d="M5.4 4.8l5.2 2.4M5.4 11.2l5.2-2.4"/>
+                    </svg>
+                  </span>
+                  <span class="ac-ident"><b>FLUX.1</b><span>Comfy-Org</span></span>
+                  <a class="ac-origin" href="../reference/components.html">Civitai
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">flux1-dev-basic.json</h3>
+                  <p class="ac-meta"><span>基础模型</span></p>
+                  <div class="ac-slot"><span>8 节点 · 2 依赖</span><span class="ac-rule"></span><span class="ac-size">11.9 MB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">电商</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">编辑</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media is-broken">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-other mo-0">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                  <div class="ac-broken">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+                         stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+                      <path d="M12 8v5"/><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none"/>
+                      <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+                    </svg>
+                    <span class="ac-broken-title">无法解析</span>
+                    <span class="ac-broken-msg">文件头不是合法 JSON</span>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">?</span>
+                  <span class="ac-ident"><b>未知</b><span>无法识别</span></span>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">broken-flow.json</h3>
+                  <p class="ac-meta"><span>未识别</span></p>
+                  <div class="ac-slot"><span class="is-err">文件格式错误</span><span class="ac-rule"></span><span class="ac-size">0 B</span></div>
+                  <div class="ac-tags"><span class="pill">未分组</span></div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">查看文件</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac on-shot">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-hunyuan mo-2 on-shot">
+                      <img class="photo" src="../../wf-covers/qwen-image-edit.jpg" alt="">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true">
+                      <circle cx="4" cy="4" r="1.6"/><circle cx="12" cy="8" r="1.6"/><circle cx="4" cy="12" r="1.6"/>
+                      <path d="M5.4 4.8l5.2 2.4M5.4 11.2l5.2-2.4"/>
+                    </svg>
+                  </span>
+                  <span class="ac-ident"><b>Hunyuan</b><span>Tencent-Hunyuan</span></span>
+                  <a class="ac-origin" href="../reference/components.html">MS
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">hunyuan-video-t2v.json</h3>
+                  <p class="ac-meta"><span>视频生成</span></p>
+                  <div class="ac-slot"><span>16 节点 · 4 依赖</span><span class="ac-rule"></span><span class="ac-size">8.4 MB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">影视</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">导入</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-sdxl mo-4">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true">
+                      <circle cx="4" cy="4" r="1.6"/><circle cx="12" cy="8" r="1.6"/><circle cx="4" cy="12" r="1.6"/>
+                      <path d="M5.4 4.8l5.2 2.4M5.4 11.2l5.2-2.4"/>
+                    </svg>
+                  </span>
+                  <span class="ac-ident"><b>SDXL</b><span>civitai</span></span>
+                  <a class="ac-origin" href="../reference/components.html">Civitai
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">sdxl-inpaint-workflow.json</h3>
+                  <p class="ac-meta"><span>图像编辑</span></p>
+                  <div class="ac-slot"><span>9 节点 · 1 依赖</span><span class="ac-rule"></span><span class="ac-size">3.1 MB</span></div>
+                  <div class="ac-tags">
+                    <span class="pill">修图</span>
+                  </div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">导入</button>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+            <p class="proto-caption">工作流的标题、节点数也落到底部遮罩里；标签只放一个自定义分组（人物 / 电商 / 影视 / 修图），时间显示已移除。坏文件仍用斜纹 + 居中说明，底部信息照常显示。</p>
+          </div>
+
+          <!-- ══════════════ 节点 ══════════════ -->
+          <div class="proto-anchor" id="pc-node">
+            <div class="proto-anchor-head"><b>节点</b><span>真实预览图 / 计数兜底 · 白线右侧 = 节点类数</span></div>
+            <div class="ac-grid">
+
+              <article class="ac on-shot">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-sd3 mo-1 on-shot">
+                      <img class="photo" src="../../wf-covers/flux-kontext.jpg" alt="">
+                      <span class="motif"></span><span class="scrim"></span>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">CM</span>
+                  <span class="ac-ident"><b>Manager</b><span>ltdrdata</span></span>
+                  <a class="ac-origin" href="../reference/components.html">GitHub
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">ComfyUI-Manager</h3>
+                  <p class="ac-meta"><span>扩展管理</span></p>
+                  <div class="ac-slot"><span class="is-ok">已启用</span><span class="ac-rule"></span><span class="ac-size">42 节点类</span></div>
+                  <div class="ac-tags"><span class="pill">Git 安装</span></div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">查看</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-other mo-3">
+                      <span class="motif"></span><span class="scrim"></span>
+                      <div class="ac-count"><strong>18</strong><span>节点类</span></div>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">IP</span>
+                  <span class="ac-ident"><b>Impact</b><span>ltdrdata</span></span>
+                  <a class="ac-origin" href="../reference/components.html">GitHub
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">ComfyUI-Impact-Pack</h3>
+                  <p class="ac-meta"><span>图像处理</span></p>
+                  <div class="ac-slot"><span class="is-ok">已启用</span><span class="ac-rule"></span><span class="ac-size">18 节点类</span></div>
+                  <div class="ac-tags"><span class="pill">一键安装</span></div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">查看</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-wan mo-0">
+                      <span class="motif"></span><span class="scrim"></span>
+                      <div class="ac-count"><strong>12</strong><span>节点类</span></div>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">WV</span>
+                  <span class="ac-ident"><b>WanVideo</b><span>kijai</span></span>
+                  <a class="ac-origin" href="../reference/components.html">GitHub
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">ComfyUI-WanVideoWrapper</h3>
+                  <p class="ac-meta"><span>视频生成</span></p>
+                  <div class="ac-slot"><span class="is-warn">缺 kornia、einops</span><span class="ac-rule"></span><span class="ac-size">12 节点类</span></div>
+                  <div class="ac-tags"><span class="pill">手动安装</span></div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">补齐依赖</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="ac">
+                <div class="ac-media">
+                  <div class="ac-plate">
+                    <div class="cp"><div class="plate f-krea mo-2">
+                      <span class="motif"></span><span class="scrim"></span>
+                      <div class="ac-count"><strong>8</strong><span>节点类</span></div>
+                    </div></div>
+                  </div>
+                </div>
+                <div class="ac-head">
+                  <span class="ident-mark">AC</span>
+                  <span class="ac-ident"><b>ControlNet</b><span>Fannovel16</span></span>
+                  <a class="ac-origin" href="../reference/components.html">GitHub
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5H2.5v7h7v-2"/><path d="M6.5 2.5h3v3M9.5 2.5 5 7"/></svg>
+                  </a>
+                </div>
+                <div class="ac-body">
+                  <h3 class="ac-name">ComfyUI-Advanced-ControlNet</h3>
+                  <p class="ac-meta"><span>控制网</span></p>
+                  <div class="ac-slot"><span>未安装</span><span class="ac-rule"></span><span class="ac-size">8 节点类</span></div>
+                  <div class="ac-tags"><span class="pill">一键安装</span></div>
+                  <div class="ac-foot">
+                    <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
+                    <button class="primary btn-xs" type="button">安装</button>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+            <p class="proto-caption">节点没有天然封面：有预览图就铺满整卡，没有就把节点类数放在遮罩上方的可见区域。节点类名属于详情页信息，不再上卡；标签只标安装方式（Git / 一键 / 手动），标识块、双行身份、原站链接与模型卡一致。</p>
+          </div>
+
+          <!-- ══════════════ 差异对照 ══════════════ -->
+          <div class="proto-anchor" id="pc-diff">
+            <div class="proto-anchor-head"><b>本地库 vs 发现页</b><span>只有白线左侧与主按钮换内容</span></div>
+            <div class="ac-diff">
+              <div>
+                <b>本地库 · 我有的</b>
+                <dl>
+                  <dt>右上</dt><dd>原站链接（与发现页一致）</dd>
+                  <dt>状态槽</dt><dd>在库 / 权重缺失 / 已启用 / 缺依赖 · 右侧大小</dd>
+                  <dt>标签行</dt><dd>模型文件类型 / 工作流分组 / 节点安装方式</dd>
+                  <dt>主按钮</dt><dd>查找适配工作流 / 重新下载 / 编辑 / 查看</dd>
+                </dl>
+              </div>
+              <div>
+                <b>发现页 · 去找</b>
+                <dl>
+                  <dt>右上</dt><dd>原站链接：HF / MS / Civitai / GitHub ↗</dd>
+                  <dt>状态槽</dt><dd>下载量 · 右侧大小</dd>
+                  <dt>标签行</dt><dd>模型文件类型 / 工作流分组 / 节点安装方式</dd>
+                  <dt>主按钮</dt><dd>下载 / 导入 / 安装</dd>
+                </dl>
+              </div>
+              <div>
+                <b>封面填充</b>
+                <dl>
+                  <dt>真实图</dt><dd>cover 铺满整卡，底部深色遮罩承载信息</dd>
+                  <dt>兜底</dt><dd>家族色 + 5 种纹样，遮罩与白线不变</dd>
+                  <dt>节点</dt><dd>兜底时节点类数放在上半区，作为信息而不是占位</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>

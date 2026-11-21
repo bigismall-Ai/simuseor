@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>站点底纹 · 渐变 × 纸纹 变体集</title>
+<meta name="description" content="SiMuseor 原型：站点整体底纹 —— 渐变 + 纸纹的六个变体对比">
+<link rel="stylesheet" href="../assets/vis.css">
+<link rel="stylesheet" href="_proto.css">
+<link rel="stylesheet" href="_proto-bg.css">
+</head>
+<body data-page="backgrounds" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.7 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<section id="c-bg">
+  <h2><span class="num">BG</span>站点底纹 · 渐变 × 纸纹 变体集</h2>
+  <p class="lead">
+    站点整体底纹只做<strong>「渐变 + 纸纹」这一种组合</strong>：纯色、单独渐变、单独纸纹都出局 ——
+    纯色没有方向，单独渐变颜色压过内容，单独纸纹干净但没方向。
+    下面是<strong>渐变本身的六种变体</strong>，每一种之上都叠同一张纸纹，用两个滑杆独立调「色场」与「纸纹」。
+  </p>
+  <p class="hint">
+    <strong>2026-11-21 定稿：v2 单束柔光</strong>，色场 <strong>70%</strong>、纸纹 <strong>60%</strong> ——
+    已按 VIS §3.10 落入产品（<code>--grad-site-wash</code> / <code>--grad-site-glow</code> /
+    <code>--texture-site-paper</code>，<code>web/src/styles.css</code> 的 <code>body</code>；VIS 手册站同款）。
+    <strong>本页滑杆的当前值 = 产品当前值</strong>（色场 70 / 纸纹 60），可直接与线上对照；
+    滑到 100% 是设计上限，不是现状。
+    另：「黑白线稿全铺」已否（观感：蝉形一旦铺成底纹，辅助图形就降级成装饰纹样，且撞 §2.0.6 / §2.4⑤）。
+  </p>
+
+  <div class="bg-ctl">
+    <div class="grp">
+      <label>变体</label>
+      <span class="bg-seg" id="variant">
+        <button type="button" data-v="v1" aria-pressed="false">v1 暖弧</button>
+        <button type="button" data-v="v2" aria-pressed="true">v2 单束光 ★</button>
+        <button type="button" data-v="v3" aria-pressed="false">v3 靛紫场</button>
+        <button type="button" data-v="v4" aria-pressed="false">v4 晨光</button>
+        <button type="button" data-v="v5" aria-pressed="false">v5 对角双光</button>
+        <button type="button" data-v="v6" aria-pressed="false">v6 色带横铺</button>
+      </span>
+    </div>
+    <div class="grp bg-k">
+      <label for="kw">色场</label>
+      <input id="kw" type="range" min="0" max="100" value="70" />
+      <output id="kwout">70%</output>
+    </div>
+    <div class="grp bg-k">
+      <label for="kp">纸纹</label>
+      <input id="kp" type="range" min="0" max="100" value="60" />
+      <output id="kpout">60%</output>
+    </div>
+    <div class="grp">
+      <label>主题</label>
+      <span class="bg-seg" id="theme">
+        <button type="button" data-v="light" aria-pressed="true">浅</button>
+        <button type="button" data-v="dark" aria-pressed="false">深</button>
+      </span>
+    </div>
+  </div>
+
+  <div class="bg-frame bg-big" id="big" data-variant="v2">
+    <div class="bg-stage">
+      <div class="bg-layer bg-wash"></div>
+      <div class="bg-layer bg-glow"></div>
+      <div class="bg-layer bg-paper"></div>
+    </div>
+    <div class="mock" data-mock></div>
+  </div>
+
+  <h3 id="s-bg-3">六变体同屏对比</h3>
+  <p class="lead">同一份内容、同一组滑杆值，只有渐变不同；每格之上都叠同一张纸纹。</p>
+  <div class="bg-strip" id="grid"></div>
+
+  <h3 id="s-bg-4">六个变体各自是什么</h3>
+  <table class="t">
+    <thead><tr><th style="width:110px">变体</th><th style="width:170px">色场</th><th style="width:170px">柔光</th><th>性格 / 代价</th></tr></thead>
+    <tbody>
+      <tr><td><strong>v1 暖弧</strong><br><small>备选</small></td><td>linear 158° 品红→橙暖弧<br><small>峰值 α0.070</small></td><td>radial 78%×58% 右上<br><small>α0.062</small></td><td>最「有颜色」的一版：整屏暖调、右上一束光。与品牌色带同源，识别度高；代价是页面底偏粉，暖调最明显</td></tr>
+      <tr><td><strong>v2 单束光</strong><br><small>已定稿</small></td><td>radial 98%×78% 右上<br><small>α0.090 → 落地 α0.063（色场 70%）</small></td><td>无</td><td>只留一束光，底几乎还是中性灰 —— 最克制，纸纹在光里显出来；代价是「方向感」最弱。<strong>这一束光就是「色场」本体</strong>，产品里由 <code>--grad-site-wash</code> 承载，<code>--grad-site-glow</code> 置 none</td></tr>
+      <tr><td><strong>v3 靛紫场</strong></td><td>linear 158° 靛紫→透明<br><small>峰值 α0.055</small></td><td>radial 74%×56% 右上<br><small>α0.050</small></td><td>把品牌暖弧换成产品交互色：底色与按钮同族，整站更「工具」；代价是底纹与交互色同色，弱化了「可点」的独占性</td></tr>
+      <tr><td><strong>v4 晨光</strong></td><td>linear 180° 顶→下<br><small>α0.062</small></td><td>radial 64%×44% 顶中<br><small>α0.050</small></td><td>光从顶部落下，内容区最干净、阅读最舒服；代价是横向无变化，滚动时方向感弱</td></tr>
+      <tr><td><strong>v5 对角双光</strong></td><td>radial 70%×60% 左上（紫）<br><small>α0.055</small></td><td>radial 66%×58% 右下（橙）<br><small>α0.050</small></td><td>两头压，对角有张力，最不像「贴上去的背景」；代价是紫橙对冲，中间带容易发灰</td></tr>
+      <tr><td><strong>v6 色带横铺</strong></td><td>linear 90° G0 五色带横扫全页<br><small>各 α0.048–0.066</small></td><td>radial 顶部提亮<br><small>α0.030</small></td><td>整页一道左→右的彩纸色带，识别度最强；代价是横向明显分割，与「克制收敛」的调性最不合</td></tr>
+    </tbody>
+  </table>
+
+  <p class="hint">
+    <strong>共同纪律（六变体一律适用）：</strong>色场峰值 α ≤ 0.07（底仍读作中性灰，不是品牌色）；纸纹<strong>中性无彩</strong>，
+    浅底 multiply / 深底 screen；底纹<strong>不计入</strong>「中性表面 + 文字 ≥85%」配额（它铺在页面底，不是表面）；
+    <strong>禁把标识铺成底纹</strong>；导出物 / 分享卡 / 打印<strong>不带</strong>底纹。完整条款见 VIS §3.10。
+  </p>
+</section>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+<script>
+/* ── 模拟界面：同一份 HTML 注入大图与六宫格，保证六张图内容完全一致 ── */
+const MOCK = `
+  <aside class="mock-side">
+    <div class="mock-brand"><img src="../assets/cicada/svg/cicada-mid.svg" alt=""><b>SiMuseor</b></div>
+    <nav class="mock-nav">
+      <span>总览</span><span class="on">模型库</span><span>工作流</span><span>节点</span>
+      <span>发现</span><span>任务</span><span>ComfyUI</span><span>设置</span>
+    </nav>
+    <div class="mock-side-foot">VIS v2.7 · 实验稿</div>
+  </aside>
+  <div class="mock-main">
+    <div class="mock-h1-row">
+      <div><div class="mock-kicker">Local library</div><h1 class="mock-h1">模型库</h1></div>
+      <div class="mock-btns"><span class="mock-btn ghost">导入</span><span class="mock-btn pri">新建工作流</span></div>
+    </div>
+    <div class="mock-stats">
+      <div class="mock-stat"><b>128</b><span>模型</span></div>
+      <div class="mock-stat"><b>76</b><span>图像</span></div>
+      <div class="mock-stat"><b>34</b><span>LoRA</span></div>
+      <div class="mock-stat"><b>412 GB</b><span>磁盘占用</span></div>
+    </div>
+    <div class="mock-bar">
+      <span class="mock-tab on">全部</span><span class="mock-tab">已安装</span><span class="mock-tab">缺依赖</span>
+      <span class="mock-input"></span>
+    </div>
+    <div class="mock-grid">
+      <div class="mock-card">
+        <div class="mock-cover" style="background:#f7efdd"><i style="right:-18px;top:-26px;width:74px;height:74px;background:#eec98a;opacity:.55"></i></div>
+        <div class="cm"><b>Qwen-Image-Edit-2509</b><span>Qwen · 图像编辑</span>
+          <div class="mock-status"><em>在库</em><i></i><span>20.4 GB</span></div></div>
+      </div>
+      <div class="mock-card">
+        <div class="mock-cover" style="background:#e1f5ee"><i style="right:-14px;top:-20px;width:66px;height:66px;background:#8fd3bd;opacity:.5"></i></div>
+        <div class="cm"><b>Wan 2.2 T2V-A14B</b><span>Wan · 文生视频</span>
+          <div class="mock-status"><em>在库</em><i></i><span>38.1 GB</span></div></div>
+      </div>
+      <div class="mock-card">
+        <div class="mock-cover" style="background:#f1eefc"><i style="right:-16px;top:-24px;width:70px;height:70px;background:#c2b7ee;opacity:.55"></i></div>
+        <div class="cm"><b>FLUX.1-dev</b><span>Flux · 文生图</span>
+          <div class="mock-status"><em>在库</em><i></i><span>23.8 GB</span></div></div>
+      </div>
+      <div class="mock-card">
+        <div class="mock-cover" style="background:#fbeaf0"><i style="right:-12px;top:-22px;width:64px;height:64px;background:#efb3c8;opacity:.55"></i></div>
+        <div class="cm"><b>SDXL Base 1.0</b><span>SDXL · 基模</span>
+          <div class="mock-status" style="color:#b45309">缺依赖</div></div>
+      </div>
+    </div>
+    <div class="mock-table">
+      <div class="mock-row"><span>名称</span><span>家族</span><span>状态</span><span>大小</span></div>
+      <div class="mock-row"><span>wan2.2_t2v_high.safetensors</span><span>Wan</span><span style="color:#15803d">已安装</span><span>38.1 GB</span></div>
+      <div class="mock-row"><span>flux1-dev-fp8.safetensors</span><span>Flux</span><span style="color:#15803d">已安装</span><span>23.8 GB</span></div>
+      <div class="mock-row"><span>illustrious-xl-v1.0.safetensors</span><span>Illustrious</span><span style="color:#71717a">未下载</span><span>6.5 GB</span></div>
+    </div>
+  </div>`;
+
+const VARIANTS = [
+  { id: 'v1', name: 'v1 暖弧洗底', note: '备选' },
+  { id: 'v2', name: 'v2 单束柔光', note: '已定稿' },
+  { id: 'v3', name: 'v3 靛紫场', note: '工具感' },
+  { id: 'v4', name: 'v4 晨光竖落', note: '阅读最舒服' },
+  { id: 'v5', name: 'v5 对角双光', note: '张力最强' },
+  { id: 'v6', name: 'v6 色带横铺', note: '识别度最高' }
+];
+
+const big = document.getElementById('big');
+const grid = document.getElementById('grid');
+
+/* 大图 + 六宫格共用同一份 mock */
+big.querySelector('[data-mock]').innerHTML = MOCK;
+grid.innerHTML = VARIANTS.map((v) => `
+  <div class="bg-frame bg-mini" data-variant="${v.id}">
+    <div class="bg-stage">
+      <div class="bg-layer bg-wash"></div>
+      <div class="bg-layer bg-glow"></div>
+      <div class="bg-layer bg-paper"></div>
+    </div>
+    <div class="scaler" data-mock>${MOCK}</div>
+    <div class="bg-mini-cap">${v.name}<em>${v.note}</em></div>
+  </div>`).join('');
+
+/* 三宫格里的缩放：mock 宽 1280，缩到格宽 */
+function fitMini() {
+  document.querySelectorAll('.bg-mini').forEach((f) => {
+    const s = f.clientWidth / 1280;
+    const scaler = f.querySelector('.scaler');
+    scaler.style.transform = 'scale(' + s + ')';
+    scaler.style.height = (f.clientHeight / s) + 'px';
+  });
+}
+
+const kw = document.getElementById('kw');
+const kp = document.getElementById('kp');
+
+function paint() {
+  const w = Number(kw.value) / 100;
+  const p = Number(kp.value) / 100;
+  document.querySelectorAll('.bg-frame').forEach((f) => {
+    f.style.setProperty('--k-wash', w.toFixed(3));
+    f.style.setProperty('--k-glow', w.toFixed(3));
+    f.style.setProperty('--k-paper', p.toFixed(3));
+  });
+  document.getElementById('kwout').textContent = kw.value + '%';
+  document.getElementById('kpout').textContent = kp.value + '%';
+}
+
+/* 变体切换（只影响大图；六宫格始终展示全部变体） */
+const seg = document.getElementById('variant');
+seg.addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  big.dataset.variant = b.dataset.v;
+});
+
+kw.addEventListener('input', paint);
+kp.addEventListener('input', paint);
+
+/* 主题（独立于手册壳的切换按钮） */
+const th = document.getElementById('theme');
+th.addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  th.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  document.documentElement.setAttribute('data-theme', b.dataset.v);
+});
+
+paint();
+fitMini();
+window.addEventListener('resize', fitMini);
+</script>
+</body>
+</html>

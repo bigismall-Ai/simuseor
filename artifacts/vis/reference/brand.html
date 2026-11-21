@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>标识 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：标识">
+<link rel="stylesheet" href="../assets/vis.css">
+</head>
+<body data-page="brand" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.7 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<section id="c-brand" class="ref">
+  <h2><span class="num">BRAND</span>标识</h2>
+  <p class="lead">
+    VIS §2.0：蝉形是<strong>辅助图形</strong>，只出现在 <strong>favicon</strong> 与 <strong>侧栏组合标</strong> 两处。
+    页头 / 空状态 / 弹层 / 错误态 / 卡片角标 / 移动端顶栏 —— 蝉形与字标<strong>都不许进</strong>（v2.0 不扩大落位面）。
+    品牌层反白靠<strong>单独的线稿资产</strong>切换，不是 CSS 取色。
+  </p>
+
+  <h3 id="s-51">组合标 / 单独标（侧栏品牌位）</h3>
+  <p class="lead">
+    组合时用 <strong>MID 半展翅</strong> + 字标；单独展示时用 <strong>MAX 全展翅</strong>。
+    不再把全展翅硬塞进文字旁边 —— 全展翅的重心是横向的，和竖排字标并置会互相抢。
+  </p>
+  <div class="lockup-row">
+    <div class="lockup-demo">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="SiMuseor 蝉形半展翅" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">司梦工作台</small></span>
+    </div>
+    <div class="lockup-demo standalone">
+      <img class="full-cicada" src="../assets/cicada/svg/cicada-max.svg" alt="SiMuseor 蝉形全展翅" />
+      <span class="lockup-cap">单独展示 · MAX 全展翅</span>
+    </div>
+  </div>
+  <p class="hint">
+    <strong>组合标几何：</strong>半展翅 MID <code>40×34px</code> + <code>10px</code> gap + 字标；
+    蝉形与字标<strong>垂直居中</strong>（半展翅重心偏上，不再用 baseline 对齐）。
+    单独标用 MAX 全展翅，最小独立尺寸 <code>--brand-icon-min: 32px</code>，不叠加文字。
+  </p>
+
+  <h3 id="s-52">品牌层纸墨（展示面）</h3>
+  <div class="branddemo paper">
+    <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="SiMuseor 蝉形半展翅" /></span>
+    <span class="brand-wordmark" style="color:var(--brand-ink)">SiMuseor<small class="brand-sub" style="color:var(--brand-muted)">司梦工作台</small></span>
+  </div>
+  <div class="branddemo dark" style="margin-top:10px">
+    <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid-dark.svg" alt="SiMuseor 蝉形半展翅反白" /></span>
+    <span class="brand-wordmark" style="color:var(--brand-ink-reverse)">SiMuseor<small class="brand-sub" style="color:var(--brand-muted)">司梦工作台</small></span>
+  </div>
+  <p class="hint">
+    品牌层六枚固定 HEX、主题不变；深色与浅色共用同一份彩色资产（新配色在深底对比度 4.5:1 以上），需要纯反白时用线稿 <code>cicada-max-lineart-b.svg</code>，不靠 CSS 反色。
+    <code>--brand-paper</code> 禁作 UI 表面（产品 UI 仍用 zinc 中性阶）。
+  </p>
+
+  <h3 id="s-53">蝉形单独使用（MAX 全展翅）</h3>
+  <div class="standalone-row">
+    <div class="standalone-item"><img src="../assets/cicada/svg/cicada-max.svg" style="width:26px" alt="蝉形 26px" /><span>26×12</span></div>
+    <div class="standalone-item"><img src="../assets/cicada/svg/cicada-max.svg" style="width:56px" alt="蝉形 56px" /><span>56×26</span></div>
+    <div class="standalone-item"><img src="../assets/cicada/svg/cicada-max.svg" style="width:120px" alt="蝉形 120px" /><span>120×55</span></div>
+    <div class="standalone-item"><img src="../assets/cicada/svg/cicada-max.svg" style="width:240px" alt="蝉形 240px" /><span>240×111</span></div>
+  </div>
+  <p class="hint">
+    单独展示只用 <strong>MAX 全展翅</strong>；半展翅 MID 不进独立位，只与字标组合。
+    蝉形可等比缩放，最小独立尺寸 <code>--brand-icon-min: 32px</code>；小于 20px 只用字首单体。
+  </p>
+
+  <h3 id="s-54">favicon 尺寸档</h3>
+  <p class="lead">
+    手工重制的 favicon 是一套<strong>方形画布</strong>资产：16 / 24 / 32 / 48 / 64 / 128 / 256 七档，
+    逐档独立出图，不做等比缩放导出的替代。产品侧用<strong>多尺寸合并 ICO</strong>，另备 PNG 档给需要位图的场合。
+  </p>
+  <div class="fav-row">
+    <div class="fav-item"><div class="fav-box" style="width:16px;height:16px"><img src="../../../web/public/brand/png/favicon-16.png" width="16" height="16" alt="favicon 16px" /></div><div class="fav-cap">16px</div></div>
+    <div class="fav-item"><div class="fav-box" style="width:32px;height:32px"><img src="../../../web/public/brand/png/favicon-32.png" width="32" height="32" alt="favicon 32px" /></div><div class="fav-cap">32px</div></div>
+    <div class="fav-item"><div class="fav-box" style="width:48px;height:48px"><img src="../../../web/public/brand/png/favicon-48.png" width="48" height="48" alt="favicon 48px" /></div><div class="fav-cap">48px</div></div>
+    <div class="fav-item"><div class="fav-box" style="width:64px;height:64px"><img src="../../../web/public/brand/png/favicon-64.png" width="64" height="64" alt="favicon 64px" /></div><div class="fav-cap">64px</div></div>
+    <div class="fav-item"><div class="fav-box" style="width:90px;height:90px"><img src="../../../web/public/brand/png/favicon-180.png" width="90" height="90" alt="favicon 180px 档" /></div><div class="fav-cap">180px 档</div></div>
+  </div>
+  <table class="t">
+    <thead><tr><th style="width:110px">档位</th><th style="width:130px">画布</th><th style="width:130px">来源</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>16 / 24 / 32 / 48</td><td>方形</td><td>逐档独立</td><td>浏览器标签页与系统小图标，最小 16px 仍可辨认机身与单侧翅</td></tr>
+      <tr><td>64 / 128 / 256</td><td>方形</td><td>逐档独立</td><td>高密度屏与安装图标；256 同时作为 favicon.svg 与 180 PNG 的母版</td></tr>
+      <tr><td>合并 ICO</td><td>多尺寸</td><td>七档打包</td><td><code>web/public/favicon.ico</code>，浏览器按需取档</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">
+    <strong>替换纪律：</strong>七档 ICO 与 PNG 全部来自手工重制的同一套矢量稿，改稿后必须<strong>整包重出</strong>，
+    不允许只替换其中一档——否则 16px 与 256px 会异构。透明底，自带暖色面片，不加底色板。
+  </p>
+
+  <h3 id="s-55">禁用方向</h3>
+  <table class="t">
+    <thead><tr><th style="width:220px">禁止</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>蝉形进页头 / 空状态 / 弹层 / 错误态</td><td>v2.0 不扩大落位面，蝉形只在 favicon 与侧栏组合标</td></tr>
+      <tr><td>SiMuseor 标识进封面铭牌</td><td>铭牌 20px 槽位是第三方家族标</td></tr>
+      <tr><td>月桂对称环 / 盾形徽章 / 放射星芒</td><td>§5 月桂已改判归「作品层荣誉母题」，不属品牌标志层</td></tr>
+      <tr><td><code>filter:invert()</code> 做深色反白</td><td>等于改色；须用线稿资产 <code>cicada-max-lineart-b.svg</code></td></tr>
+      <tr><td>非等比拉伸</td><td>硬约束，无例外；favicon 七档均为方形画布，不靠压缩适配</td></tr>
+      <tr><td>墨黑字标压靛紫底</td><td>§3.4 禁止组合</td></tr>
+    </tbody>
+  </table>
+</section>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>

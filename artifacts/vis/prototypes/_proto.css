@@ -1,0 +1,429 @@
+html { scroll-behavior: smooth; }
+body { background: var(--bg); }
+.wrap { padding-top: 20px; }
+.proto-anchor { scroll-margin-top: 20px; }
+@media (max-width: 900px) {
+  .wrap { padding: 16px 16px 56px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   资产卡统一骨架（原型）
+   模型 / 工作流 / 节点共用一套外壳；本地库与发现页只换槽位内容。
+
+   封面铺满整张卡，底部信息区压在封面上，用一层半透明深色遮罩托底；
+   状态行里用一根半透明白线把「状态」和「大小」分开。
+   ══════════════════════════════════════════════════════════════ */
+.ref .ac-grid {
+  display: grid;
+  /* 常规资产卡宽度落在 240–280；这里取 240–260，保证不小于 240，
+     同时不会在宽屏上被 1fr 拉回 300 以上。 */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 260px));
+  justify-content: start;
+  gap: 10px;
+}
+
+.ref .ac {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 235px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+/* 描边只由 ::after 画：hover 不位移、不加外阴影 */
+.ref .ac::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--border);
+  pointer-events: none;
+  transition: box-shadow 0.16s ease;
+}
+.ref .ac.on-shot::after { box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18); }
+.ref .ac:hover::after,
+.ref .ac:focus-within::after {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* ---- 封面：不再分上下两段，直接铺满整卡 ---- */
+.ref .ac-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.ref .ac-plate { position: absolute; inset: 0; }
+.ref .ac-plate > .cp { position: absolute; inset: 0; }
+
+/* ---- 身份行：左上「32×32 标识块 + 厂名 / 作者两行」，右上「原站链接」 ---- */
+.ref .ac-head {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* 所有卡片左上角的标识框统一 32×32，内部图形 24×24 */
+.ref .ac-head .ident-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 10px;
+  backdrop-filter: blur(6px);
+}
+.ref .ac-head .ident-mark img,
+.ref .ac-head .ident-mark svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* 厂名在上、作者在下；两者都可截断，不把右上角链接挤出去 */
+.ref .ac-ident {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ref .ac-ident b {
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ref .ac-ident span {
+  min-width: 0;
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ref .ac.on-shot .ac-ident b { color: var(--lit-007); text-shadow: 0 1px 3px var(--lit-008); }
+.ref .ac.on-shot .ac-ident span { color: var(--lit-003); text-shadow: 0 1px 3px var(--lit-008); }
+
+/* 右上角：本地库与发现页一致，都是原站链接 */
+.ref .ac-origin {
+  margin-left: auto;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--panel) 92%, transparent);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text);
+  font: 600 9px/1 'Cascadia Mono', Consolas, monospace;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+.ref .ac-origin svg {
+  width: 9px;
+  height: 9px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ref .ac.on-shot .ac-origin { background: var(--lit-002); box-shadow: none; color: var(--lit-007); }
+
+/* ---- 底部信息区：压在封面上的半透明遮罩 ---- */
+.ref .ac-body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding: 9px 10px 10px;
+  /* 透明度再提一档：照片透出来更多，靠更强的模糊 + 文字投影保住可读性 */
+  background: linear-gradient(
+    to top,
+    rgb(10 12 18 / 0.28) 0%,
+    rgb(10 12 18 / 0.22) 62%,
+    rgb(10 12 18 / 0.14) 100%
+  );
+  backdrop-filter: blur(14px) saturate(0.95);
+}
+/* 深色主题不再用蓝黑，改成带靛紫的近黑，和暗色底/accent 对齐 */
+:root[data-theme="dark"] .ref .ac-body {
+  background: linear-gradient(
+    to top,
+    rgb(26 22 44 / 0.32) 0%,
+    rgb(26 22 44 / 0.25) 62%,
+    rgb(26 22 44 / 0.16) 100%
+  );
+}
+/* 没有真实封面时没有照片可透，遮罩加深，保证白字的对比度；
+   有封面的卡保持高透明度，不受这条影响。 */
+.ref .ac:not(.on-shot) .ac-body {
+  background: linear-gradient(
+    to top,
+    rgb(10 12 18 / 0.66) 0%,
+    rgb(10 12 18 / 0.62) 62%,
+    rgb(10 12 18 / 0.56) 100%
+  );
+}
+:root[data-theme="dark"] .ref .ac:not(.on-shot) .ac-body {
+  background: linear-gradient(
+    to top,
+    rgb(26 22 44 / 0.7) 0%,
+    rgb(26 22 44 / 0.66) 62%,
+    rgb(26 22 44 / 0.6) 100%
+  );
+}
+/* 遮罩上沿再化开一段，避免照片和遮罩之间出现一道硬边 */
+.ref .ac-body::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 24px;
+  background: linear-gradient(to top, rgb(10 12 18 / 0.14), transparent);
+  pointer-events: none;
+}
+:root[data-theme="dark"] .ref .ac-body::before {
+  background: linear-gradient(to top, rgb(26 22 44 / 0.16), transparent);
+}
+
+.ref .ac-name {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.008em;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+}
+.ref .ac-meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-size: 9.5px;
+  color: rgb(255 255 255 / 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.52);
+}
+.ref .ac-meta span + span::before {
+  content: '·';
+  margin: 0 5px;
+  opacity: 0.55;
+}
+
+/* ---- 状态槽：左状态 · 白线 · 右大小 ---- */
+.ref .ac-slot {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 16px;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.52);
+}
+.ref .ac-slot .is-ok { color: #7ee2a8; }
+.ref .ac-slot .is-warn { color: #fbbf24; }
+.ref .ac-slot .is-err { color: #fca5a5; }
+/* 半透明白线：右侧只放一个「权重 / 磁盘大小」 */
+.ref .ac-rule {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 1px;
+  background: rgb(255 255 255 / 0.42);
+}
+.ref .ac-size {
+  flex: none;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 标签行 ---- */
+.ref .ac-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  overflow: hidden;
+}
+.ref .ac-tags .pill,
+.ref .ac-tags .kind-pill {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 42%;
+  height: 16px;
+  padding: 0 6px;
+  font-size: 9.5px;
+  line-height: 14px;
+  background: rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(6px);
+}
+.ref .ac-tags .pill.is-more { flex: none; max-width: none; }
+.ref .ac-tags .pill-link:hover { background: rgb(255 255 255 / 0.24); color: #fff; }
+
+/* ---- 动作行：⋯ 在左，主按钮在右 ---- */
+.ref .ac-foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+.ref .ac-foot .btn-xs {
+  height: 22px;
+  padding: 0 9px;
+  font-size: 10.5px;
+  margin-left: auto;
+}
+.ref .ac-kebab {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: var(--radius-sm);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.ref .ac-kebab:hover {
+  background: rgb(255 255 255 / 0.18);
+  border-color: rgb(255 255 255 / 0.4);
+}
+
+/* ---- 节点兜底封面：没有预览图时，把「节点类数」放在上半区 ---- */
+.ref .ac-count {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 46px;
+  height: 56px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--plate-ink);
+  text-align: center;
+}
+.ref .ac-count strong {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--plate-strong);
+  font-variant-numeric: tabular-nums;
+}
+.ref .ac-count span {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.78;
+}
+
+/* ---- 坏文件：沿用「斜纹 = 这条资产残了」的通用语言 ---- */
+.ref .ac-media.is-broken {
+  background: repeating-linear-gradient(45deg, var(--panel-3), var(--panel-3) 9px,
+    var(--panel-2) 9px, var(--panel-2) 18px);
+}
+.ref .ac-media.is-broken .ac-plate { visibility: hidden; }
+.ref .ac-broken {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38px;
+  height: 58px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--err);
+}
+.ref .ac-broken-title {
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+  background: var(--err-soft);
+  color: var(--err);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.ref .ac-broken-msg {
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-soft);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+/* ---- 页内骨架说明 ---- */
+.ref .ac-spec {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 8px;
+}
+.ref .ac-spec > div {
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.ref .ac-spec b { display: block; font-size: 11px; font-weight: 600; }
+.ref .ac-spec span { display: block; margin-top: 2px; font-size: 10.5px; line-height: 1.45; color: var(--muted); }
+
+.ref .ac-diff {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+.ref .ac-diff > div {
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.ref .ac-diff b { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 600; }
+.ref .ac-diff dl { margin: 0; display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 3px 8px; font-size: 10.5px; }
+.ref .ac-diff dt { color: var(--muted); }
+.ref .ac-diff dd { margin: 0; color: var(--text-2); }

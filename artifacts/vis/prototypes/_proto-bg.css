@@ -1,0 +1,221 @@
+/* ============================================================================
+ * 站点背景方案实验稿（backgrounds.html 专用）
+ * ----------------------------------------------------------------------------
+ * 目的：把「纯色平铺」换成三种可看可比的背景 —— 渐变 / 纸纹 / 黑白线稿全铺。
+ * 这是【实验稿】，不是规范落地。三条都必须先过主理人裁决：
+ *   渐变 → VIS §3.4「禁大面积渐变铺底」
+ *   纸纹 → 规范无裁决（纯几何底纹属真空地带）
+ *   线稿 → VIS §2.0.6 / §2.4⑤「提取蝉形做纹样 / 平铺 / 水印」硬禁
+ *
+ * 实现要点：
+ *   · 背景走「帧内绝对定位图层 + opacity」，与内容分层，互不影响排版。
+ *   · 三种方案共用同一个 --bg-k 浓度变量（0→1），由页面滑杆统一驱动。
+ *   · 线稿用资产库现成的两份线稿（深 #231815 / 白 #fff）叠铺，
+ *     浅底看深线稿、深底看白线稿，另一层退成极淡的第二重。
+ * ============================================================================ */
+
+/* ---- 方案图层 ---- */
+.bg-stage { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
+.bg-layer { position: absolute; inset: 0; pointer-events: none; }
+/* 三层结构与产品 token 一一对应：色场 / 柔光 / 纸纹。
+   每枚 token 只放一条渐变 —— CSS 的层属性列表按层套用，
+   一个 var() 展开成两条渐变会让后面的层错位（见 VIS §3.10 的踩坑记录）。 */
+.bg-wash { opacity: var(--k-wash, 0); }
+.bg-glow { opacity: var(--k-glow, 0); }
+.bg-paper { opacity: var(--k-paper, 0); mix-blend-mode: multiply; }
+:root[data-theme="dark"] .bg-paper { mix-blend-mode: screen; }
+
+/* ══ 渐变变体 ═══════════════════════════════════════════════════════════
+   每个变体 = 一条色场（wash）+ 一条柔光（glow），二者之上统一叠纸纹。
+   alpha 是「设计上限」的峰值：滑杆只乘系数，不改这里的数值。 */
+
+/* v1 暖弧洗底 —— 已落产品（--grad-site-wash + --grad-site-glow） */
+[data-variant="v1"] .bg-wash {
+  background-image: linear-gradient(158deg,
+    rgba(163, 56, 156, 0.070) 0%,
+    rgba(210, 71, 126, 0.045) 40%,
+    rgba(244, 119, 106, 0.055) 70%,
+    rgba(244, 119, 106, 0) 100%);
+}
+[data-variant="v1"] .bg-glow {
+  background-image: radial-gradient(78% 58% at 94% -8%, rgba(217, 119, 6, 0.062), rgba(217, 119, 6, 0) 62%);
+}
+
+/* v2 单束柔光 —— 没有色场，只要一束光。
+   【定稿版】这束光就是「色场」本体（wash），glow 置空 —— 语义在六个变体间保持一致：
+   wash = 色场，glow = 柔光。产品落地的 --grad-site-wash 就是这一条。 */
+[data-variant="v2"] .bg-wash {
+  background-image: radial-gradient(98% 78% at 76% -14%, rgba(217, 119, 6, 0.090), rgba(244, 119, 106, 0) 64%);
+}
+[data-variant="v2"] .bg-glow { background-image: none; }
+
+/* v3 靛紫场 —— 把品牌暖弧换成产品交互色（靛紫） */
+[data-variant="v3"] .bg-wash {
+  background-image: linear-gradient(158deg,
+    rgba(79, 70, 229, 0.055) 0%,
+    rgba(124, 108, 240, 0.038) 42%,
+    rgba(99, 102, 241, 0) 100%);
+}
+[data-variant="v3"] .bg-glow {
+  background-image: radial-gradient(74% 56% at 92% -6%, rgba(129, 140, 248, 0.050), rgba(129, 140, 248, 0) 60%);
+}
+
+/* v4 晨光竖落 —— 顶部亮、向下淡出 */
+[data-variant="v4"] .bg-wash {
+  background-image: linear-gradient(180deg,
+    rgba(163, 56, 156, 0.062) 0%,
+    rgba(210, 71, 126, 0.030) 34%,
+    rgba(244, 119, 106, 0) 72%);
+}
+[data-variant="v4"] .bg-glow {
+  background-image: radial-gradient(64% 44% at 50% 0%, rgba(244, 119, 106, 0.050), rgba(244, 119, 106, 0) 64%);
+}
+
+/* v5 对角双光 —— 左上紫、右下橙，两头压 */
+[data-variant="v5"] .bg-wash {
+  background-image: radial-gradient(70% 60% at 6% -4%, rgba(124, 58, 142, 0.055), rgba(124, 58, 142, 0) 66%);
+}
+[data-variant="v5"] .bg-glow {
+  background-image: radial-gradient(66% 58% at 98% 102%, rgba(217, 119, 6, 0.050), rgba(217, 119, 106, 0) 64%);
+}
+
+/* v6 品牌色带横铺 —— G0 五色带左→右横扫整页 */
+[data-variant="v6"] .bg-wash {
+  background-image: linear-gradient(90deg,
+    rgba(58, 10, 63, 0.062) 0%,
+    rgba(109, 10, 94, 0.048) 26%,
+    rgba(163, 56, 156, 0.058) 50%,
+    rgba(210, 71, 126, 0.048) 74%,
+    rgba(244, 119, 106, 0.066) 100%);
+}
+[data-variant="v6"] .bg-glow {
+  background-image: radial-gradient(80% 56% at 50% -12%, rgba(255, 255, 255, 0.030), rgba(255, 255, 255, 0) 60%);
+}
+
+/* A · 渐变：品牌暖弧（品红→橙）低浓度洗底 + 右上一团柔光。
+   浓度上限刻意压低：--bg-k=1 时峰值 alpha 约 0.16。 */
+.bg-grad {
+  background-image:
+    linear-gradient(158deg,
+      rgba(163, 56, 156, 0.17) 0%,
+      rgba(210, 71, 126, 0.11) 40%,
+      rgba(244, 119, 106, 0.13) 70%,
+      rgba(244, 119, 106, 0) 100%),
+    radial-gradient(78% 58% at 94% -8%, rgba(217, 119, 6, 0.15), rgba(217, 119, 6, 0) 62%);
+  opacity: var(--bg-k, 0);
+}
+
+/* B · 纸纹：SVG feTurbulence 纤维噪声（中性黑白，不带暖色，
+   免得踩「暖纸色铺进 --bg」）。浅底 multiply / 深底 screen。 */
+.bg-paper {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+/* ---- 控制条 ---- */
+.bg-ctl {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+  padding: 10px 12px; margin-bottom: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.bg-ctl .grp { display: flex; align-items: center; gap: 6px; }
+.bg-ctl label { font-size: 11px; color: var(--muted); }
+.bg-seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-xs); overflow: hidden; }
+.bg-seg button {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  padding: 4px 10px; font: 500 11px/1.4 inherit; color: var(--muted);
+  border-right: 1px solid var(--border);
+}
+.bg-seg button:last-child { border-right: 0; }
+.bg-seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.bg-seg button:hover { color: var(--text); }
+.bg-k { display: flex; align-items: center; gap: 8px; }
+.bg-k input[type="range"] { width: 160px; accent-color: var(--accent); }
+.bg-k output { font: 600 11px/1 'Cascadia Mono', Consolas, monospace; color: var(--text-2); min-width: 34px; }
+
+/* ---- 预览框 ---- */
+.bg-frame {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg);
+}
+.bg-frame > .mock { position: absolute; inset: 0; }
+
+/* 大图 */
+.bg-big { height: 620px; }
+
+/* 三宫格 */
+.bg-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.bg-mini { height: 236px; }
+.bg-mini > .scaler { position: absolute; top: 0; left: 0; width: 1280px; transform-origin: 0 0; }
+.bg-mini-cap {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+  padding: 6px 9px; font: 600 11px/1.4 inherit; color: #fff;
+  background: linear-gradient(to top, rgb(10 12 18 / 0.72), rgb(10 12 18 / 0));
+}
+.bg-mini-cap em { font-style: normal; font-weight: 400; opacity: 0.82; margin-left: 6px; }
+
+/* ---- 结论卡 ---- */
+.bg-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.bg-note {
+  padding: 11px 13px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--panel); font-size: 11.5px; line-height: 1.6; color: var(--muted);
+}
+.bg-note b { display: block; margin-bottom: 4px; color: var(--text); font-size: 12px; }
+.bg-note .flag {
+  display: inline-block; margin-top: 6px; padding: 1px 6px; border-radius: 4px;
+  font: 600 10px/1.5 inherit; background: var(--err-soft); color: var(--err);
+}
+.bg-note .flag.ok { background: var(--ok-soft, var(--accent-soft)); color: var(--ok, var(--accent)); }
+.bg-note code { color: var(--text-2); }
+
+/* ============================================================================
+ * 模拟界面的极简骨架（不依赖产品的 .plate 系列样式，避免被缺失样式带偏）
+ * ============================================================================ */
+.mock { display: grid; grid-template-columns: 196px minmax(0, 1fr); height: 100%; }
+.mock-side {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 10px; background: var(--panel); border-right: 1px solid var(--border);
+}
+.mock-brand { display: flex; align-items: center; gap: 7px; padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid var(--border-soft); }
+.mock-brand img { width: 26px; height: 13px; }
+.mock-brand b { font: 600 12px/1 'Barlow Condensed', 'Segoe UI', sans-serif; letter-spacing: .04em; color: var(--text); }
+.mock-nav { display: flex; flex-direction: column; gap: 1px; }
+.mock-nav span { padding: 5px 8px; border-radius: 5px; font-size: 11px; color: var(--muted); }
+.mock-nav span.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.mock-side-foot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border-soft); font-size: 10px; color: var(--faint); }
+
+.mock-main { padding: 16px 20px; overflow: hidden; }
+.mock-kicker { font: 600 9.5px/1 inherit; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+.mock-h1 { margin: 4px 0 12px; font-size: 19px; font-weight: 600; letter-spacing: -.015em; color: var(--text); }
+.mock-h1-row { display: flex; align-items: flex-start; justify-content: space-between; }
+.mock-btns { display: flex; gap: 6px; }
+.mock-btn { padding: 4px 10px; border-radius: var(--radius-xs, 5px); font-size: 10.5px; font-weight: 600; }
+.mock-btn.pri { background: var(--primary); color: var(--on-primary, #fff); }
+.mock-btn.ghost { border: 1px solid var(--border); color: var(--text-2); }
+
+.mock-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.mock-stat { padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm, 8px); background: var(--panel); }
+.mock-stat b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -.02em; color: var(--text); font-variant-numeric: tabular-nums; }
+.mock-stat span { font-size: 10px; color: var(--muted); }
+
+.mock-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.mock-tab { padding: 3px 9px; border-radius: 999px; font-size: 10.5px; color: var(--muted); border: 1px solid transparent; }
+.mock-tab.on { background: var(--panel); border-color: var(--border); color: var(--text); font-weight: 600; }
+.mock-input { flex: 1; height: 24px; border: 1px solid var(--border); border-radius: 5px; background: var(--panel); }
+
+.mock-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+.mock-card { border: 1px solid var(--border); border-radius: var(--radius-sm, 8px); background: var(--panel); overflow: hidden; }
+.mock-cover { height: 88px; position: relative; }
+.mock-cover i { position: absolute; border-radius: 50%; }
+.mock-card .cm { padding: 7px 9px 9px; }
+.mock-card .cm b { display: block; font-size: 10.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mock-card .cm span { font-size: 9.5px; color: var(--muted); }
+.mock-status { display: flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 9.5px; color: var(--muted); }
+.mock-status em { font-style: normal; font-weight: 600; color: #15803d; }
+.mock-status i { flex: 1; height: 1px; background: var(--border); }
+
+.mock-table { border: 1px solid var(--border); border-radius: var(--radius-sm, 8px); background: var(--panel); overflow: hidden; }
+.mock-row { display: grid; grid-template-columns: 2fr 1fr 1fr 90px; gap: 10px; padding: 7px 11px; font-size: 10.5px; color: var(--text-2); border-top: 1px solid var(--border-soft); }
+.mock-row:first-child { border-top: 0; background: var(--panel-2); color: var(--muted); font-weight: 600; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>规范 vs 实现 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：规范 vs 实现">
+<link rel="stylesheet" href="../assets/vis.css">
+</head>
+<body data-page="audit" data-root="../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.7</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.7 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<section id="c-diff">
+  <h2><span class="num">AUDIT</span>规范 vs 实现</h2>
+  <p class="lead">
+    本页如实登记<strong>规范要求与真实实现的差异</strong>，不做掩盖。差异按影响面排序。
+    「状态」列：<code>已落地</code> / <code>待收敛</code>（M1 批次） / <code>缺实现</code>（规范有、实现无）。
+  </p>
+  <table class="t">
+    <thead><tr><th style="width:180px">项</th><th style="width:220px">规范要求</th><th style="width:230px">实际实现</th><th style="width:90px">状态</th><th>影响</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>按钮 error 态</td>
+        <td>§6.4 八态含 error</td>
+        <td>只有 <code>button.danger</code>（描边红字），无独立 error 按钮样式</td>
+        <td>缺实现</td>
+        <td>规范把 error 与 danger 当两态，实现合并了</td>
+      </tr>
+      <tr>
+        <td>输入框 error 态</td>
+        <td>§6.4 要求 error 态</td>
+        <td>无 <code>aria-invalid</code> / <code>:invalid</code> 样式</td>
+        <td>缺实现</td>
+        <td>表单错误只能靠 <code>.notice.err</code> 表达</td>
+      </tr>
+      <tr>
+        <td>面板折叠态</td>
+        <td>§6.4 要求折叠</td>
+        <td><code>ui-panel</code> 无折叠能力（只有静态标题栏）</td>
+        <td>缺实现</td>
+        <td>本页用 <code>&lt;details&gt;</code> 静态等价物</td>
+      </tr>
+      <tr>
+        <td>面板加载态</td>
+        <td>§6.4 要求加载</td>
+        <td>无 <code>ui-panel</code> 的 loading 输入</td>
+        <td>缺实现</td>
+        <td>本页用 <code>.loading-line</code> 拼装</td>
+      </tr>
+      <tr>
+        <td>控件边界色</td>
+        <td>§3.5 新增 <code>--border-control #8b8b94</code>（3.38:1）</td>
+        <td>input / select / textarea 仍用 <code>var(--border)</code>（1.27:1）</td>
+        <td>待收敛</td>
+        <td>控件边界对白仅 1.27:1，低于 WCAG 1.4.11 的 3:1</td>
+      </tr>
+      <tr>
+        <td>字重白名单</td>
+        <td>§4 白名单 400/500/600/700</td>
+        <td>存在 <code>650</code>（library-card <code>.mname</code>）、<code>550</code>（editor 页两处）</td>
+        <td>待收敛</td>
+        <td><code>650</code> 不在白名单，且会回退到 700 渲染</td>
+      </tr>
+      <tr>
+        <td>圆角中间档</td>
+        <td>§6.2 三档 12/8/5</td>
+        <td>workflow-editor 页有 7px / 9px / 10px；cover-plate 有 4px / 6px</td>
+        <td>待收敛</td>
+        <td>cover-plate 3 处属「适用域外」（§10 裁决 3），不计入</td>
+      </tr>
+      <tr>
+        <td>主按钮 hover</td>
+        <td>§8.5 裁决 5：保持 <code>--primary</code> 底 + 白字，仅改 <code>border-color</code></td>
+        <td><code>button.primary:hover</code> 已按此实现</td>
+        <td>已落地</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>卡片 hover 描边</td>
+        <td>§3.7.3：统一画在 <code>::after</code></td>
+        <td>三张卡均已改到 <code>::after</code>（z-index 2 / 3 / —）</td>
+        <td>已落地</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><code>.pill</code> 规格</td>
+        <td>§3.7.2：20px / padding 0 9px / 11px / 500</td>
+        <td>实现值一致</td>
+        <td>已落地</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>列表行内边距</td>
+        <td>§3.7.3：<code>12px 14px 12px 12px</code></td>
+        <td><code>.nd-row</code> 与 <code>.wf-row</code> 实测一致</td>
+        <td>已落地</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>component token 层</td>
+        <td>§3.7.5：<code>--cmp-*</code> 只建结构</td>
+        <td>0 枚已赋值</td>
+        <td>已落地</td>
+        <td>刻意留空，避免死变量</td>
+      </tr>
+      <tr>
+        <td>token 层接线</td>
+        <td>§3.7.5：改 primitive 应全站联动</td>
+        <td>UI 仍读 styles.css 的平铺 token，未接线</td>
+        <td>待收敛</td>
+        <td>「改 primitive 全站联动」目前不成立</td>
+      </tr>
+      <tr>
+        <td>Inter 字体</td>
+        <td>§4：body 首位 Inter</td>
+        <td><code>@font-face</code> 声明保留但<strong>未加载文件</strong>（§10 裁决 2）</td>
+        <td>已落地</td>
+        <td>正文实际走 <code>Segoe UI / Microsoft YaHei</code> 回退栈</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="s-61">本页自身的口径声明</h3>
+  <ul style="font-size:12.5px;color:var(--muted);line-height:1.7">
+    <li>本页所有数值由 <code>artifacts/vis/_work/build.mjs</code> 从 <code>web/src/styles.css</code>、<code>web/src/vis-tokens.css</code>、<code>web/src/app/ui/*.ts</code> 现场解析，<strong>不手抄</strong>。</li>
+    <li>组件复刻规则加 <code>.ref</code> 作用域前缀，选择器与声明体<strong>逐条搬入真实源码</strong>；静态样张（卡片、面板、弹层）已标注。</li>
+    <li>色值全部走 CSS 变量；<strong>唯一的字面色值集中登记在 <code>:root</code> 的「字面色值集中登记」块里</strong>（共 148 枚），规则里一律 <code>var(--lit-*)</code> 引用。</li>
+    <li>圆角只用 12 / 8 / 5（弹层 16、胶囊 999 为 VIS 登记例外）。</li>
+    <li>字重只用 400 / 500 / 600 / 700。</li>
+    <li>本页属<strong>评审用参考页</strong>，不进产品导航。</li>
+    <li>组件 scoped 样式已搬入 <strong>92.3%</strong>（203 / 220 个选择器，覆盖 model-card / workflow-card / family-mark 全部，library-card 82.1%，cover-plate 93.4%）。未搬入的是封面铭牌的内部尺寸档（<code>sz-mini</code> / <code>sz-row</code> / <code>sz-wide</code>）与破卡细部 —— 这些形态参考页没有样张，搬进来也不会被看到。</li>
+  </ul>
+</section>
+    </div>
+  </main>
+</div>
+<script src="../assets/shell.js"></script>
+</body>
+</html>

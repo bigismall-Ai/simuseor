@@ -23,7 +23,7 @@
  * 【零覆盖承诺】（硬性，由 artifacts/vis/vis-check.mjs 自动校验）
  *   本文件不重新赋值 web/src/styles.css:17-74 / :77-122 中任何已有 --* 变量。
  *   下述 --brand-* / --border-control / --radius-lg / 四个 URL 变量 / 三个常量
- *   全部为【新增名】。UI 两套 :root 原样保留（Phase1 §3.1 裁决 A：分层双轨、
+ *   / --grad-* 全部为【新增名】。UI 两套 :root 原样保留（Phase1 §3.1 裁决 A：分层双轨、
  *   零覆盖、零回归）；靛紫 --accent/#4f46e5 / #a5b4fc 仍是唯一交互色。
  *   vis-check.mjs 会剥离注释后取两文件「赋值变量名」集合求交集，交集必须为空。
  *
@@ -129,6 +129,40 @@
   --brand-clear-space: 10px;            /* Phase1 §2.3 占位近似：字标总高 20px 的 0.5 倍；冻结后按实测 X（S cap-height）替换 */
   --brand-min-width:   120px;           /* Phase1 §2.3 横向字标最小宽度；侧栏可用宽约 190px */
   --brand-icon-min:    32px;            /* Phase1 §2.3 独立图标最小尺寸；<20px 只用字首单体 */
+
+  /* ---- 渐变层（--grad-*）〔VIS v2.6 新增 · §3.8〕----
+   * 全站本来就跑着 6 类渐变（蝉形 82 条面片微渐变 / favicon 5 档色带 / 卡片信息区遮罩 /
+   * 封面照片 scrim / 封面 5 构图纹理 / 家族铭牌底），此前全靠就地硬编码，
+   * 既没有 token 也没有口径 —— 谁改谁都漂。这里收口成 4 级 12 枚 token：
+   *   G0 品牌色带   蝉形同源品红→橙暖弧（跨色相是刻意的，不是彩虹渐变）
+   *   G1 家族色渐变 只引用 --plate-* 三槽，同色相、只走明度阶（Δh ≤ 10°）
+   *   G2 遮罩 scrim  照片压字；白字压在最亮照片上时 alpha 必须 ≥ 0.57
+   *   G3 构图纹理   封面 5 变体；只出家族色派生，不出独立色
+   *   G4 交互渐变   受限：面积 ≤2 处/屏，两端白字都 ≥4.5:1
+   * 完整色域要求与 9 条硬约束：artifacts/vis/reference/color.html §s-19。
+   * 本层只加 token、不改任何现有取值 —— 视觉零变化。 */
+  --grad-brand-spectrum: linear-gradient(90deg, #3a0a3f 0%, #6d0a5e 28%, #a3389c 52%, #d2477e 76%, #f4776a 100%);
+  --grad-brand-spectrum-warm: linear-gradient(90deg, #a3389c 0%, #d2477e 52%, #f4776a 100%);
+  --grad-family-veil: linear-gradient(160deg, var(--plate-bg) 0%, var(--plate-mark) 100%);
+  --grad-family-ink-veil: linear-gradient(to top, var(--plate-strong) 0%, transparent 100%);
+  --grad-scrim-card: linear-gradient(162deg, rgb(10 12 18 / 0.45) 0%, rgb(10 12 18 / 0.38) 62%, rgb(10 12 18 / 0.28) 100%);
+  --grad-scrim-card-fade: linear-gradient(to top, rgb(10 12 18 / 0.28), transparent);
+  --grad-scrim-shot: linear-gradient(to bottom, rgb(8 10 16 / 0.52) 0%, rgb(8 10 16 / 0) 34%), linear-gradient(to top, rgb(8 10 16 / 0.94) 0%, rgb(8 10 16 / 0.66) 32%, rgb(8 10 16 / 0) 72%);
+  --grad-scrim-plate: linear-gradient(to top, var(--plate-bg) 0%, color-mix(in oklab, var(--plate-bg) 88%, transparent) 28%, transparent 64%);
+  --grad-motif-stripe: repeating-linear-gradient(-58deg, color-mix(in oklab, var(--plate-mark) 17%, transparent) 0 12px, transparent 12px 38px);
+  --grad-motif-dot: radial-gradient(circle, color-mix(in oklab, var(--plate-mark) 52%, transparent) 1.1px, transparent 1.4px);
+  --grad-motif-glow: radial-gradient(62% 72% at 10% 0%, color-mix(in oklab, var(--plate-mark) 40%, transparent), transparent 70%), radial-gradient(52% 62% at 98% 30%, color-mix(in oklab, var(--plate-mark) 26%, transparent), transparent 72%);
+  --grad-accent: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+
+  /* ---- 站点级底纹（--grad-site-wash + --texture-site-paper）〔VIS v2.7 · §3.10〕----
+   * 站点整体背景 = 纯中性底 + 低浓度品牌暖弧洗底 + 中性纸纹。
+   * 顺序：底色 --bg → 洗底（色场）→ 纸纹（肌理）。
+   * 两条纪律：洗底峰值 alpha ≤ 0.07（底仍读作中性灰）；纸纹中性无彩
+   *（所以不碰「暖纸色不进 --bg」）。浓度只调这两枚 token 的 alpha。
+   * 【与生效层必须逐字一致】—— vis-check.mjs 3C 交叉校验按值比对。 */
+  --grad-site-wash: radial-gradient(98% 78% at 76% -14%, rgba(217, 119, 6, 0.063), rgba(244, 119, 106, 0) 64%);
+  --grad-site-glow: none;
+  --texture-site-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.204'/%3E%3C/svg%3E");
 }
 
 
@@ -152,11 +186,56 @@
    * 深浅取同一 HEX 是 Phase2 §2.10-11 的实测结论；分别声明是为了留出深色独立
    * 微调的接口。禁止用它覆盖 --border / --border-strong。 */
   --border-control: #8b8b94;            /* Phase2 §2.10-11 深：on #141417 = 5.44:1 */
+
+  /* 渐变层 · 深色只覆盖 G4 交互渐变一枚：两端一起压深，白字实算
+   * 7.90:1 → 9.93:1（两端均 ≥4.5:1）。G0 品牌色带不翻（品牌资产本身
+   * 不随主题变）；G1/G2/G3 都由 --plate-* 派生，家族色换整套时自动跟着翻。 */
+  --grad-accent: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+
+  /* ---- 站点级底纹 · 深色只换纸纹那一枚 ----
+   * 洗底深浅同值；纸纹必须换 —— 浅底是灰噪声 multiply（压出纤维阴影），
+   * 深底要白噪声 screen（浮起颗粒）：同一张灰噪声在深底上只会糊成一层灰雾。
+   * 这不是把浅色反相，而是换一张噪声图（RGB 恒白 + alpha 随噪声起伏）。 */
+  --texture-site-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.048 0.048 0.048 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 
 /* ============================================================================
- * 4. 接入片段【注释形式，不生效】—— 仅供参考，不产出组件实现
+ * 4. 渐变层（--grad-*）〔VIS v2.6 新增 · §3.8〕—— 口径说明
+ * ============================================================================
+ * 为什么补这一层：VIS §3.4 只写了「禁止大面积渐变铺底」，但**全站本来就有 6 类
+ * 渐变**，它们此前既没有 token 也没有约束，全是就地硬编码的 rgba 串：
+ *   ① 蝉形 82 条面片微渐变（assets/cicada/svg/cicada-max.svg，色相 ±10° /
+ *      饱和 ×1.04→1.00 / 明度 ×0.97→1.03，每面片一条）
+ *   ② favicon 5 档色带（#3a0a3f → #f4776a，横向量化）
+ *   ③ 卡片信息区遮罩（prototypes/_proto.css:161-167，162° 三段 + 24px 化开段）
+ *   ④ 封面照片 scrim（ui/cover-plate.component.ts:248-270，顶部 + 底部双层）
+ *   ⑤ 封面 5 构图纹理（cover-plate.component.ts:458-565，斜纹 / 点阵 / 柔光）
+ *   ⑥ 家族铭牌底（model-tone.ts 的 bg / mark / strong 三槽派生）
+ * 结果是「渐变有事实、无口径」：谁改谁都漂，改一处不知道会撞掉哪条对比度。
+ * 本层把渐变收口成 **4 级 12 枚 token**，色域要求与可判定约束见
+ * artifacts/vis/reference/color.html §s-19（色域实测脚本：
+ * artifacts/vis/_work/measure_color_domain.py）。
+ *
+ * 【声明位置】12 枚 --grad-* 声明在 §2 的 :root 里，深色覆写（仅 --grad-accent）
+ * 在 §3 的 :root[data-theme="dark"] 里 —— **不另开 :root 块**：
+ * vis-check.mjs 的 3C 交叉校验只取每个文件的**第一块** :root，
+ * 另开块会让设计层解析成 null。改这组 token 时两层必须同步。
+ *
+ * 四级分工：
+ *   G0 品牌色带 —— 品牌落款 / 启动页 / 分享卡；品红→橙暖弧，跨色相是**刻意**的
+ *   G1 家族色渐变 —— 模型卡美术主色；同色相、只走明度阶（Δh ≤ 10°）
+ *   G2 遮罩 scrim —— 照片压字；白字压在最亮照片上时 alpha 必须 ≥ 0.57
+ *   G3 构图纹理 —— 封面 5 变体；只出家族色派生，不出独立色
+ *   G4 交互渐变 —— 受限；面积 ≤2 处/屏，两端白字都要 ≥4.5:1
+ *
+ * 通用禁令（VIS §3.4 延续）：禁多色相彩虹渐变（跨度 >30°）、禁大面积铺底、
+ * 禁给文字上渐变、禁渐变做 1px 描边、禁 filter:invert() 取反。
+ * ============================================================================ */
+
+
+/* ============================================================================
+ * 5. 接入片段【注释形式，不生效】—— 仅供参考，不产出组件实现
  * ----------------------------------------------------------------------------
  * 说明：本文件中【生效】的 CSS 只有上面两条 @font-face 与两个 :root 块。
  *       以下全部为注释，复制到 M2/M3 的具体文件时才成为真实规则；刻意不写成
