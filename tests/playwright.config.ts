@@ -1,8 +1,32 @@
 import { defineConfig } from '@playwright/test';
 import { resolve } from 'node:path';
+import { existsSync } from 'node:fs';
 
 // tests/ 的上一级就是项目根，后端和 .venv 都在那里
 const repoRoot = resolve(__dirname, '..');
+
+/**
+ * 用本机已装的 Chromium，而不是 Playwright 自带的那份。
+ *
+ * 为什么：本机缓存里的浏览器版本与 tests/node_modules 里 Playwright 期望的版本
+ * 对不上（期望 chromium_headless_shell-1248，实际只有 chromium-1234），
+ * 于是每条用例都在 browserType.launch 就挂掉 —— **报的是「浏览器不存在」，
+ * 不是断言失败**，看起来像全盘崩，其实一条都没跑到。
+ *
+ * 做法：优先用 Playwright 自带的；没有就退到本机 ms-playwright 缓存里已装的那份
+ * （VIS 工具链 `vis-render.mjs` 用的也是它）。**不下载任何东西**，
+ * 也不会在别的机器上把 E2E 弄坏 —— 路径不存在时就不设，走 Playwright 默认。
+ */
+const CHROMIUM_FALLBACK = 'C:/Users/Moc/AppData/Local/ms-playwright/chromium-1234/chrome-win64/chrome.exe';
+let launchOptions: { executablePath?: string } | undefined;
+try {
+  const { chromium } = require('@playwright/test');
+  const bundled = chromium.executablePath();
+  if (bundled && existsSync(bundled)) launchOptions = { executablePath: bundled };
+  else if (existsSync(CHROMIUM_FALLBACK)) launchOptions = { executablePath: CHROMIUM_FALLBACK };
+} catch {
+  if (existsSync(CHROMIUM_FALLBACK)) launchOptions = { executablePath: CHROMIUM_FALLBACK };
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // E2E 端口：刻意用 8123 而不是 8000
@@ -32,6 +56,7 @@ export default defineConfig({
     baseURL,
     screenshot: 'only-on-failure',
     viewport: { width: 1440, height: 900 },
+    launchOptions,
   },
   webServer: {
     command:

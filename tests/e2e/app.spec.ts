@@ -96,7 +96,8 @@ test.describe('Model Downloader Web UI', () => {
 
     // 模型库 v4：卡片是海报卡，收藏 / 评审已移除，压力条与卡片动作都在
     await expect(page.getByTitle('收藏')).toHaveCount(0);
-    await expect(page.locator('md-library-card .gauge').first()).toBeVisible();
+    // 显存压力条已撤（统一骨架没有这一层）—— 撤掉之后不该再出现
+    await expect(page.locator('md-library-card .gauge')).toHaveCount(0);
     await expect(page.getByRole('button', { name: '查找适配工作流' }).first()).toBeVisible();
   });
 
@@ -211,12 +212,14 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('.task').first()).toContainText('demo/', { timeout: 15_000 });
   });
 
-  test('模型卡：分类标签是统一胶囊，单行不换行', async ({ page }) => {
+  test('模型卡：分类标签只放一枚，来源收进右上角与 ⋯ 菜单', async ({ page }) => {
     await page.goto('/models/discover?demo=1');
     await page.waitForTimeout(1500);
 
     const card = page.locator('md-model-card').first();
     const tags = card.locator('.card-tags .pill');
+    // 统一骨架 ⑤：分类标签**只放一枚**（模型=文件类型，工作流=分组，节点=它提供什么）
+    await expect(tags).toHaveCount(1);
     await expect(tags.first()).toBeVisible();
 
     // 全圆角胶囊 —— 参考 comfy.org Hub 模型卡的规格
@@ -233,19 +236,24 @@ test.describe('Model Downloader Web UI', () => {
     );
     expect(new Set(heights).size).toBe(1);
 
-    // 标签内容是分类信息，不是来源的全大写字母。
+    // 标签内容是分类信息（文件类型 / 任务类别），**不是**来源的全大写字母。
     // 注意别一刀切禁止大写 —— LoRA / VAE / HF / MS 是专有名词，本来就该大写。
     const texts = await tags.allTextContents();
-    expect(texts.some((t) => /HF|MS|Civitai|Demo/.test(t))).toBe(true);
+    expect(texts.some((t) => /HF|MS|Civitai|Demo/.test(t))).toBe(false);
     expect(
       texts.every((t) => t.trim() === t && !/^[A-Z]{3,}\s/.test(t)),
     ).toBe(true);
 
-    // 卡片上的来源用短名：「Hugging Face」占 92px，两枚来源就把行塞满了，
-    // 后面的标签连同 +N 一起被挤出可视区。完整名在 title 里。
-    expect(texts.some((t) => /Hugging Face|ModelScope/.test(t))).toBe(false);
+    // 来源入口有两处，都不在标签行里：
+    //   右上角 .acard-origin（原站链接）· ⋯ 菜单里的来源胶囊（各来源的下载入口）
+    const origin = card.locator('.origin').first();
+    await expect(origin).toHaveAttribute('target', '_blank');
+    await expect(origin).toHaveText(/HF|MS|Civitai/);
+    await expect(card.locator('.card-tags .pill-link')).toHaveCount(0);
+
+    await card.locator('.acard-kebab').click();
     const srcTitle = await card
-      .locator('.card-tags .pill-link')
+      .locator('.acard-menu .pill-link')
       .first()
       .getAttribute('title');
     expect(srcTitle).toMatch(/在 .+ 上打开原始仓库/);
@@ -378,8 +386,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('md-library-card')).toHaveCount(2);
     await pub.getByRole('button', { name: '重置' }).click();
     await expect(page.locator('md-library-card')).toHaveCount(3);
-    // 三种形态都在，压力条一点都不少
-    await expect(page.locator('md-library-card .gauge')).toHaveCount(3);
+    // 三种形态都在；显存压力条按统一骨架撤掉了，不该再有
+    await expect(page.locator('md-library-card .gauge')).toHaveCount(0);
     // 残缺条目的主操作是补救，不是「查找适配工作流」
     await expect(page.getByRole('button', { name: '重新下载模型' })).toBeVisible();
 
@@ -1064,11 +1072,12 @@ test.describe('Model Downloader Web UI', () => {
     await page.goto('/nodes/discover');
 
     await expect(page.getByRole('heading', { name: '发现节点' })).toBeVisible();
-    await expect(page.locator('.nd-row')).toHaveCount(2);
-    // 已装的那一行给徽章，未装的给安装按钮
-    await expect(page.locator('.nd-row').first().getByText('已安装').first()).toBeVisible();
-    await expect(page.locator('.nd-row').nth(1).getByRole('button', { name: '安装' })).toBeVisible();
-    await expect(page.locator('.nd-tile strong').nth(1)).toHaveText('202');
+    await expect(page.locator('.nd-card')).toHaveCount(2);
+    // 已装的那张给徽章，未装的给安装按钮
+    await expect(page.locator('.nd-card').first().getByText('已安装').first()).toBeVisible();
+    await expect(page.locator('.nd-card').nth(1).getByRole('button', { name: '安装' })).toBeVisible();
+    // 节点类数现在在状态槽右侧（统一骨架 ④ 的「大小」位）
+    await expect(page.locator('.nd-card .acard-size').nth(1)).toHaveText('202 节点类');
     await page.screenshot({ path: ART + '/19-nodes-discover.png', fullPage: true });
   });
 
@@ -1086,7 +1095,7 @@ test.describe('Model Downloader Web UI', () => {
       }));
 
     await page.goto('/nodes/discover');
-    await page.locator('.nd-row').nth(1).getByRole('button', { name: '安装' }).click();
+    await page.locator('.nd-card').nth(1).getByRole('button', { name: '安装' }).click();
     await expect(page.locator('.nd-progress').first()).toHaveText('45%');
     await expect(page.locator('.nd-log')).toContainText('克隆');
     await page.screenshot({ path: ART + '/20-nodes-installing.png', fullPage: true });
@@ -1098,10 +1107,10 @@ test.describe('Model Downloader Web UI', () => {
     await page.goto('/nodes');
 
     await expect(page.getByRole('heading', { name: '节点管理' })).toBeVisible();
-    await expect(page.locator('tbody tr')).toHaveCount(2);
-    // 「已禁用」在统计条里也有一个，限定在表格内取徽章
-    await expect(page.getByRole('table').getByText('已禁用')).toBeVisible();
-    await expect(page.getByRole('table').getByText('清单未收录')).toBeVisible();
+    await expect(page.locator('.nd-card')).toHaveCount(2);
+    // 「已禁用」在统计条里也有一个，限定在卡片内取
+    await expect(page.locator('.nd-card').nth(1).getByText('已禁用').first()).toBeVisible();
+    await expect(page.locator('.nd-card').nth(1).getByText('清单未收录').first()).toBeVisible();
 
     await page.getByRole('button', { name: '开始检测' }).click();
     await expect(page.getByText('5 个工作流里有 1 个缺节点')).toBeVisible();
@@ -1155,8 +1164,12 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.locator('ui-family-mark img.fm-logo[alt="flux"]')).toHaveCount(1);
     await expect(page.locator('ui-family-mark img.fm-logo[alt="qwen"]')).toHaveCount(1);
     await expect(page.locator('ui-family-mark img.fm-logo[alt="minimax"]')).toHaveCount(1);
-    // 真没有官方资产的家族才用家族码
-    await expect(page.locator('ui-family-mark .fm-code')).toHaveText('PONY');
+    // Pony 也补上了位图临摹标（2026-11-21），走品牌标而不是家族码
+    await expect(page.locator('ui-family-mark img.fm-logo[alt="pony"]')).toHaveCount(1);
+    // 25 个家族现在都有矢量或位图临摹资产 —— 「认得出家族但没有资产 → 回落家族码」
+    // 这条降级路径当前**没有可用样本**了（认不出家族时按规矩什么都不画，
+    // 见 family-mark.component.ts）。这条断言留着是为了哪天又有家族没资产时能立刻发现。
+    await expect(page.locator('ui-family-mark .fm-code')).toHaveCount(0);
     await page.screenshot({ path: ART + '/24-workflow-family-mark.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
@@ -1958,8 +1971,16 @@ test.describe('Model Downloader Web UI', () => {
         const s = getComputedStyle(el);
         return [s.height, s.borderRadius, s.fontVariantNumeric].join('|');
       });
-    expect(await chipSpec(tag)).toBe(
-      await chipSpec(page.getByTestId('lw-groups').locator('.wf-chip b').first()),
+    // 卡上这一格是**分类标签**（VIS §3.7.2）：一律中性胶囊 .pill。
+    // 工具栏里那个是「分组数量」的数字片 —— 两者不是同一件东西，不比规格。
+    const tagStyle = await tag.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { h: s.height, r: s.borderRadius, bg: s.backgroundColor };
+    });
+    expect(tagStyle.h).toBe('16px');
+    expect(tagStyle.r).toMatch(/999px|^50%$/);
+    expect(await chipSpec(page.getByTestId('lw-groups').locator('.wf-chip b').first())).not.toBe(
+      await chipSpec(tag),
     );
     await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });
     await page.unrouteAll({ behavior: 'ignoreErrors' });

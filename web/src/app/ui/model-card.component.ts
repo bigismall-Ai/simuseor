@@ -1,276 +1,263 @@
-import { Component, Input, output } from '@angular/core';
-import { coverMeta } from '../core/cover';
+import { Component, ElementRef, HostListener, Input, inject, output } from '@angular/core';
+import { CoverMeta, coverMeta } from '../core/cover';
 import { sourceLabel, sourceShort } from '../core/source-links';
-import { SearchItem, fmtNum } from '../core/types';
-import { sourceTaskLabel } from '../core/task-labels';
+import { ThemeService } from '../core/theme.service';
+import { SearchItem, fmtNum, fmtSize } from '../core/types';
+import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { CoverPlateComponent } from './cover-plate.component';
 
 /** 封面取图顺序，与后端 `covers.PREFERENCE` 保持一致 */
 const COVER_ORDER = ['modelscope', 'huggingface', 'civitai'];
 
-/** 卡片上的一枚分类标签。有 href 的是可点的来源链接。 */
-interface CardTag {
-  key: string;
-  text: string;
-  title: string;
-  href?: string;
+/**
+ * 「文件类型」词表 —— Civitai 的 modelType。
+ *
+ * 只有 Civitai 回答得了「这个文件是什么」（Checkpoint / LoRA / VAE…）；
+ * HF / MS 的 task 是 pipeline 任务（text-to-image…），那是**类别**不是文件形态。
+ * 两者混在一列里，标签既不是类型也不是类别。词表与 core/task-labels.ts 的 Civitai 分组一致。
+ */
+const FILE_TYPES = new Set([
+  'Checkpoint', 'LORA', 'LoCon', 'VAE', 'Controlnet', 'TextualInversion', 'TextEncoder',
+  'Upscaler', 'Embedding', 'Hypernetwork', 'Motion Module', 'Style Model',
+  'Aesthetic Gradient', 'Poses', 'Wildcards', 'ComfyWorkflows', 'LLM',
+]);
+
+/**
+ * 发现页条目可能带的文件大小（字节）。
+ *
+ * 共享类型 SearchItem 里没有这个字段，但各源的搜索列表接口都可能补上，
+ * 所以按可选字段接住，不改共享类型（core/types.ts 不归本组件动）。
+ */
+interface SizedItem extends SearchItem {
+  size?: number;
 }
 
 /**
- * 模型卡：一张海报，不是「封面 + 正文」两段。
+ * 模型卡：资产卡统一骨架的模型版。
  *
- * 铭牌铺满整块当背景（生成构图，或在有缩略图时铺图），正文靠 `margin-top:auto` 贴底，
- * 所以卡片高度只由正文决定，换任何一张背景都不会塌、也不会跳。
+ * 外壳与几何全部来自 `asset-card.css`（产品侧唯一一份），本组件只填槽位：
+ *   ① 封面   铺满整卡的铭牌（只贡献底图与蒙版）
+ *   ② 身份行 32×32 标识块 + 厂名 / 作者
+ *   ③ 原站   右上角一条原站链接
+ *   ④ 状态槽 左下载量 · 一根白线 · 右大小
+ *   ⑤ 标签   恰好一枚（文件类型）
+ *   ⑥ 动作行 ⋯ 在左，主按钮在右
  *
- * 为什么不再分上下两段：旧卡片上半截是封面、下半截是正文，一屏 20 张就是
- * 20 个「上面一块、下面一块」，卡片被撑到 300px 以上，一屏看不了几条。
- * 合成一张之后高度掉到 200 以内，信息一个没少。
- *
- * 模型名是卡片里唯一的大字。铭牌只负责「哪个家族、什么规格、什么文件形态」，
- * 字号不跟模型名抢。
+ * 为什么把标签位收成一枚：旧卡一排等权重胶囊（类型 / 来源 / 作者 + 「+N」），
+ * 信息互相稀释 —— 来源链接是出口，不该跟分类挤在一行；作者归身份行；
+ * 分类只剩「这是什么文件」一件事，一枚就够。
  */
 @Component({
   selector: 'md-model-card',
   standalone: true,
   imports: [CoverPlateComponent],
   template: `
-    <article class="card" [class.on-shot]="photoOk">
-      <!-- ratio="fill"：不声明比例，宽高由外层给 —— 本卡封面是
-           position:absolute; inset:0 铺满整卡，正是 fill 的语义。 -->
-      <app-cover-plate class="card-plate" ratio="fill" [model]="plate" (shotState)="photoOk = $event" />
+    <article class="card acard" [class.on-shot]="photoOk">
+      <!-- ① 封面：铺满整卡。ratio="fill" 不声明比例，宽高由外层给 ——
+           本卡封面是 position:absolute; inset:0 铺满整卡，正是 fill 的语义。
+           铭牌自带的顶行（厂标 + 家族码 + 规格 + 原站链接）在这里是重复的：
+           身份与原站由 .acard-head 承担，所以整行收掉（与工作流卡同一手法）。 -->
+      <div class="acard-media">
+        <app-cover-plate
+          class="card-plate acard-plate"
+          ratio="fill"
+          [model]="plate"
+          (shotState)="photoOk = $event"
+        />
+      </div>
 
-      <div class="card-body">
-        <h2 class="card-name" [title]="primary?.id">{{ primary?.name }}</h2>
-
-        <!-- 下载量：独立一行，在模型名之下、标签之上。
-             为什么放在这里（四站实测 Civitai / Comfy / HF / ModelScope 的结论）：
-             - 下载量是**唯一**能证明「有人跑通过」的硬信号，社交指标（点赞、评论、
-               点数）都能排最后，它不行。
-             - 之前它跟「下载」按钮并排、11px 灰字靠右下，在 4 列网格里几乎读不到 ——
-               而排序功能已经支持「按下载量」，**排序依据与视觉权重不一致是自相矛盾**。
-             - 位置取「名之下」而不是「图之上」：Civitai 与 HF 的阅读动线都是
-               「名 → 量」，放名之上会把动线倒过来，让人先读量再读名。
-             - 也不放铭牌行左上角：那一行右侧已被「原站链接」占（cover-plate 的
-               .origin），塞进去两者会挤，且身份信息与热度信息混排。
-             右边的细线是分隔线不是装饰：它把这行和下面的分类标签分开，
-             让「热度」独立于「分类」成层。 -->
-        <div class="card-dl" title="下载量">
-          <span class="card-dl-num">↓ {{ fmtNum(maxDownloads) }}</span>
-          <span class="card-dl-rule"></span>
-        </div>
-
-        <!-- 分类标签：类型 / 来源 / 作者。
-             规格跟 comfy.org Hub 模型卡一致 —— 一排等权重胶囊，
-             分类信息用文字说明，权重信息（下载量）另行一路。
-             装不下的折叠成「+N」，标题里给出全部内容。 -->
-        <div class="pill-row card-tags">
-          @for (t of visibleTags(); track t.key) {
-            @if (t.href) {
-              <a
-                class="pill pill-link"
-                [href]="t.href"
-                target="_blank"
-                rel="noreferrer"
-                [title]="t.title"
-                >{{ t.text }}</a
-              >
-            } @else {
-              <span class="pill" [title]="t.title">{{ t.text }}</span>
+      <!-- ② 身份行（32×32 标识块 + 厂名 / 作者） + ③ 右上角原站链接 -->
+      <div class="acard-head">
+        <span class="acard-mark" [title]="markTitle">
+          @if (markLogo) {
+            <img
+              class="logo-light"
+              [src]="meta.logo"
+              [alt]="meta.code"
+              [style.--logo-scale]="meta.logoScale || 1"
+            />
+            @if (meta.logoDark) {
+              <img
+                class="logo-dark"
+                [src]="meta.logoDark"
+                alt=""
+                aria-hidden="true"
+                [style.--logo-scale]="meta.logoScale || 1"
+              />
             }
+          } @else if (familyCode) {
+            <span class="acard-code">{{ familyCode }}</span>
+          } @else if (meta.publisher) {
+            <!-- 未登记家族：用发布方缩写兜底。它回答的是「谁发的」，不是伪造的厂牌标。 -->
+            <span class="acard-code" [title]="'未登记厂牌 · 发布方：' + meta.publisher.label">{{
+              meta.publisher.abbr
+            }}</span>
           }
-          @if (hiddenTagCount() > 0) {
-            <span class="pill pill-count is-more" [title]="allTagText()">+{{ hiddenTagCount() }}</span>
-          }
+        </span>
+
+        <span class="acard-ident">
+          <b [title]="familyName">{{ familyName }}</b>
+          <span [title]="authorText">{{ authorText || '—' }}</span>
+        </span>
+
+        @if (origin.href) {
+          <a
+            class="origin acard-origin"
+            [href]="origin.href"
+            target="_blank"
+            rel="noreferrer"
+            [title]="origin.title"
+          >
+            {{ origin.label }}
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M4.5 2.5H2.5v7h7v-2" />
+              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
+            </svg>
+          </a>
+        }
+      </div>
+
+      <div class="card-body acard-body">
+        <h2 class="card-name acard-name" [title]="primary?.id">{{ primary?.name }}</h2>
+
+        <!-- 类别行：参数 / 量化（原先在铭牌顶行上，那块地归了身份行）。
+             高度固定 —— 规格不是每张卡都有，行高不一致整墙卡片就会参差。 -->
+        <p class="card-meta acard-meta" [title]="metaLine">{{ metaLine }}</p>
+
+        <!-- ④ 状态槽：左状态 · 一根白线 · 右大小。
+             发现页的「状态」是下载量：它是唯一能证明「有人跑通过」的硬信号，
+             排序功能也按它排，视觉权重必须跟排序依据一致。 -->
+        <div class="card-slot acard-slot">
+          <span [title]="'下载量：' + maxDownloads">↓ {{ fmtNum(maxDownloads) }}</span>
+          <span class="acard-rule"></span>
+          <span class="acard-size">{{ sizeText }}</span>
         </div>
 
-        <div class="card-actions">
-          <button class="primary btn-xs" (click)="download.emit()" data-testid="card-download">
-            下载
+        <!-- ⑤ 分类标签：恰好一枚。站点入口归右上角与 ⋯ 菜单，不再占标签位。 -->
+        <div class="card-tags acard-tags">
+          <span class="pill" [title]="tagTitle">{{ tagText }}</span>
+        </div>
+
+        <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
+        <div class="card-actions acard-foot">
+          <button
+            class="card-kebab acard-kebab"
+            type="button"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="menuOpen"
+            aria-label="更多操作"
+            title="更多操作"
+            (click)="toggleMenu($event)"
+          >
+            ⋯
           </button>
+
+          @if (menuOpen) {
+            <div class="acard-menu" role="menu">
+              @for (s of sourceLinks; track s.key) {
+                <a
+                  class="pill pill-link acard-menu-item"
+                  role="menuitem"
+                  [href]="s.href"
+                  target="_blank"
+                  rel="noreferrer"
+                  [title]="s.title"
+                  >{{ s.text }}</a
+                >
+              }
+            </div>
+          }
+
           @if (inLibrary) {
             <span class="in-lib">已在库</span>
           }
+
+          <button class="acard-primary primary btn-xs" (click)="download.emit()" data-testid="card-download">
+            下载
+          </button>
         </div>
       </div>
     </article>
   `,
-  styles: `
-    :host { display: block; min-width: 0; }
+  styleUrls: ['./asset-card.css'],
+  styles: [
+    `
+      :host { display: block; min-width: 0; }
 
-    .card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      min-height: 202px;
-      overflow: hidden;
-      border-radius: var(--radius);
-      background: var(--panel);
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
-    }
+      /* 铭牌自带的顶行（厂标 + 家族码 + 搬运标注 + 规格）在本卡里是重复的：
+         身份行已经在卡角给出厂标与厂名，规格挪到了类别行 —— 整行收掉，
+         铭牌只贡献底图与蒙版（与工作流卡同一手法）。
+         选择器要带 .acard-plate 才压得住：铭牌自己的 .head 规则在它自己的作用域里
+         （.head[_ngcontent-xxx]，特异性 0,2,0），而 :host ::ng-deep .head 只有 0,2,0，
+         平手时谁赢看样式注入顺序。 */
+      :host ::ng-deep .acard-plate .head { display: none; }
 
-    /* 边框用内描边而不是 border：border 画在盒子外沿，背景图只能铺到 padding box，
-       两者之间永远隔着 1px，浅色边框压在图上会被读成「图没贴边」。 */
-    .card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      border-radius: inherit;
-      box-shadow: inset 0 0 0 1px var(--border);
-      pointer-events: none;
-      transition: box-shadow 0.16s ease;
-    }
-    .card.on-shot::after { box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.16); }
+      /* 标识块：几何（32×32 / 圆角 / 居中）在共享文件里；
+         这里只给**底衬** —— 家族码是文字，压在家族色底纹上要有实底才读得出来。 */
+      .acard-mark {
+        background: color-mix(in oklab, var(--panel) 94%, transparent);
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+        color: var(--text);
+      }
+      .acard.on-shot .acard-mark {
+        background: rgb(10 12 18 / 0.42);
+        box-shadow: none;
+        color: #fff;
+      }
+      .acard-mark img {
+        object-fit: contain;
+        transform: scale(var(--logo-scale, 1));
+      }
+      /* 只有黑白标才备反白版；彩色 / 渐变资产没有深色版，深色主题下继续用浅色版。 */
+      .logo-dark { display: none; }
+      :host-context([data-theme='dark']) .logo-light { display: none; }
+      :host-context([data-theme='dark']) .logo-dark { display: block; }
 
-    /**
-     * hover 统一成「抬起 + 外描边」，两种卡片一模一样。
-     *
-     * 之前是内描边变色：普通卡从 --border 变 accent 混合色，照片卡从黑 16% 变黑 30%。
-     * 同一个动作在两种底色上表现完全不同——照片卡上那点黑色变化肉眼看不出来，
-     * 看起来就是「有图的卡没有 hover 效果」。内描边画在图片上就注定没法统一，
-     * 所以改画在外圈（贴着页面底色），与卡片内容无关；内描边同时让位，避免两层边。
-     */
-    /* M1-c：hover 不再位移 + 不再外阴影。边框优先于阴影是全站约束，
-       抬起 2px 在密集列表里会让整行抖动，阴影又掩盖了 1px 描边的分层。
-       v2.1 修正：hover 描边画在 **::after** 而不是本体 —— 本体两条路都不通：
-         · 本体 inset 描边 → 被 position:absolute + inset:0 铺满的 .card-plate 盖住
-         · 本体外圈 box-shadow → 被本体的 overflow:hidden 裁掉
-       实测（Playwright 像素级，顶部 18px 的 accent 像素）：
-         改前 off=37 / on=37（hover 毫无反应）→ 改后 off=0 / on=323（可见）
-       ::after 既有 z-index:2 盖得住封面，又与本体同框不会被裁。 */
-    .card:hover,
-    .card:focus-within {
-      box-shadow: none;
-    }
-    .card:hover::after,
-    .card:focus-within::after {
-      box-shadow: inset 0 0 0 1px var(--accent);
-    }
+      /* 家族码 / 发布方缩写：中性色、方角细框，跟官方品牌标保持视觉距离。
+         圆角用 var(--radius-xs)（5px，VIS §6.4 允许档）—— 不写字面量 4px，
+         那是圆角中间档，vis-check 1.6 会按棘轮拦住。 */
+      .acard-code {
+        display: inline-flex;
+        align-items: center;
+        height: 15px;
+        padding: 0 4px;
+        border-radius: var(--radius-xs);
+        background: var(--panel-3);
+        box-shadow: inset 0 0 0 1px var(--border-soft);
+        font: 700 9px/1 'Cascadia Mono', Consolas, monospace;
+        letter-spacing: 0.02em;
+        color: var(--text-2);
+        white-space: nowrap;
+      }
+      .acard.on-shot .acard-code {
+        background: rgb(255 255 255 / 0.16);
+        box-shadow: none;
+        color: #fff;
+      }
 
-    @media (prefers-reduced-motion: reduce) {
-      .card { transition: none; }
-      .card:hover,
-      .card:focus-within { transform: none; }
-    }
+      /* 类别行：规格不是每张卡都有（名字里没有参数量 / 量化就没有），
+         行高必须一样 —— 同一墙卡片高度一乱，节奏就没了。 */
+      .card-meta.acard-meta { min-height: 1.4em; }
 
-    .card-plate {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-    }
+      /* ⋯ 按钮与菜单浮层的外壳几何都在共享文件里（asset-card.css）；
+         这里只补这张卡特有的：菜单项用胶囊外观、菜单底用双层描边。 */
+      .acard-menu {
+        align-items: flex-start;
+        gap: 4px;
+        max-height: 104px;
+        overflow-y: auto;
+        padding: 6px;
+        box-shadow: inset 0 0 0 1px var(--border-strong), var(--shadow-md);
+      }
 
-    .card-body {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-top: auto;
-      /* 顶部 44px 留给铭牌那一行（厂牌名 + 形态角标），正文永不压上去 */
-      padding: 44px 13px 12px;
-    }
-
-    .card-name {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.38;
-      letter-spacing: -0.008em;
-      color: var(--text);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      word-break: break-word;
-    }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      min-width: 0;
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    /* 标签行：单行不换行，装不下的折叠成「+N」。
-       换行会让同一网格里的卡片高度参差 —— 卡片是海报，
-       高度一乱，整墙的节奏就没了。折叠规则跟 comfy.org 一样。
-
-       宽度约束：单枚上限 42%（约 94px），作者名再长也不会顶掉旁边的标签；
-       「+N」不限宽且排在最后 —— 它是「还有更多」的提示，被裁掉就等于没折叠。 */
-    .card-tags {
-      position: relative;
-      z-index: 1;
-      flex-wrap: nowrap;
-      overflow: hidden;
-    }
-    .card-tags .pill {
-      flex: 0 1 auto;
-      min-width: 0;
-      max-width: 42%;
-    }
-    .card-tags .pill.is-more {
-      flex: none;
-      max-width: none;
-    }
-    .on-shot .card-tags .pill {
-      background: rgb(255 255 255 / 0.14);
-      color: rgb(255 255 255 / 0.88);
-      backdrop-filter: blur(6px);
-    }
-    .on-shot .card-tags .pill:hover {
-      background: rgb(255 255 255 / 0.24);
-      color: #fff;
-    }
-
-    /* 下载量：独立成行，在模型名之下、标签之上。
-       独立成行是刻意的 —— 它是「热度」层的唯一信息，
-       跟「分类」胶囊和「动作」按钮分开，扫读时能横向比较。 */
-    .card-dl {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-    .card-dl-num {
-      flex: none;
-      font-variant-numeric: tabular-nums;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-    /* 分隔线不是装饰：这行是「热度」，下面那行是「分类」，
-       视觉上必须断开，否则两行会被读成同一组信息。 */
-    .card-dl-rule {
-      flex: 1 1 auto;
-      min-width: 8px;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 2px;
-    }
-    .in-lib {
-      font-size: 11px;
-      color: var(--ok);
-      white-space: nowrap;
-    }
-
-    /* 有真实封面时正文翻白：蒙版下沿已经是近实色的深底，正文永远落在稳定底色上 */
-    .on-shot .card-name {
-      color: #fff;
-      text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
-    }
-    .on-shot .card-dl-num { color: rgb(255 255 255 / 0.8); }
-    .on-shot .card-dl-rule { background: rgb(255 255 255 / 0.28); }
-  `,
+      /* 已在库：内容型标记，不是外壳几何。 */
+      .in-lib {
+        font-size: 11px;
+        color: var(--ok);
+        white-space: nowrap;
+      }
+    `,
+  ],
 })
 export class ModelCardComponent {
   @Input({ required: true }) items: SearchItem[] = [];
@@ -281,6 +268,12 @@ export class ModelCardComponent {
 
   /** 铭牌通知「照片真的显示出来了」；决定正文用白字还是深色字 */
   photoOk = false;
+
+  /** ⋯ 菜单是否展开 */
+  menuOpen = false;
+
+  private host = inject(ElementRef<HTMLElement>);
+  private theme = inject(ThemeService);
 
   get primary(): SearchItem | undefined {
     return this.items[0];
@@ -308,13 +301,14 @@ export class ModelCardComponent {
    * 这里按引用缓存：模板里的 `[model]="plate"` 每次变更检测都会求值，返回新对象
    * 就会让子组件的 ngOnChanges 每帧触发（`meta` 被反复重置，图片加载失败时
    * 甚至会把失败的图重新挂回去形成死循环）。
+   *
+   * 不再传 href / hrefLabel：原站链接上移到卡角（.acard-origin），
+   * 铭牌里再放一份就成了同一张卡上两个原站入口。
    */
   get plate(): {
     id?: string;
     name: string;
     tags: string[];
-    href?: string;
-    hrefLabel?: string;
     image?: string;
     author?: string;
   } {
@@ -322,19 +316,15 @@ export class ModelCardComponent {
     const shot = this.shot;
     const id = p?.id || '';
     const name = p?.name || '';
-    const href = p?.url || '';
-    const hrefLabel = p ? sourceShort(p.source) : '';
     const author = p?.author || '';
     if (
       !this._plate ||
       this._plate.id !== id ||
       this._plate.name !== name ||
       this._plate.image !== shot ||
-      this._plate.href !== href ||
-      this._plate.hrefLabel !== hrefLabel ||
       this._plate.author !== author
     ) {
-      this._plate = { id, name, tags: p?.tags || [], href, hrefLabel, image: shot, author };
+      this._plate = { id, name, tags: p?.tags || [], image: shot, author };
     }
     return this._plate;
   }
@@ -342,11 +332,57 @@ export class ModelCardComponent {
     id?: string;
     name: string;
     tags: string[];
-    href?: string;
-    hrefLabel?: string;
     image?: string;
     author?: string;
   } | null = null;
+
+  /**
+   * 家族身份：标识块素材、厂名、规格。跟 plate 一起按引用缓存 ——
+   * coverMeta 每次都要跑一遍正则，一屏几十张卡时不该每帧重算。
+   */
+  get meta(): CoverMeta {
+    const p = this.plate;
+    if (this._metaFor !== p) {
+      this._metaFor = p;
+      this._meta = coverMeta(p);
+    }
+    return this._meta as CoverMeta;
+  }
+  private _meta: CoverMeta | null = null;
+  private _metaFor: unknown = null;
+
+  /** 厂名：家族码（产品里家族只有码，没有另一套展示名） */
+  get familyName(): string {
+    return this.familyCode || '未知家族';
+  }
+
+  /** 标识块里的家族码；未登记家族留空，退到发布方缩写 */
+  get familyCode(): string {
+    return this.meta.code !== '—' ? this.meta.code : '';
+  }
+
+  /**
+   * 标识块用官方资产还是家族码。
+   *
+   * 深色主题下没有反白资产的家族（混元只有浅色版）不能用黑标 ——
+   * 深底上等于什么都没画，宁可用家族码。
+   */
+  get markLogo(): boolean {
+    if (!this.meta.logo) return false;
+    return !this.darkNow || !!this.meta.logoDark;
+  }
+
+  /** 标识块的说明：官方标说家族，缩写说发布方 */
+  get markTitle(): string {
+    if (this.markLogo) return `${this.meta.code} 官方标识`;
+    if (this.familyCode) return `${this.familyCode} 家族`;
+    if (this.meta.publisher) return `未登记厂牌 · 发布方：${this.meta.publisher.label}`;
+    return '';
+  }
+
+  private get darkNow(): boolean {
+    return this.theme.theme() === 'dark';
+  }
 
   get authorText(): string {
     const authors = [...new Set(this.items.map((i) => i.author).filter((a) => !!a))];
@@ -354,74 +390,142 @@ export class ModelCardComponent {
   }
 
   /**
-   * 分类标签里的「类型」。
+   * 右上角原站链接：主条目的原址。
    *
-   * 同一模型可能同时挂在几个来源上，而各来源的 task 词表不同
-   * （HF 给 text-to-image，Civitai 给 Checkpoint）。取第一个能翻译的，
-   * 免得一个模型卡上同时冒出中英两种写法。
+   * 旧卡上它在铭牌顶行（cover-plate 的 .origin），位置随铭牌走；
+   * 现在固定到卡角，跟本地库卡同一位置、同一写法。
    */
-  get taskLabel(): string {
-    for (const it of this.items) {
-      const label = sourceTaskLabel(it.task || '');
-      if (label) return label;
-    }
-    return '';
+  get origin(): { href: string; label: string; title: string } {
+    const p = this.primary;
+    if (!p) return { href: '', label: '', title: '' };
+    return {
+      href: p.url || '',
+      label: sourceShort(p.source),
+      title: `打开 ${sourceLabel(p.source)} 上的原始页面`,
+    };
   }
 
   /**
-   * 卡片上的分类标签：类型 → 来源 → 作者。
+   * ⋯ 菜单：每个来源一条原站入口。
    *
-   * 顺序有讲究：类型先出来（这是模型「是什么」），来源次之（去哪儿拿），
-   * 作者最后（谁做的，最不重要）。同一个模型挂了几个来源就并列几个来源，
-   * 因为它们都是下载入口，不能只留一个。
+   * 标签位收成一枚之后，来源链接不能跟着一起没 —— 它们是这张卡唯一的出口，
+   * 收进菜单（与工作流卡同一手法：次要操作进菜单，主按钮留在外面）。
    */
-  private get allTags(): CardTag[] {
-    const out: CardTag[] = [];
-    const task = this.taskLabel;
-    if (task) out.push({ key: 'task', text: task, title: `类型：${task}` });
+  get sourceLinks(): { key: string; text: string; href: string; title: string }[] {
+    const out: { key: string; text: string; href: string; title: string }[] = [];
     for (const it of this.items) {
-      const full = sourceLabel(it.source);
-      const short = sourceShort(it.source);
+      if (!it.url) continue;
       out.push({
-        key: 'src-' + it.source,
-        text: short,
+        key: `${it.source}:${it.id}`,
+        text: sourceShort(it.source),
         href: it.url,
-        title: `在 ${full} 上打开原始仓库`,
+        title: `在 ${sourceLabel(it.source)} 上打开原始仓库`,
       });
-    }
-    // 铭牌上已经标了「搬运」作者，标签行不再重复 —— 同一张卡上出现两次既冗余、
-    // 又让人以为是两个不同的发布者。铭牌没标（官方出品 / 家族未登记官方发布者）时才在这里补。
-    const author = this.authorText;
-    // 铭牌上的搬运标注由 coverMeta 从作者 + 家族官方发布者推导，不是 plate 的入参字段，
-    // 这里复用同一份判定，避免「铭牌标了、标签行又标一次」。
-    if (author && !coverMeta(this.plate).byline) {
-      out.push({ key: 'author', text: author, title: `发布者：${author}` });
     }
     return out;
   }
 
   /**
-   * 最多露 3 枚，其余折成「+N」。
+   * 文件类型：只有 Civitai 的 modelType 回答得了「这个文件是什么」。
    *
-   * 3 枚是量出来的：250px 的卡片减去内边距约 224px，
-   * 用了短名后一枚「HF」只占 32px，3 枚稳稳放下。
-   * 作者名可能很长，单枚上限 46%，超出就省略号 ——
-   * 宁可少露一枚，也不能让标签行换行。
+   * 显示走 `core/task-labels.ts` 的**产品词表**（Checkpoint → 主模型、
+   * TextEncoder → 文本编码器…）—— 与本地库卡的「存放类型」同一套词。
+   * 之前这里保留源站英文原词，同一个东西在发现页写 Checkpoint、在本地库写主模型，
+   * 两页对不上；那张表的注释本来就写着「放两处就会漂移」。
    */
-  visibleTags(): CardTag[] {
-    return this.allTags.slice(0, 3);
+  get fileType(): string {
+    for (const it of this.items) {
+      const t = (it.task || '').trim();
+      if (FILE_TYPES.has(t)) return sourceTaskLabel(t);
+    }
+    return '';
   }
 
-  hiddenTagCount(): number {
-    return Math.max(0, this.allTags.length - 3);
+  /**
+   * 任务类别（文生图 / 文生视频…）。
+   *
+   * 优先看条目的 task（HF / MS 的 pipeline_tag 就在那儿）；
+   * Civitai 的 task 是文件类型，类别藏在它的 tags 里（text-to-image / text-to-video）。
+   */
+  get categoryLabel(): string {
+    for (const it of this.items) {
+      const t = (it.task || '').trim();
+      if (!t || FILE_TYPES.has(t)) continue;
+      const label = sourceTaskLabel(t);
+      if (label) return label;
+    }
+    for (const it of this.items) {
+      for (const raw of it.tags || []) {
+        const tag = (raw || '').trim();
+        if (!tag || FILE_TYPES.has(tag)) continue;
+        const label = SOURCE_TASK_LABELS[tag];
+        if (label) return label;
+      }
+    }
+    return '';
   }
 
-  allTagText(): string {
-    return this.allTags.map((t) => t.text).join(' · ');
+  /**
+   * 分类标签：恰好一枚。文件类型优先，没有就退到任务类别，再没有就是「模型」。
+   */
+  get tagText(): string {
+    return this.fileType || this.categoryLabel || '模型';
+  }
+
+  get tagTitle(): string {
+    if (this.fileType) return `文件类型：${this.fileType}`;
+    if (this.categoryLabel) return `类别：${this.categoryLabel}`;
+    return '模型';
+  }
+
+  /**
+   * 类别行：类别 + 规格（参数 / 量化）。
+   *
+   * 类别只在标签位放文件类型时才出现 —— 同一个事实不说两遍；
+   * 规格原先印在铭牌顶行上，那块地归了身份行，挪到这里。
+   */
+  get metaLine(): string {
+    const parts: string[] = [];
+    if (this.fileType) {
+      const cat = this.categoryLabel;
+      if (cat) parts.push(cat);
+    }
+    for (const s of this.meta.specs) parts.push(`${s.k} ${s.v}`);
+    return parts.join(' · ');
+  }
+
+  /**
+   * 状态槽右侧：文件大小。
+   *
+   * 发现页的条目现在没有大小字段（HF / MS / Civitai 的搜索列表都不给），
+   * 所以按可选字段接住：后端补上就直接显示，没补就显示「—」——
+   * 不拿点赞之类的别的东西凑数，那会把这个槽位的含义换掉。
+   */
+  get sizeText(): string {
+    const bytes = Math.max(...this.items.map((i) => (i as SizedItem).size || 0), 0);
+    return bytes > 0 ? fmtSize(bytes) : '—';
   }
 
   get maxDownloads(): number {
     return Math.max(...this.items.map((i) => i.downloads || 0), 0);
+  }
+
+  /** ⋯ 菜单开关。点外面 / Esc 收起。 */
+  toggleMenu(event: MouseEvent): void {
+    // 别让「点外面收菜单」的监听器跟着这次点击一起跑
+    event.stopPropagation();
+    this.menuOpen = !this.menuOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.menuOpen) return;
+    if (!this.host.nativeElement.contains(event.target as Node)) this.menuOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.menuOpen = false;
   }
 
   fmtNum = fmtNum;

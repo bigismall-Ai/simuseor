@@ -2,17 +2,17 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { errMsg, fmtNum, fmtSize, InstalledNode, MissingProvider, NodeMissingReport, NodeStats } from '../core/types';
+import { errMsg, fmtNum, InstalledNode, MissingProvider, NodeMissingReport, NodeStats } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
-import { BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
+import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
 
 @Component({
   selector: 'app-node-library',
   standalone: true,
-  imports: [RouterLink, BadgeComponent, EmptyComponent, PageHeaderComponent, PanelComponent],
+  imports: [RouterLink, EmptyComponent, NodeCardComponent, PageHeaderComponent, PanelComponent],
   template: `
     <ui-page-header
       kicker="Nodes"
@@ -141,58 +141,16 @@ import { PanelComponent } from '../ui/panel.component';
       }
 
       @if (installed.length) {
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>扩展</th>
-                <th class="nl-col-node">节点</th>
-                <th class="nl-col-commit">版本</th>
-                <th class="nl-col-size">大小</th>
-                <th class="nl-col-state">状态</th>
-                <th class="nl-col-act">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (it of installed; track it.dir) {
-                <tr>
-                  <td>
-                    <div class="nl-name" [title]="it.repo || it.path">{{ it.title }}</div>
-                    <div class="nl-sub">
-                      <span class="nl-dir">{{ it.dir }}</span>
-                      @if (!it.tracked) {
-                        <ui-badge tone="gray">清单未收录</ui-badge>
-                      }
-                      @if (it.requirements) {
-                        <span class="nl-dep" title="该扩展带 requirements.txt，安装时已走同一条依赖通道">带依赖</span>
-                      }
-                    </div>
-                  </td>
-                  <td class="nl-col-node">{{ it.node_count || '—' }}</td>
-                  <td class="nl-col-commit">{{ it.commit || '—' }}</td>
-                  <td class="nl-col-size">{{ fmtSize(it.size) }}</td>
-                  <td class="nl-col-state">
-                    @if (it.disabled) {
-                      <ui-badge tone="orange">已禁用</ui-badge>
-                    } @else {
-                      <ui-badge tone="green">启用中</ui-badge>
-                    }
-                  </td>
-                  <td class="nl-col-act">
-                    <button class="btn-xs" (click)="toggle(it)" [disabled]="busy === it.dir">
-                      {{ it.disabled ? '启用' : '禁用' }}
-                    </button>
-                    @if (it.repo) {
-                      <a class="btn-xs nl-link" [href]="it.repo" target="_blank" rel="noreferrer">仓库</a>
-                    }
-                    <button class="btn-xs nl-danger" (click)="remove(it)" [disabled]="busy === it.dir">
-                      {{ busy === it.dir ? '处理中…' : '卸载' }}
-                    </button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+        <div class="nl-list">
+          @for (it of installed; track it.dir) {
+            <md-node-card
+              mode="library"
+              [item]="it"
+              [busy]="busy === it.dir"
+              (toggle)="toggle(it)"
+              (remove)="remove(it)"
+            />
+          }
         </div>
       }
     </ui-panel>
@@ -319,40 +277,16 @@ import { PanelComponent } from '../ui/panel.component';
       color: var(--muted);
     }
 
-    .nl-name { font-size: 12.5px; font-weight: 500; }
-    .nl-sub {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 3px;
-      flex-wrap: wrap;
+    /* 已装列表：一张扩展一张卡（与发现页同一套骨架，只换状态槽与主按钮） */
+    .nl-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+      gap: 12px;
     }
-    .nl-dir {
-      font-family: "Cascadia Mono", Consolas, monospace;
-      font-size: 10.5px;
-      color: var(--muted);
-    }
-    .nl-dep { font-size: 10.5px; color: var(--muted); }
-
-    .nl-col-node, .nl-col-commit, .nl-col-size { width: 76px; font-variant-numeric: tabular-nums; }
-    .nl-col-commit { width: 92px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px; }
-    .nl-col-state { width: 82px; }
-    .nl-col-act { width: 172px; white-space: nowrap; }
-    .nl-col-act .btn-xs { margin-right: 4px; }
-
-    .nl-link {
-      display: inline-flex;
-      align-items: center;
-      color: var(--muted);
-      text-decoration: none;
-    }
-    .nl-link:hover { color: var(--text); }
-    .nl-danger { color: var(--muted); }
-    .nl-danger:hover:not(:disabled) { color: var(--err); border-color: var(--err); }
 
     @media (max-width: 760px) {
       .nl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .nl-col-commit, .nl-col-size { display: none; }
+      .nl-list { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     }
   `,
 })
@@ -482,5 +416,4 @@ export class NodeLibraryComponent implements OnInit, OnDestroy {
   }
 
   fmtNum = fmtNum;
-  fmtSize = fmtSize;
 }

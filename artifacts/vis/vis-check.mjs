@@ -110,15 +110,13 @@ const BASELINE_1_6_SCOPED = {
   'web/src/app/lab/lab-primeng.component.ts|border-radius:10px': 1,
   'web/src/app/pages/library.component.ts|border-radius:10px': 1,
   'web/src/app/pages/library.component.ts|border-radius:6px': 2,
-  'web/src/app/pages/workflow-editor.component.ts|border-radius:4px': 3,
-  'web/src/app/pages/workflow-editor.component.ts|border-radius:9px': 2,
   'web/src/app/pages/workflow-editor.component.ts|border-radius:10px': 1,
+  'web/src/app/pages/workflow-editor.component.ts|border-radius:4px': 3,
   'web/src/app/pages/workflow-editor.component.ts|border-radius:6px': 6,
-  'web/src/app/ui/cover-plate.component.ts|border-radius:6px': 2,
+  'web/src/app/pages/workflow-editor.component.ts|border-radius:9px': 2,
   'web/src/app/ui/cover-plate.component.ts|border-radius:4px': 1,
-  'web/src/app/ui/library-card.component.ts|border-radius:6px': 1,
-  'web/src/app/ui/library-card.component.ts|border-radius:4px': 1,
-};
+  'web/src/app/ui/cover-plate.component.ts|border-radius:6px': 2,
+  };
 const BASELINE_1_3 = {
   'web/src/app/pages/workflows.component.ts|.cm-cell-tag': 1,
 };
@@ -139,6 +137,23 @@ const BASELINE_1_12_SCOPED = {
   'web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.55)': 3,
   'web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.58)': 1,
   'web/src/app/pages/workflows.component.ts|rgb(0 0 0 / 0.6)': 2,
+  'web/src/app/ui/asset-card.css|#7ee2a8': 1,
+  'web/src/app/ui/asset-card.css|#fbbf24': 1,
+  'web/src/app/ui/asset-card.css|#fca5a5': 1,
+  'web/src/app/ui/asset-card.css|#fff': 4,
+  'web/src/app/ui/asset-card.css|rgb(0 0 0 / 0.18)': 1,
+  'web/src/app/ui/asset-card.css|rgb(0 0 0 / 0.28)': 1,
+  'web/src/app/ui/asset-card.css|rgb(0 0 0 / 0.5)': 3,
+  'web/src/app/ui/asset-card.css|rgb(10 12 18 / 0.55)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.1)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.18)': 2,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.22)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.4)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.42)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.8)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.82)': 2,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.9)': 1,
+  'web/src/app/ui/asset-card.css|rgb(255 255 255 / 0.92)': 1,
   'web/src/app/ui/cover-plate.component.ts|#000': 8,
   'web/src/app/ui/cover-plate.component.ts|#232321': 1,
   'web/src/app/ui/cover-plate.component.ts|#57564f': 1,
@@ -154,48 +169,29 @@ const BASELINE_1_12_SCOPED = {
   'web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.28)': 1,
   'web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.76)': 1,
   'web/src/app/ui/cover-plate.component.ts|rgba(255, 255, 255, 0.94)': 1,
-  'web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0)': 2,
   'web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.52)': 1,
   'web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.66)': 1,
   'web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0.94)': 1,
+  'web/src/app/ui/cover-plate.component.ts|rgba(8, 10, 16, 0)': 2,
   'web/src/app/ui/family-mark.component.ts|rgb(0 0 0 / 0.28)': 1,
   'web/src/app/ui/library-card.component.ts|#000': 8,
-  'web/src/app/ui/library-card.component.ts|#15803d': 2,
-  'web/src/app/ui/library-card.component.ts|#17101d': 1,
-  'web/src/app/ui/library-card.component.ts|#b45309': 2,
-  'web/src/app/ui/library-card.component.ts|#eab308': 2,
-  'web/src/app/ui/library-card.component.ts|#ff0000': 3,
-  'web/src/app/ui/library-card.component.ts|#fff': 6,
-  'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.1)': 2,
+  'web/src/app/ui/library-card.component.ts|#fff': 3,
+  'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.1)': 1,
   'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.18)': 1,
   'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.42)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.5)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.55)': 1,
   'web/src/app/ui/library-card.component.ts|rgb(0 0 0 / 0.74)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(234 179 8 / 0.5)': 2,
-  'web/src/app/ui/library-card.component.ts|rgb(255 0 0 / 0.5)': 2,
-  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.18)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.22)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.24)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.28)': 1,
-  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.78)': 2,
+  'web/src/app/ui/library-card.component.ts|rgb(10 12 18 / 0.42)': 1,
+  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.16)': 1,
+  'web/src/app/ui/library-card.component.ts|rgb(255 255 255 / 0.78)': 1,
   'web/src/app/ui/model-card.component.ts|#fff': 2,
-  'web/src/app/ui/model-card.component.ts|rgb(0 0 0 / 0.16)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(0 0 0 / 0.5)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.14)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.24)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.28)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.8)': 1,
-  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.88)': 1,
-  'web/src/app/ui/workflow-card.component.ts|#fff': 5,
-  'web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.42)': 2,
-  'web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.5)': 1,
-  'web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.58)': 1,
+  'web/src/app/ui/model-card.component.ts|rgb(10 12 18 / 0.42)': 1,
+  'web/src/app/ui/model-card.component.ts|rgb(255 255 255 / 0.16)': 1,
+  'web/src/app/ui/node-card.component.ts|rgb(0 0 0 / 0.18)': 1,
+  'web/src/app/ui/workflow-card.component.ts|#fff': 1,
+  'web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.42)': 1,
   'web/src/app/ui/workflow-card.component.ts|rgb(0 0 0 / 0.6)': 1,
-  'web/src/app/ui/workflow-card.component.ts|rgb(217 119 6 / 0.86)': 1,
-  'web/src/app/ui/workflow-card.component.ts|rgb(220 38 38 / 0.58)': 1,
-  'web/src/app/ui/workflow-card.component.ts|rgb(255 255 255 / 0.74)': 1,
-};
+  'web/src/app/ui/workflow-card.component.ts|rgb(255 255 255 / 0.22)': 1,
+  };
 const BASELINE_1_12_LITERAL = {
   'web/src/app/pages/workflow-editor.component.ts|#0284c7': 1,
   'web/src/app/pages/workflow-editor.component.ts|#059669': 1,
@@ -204,7 +200,7 @@ const BASELINE_1_12_LITERAL = {
   'web/src/app/pages/workflow-editor.component.ts|#71717a': 1,
   'web/src/app/pages/workflow-editor.component.ts|#8b5cf6': 1,
   'web/src/app/pages/workflow-editor.component.ts|#d97706': 1,
-};
+  };
 
 /* --------------------------------------------------------------------------
  * 输出缓冲：先攒进内存，最后一次性打印（--write-report 时同一份内容写文件）
@@ -257,6 +253,17 @@ function collectTs(dir, out = []) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) collectTs(p, out);
     else if (ent.name.endsWith('.ts')) out.push(p);
+  }
+  return out;
+}
+
+/** 组件级共享样式（app 下的 .css）—— 与组件 scoped 样式块同属「样式」一类 */
+function collectCss(dir, out = []) {
+  if (!fs.existsSync(dir)) return out;
+  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, ent.name);
+    if (ent.isDirectory()) collectCss(p, out);
+    else if (ent.name.endsWith('.css')) out.push(p);
   }
   return out;
 }
@@ -330,6 +337,13 @@ function reportRatchet(label, kind, actual, baseline, detailLines) {
   const r = ratchet(actual, baseline);
   const total = Object.values(actual).reduce((a, b) => a + b, 0);
   const baseTotal = Object.values(baseline).reduce((a, b) => a + b, 0);
+  /* 棘轮现状导出：设 VIS_RATCHET_DUMP=<文件> 时把每一项的实际 tally 写成 JSONL。
+     用途：重构把债务在文件之间挪了位置（总数没变）时，按实际重新收紧基线 ——
+     靠解析 stdout 里的明细行不可靠（明细是给人看的，会被截断/换行）。 */
+  if (process.env.VIS_RATCHET_DUMP) {
+    fs.appendFileSync(process.env.VIS_RATCHET_DUMP,
+      JSON.stringify({ label, total, baseTotal, actual, baseline }) + '\n');
+  }
   HEAT.push({
     label, total, baseTotal,
     regression: r.regression, debt: r.debt, improvement: r.improvement,
@@ -824,8 +838,9 @@ say(HR2);
  *   判定：棘轮（登记基线 scoped 108 处 / literal 7 处，只降不升）
  * ------------------------------------------------------------------------ */
 {
-  say('    1.12 硬编码色值（新增）：web/src/app/**/*.ts 内的裸 hex / rgb() / rgba()');
-  say('      口径: 组件 scoped 样式块（styles: `...`）与 TS 字面量分开统计，两类各自棘轮。');
+  say('    1.12 硬编码色值（新增）：web/src/app/**/*.ts 与 **.css** 内的裸 hex / rgb() / rgba()');
+  say('      口径: 组件 scoped 样式块（styles: `...`）与组件级共享样式（app 下 .css）合为「样式」一类，');
+  say('            TS 字面量另计，两类各自棘轮。');
   say('      豁免清单（显式白名单，附理由）:');
   for (const ex of COLOR_EXEMPT) {
     say('        - ' + ex.path);
@@ -881,6 +896,23 @@ say(HR2);
       if (ex) { exemptHits.push({ file: r, line, val, exempt: ex.path }); continue; }
       if (inSpan[m.index]) scopedItems.push({ key: r + '|' + val, file: r, line, val });
       else literalItems.push({ key: r + '|' + val, file: r, line, val });
+    }
+  }
+  /* 组件级共享样式（app 下的 .css，如 ui/asset-card.css）：
+     它们是**样式**不是 TS 字面量，归「组件 scoped」一类。
+     不扫它们 = 新建一个共享样式文件就成检查盲区 —— 硬编码色值可以「换个文件就藏起来」。
+     （2026-11-21 资产卡统一骨架时踩过：几何收进 asset-card.css，色值一并搬了过去，
+       1.12 扫不到，棘轮还误判成「无新增违规」。盲区必须先堵上。） */
+  for (const f of collectCss(APP_DIR)) {
+    const raw = fs.readFileSync(f, 'utf8');
+    const r = rel(f);
+    const ex = COLOR_EXEMPT.find((x) => x.re.test(r));
+    const t = stripComments(raw);
+    for (const m of [...t.matchAll(HEX_RE), ...t.matchAll(RGB_RE)]) {
+      const val = normColor(m[0]);
+      const line = lineAt(t, m.index);
+      if (ex) { exemptHits.push({ file: r, line, val, exempt: ex.path }); continue; }
+      scopedItems.push({ key: r + '|' + val, file: r, line, val });
     }
   }
 

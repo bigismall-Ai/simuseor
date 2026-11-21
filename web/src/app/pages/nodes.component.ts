@@ -7,6 +7,7 @@ import { errMsg, fmtNum, NodeItem } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
 import { BadgeComponent } from '../ui/badge.component';
 import { EmptyComponent } from '../ui/empty.component';
+import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
 
@@ -22,7 +23,15 @@ const SORTS = [
 @Component({
   selector: 'app-nodes',
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, EmptyComponent, PageHeaderComponent, PanelComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BadgeComponent,
+    EmptyComponent,
+    NodeCardComponent,
+    PageHeaderComponent,
+    PanelComponent,
+  ],
   template: `
     <ui-page-header
       kicker="Nodes · Discover"
@@ -131,71 +140,17 @@ const SORTS = [
       <ui-empty title="没有找到节点" hint="换个关键词，或点「刷新清单」重新拉取。" />
     }
 
+    <!-- 列表：一行扩展 → 一张资产卡（骨架与模型卡 / 工作流卡共用） -->
     <div class="nd-list">
       @for (it of items; track it.id) {
-        <article class="nd-row" [class.is-installed]="it.installed">
-          <div class="nd-tile">
-            <strong>{{ it.node_count || '—' }}</strong>
-            <span>节点类</span>
-          </div>
-
-          <div class="nd-body">
-            <div class="nd-head">
-              <h3 class="nd-title" [title]="it.name">{{ it.name }}</h3>
-              @if (it.installed) {
-                <ui-badge tone="green">已安装</ui-badge>
-              }
-              @if (!it.installable) {
-                <ui-badge tone="gray">{{ it.install_type }} 安装</ui-badge>
-              }
-              <a class="mc-link" [href]="it.repo" target="_blank" rel="noreferrer">仓库 ↗</a>
-            </div>
-            <div class="nd-meta">
-              <span>{{ it.author }}</span>
-              <span>{{ fmtNum(it.node_count) }} 个节点</span>
-              @if (it.tags.length) {
-                <span>{{ it.tags.join(' / ') }}</span>
-              }
-            </div>
-            @if (it.description) {
-              <p class="nd-desc">{{ it.description }}</p>
-            }
-            @if (it.nodes.length) {
-              <div class="nd-chips">
-                @for (name of it.nodes.slice(0, 4); track name) {
-                  <span class="nd-chip">{{ name }}</span>
-                }
-                @if (it.node_count > 4) {
-                  <span class="nd-more">+{{ it.node_count - 4 }}</span>
-                }
-              </div>
-            }
-            @if (it.needs.length) {
-              <p class="nd-needs">额外依赖：{{ it.needs.join(', ') }}</p>
-            }
-            @if (it.preemptions.length) {
-              <p class="nd-needs">与其它扩展重名：{{ it.preemptions.join(', ') }}</p>
-            }
-          </div>
-
-          <div class="nd-actions">
-            @if (install.installingId === it.id && install.job?.status === 'running') {
-              <span class="nd-progress">{{ install.job?.percent }}%</span>
-              <span class="nd-stage">{{ install.job?.stage }}</span>
-            } @else if (!it.installable) {
-              <span class="nd-done">不支持一键装</span>
-            } @else if (!it.installed) {
-              <button
-                class="primary btn-xs"
-                (click)="installItem(it)"
-                [disabled]="install.busy || loading"
-                [attr.data-testid]="'node-install-' + it.id"
-              >
-                安装
-              </button>
-            }
-          </div>
-        </article>
+        <md-node-card
+          [item]="it"
+          [installing]="install.installingId === it.id && install.job?.status === 'running'"
+          [percent]="install.job?.percent ?? 0"
+          [stage]="install.job?.stage ?? ''"
+          [busy]="install.busy || loading"
+          (install)="installItem(it)"
+        />
       }
     </div>
 
@@ -233,160 +188,11 @@ const SORTS = [
       gap: 6px;
     }
 
+    /* 列表：一行扩展 → 一张卡。列宽给个下限，窄屏自动收成一列。 */
     .nd-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    /* 方块只放「这个扩展有多少节点」：清单里没有 star 也没有更新时间，
-       拿节点数当规模信号，比一行无序的标签有用 */
-    .nd-row {
       display: grid;
-      grid-template-columns: 56px minmax(0, 1fr) auto;
-      gap: 14px;
-      padding: 12px 14px 12px 12px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: border-color 0.14s ease, box-shadow 0.14s ease;
-    }
-    .nd-row:hover {
-      border-color: var(--border-strong);
-      background: var(--hover);
-    }
-    .nd-row.is-installed {
-      background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft)), var(--panel);
-    }
-    /* 已安装行：.is-installed 与 :hover 同特异性(0,2,0)且写在后面，会盖掉 hover 的
-       background —— 实测已安装行 hover 时背景不变、只剩 border-color 变化。
-       这里补一条同选择器组合：保留 accent-soft 底纹（已安装的状态提示不能丢），
-       只把底板换成 --hover，与普通行 hover 一致。 */
-    .nd-row.is-installed:hover {
-      background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft)), var(--hover);
-    }
-
-    .nd-tile {
-      width: 56px;
-      height: 56px;
-      border-radius: 8px;
-      background: var(--panel-3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1px;
-    }
-    .nd-tile strong {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.1;
-      font-variant-numeric: tabular-nums;
-    }
-    .nd-tile span {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .nd-body { min-width: 0; }
-
-    .nd-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .nd-title {
-      margin: 0;
-      font-size: 13.5px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      line-height: 1.35;
-      max-width: 66%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .nd-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 8px;
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-    }
-    .nd-meta span + span::before {
-      content: '·';
-      margin-right: 8px;
-      opacity: 0.45;
-    }
-
-    .nd-desc {
-      margin: 6px 0 0;
-      font-size: 12px;
-      line-height: 1.5;
-      color: var(--muted);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .nd-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 7px;
-    }
-    .nd-chip {
-      font-size: 10.5px;
-      line-height: 17px;
-      padding: 0 6px;
-      border-radius: var(--radius-xs);
-      background: var(--panel-3);
-      color: var(--muted);
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .nd-more {
-      font-size: 10.5px;
-      line-height: 17px;
-      color: var(--muted);
-    }
-
-    .nd-needs {
-      margin: 6px 0 0;
-      font-size: 10.5px;
-      color: var(--warn);
-    }
-
-    .nd-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 4px;
-      min-width: 84px;
-    }
-    .nd-progress {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-    }
-    .nd-stage {
-      font-size: 10.5px;
-      color: var(--muted);
-      text-align: right;
-      max-width: 110px;
-    }
-    .nd-done {
-      font-size: 11.5px;
-      color: var(--muted);
+      grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+      gap: 12px;
     }
 
     .nd-job-panel { margin-bottom: 0; }
@@ -432,15 +238,7 @@ const SORTS = [
     }
 
     @media (max-width: 760px) {
-      .nd-row { grid-template-columns: 44px minmax(0, 1fr); }
-      .nd-tile { width: 44px; height: 44px; }
-      .nd-tile strong { font-size: 14px; }
-      .nd-actions {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
-      }
+      .nd-list { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     }
   `,
 })

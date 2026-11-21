@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SiMuseor · VIS 视觉识别系统 v2.15</title>
+<title>SiMuseor · VIS 视觉识别系统 v2.16</title>
 <style>
 /* ============================================================
    SiMuseor VIS 手册样式
@@ -184,7 +184,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
 <div class="wrap">
 <nav class="toc" aria-label="目录">
   <div class="tc-brand">SiMuseor</div>
-  <div class="tc-sub">Visual Identity System · v2.15</div>
+  <div class="tc-sub">Visual Identity System · v2.16</div>
   <p class="tc-back"><a href="vis-reference.html">← 返回手册站总览</a></p>
   <ol>
     <li><a href="#s0">卷首 · 状态声明</a></li>
@@ -216,7 +216,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
     <p class="small" style="max-width:720px;margin:-14px 0 24px"><strong>口径：本页 = VIS 全篇的单文件合订本。</strong>手册站的<strong>12 个分章页</strong>是<strong>同一份规范</strong>的分页排版（产品 UI 层，左侧两级导航：章 → 节）—— <strong>内容同源、版本同号（v2.10），不是两套标准</strong>。<strong>真值是 <code>SiMuseor-VIS.md</code></strong>；两者若有出入，以它为准。从 <a href="vis-reference.html">手册站总览</a> 进分章读。</p>
     <dl class="meta">
-      <div><dt>版本</dt><dd>v2.15 · 2026-11-21</dd></div>
+      <div><dt>版本</dt><dd>v2.16 · 2026-11-21</dd></div>
       <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
       <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
       <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
@@ -580,32 +580,45 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
   </table>
   <p class="small"><code>styles.css</code> 中 <code>.pill</code> 上方的注释已修正（原先「12px 内边距 / 12px 字重」的表述是错的）。<strong>以本表为准。</strong>变体：<code>.pill-outlined</code>（描边版，底太浅时用）、<code>.pill-on-media</code>（压在封面上，白 8% 半透明 + <code>backdrop-blur</code>，参照 comfy.org 做法）、<code>.pill-author</code>（发布者）。</p>
 
-  <h4 id="s3-7-3">3.7.3 卡片与列表行几何 <span class="small">（源码逐行核验）</span></h4>
+<h4 id="s3-7-3">3.7.3 资产卡统一骨架 <span class="pill v2">v2.16 重写</span></h4>
+  <p class="notice"><strong>裁决：模型 / 工作流 / 节点 / 本地库 / 发现页，五处共用一套资产卡骨架。</strong>此前产品侧有<strong>四套</strong>卡片做法（模型卡海报式、库卡 145px 封面 + 独立页脚、工作流卡 16:10 封面 + 下方正文、节点只有 <code>.nd-row</code> 行），同一件事四种做法 —— 「一份标准」在自己的产品侧就落空了。</p>
+  <p class="small"><strong>几何只有一份</strong>：<code>web/src/app/ui/asset-card.css</code>（产品侧唯一一份，四个组件各自 <code>styleUrls</code> 引入）。<strong>「统一」不是靠约定，是结构上做不到不统一</strong> —— 各组件不再自己写外壳的定位 / 尺寸 / 圆角 / 字号 / 遮罩渐变。</p>
   <table>
-    <tr><th style="width:180px">组件</th><th>封面</th><th>内容内边距</th></tr>
-    <tr><td><code>md-model-card</code><br><span class="small">ui/model-card.component.ts</span></td><td><code>min-height:202px</code>；封面 <code>.card-plate</code> <strong>绝对定位铺满整卡</strong>（<code>position:absolute; inset:0</code>）</td><td><code>.card-body</code> = <strong><code>44px 13px 12px</code></strong>（顶部 44px 留给铭牌行，正文永不压上）</td></tr>
-    <tr><td><code>md-library-card</code><br><span class="small">ui/library-card.component.ts</span></td><td><code>.mplate</code> 固定 <code>height:145px</code>（<code>position:relative</code>，图片 <code>.photo</code> 绝对定位铺满）</td><td><code>.plate-foot</code> 绝对定位 <code>left/right:11px; bottom:8px</code>；<code>.mfoot</code> = <code>8px 11px</code></td></tr>
-    <tr><td><code>app-workflow-card</code><br><span class="small">ui/workflow-card.component.ts</span></td><td><code>.wc-cover</code> <strong><code>aspect-ratio:16/10</code></strong></td><td><code>.wc-body</code> = <strong><code>8px 9px</code></strong></td></tr>
-    <tr><td><code>.nd-row</code><br><span class="small">pages/nodes.component.ts:244</span></td><td>无封面，左侧 <code>56px</code> 方块（<code>.nd-tile</code>，<code>grid-template-columns:56px minmax(0,1fr) auto</code>）</td><td><strong><code>12px 14px 12px 12px</code></strong></td></tr>
-    <tr><td><code>.wf-row</code><br><span class="small">pages/workflows.component.ts:1617</span></td><td>缩略图列 <strong>132px</strong>（<code>grid-template-columns:132px minmax(0,1fr) auto</code>）</td><td><strong><code>12px 14px 12px 12px</code></strong></td></tr>
+    <tr><th style="width:90px">层</th><th style="width:210px">类名</th><th>内容</th></tr>
+    <tr><td>① 封面</td><td><code>.acard-media</code> / <code>.acard-plate</code></td><td><strong>铺满整卡</strong>（不再分上下两段）。有真实图就铺图，没有就用家族色 + 几何纹样兜底</td></tr>
+    <tr><td>② 身份行</td><td><code>.acard-head</code> / <code>.acard-mark</code> / <code>.acard-ident</code></td><td>左上 <strong>32×32 标识块</strong>（内部图形 24×24）+ 右侧<strong>双行身份</strong>（厂名在上、作者在下，都可截断）</td></tr>
+    <tr><td>③ 原站</td><td><code>.acard-origin</code></td><td><strong>右上角</strong>原站链接，本地库与发现页同一位置、同一种样式</td></tr>
+    <tr><td>④ 状态槽</td><td><code>.acard-slot</code> / <code>.acard-rule</code> / <code>.acard-size</code></td><td>左状态 · <strong>一根半透明白线</strong> · 右大小（模型=磁盘大小 / 工作流=文件大小 / 节点=节点类数）</td></tr>
+    <tr><td>⑤ 分类标签</td><td><code>.acard-tags</code></td><td><strong>只放一枚</strong>（见下表）</td></tr>
+    <tr><td>⑥ 动作行</td><td><code>.acard-foot</code></td><td><strong>⋯ 在左，主按钮在右</strong>。危险、补齐依赖等次要操作收进 ⋯ 菜单</td></tr>
   </table>
+  <table>
+    <tr><th style="width:150px">项</th><th>值</th></tr>
+    <tr><td>卡宽 / 最小高</td><td><strong>240–260px</strong> / <strong>235px</strong>（<code>min-height</code>）</td></tr>
+    <tr><td>圆角 / 描边</td><td><code>var(--radius)</code> / <strong>只由 <code>::after</code> 画</strong>（hover 不位移、不加外阴影 —— 铺满型封面下内描边会被盖住）</td></tr>
+    <tr><td>底部遮罩</td><td>VIS 登记的 scrim token：<code>--grad-scrim-card</code> + <code>--grad-scrim-card-fade</code></td></tr>
+    <tr><td>无照片时的遮罩</td><td><strong>跟随主题的中性色</strong>（浅色主题=浅遮罩配深字，深色主题=深遮罩配浅字）—— 家族色底纹上不能压深色遮罩又用深色字</td></tr>
+    <tr><td>状态色两档</td><td>无照片用主题档 <code>--ok/--warn/--err</code>；压照片用亮色档（<code>#7ee2a8 / #fbbf24 / #fca5a5</code>，与原型一致）</td></tr>
+  </table>
+  <h4>⑤ 那一格按类型各答一件事</h4>
+  <table>
+    <tr><th style="width:90px">类型</th><th style="width:190px">标签内容</th><th>例</th></tr>
+    <tr><td>模型</td><td><strong>文件类型</strong></td><td>Checkpoint / LoRA / VAE —— 取产品词表（<code>core/task-labels.ts</code>），发现页与本地库<strong>同一套词</strong></td></tr>
+    <tr><td>工作流</td><td><strong>自定义分组</strong></td><td>人物 / 电商 / 影视 / 修图；没有分组的给「未分组」</td></tr>
+    <tr><td>节点</td><td><strong>它提供什么</strong></td><td>代表节点类名 + 「+N」（<code>ImpactWildcardProcessor</code> +17）；<strong>一个节点类都不提供的给「管理面板」</strong> —— ComfyUI-Manager 的 <code>NODE_CLASS_MAPPINGS</code> 是空的，节点类数恒为 0，<strong>不要拿数字硬凑</strong></td></tr>
+  </table>
+  <p class="small"><strong>本地库 vs 发现页</strong>：<strong>只换 ④ 左侧与 ⑥ 主按钮</strong>，其余完全一样。<strong>随本轮撤掉的</strong>：库卡的<strong>显存压力条</strong>（<code>.gauge</code>）—— 「本机跑不跑得动」改由状态槽的浮层说明承担。</p>
   <div class="notice ink">
-    <p style="margin:0"><strong>卡片 hover 描边统一画在 <code>::after</code>，不画在本体</strong> —— 三个卡片（<code>md-model-card</code> / <code>app-workflow-card</code> / <code>md-library-card</code>）口径一致。<br>
-    本体的 <strong>inset</strong> 描边在<strong>铺满型封面</strong>下会被盖住：<code>md-model-card</code> 的 <code>.card-plate</code> 是 <code>position:absolute; inset:0</code>，铺满整卡 → hover 视觉上毫无反应（实测顶部 20px 的 accent 像素 <strong>off=37 / on=37，完全不变</strong>）。<br>
-    <code>::after</code> 在<strong>两种封面结构下都成立</strong>：<code>model-card</code> 的 <code>::after</code> 是 <code>z-index:2</code>（盖得住铺满封面），<code>library-card</code> 的是 <code>z-index:3</code>（盖得住流式封面）。<br>
-    ⚠️ <strong>常见误解</strong>：<code>box-shadow</code> 的<strong>外圈</strong>绘制在 border box 之外，<strong>不被元素自身的 <code>overflow</code> 裁剪</strong>（<code>overflow</code> 只裁剪<strong>子元素</strong>）—— 所以本体外圈也可行（实测 <code>md-library-card</code> 外圈 accent 像素 <strong>off=0 → on=297</strong>，清晰可见）。但<strong>不统一</strong>，仍以 <code>::after</code> 为准：<strong>口径统一的价值在于「一条规则走天下」，而不是「视觉恰好一样」。</strong><br>
-    <strong>三卡片实测</strong>（顶部 24px 带的 accent 像素，off → on）：<code>md-model-card</code> <strong>40 → 329</strong>（<code>::after</code> z-index 2）　·　<code>md-library-card</code> <strong>0 → 289</strong>（<code>::after</code> z-index 3）　·　<code>app-workflow-card</code> <strong>0 → 289</strong>（<code>::after</code>）—— <strong>三张全部可见、落点全部在 <code>::after</code></strong>（提交 <code>b006877</code> 把 library-card 从本体外圈改到 <code>::after</code>）。</p>
+    <p style="margin:0"><strong>卡片 hover 描边统一画在 <code>::after</code>，不画在本体</strong> —— 现在这条由共享几何 <code>.acard::after</code> 一处给，四张卡天然一致。<br>
+    本体的 <strong>inset</strong> 描边在<strong>铺满型封面</strong>下会被盖住：封面是 <code>position:absolute; inset:0</code> 铺满整卡 → hover 视觉上毫无反应（实测顶部 20px 的 accent 像素 <strong>off=37 / on=37，完全不变</strong>）。<br>
+    <code>::after</code> 有 <code>z-index</code> 盖得住铺满封面，又与本体同框不会被裁。<br>
+    ⚠️ <strong>常见误解</strong>：<code>box-shadow</code> 的<strong>外圈</strong>绘制在 border box 之外，<strong>不被元素自身的 <code>overflow</code> 裁剪</strong>（<code>overflow</code> 只裁剪<strong>子元素</strong>）—— 所以本体外圈也可行。但<strong>不统一</strong>，仍以 <code>::after</code> 为准：<strong>口径统一的价值在于「一条规则走天下」，而不是「视觉恰好一样」。</strong></p>
   </div>
   <div class="notice ink">
     <p style="margin:0"><strong>像素级验收的判据</strong>：测 hover 反馈时，accent 像素用<strong>欧氏距离</strong>判定（目标色 <code>rgb(79,70,229)</code>，阈值 <strong>60</strong> —— 含义是「肉眼能明确认出是那个靛蓝」），<strong>不要用单通道差值</strong> —— accent 的 r 与 g 仅差 9，用「r−g 大」判蓝会<strong>假阴性</strong>（把 accent 本身判成非蓝，得出「hover 无反应」的错误结论）；用「b−r 大」又会把偏蓝的灰色<strong>误判</strong>成 accent（假阳性）。</p>
-    <pre><span class="c">// accent = rgb(79,70,229)</span>
-const isAccent = (r, g, b) =&gt; {
-  const dr = r - 79, dg = g - 70, db = b - 229;
-  return Math.hypot(dr, dg, db) &lt; 60;
-};</pre>
   </div>
   <div class="notice ink">
-    <p style="margin:0"><strong>登记更正</strong>：主理人简报中 <code>.nd-row</code> / <code>.wf-row</code> 的内边写作「<code>10px 14px</code>」，源码实测<strong>两者均为 <code>12px 14px 12px 12px</code></strong>（四值：上 右 下 左）。<code>10px 10px 10px 14px</code> 属于 <code>workflows.component.ts</code> 的 <code>.wf-toast</code>，与两行无关。<strong>以本表为准。</strong></p>
+    <p style="margin:0"><strong>登记更正</strong>：主理人简报中 <code>.wf-row</code> 的内边写作「<code>10px 14px</code>」，源码实测为 <strong><code>12px 14px 12px 12px</code></strong>（四值：上 右 下 左）。<code>.nd-row</code> 已于 v2.16 随节点卡改造<strong>退役</strong>（节点改为 <code>.nd-card</code>）。<code>10px 10px 10px 14px</code> 属于 <code>workflows.component.ts</code> 的 <code>.wf-toast</code>，与 <code>.wf-row</code> 无关。<strong>以本表为准。</strong></p>
   </div>
 
   <h4 id="s3-7-4">3.7.4 蝉形矢量的可编辑性结构</h4>
@@ -1165,7 +1178,7 @@ const isAccent = (r, g, b) =&gt; {
   <p class="small"><strong>v2.14（2026-11-21 · 手册站结构归一 + 结构检查门禁）</strong>：① <strong>全轮排查 72 页</strong> —— 查出 31 页结构非法（23 处标签配平错误）、51 个 class 无法命中（59 次）、2 处骨架缺失、11 条链接/资源失效。根因两条：<strong>拆分按 <code>&lt;h3&gt;</code> 文本位置切、切在嵌套容器中间</strong>；<strong>12 个旧章页里只有 4 个带 <code>class="ref"</code></strong>，导致 <code>vis.css</code> 里 442 条 <code>.ref </code> 作用域规则对 8 个整章从未生效。② <strong>拆分改为 DOM 级块拆分</strong> —— <code>vis-manual.mjs</code> 引入真实 HTML 解析（<code>vis-dom.mjs</code>：分词 + 标签栈 + HTML5 void/raw/implicit-close 规则 + CSS 选择器匹配），<code>split</code> 不再按文本位置切；连跑两次逐字节相同（幂等）。③ <strong>§3.13 新增「手册站结构 / 样式 / 骨架检查」</strong> —— 新工具 <code>vis-layout.mjs</code>（<code>check</code> / <code>report</code> / <code>pages</code>），五类检查：结构合法性 / class 可命中（祖先作用域感知）/ 关键结构（<code>section &gt;</code> 直接子契约、<code>nav-label</code> ≤ 6 字）/ 链接与资源 / 孤儿徽标头；<code>vis-check.mjs</code> 新增 <strong>[3.8]</strong> 段调它，阻塞级。④ <strong>72 页重排到统一骨架</strong> —— 58 节页 + 12 章首页 + 总览页 + 原型页，渲染验收 0 JS 错 / 0 横向溢出 / 0 样式不符。⑤ <strong>孤儿计数徽标修掉</strong> —— 标题提升为页面 <code>h1</code> 后，头容器只剩计数徽标、被 <code>margin-left:auto</code> 推到面板角上（数字孤零零挂着），现把计数收进 <code>doc-sub</code>（<code>… · 本节 N 项</code>）并删掉空壳头容器。⑥ <strong><code>vis.css</code> 补 89 条规则</strong> —— 9 个原先无定义的类 + 42 个 <code>tone-*</code>（原先内联在色彩章的 <code>&lt;style&gt;</code> 里，只在该节生效）+ <code>tone-neutral</code>。</p>
   <p class="small"><strong>v2.15（2026-11-21 · 导航规格归一 + 同名不同义修掉）</strong>：① <strong>§4.1 排版登记表更正</strong> —— <code>.nav-item</code> 原登记在 B2 档（12.5px/500），但产品实现 <code>web/src/styles.css</code> 实为 <strong>13px/500</strong>，组件章 §s-311 的页内说明也是 13px —— <strong>原登记是唯一的异类</strong>。现从 B2 档拆出、<strong>新增「NAV 导航项 13 / 500 / 1.55」一档</strong>，B2 档改挂 <code>.nav-sub-item</code>（12.5/500，实现一致）。② <strong>手册站自己的侧栏改吃产品导航规格</strong> —— <code>.app-nav</code> 原来是一套私货（一级 29px / padding 0 8px / radius 6px / 12px·500，二级 25px / 11.5px），与它自己在 §5 发布的 <code>.nav-item</code>（32px / 0 9px / 8px / 13px·500）<strong>逐项不同</strong>；现一级可点项与章头统一为 32px / 0 9px / 8px / 13px·500、二级节项统一为 29px / 0 9px / 8px / 12.5px，图标 15px、图文间距 10px（与产品 <code>.nav-item svg</code> 同口径）。<strong>规范发布什么，手册站就用什么。</strong>③ <strong>修掉一处同名不同义</strong> —— 手册站的「章头」复用 <code>.nav-group</code> 类名，而产品的 <code>.nav-group</code> 是<strong>组标题</strong>（10px/600/uppercase 静态标签）；手册站的 <code>.nav-group</code> 规则<strong>没加作用域</strong>，把 <code>display:flex / justify-content:space-between / padding 0 4px 0 8px / radius 6px / min-height 28px</code> 漏进 §s-311 的产品导航演示 —— <strong>演示出来的不是产品真实样子</strong>。现手册站侧栏规则一律限定 <code>.app-nav</code>，演示恢复产品原样。④ <strong>渲染验收新增侧栏几何断言</strong> —— <code>vis-render.mjs</code> 逐页量「侧栏一级项 / 章头 / 二级项」三组值与「产品导航演示·组标题」四个值，与上面两处登记对不上即报错。⑤ <strong>原型页入口从导航末尾提到「总览」之下</strong> —— 「资产卡片原型」原先排在 12 个章<strong>之后</strong>，是 14 个一级项里的最后一个，读者要滚到侧栏最底部才看得见，<strong>等同于「找不到了」</strong>；现提到第二位，标签自带「原型」二字以示它不在规范分章里（§3.12 生命周期口径不变，它仍不是规范的第 13 章）。逐页实测：72 页该入口<strong>可见且可点</strong>，点击落地 <code>prototypes/cards.html</code>。</p>
   <footer>
-    SiMuseor · Visual Identity System v2.15 · 2026-11-21<br>
+    SiMuseor · Visual Identity System v2.16 · 2026-11-21<br>
     编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
     本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
   </footer>

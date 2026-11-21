@@ -1,27 +1,31 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges, output } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, OnDestroy, SimpleChanges, output } from '@angular/core';
 import { LibraryModel, fmtBytes } from '../core/types';
 import { coverMeta } from '../core/cover';
 import { modelTone, type Tone } from '../core/model-tone';
 import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/source-links';
 
 /**
- * 模型库卡片：一张海报（v4 终稿）。
+ * 模型库卡片：资产卡统一骨架的本地库版。
  *
- * 结构三层，没有多余的壳：
- *   .mplate  封面（145px，家族色 + 几何纹样，或有真实图时铺图）
- *   .gauge   显存压力条（9px，与卡片等宽、左右顶满、无圆角）
- *   .mfoot   两个动作
+ * 外壳与几何全部来自 `asset-card.css`（产品侧唯一一份），本组件只填槽位：
+ *   ① 封面     .acard-media / .acard-plate —— 铺满整卡
+ *   ② 身份行   .acard-head —— 32×32 标识块 + 厂名 / 作者两行
+ *   ③ 原站     .acard-origin —— 右上角
+ *   ④ 状态槽   .acard-slot —— 左状态 · 一根白线 · 右磁盘大小
+ *   ⑤ 标签     .acard-tags —— 恰好一枚（模型文件类型）
+ *   ⑥ 动作行   .acard-foot —— ⋯ 在左，主按钮在右
  *
- * 正常卡 / 残缺卡 / DEMO 卡走**同一个模板**，只有内容不同 ——
- * 之前三套 HTML 各写一遍，结果残缺卡的横条高度跟正常卡对不上、一屏混排像两种卡。
+ * 为什么不再「145px 封面 + 独立页脚」：本地库与发现页是同一批资产的两种状态，
+ * 两套壳会让「这条已经在库里」和「这条可以下」看起来不像同一件东西。
+ *
+ * 显存压力条撤掉了（原型口径）：本机跑不跑得动是**环境**的属性，不是资产的属性，
+ * 留在模型卡上，一屏卡片就被本机显卡牵着走。真要这个信息时，
+ * 状态槽左边的状态字带着浮层说明（后端算好的结论与差额）。
  *
  * 颜色不写家族类，而是把「家族色优先、任务色兜底」算成两套变量内联
  * （`--t-*` / `--t-*-d`），再由 CSS 映射到 `--plate-*`：
  * 内联永远赢过 CSS 规则，两套色都写内联的话深色主题切不过去。
- *
- * 「权重缺失 / 损坏」不是「无法判定」，是「这个条目残了」——
- * 所以它走红色斜纹（通用的「不完整」语言），主操作换成「重新下载模型」。
  */
 @Component({
   selector: 'md-library-card',
@@ -29,7 +33,9 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
   imports: [CommonModule],
   template: `
     <article
-      class="mcard"
+      class="mcard acard"
+      [class.on-shot]="shotOk && !broken"
+      [class.is-broken]="broken"
       [style.--t-bg]="tone.bg"
       [style.--t-ink]="tone.ink"
       [style.--t-strong]="tone.strong"
@@ -39,119 +45,162 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
       [style.--t-strong-d]="toneDark.strong"
       [style.--t-mark-d]="toneDark.mark"
     >
-      <div class="mplate" [class.on-shot]="shotOk && !broken" [class.broken-plate]="broken">
-        @if (cover && !dead && !broken) {
-          <img
-            class="photo"
-            [src]="cover"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            referrerpolicy="no-referrer"
-            (load)="onImgLoad($event)"
-            (error)="onImgError()"
-          />
-        }
-
-        @if (!broken) {
-          <span class="motif" [ngClass]="'mo-' + meta.motif"></span>
-          <div class="scrim"></div>
-        }
-
-        <div class="top-half">
-          <div class="brand-slot">
-            @if (meta.logo) {
-              <span class="brand" [class.has-dark]="!!meta.logoDark">
-                <img
-                  class="logo-light"
-                  [src]="meta.logo"
-                  [alt]="meta.code"
-                  [style.--logo-scale]="meta.logoScale"
-                />
-                @if (meta.logoDark) {
-                  <img
-                    class="logo-dark"
-                    [src]="meta.logoDark"
-                    alt=""
-                    aria-hidden="true"
-                    [style.--logo-scale]="meta.logoScale"
-                  />
-                }
-              </span>
-            } @else if (meta.code !== '—') {
-              <span class="brand code">{{ meta.code }}</span>
+      <!-- ① 封面：铺满整卡。壳的几何在 asset-card.css，这里只放封面自己的内容 -->
+      <div class="acard-media">
+        <div class="acard-plate">
+          <div class="mplate" [class.on-shot]="shotOk && !broken" [class.broken-plate]="broken">
+            @if (cover && !dead && !broken) {
+              <img
+                class="photo"
+                [src]="cover"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+                (load)="onImgLoad($event)"
+                (error)="onImgError()"
+              />
             }
-            @if (specLine) {
-              <span class="spec">{{ specLine }}</span>
+
+            @if (!broken) {
+              <span class="motif" [ngClass]="'mo-' + meta.motif"></span>
+              <div class="scrim"></div>
+            }
+
+            @if (broken) {
+              <div class="broken-inner">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                     stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+                  <path d="M12 8v5" />
+                  <circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
+                  <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+                </svg>
+                <span class="broken-title">{{ brokenTitle }}</span>
+                <span class="broken-msg">{{ brokenMsg }}</span>
+              </div>
             }
           </div>
-          @if (sourceHref) {
-            <a
-              class="origin"
-              [href]="sourceHref"
-              target="_blank"
-              rel="noreferrer"
-              [title]="sourceTitle"
-            >
-              {{ sourceShortLabel }}
-              <svg viewBox="0 0 12 12" aria-hidden="true">
-                <path d="M4.5 2.5H2.5v7h7v-2" />
-                <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
-              </svg>
-            </a>
-          }
-        </div>
-
-        @if (broken) {
-          <div class="broken-inner">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
-                 stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
-              <path d="M12 8v5" />
-              <circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
-              <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-            </svg>
-            <span class="broken-title">{{ brokenTitle }}</span>
-            <span class="broken-msg">{{ brokenMsg }}</span>
-          </div>
-        }
-
-        <div class="plate-foot">
-          <h3 class="mname" [title]="model.name">{{ model.name }}</h3>
-          @if (!broken) {
-            <!-- 类型 / 发布方；原站链接在右上角 -->
-            <div class="plate-meta">
-              <span
-                class="pill"
-                [class.pill-on-media]="shotOk"
-                [class.pill-demo]="!!model.isDemo"
-              >{{ taskLabel }}</span>
-              @if (author) {
-                <span
-                  class="pill pill-author"
-                  [class.pill-on-media]="shotOk"
-                  [title]="'发布者：' + author"
-                >{{ author }}</span>
-              }
-              <span class="grow"></span>
-              <span class="msize">{{ fmtBytes(model.size_bytes) }}</span>
-            </div>
-          }
         </div>
       </div>
 
-      <span [class]="gaugeClass" [style.--fill]="fill + '%'" [title]="gaugeTip"></span>
+      <!-- ② 身份行 + ③ 原站链接。排版在 asset-card.css，这里只给库卡特有的内容 -->
+      <div class="acard-head">
+        <span class="acard-mark brand" [title]="markTitle">
+          @if (meta.logo) {
+            <img
+              class="logo-light"
+              [src]="meta.logo"
+              [alt]="meta.code"
+              [style.--logo-scale]="meta.logoScale"
+            />
+            @if (meta.logoDark) {
+              <img
+                class="logo-dark"
+                [src]="meta.logoDark"
+                alt=""
+                aria-hidden="true"
+                [style.--logo-scale]="meta.logoScale"
+              />
+            }
+          } @else if (familyCode) {
+            <span class="acard-code">{{ familyCode }}</span>
+          } @else if (meta.publisher) {
+            <!-- 未登记家族：用发布方缩写兜底。它回答的是「谁发的」，不是伪造的厂牌标。 -->
+            <span class="acard-code" [title]="'未登记厂牌 · 发布方：' + meta.publisher.label">{{
+              meta.publisher.abbr
+            }}</span>
+          }
+        </span>
 
-      <div class="mfoot">
-        <button type="button" class="mini danger" (click)="remove.emit()">删除模型</button>
-        <span class="grow"></span>
-        @if (broken) {
-          <button type="button" class="mini primary" (click)="redownload.emit()">重新下载模型</button>
-        } @else {
-          <button type="button" class="mini" (click)="use.emit()">查找适配工作流</button>
+        <span class="acard-ident">
+          <b [title]="familyName">{{ familyName }}</b>
+          @if (author) {
+            <span class="pill-author" [title]="'发布者：' + author">{{ author }}</span>
+          } @else {
+            <span [title]="originLabel">{{ originLabel }}</span>
+          }
+        </span>
+
+        <!-- 形态角标（参数 / 精度）：留在封面上，不进底部信息区 -->
+        @if (specLine) {
+          <span class="spec" [title]="'规格：' + specLine">{{ specLine }}</span>
         }
+
+        @if (sourceHref) {
+          <a
+            class="origin acard-origin"
+            [href]="sourceHref"
+            target="_blank"
+            rel="noreferrer"
+            [title]="sourceTitle"
+          >
+            {{ sourceShortLabel }}
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M4.5 2.5H2.5v7h7v-2" />
+              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
+            </svg>
+          </a>
+        }
+      </div>
+
+      <!-- 底部信息区：压在封面上的遮罩 -->
+      <div class="acard-body">
+        <h3 class="mname acard-name" [title]="model.name">{{ model.name }}</h3>
+        <p class="acard-meta">{{ taskLabel }}</p>
+
+        <!-- ④ 状态槽：左状态 · 半透明白线 · 右磁盘大小 -->
+        <div class="acard-slot">
+          <span [class.is-ok]="!broken" [class.is-err]="broken" [title]="statusTip">{{ statusText }}</span>
+          <span class="acard-rule"></span>
+          <span class="msize acard-size">{{ fmtBytes(model.size_bytes) }}</span>
+        </div>
+
+        <!-- ⑤ 分类标签：恰好一枚 —— 模型文件类型（作者由身份行承担，不再重复） -->
+        <div class="plate-meta acard-tags">
+          <span class="pill" [class.pill-demo]="!!model.isDemo" [title]="fileTypeTip">{{ fileTypeLabel }}</span>
+        </div>
+
+        <!-- ⑥ 动作行：⋯ 在左（破坏性操作收进去），主按钮在右 -->
+        <div class="acard-foot">
+          <button
+            type="button"
+            class="acard-kebab"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="menuOpen"
+            aria-label="更多操作"
+            title="更多操作"
+            data-testid="lib-card-kebab"
+            (click)="toggleMenu($event)"
+          >⋯</button>
+
+          @if (menuOpen) {
+            <div class="acard-menu" role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                class="acard-menu-item is-danger"
+                data-testid="lib-card-remove"
+                (click)="onRemove()"
+              >删除模型</button>
+            </div>
+          }
+
+          <button
+            type="button"
+            class="acard-primary primary btn-xs"
+            data-testid="lib-card-primary"
+            (click)="onPrimary()"
+          >{{ primaryLabel }}</button>
+        </div>
       </div>
     </article>
   `,
+  /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
+     （Emulated 封装），四张卡引用的是同一份源，改一处四张卡一起变。
+     为什么不是 styles: ['./asset-card.css', …] —— ng build 的 esbuild 构建器
+     只认 styleUrl / styleUrls，styles 数组里的字符串一律当内联 CSS 解析，
+     写成路径会直接报「Unknown word ./asset-card.css」。 */
+  styleUrls: ['./asset-card.css'],
   styles: [
     `
       :host {
@@ -160,16 +209,11 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
       }
 
       .mcard {
-        position: relative;
-        overflow: hidden;
-        border-radius: var(--radius);
-        background: var(--panel);
         /* 间接层：内联只给 --t-*，这里映射到 --plate-*，深色主题才切得动 */
         --plate-bg: var(--t-bg);
         --plate-ink: var(--t-ink);
         --plate-strong: var(--t-strong);
         --plate-mark: var(--t-mark);
-        transition: transform 0.16s ease, box-shadow 0.16s ease;
       }
       :host-context([data-theme='dark']) .mcard {
         --plate-bg: var(--t-bg-d);
@@ -177,43 +221,16 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         --plate-strong: var(--t-strong-d);
         --plate-mark: var(--t-mark-d);
       }
-
-      /* 描边只用 ::after —— border 会让 inset:0 从边框内沿起算，描边整体内缩 1px */
-      .mcard::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 3;
-        border-radius: inherit;
-        box-shadow: inset 0 0 0 1px var(--border);
-        pointer-events: none;
-        transition: box-shadow 0.16s ease;
-      }
-      /* M1-c：hover 不再位移 + 不再外阴影（Phase2 §2.10-13 / §8-E 第 3 处）。
-         保留 1px 描边作为唯一可见反馈。
-
-         v2.2 改画在 **::after**（inset accent），与 model-card / workflow-card 统一：
-         本体的 inset 描边在**铺满型封面**下会被盖住（model-card 的 .card-plate 是
-         position:absolute; inset:0 铺满整卡 → 实测 accent 像素 off=37 / on=37，
-         hover 视觉上毫无反应）。::after 在两种封面结构下都成立：
-         本卡 ::after 是 z-index:3，盖得住流式封面的 .mplate。
-
-         注：本体外圈 box-shadow 也能看见（实测 off=0 → on=297），因为 box-shadow
-         的外圈绘制在 border box 之外、不被元素自身的 overflow 裁剪（overflow 只裁
-         子元素）—— 但那样三个卡片口径就不一致了。**统一的价值在于「一条规则走
-         天下」，而不是「视觉恰好一样」。 */
-      .mcard:hover {
-        box-shadow: none;
-      }
-      .mcard:hover::after {
-        box-shadow: inset 0 0 0 1px var(--accent);
+      /* 有照片时封面上的字翻白。压在这一层而不是根上：
+         深色主题的色板映射（--t-strong-d）写在根上，根上的声明会一路继承下来，
+         只有在用它的那一层（身份行）再声明一次才盖得住。 */
+      .acard.on-shot .acard-head {
+        --plate-strong: #fff;
+        --plate-ink: rgb(255 255 255 / 0.78);
       }
 
-      /* ---- 封面：固定 145px，6:4 的上部 ---- */
+      /* ---- 封面内容：家族色底 / 几何纹样 / 铺图 / 蒙版 ---- */
       .mplate {
-        position: relative;
-        height: 145px;
-        overflow: hidden;
         background: var(--plate-bg);
       }
       .photo {
@@ -226,7 +243,7 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         object-position: center 28%;
       }
 
-      /* ---- 纹样：5 种变体，类名在 .motif 自己身上（.mo-0::before） ---- */
+      /* 纹样：5 种变体，类名在 .motif 自己身上（.mo-0::before） */
       .motif {
         position: absolute;
         inset: 0;
@@ -340,61 +357,55 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
           rgb(0 0 0 / 0.42) 100%
         );
       }
-      .mplate.on-shot {
-        --plate-strong: #fff;
-        --plate-ink: rgb(255 255 255 / 0.78);
-      }
 
-      /* ---- 上半：厂标靠左 ---- */
-      .top-half {
-        position: absolute;
-        left: 11px;
-        right: 11px;
-        top: 10px;
-        z-index: 2;
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
+      /* ---- ② 标识块：共享几何给了 32×32 与布局，底衬由本卡定 ----
+         家族标自带底衬，家族码 / 发布方缩写没有 —— 两种都得有实底才读得出来。 */
+      .acard-mark {
+        background: color-mix(in oklab, var(--panel) 94%, transparent);
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+        color: var(--text);
       }
-      .brand-slot {
-        /* 让位给右上角的文件形态角标：规格文字过长时自己省略，不把角标挤出去 */
-        flex: 0 1 auto;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        min-width: 0;
+      .acard.on-shot .acard-mark {
+        background: rgb(10 12 18 / 0.42);
+        box-shadow: none;
+        color: #fff;
       }
-      .brand {
-        width: 24px;
-        height: 24px;
-        padding: 0;
-        display: grid;
-        place-items: center;
-        border-radius: 6px;
-        background: color-mix(in oklab, var(--plate-mark) 30%, transparent);
-        border: 1.5px solid color-mix(in oklab, var(--plate-mark) 46%, transparent);
-      }
-      .brand img {
-        display: block;
-        width: 14px;
-        height: 14px;
+      .acard-mark img {
         object-fit: contain;
         transform: scale(var(--logo-scale, 1));
       }
       /* 只有黑白标才备反白版。彩色 / 渐变资产（Qwen 紫、混元多色、MiniMax 渐变）
          没有深色版：深色主题下必须继续显示浅色版，否则整个厂标会消失。 */
-      .brand.has-dark .logo-dark { display: none; }
-      :host-context([data-theme='dark']) .brand.has-dark .logo-light { display: none; }
-      :host-context([data-theme='dark']) .brand.has-dark .logo-dark { display: block; }
-      .brand.code {
-        font-size: 8.5px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        color: var(--plate-strong);
+      .logo-dark { display: none; }
+      :host-context([data-theme='dark']) .logo-light { display: none; }
+      :host-context([data-theme='dark']) .logo-dark { display: block; }
+
+      /* 家族码 / 发布方缩写：中性色、方角细框，跟官方品牌标保持视觉距离
+         圆角用 var(--radius-xs)（5px，VIS §6.4 允许档）—— 不写字面量 4px，
+         那是圆角中间档，vis-check 1.6 会按棘轮拦住。 */
+      .acard-code {
+        display: inline-flex;
+        align-items: center;
+        height: 15px;
+        padding: 0 4px;
+        border-radius: var(--radius-xs);
+        background: var(--panel-3);
+        box-shadow: inset 0 0 0 1px var(--border-soft);
+        font: 700 9px/1 'Cascadia Mono', Consolas, monospace;
+        letter-spacing: 0.02em;
+        color: var(--text-2);
+        white-space: nowrap;
+      }
+      .acard.on-shot .acard-code {
+        background: rgb(255 255 255 / 0.16);
+        box-shadow: none;
+        color: #fff;
       }
 
+      /* ---- 形态角标（参数 / 精度）：留在封面上，不进底部信息区 ---- */
       .spec {
+        flex: 0 1 auto;
+        min-width: 0;
         font-size: 10px;
         font-weight: 600;
         letter-spacing: 0.03em;
@@ -404,47 +415,6 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-width: 0;
-      }
-
-      /* 右上角：直接跳回模型原站。格式角标（SAFE/GGUF）已删除。 */
-      .origin {
-        flex: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        height: 18px;
-        padding: 0 6px;
-        border-radius: 4px;
-        background: color-mix(in oklab, var(--plate-mark) 42%, var(--plate-bg));
-        color: var(--plate-strong);
-        font: 600 10px/1 'Cascadia Mono', Consolas, monospace;
-        letter-spacing: 0.04em;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: background 0.14s ease, color 0.14s ease;
-      }
-      .origin svg {
-        width: 9px;
-        height: 9px;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 1.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      .origin:hover {
-        background: color-mix(in oklab, var(--plate-mark) 62%, var(--plate-bg));
-        color: var(--plate-strong);
-      }
-      .mplate.on-shot .origin {
-        background: rgb(255 255 255 / 0.18);
-        color: #fff;
-        backdrop-filter: blur(6px);
-      }
-      .mplate.on-shot .origin:hover {
-        background: rgb(255 255 255 / 0.28);
-        color: #fff;
       }
 
       /* ---- 残缺卡：斜纹底 + 居中警示 + 红底标题 + 中性底详情 ---- */
@@ -459,192 +429,49 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
         position: absolute;
         left: 0;
         right: 0;
-        top: 6px;
+        /* 警示块整块落在封面区里，不能压到底部信息带下面 ——
+           封面铺满整卡之后，信息带的位置随内容高度变，只能靠收紧这一块腾地方。 */
+        top: 42px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 5px;
+        gap: 3px;
         color: var(--err);
       }
       .broken-title {
-        font-size: 11.5px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.02em;
         background: var(--err-soft);
         color: var(--err);
-        padding: 2px 9px;
+        padding: 1px 8px;
         border-radius: var(--radius-xs);
       }
       .broken-msg {
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 500;
         color: var(--muted);
         background: var(--panel);
-        padding: 2px 8px;
+        padding: 1px 7px;
         border-radius: var(--radius-xs);
         border: 1px solid var(--border-soft);
         max-width: 82%;
         text-align: center;
         line-height: 1.35;
       }
-      /* 斜纹底太花，厂标压在上面读不清 → 给它一块实底衬 */
-      .broken-plate .brand-slot { position: relative; z-index: 2; }
-      .broken-plate .brand { background: var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / 0.1); }
-      .broken-plate .spec { color: var(--faint); }
+      /* 斜纹底太花，标识块压在上面读不清 → 给它一块实底衬 */
+      .is-broken .acard-mark { background: var(--panel); }
 
-      /* ---- 封面底部：名称 / 类型 / 规格 / 大小 ---- */
-      .plate-foot {
-        position: absolute;
-        left: 11px;
-        right: 11px;
-        bottom: 8px;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .mname {
-        margin: 0;
-        flex: 1;
-        min-width: 0;
-        font-size: 12.5px;
-        font-weight: 650;
-        line-height: 1.35;
-        letter-spacing: -0.008em;
-        color: var(--text);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .mplate.on-shot .mname {
-        color: #fff;
-        text-shadow: 0 1px 3px rgb(0 0 0 / 0.55);
-      }
-      .plate-meta {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        min-width: 0;
-      }
-      .msize {
-        font-size: 10.5px;
-        color: var(--faint);
-        font-variant-numeric: tabular-nums;
-        flex: none;
-      }
-      .mplate.on-shot .msize {
-        color: rgb(255 255 255 / 0.78);
-        text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
-      }
+      /* ---- ⑥ 动作行 ----
+         ⋯ 按钮与菜单浮层的几何都在 asset-card.css，这里只补一处：
+         删除是破坏性操作，菜单项要说得出 danger。 */
+      .acard-menu-item.is-danger { color: var(--err); }
+      .acard-menu-item.is-danger:hover { background: var(--err-soft); color: var(--err); }
 
-      /* 卡片里的分类标签直接用全站 .pill —— 跟发现页同一套圆角、字号、填充。
-         只在高度上收紧 2px，适配 145px 封面底部这一行。 */
-      .plate-meta .pill {
-        flex: none;
-        max-width: 42%;
-        height: 18px;
-        padding: 0 7px;
-        font-size: 10.5px;
-        line-height: 16px;
-      }
-      /* 作者最长，也最先让位：它可以用省略号，类型和大小不能 */
-      .plate-meta .pill-author {
-        flex: 0 1 auto;
-        max-width: 44%;
-        min-width: 0;
-      }
-      .plate-meta .pill.pill-demo {
+      /* DEMO 是离线占位文件，标红才不会被当成真模型 */
+      .acard .acard-tags .pill.pill-demo {
         background: var(--err-soft);
         color: var(--err);
-        letter-spacing: 0.06em;
-      }
-      /* 照片上的标签是白 14% 半透明；hover 不能翻回灰底，否则一块灰斑 */
-      .plate-meta .pill-on-media.pill-link:hover {
-        background: rgb(255 255 255 / 0.24);
-        color: #fff;
-      }
-
-      /* ---- 显存压力条：9px，与卡片等宽，无圆角无 border ----
-         渐变铺满整条再用 clip-path 裁出左侧填充段；用 background-size 压缩
-         会把整条渐变塞进那一小段（错）。 */
-      .gauge {
-        position: relative;
-        display: block;
-        height: 9px;
-        background: var(--border-strong);
-      }
-      .gauge::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-          repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.22) 0 3px, transparent 3px 7px),
-          linear-gradient(to right,
-            #15803d 0%, #15803d 26%,
-            #b45309 56%, #b45309 74%,
-            #ff0000 100%);
-        clip-path: inset(0 calc(100% - var(--fill)) 0 0);
-      }
-      .gauge-unknown { background: var(--border-strong); }
-      .gauge-unknown::before { display: none; }
-      .gauge-broken {
-        background: repeating-linear-gradient(-45deg,
-          #ff0000, #ff0000 4px, rgb(255 0 0 / 0.5) 4px, rgb(255 0 0 / 0.5) 8px);
-      }
-      .gauge-broken::before { display: none; }
-      .gauge-demo {
-        background: repeating-linear-gradient(-45deg,
-          #eab308, #eab308 4px, rgb(234 179 8 / 0.5) 4px, rgb(234 179 8 / 0.5) 8px);
-      }
-      .gauge-demo::before { display: none; }
-
-      /* ---- 下部：两个动作 ---- */
-      .mfoot {
-        position: relative;
-        padding: 8px 11px;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        background: color-mix(in oklab, var(--panel) 88%, transparent);
-      }
-      .mini {
-        height: 23px;
-        padding: 0 9px;
-        border: 1px solid var(--border);
-        border-radius: 5px;
-        background: var(--panel);
-        color: var(--text-2);
-        font: inherit;
-        font-size: 10.5px;
-        cursor: pointer;
-        white-space: nowrap;
-        flex: none;
-      }
-      .mini:hover { border-color: var(--border-strong); color: var(--text); }
-      .mini.danger {
-        color: var(--err);
-        border-color: color-mix(in oklab, var(--err) 26%, transparent);
-      }
-      .mini.danger:hover {
-        background: var(--err-soft);
-        border-color: color-mix(in oklab, var(--err) 46%, transparent);
-      }
-      /* 残缺条目的唯一下一步是补救 → 强调色实心，在一堆灰按钮里跳出来 */
-      .mini.primary {
-        color: #fff;
-        background: var(--accent);
-        border-color: var(--accent);
-        font-weight: 600;
-      }
-      .mini.primary:hover {
-        background: var(--accent-hover);
-        border-color: var(--accent-hover);
-      }
-      :host-context([data-theme='dark']) .mini.primary { color: #17101d; }
-
-      @media (prefers-reduced-motion: reduce) {
-        .mcard { transition: none; }
-        .mcard:hover { transform: none; }
       }
     `,
   ],
@@ -653,12 +480,15 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) model!: LibraryModel;
   /** 后端解析出的真实封面；取不到就退回家族色构图 */
   @Input() cover = '';
-  /** 本机独显显存（GB），压力条的分母 */
+  /** 本机独显显存（GB）；状态槽的浮层说明要用 */
   @Input() vramGb = 0;
 
   readonly remove = output<void>();
   readonly use = output<void>();
   readonly redownload = output<void>();
+
+  /** ⋯ 菜单是否展开 */
+  menuOpen = false;
 
   /** 照片是否真的画出来了（有 URL 不等于加载成功，lazy 图在滚动前根本不发请求） */
   shotOk = false;
@@ -698,8 +528,26 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
     return [this.model.precision, this.model.params].filter(Boolean).join(' · ');
   }
 
+  /** 任务类型：拿来干什么（文生图 / 文本生成…），是卡上的「类别」 */
   get taskLabel(): string {
-    return this.model.isDemo ? 'DEMO' : this.model.taskLabel || '未标注';
+    return this.model.taskLabel || '未标注';
+  }
+
+  /**
+   * 分类标签：模型文件类型（主模型 / LoRA / 文本编码器…）。
+   *
+   * 存放类型是物理事实（落在 ComfyUI 的哪个目录），比任务类型更接近「这是什么文件」，
+   * 原型里这一格也只放这一层；任务类型挪到上面的类别行，两者不重复。
+   */
+  get fileTypeLabel(): string {
+    if (this.model.isDemo) return 'DEMO';
+    return this.model.folderLabel || this.taskLabel;
+  }
+
+  get fileTypeTip(): string {
+    return this.model.isDemo
+      ? '离线演示占位文件，权重内容为假'
+      : `存放类型：${this.model.folderLabel || '未分类'}`;
   }
 
   /**
@@ -724,35 +572,58 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
     return sourceAuthor(this.model.source, this.model.repo_id);
   }
 
-  /** 压力条形态：演示黄斜纹 / 残缺红斜纹 / 无独显灰 / 正常渐变 */
-  get gaugeClass(): string {
-    if (this.model.isDemo) return 'gauge gauge-demo';
-    const lvl = this.model.vram?.level;
-    if (lvl === 'broken' || lvl === 'missing') return 'gauge gauge-broken';
-    if (lvl !== 'ok' && lvl !== 'warn' && lvl !== 'err') return 'gauge gauge-unknown';
-    return 'gauge';
+  /** 厂名：家族码（产品里家族只有码，没有另一套展示名） */
+  get familyName(): string {
+    return this.familyCode || '未知家族';
   }
 
-  /** 填充百分比（0~100）。超过 100% 就填满 —— 条子表达不了更多 */
-  get fill(): number {
+  /** 标识块里的家族码；未登记家族留空，退到发布方缩写 */
+  get familyCode(): string {
+    return this.meta.code !== '—' ? this.meta.code : '';
+  }
+
+  /** 标识块的说明：官方标说家族，缩写说发布方 */
+  get markTitle(): string {
+    if (this.meta.logo) return `${this.meta.code} 官方标识`;
+    if (this.familyCode) return `${this.familyCode} 家族`;
+    if (this.meta.publisher) return `未登记厂牌 · 发布方：${this.meta.publisher.label}`;
+    return '';
+  }
+
+  /** 身份行第二行没有发布者时说清这条模型从哪来 */
+  get originLabel(): string {
+    if (this.model.isDemo) return '演示数据';
+    if (this.model.source === 'imported') return '本地导入';
+    return '未登记发布者';
+  }
+
+  /** ④ 状态槽左侧：这条资产在库里是什么状态 */
+  get statusText(): string {
     const lvl = this.model.vram?.level;
-    if (this.model.isDemo || lvl === 'broken' || lvl === 'missing') return 0;
-    if (lvl !== 'ok' && lvl !== 'warn' && lvl !== 'err') return 0;
+    if (lvl === 'broken') return '文件格式错误';
+    if (lvl === 'missing') return '权重缺失';
+    return '在库';
+  }
+
+  /**
+   * 状态槽的浮层说明 —— 显存压力条撤掉后，本机跑不跑得动只在这里说。
+   *
+   * 用后端算好的结论（跑得动 / 勉强 / 装不下）与差额，不在前端重算一遍。
+   */
+  get statusTip(): string {
+    const v = this.model.vram;
+    const parts = [v?.text, v?.hint].filter(Boolean);
+    if (parts.length) return parts.join(' · ');
+    if (!this.vramGb) return '本机未检测到独立显卡，无法判断能否运行';
     const need = this.model.needGb ?? 0;
-    if (!this.vramGb || need <= 0) return 0;
-    return Math.max(0, Math.min(Math.round((need / this.vramGb) * 100), 100));
+    return need > 0
+      ? `显存压力 · 本机 ${this.vramGb.toFixed(0)} GB（估算值，实际占用取决于推理方式）`
+      : '';
   }
 
-  get gaugeTip(): string {
-    if (this.model.isDemo) return '离线演示占位文件，权重内容为假';
-    const lvl = this.model.vram?.level;
-    if (lvl === 'broken' || lvl === 'missing') {
-      return this.model.vram?.hint || '权重不完整，这个条目还不能用';
-    }
-    if (lvl !== 'ok' && lvl !== 'warn' && lvl !== 'err') {
-      return '本机未检测到独立显卡，无法判断能否运行';
-    }
-    return `显存压力 · 本机 ${this.vramGb.toFixed(0)} GB（估算值，实际占用取决于推理方式）`;
+  /** ⑥ 主按钮：残缺条目的唯一下一步是补救，正常条目去找能跑它的工作流 */
+  get primaryLabel(): string {
+    return this.broken ? '重新下载模型' : '查找适配工作流';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -791,6 +662,28 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
     this.clearTimer();
     this.dead = true;
     this.shotOk = false;
+  }
+
+  /** ⋯ 菜单：破坏性操作（删除模型）收在这里，主按钮位只放正事 */
+  toggleMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuOpen = !this.menuOpen;
+  }
+
+  /** 点别处收起菜单 */
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.menuOpen = false;
+  }
+
+  onPrimary(): void {
+    if (this.broken) this.redownload.emit();
+    else this.use.emit();
+  }
+
+  onRemove(): void {
+    this.menuOpen = false;
+    this.remove.emit();
   }
 
   private armTimeout(): void {
