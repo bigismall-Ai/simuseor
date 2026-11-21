@@ -306,7 +306,7 @@ W('''
       <tr><td><strong>G2</strong></td><td>遮罩 scrim</td><td>卡片信息区遮罩 / 封面照片 scrim</td><td>文字压照片的唯一手段；<strong>alpha 下限 0.57</strong>（见下表）</td></tr>
       <tr><td><strong>G3</strong></td><td>构图纹理</td><td>封面 5 变体中的斜纹 / 点阵 / 柔光</td><td>只出<strong>家族色派生</strong>，不引入独立色；深色主题浓度自动下调</td></tr>
       <tr><td><strong>G4</strong></td><td>交互渐变</td><td>本轮新增（主按钮 / 选中态）</td><td>受限：面积 ≤2 处/屏，两端白字都 ≥4.5:1，深浅各一套</td></tr>
-      <tr><td><strong>G5</strong></td><td>站点底纹</td><td>站点整体背景（§3.10 · v2.7 裁决）</td><td>纯中性底 + 一束光（色场）+ 中性纸纹；<strong>定稿 v2 单束柔光，色场 70% / 纸纹 60%</strong>；底纹<strong>不计入</strong>「中性表面 ≥85%」配额；禁标识平铺；深色换噪声图不反相。渐变共 6 个变体（见 <code>prototypes/backgrounds.html</code>）</td></tr>
+      <tr><td><strong>G5</strong></td><td>站点底纹</td><td>站点整体背景（§3.10 · v2.7 裁决）</td><td>纯中性底 + 一束光（色场）+ 中性纸纹；<strong>定稿 v2 单束柔光，色场 70% / 纸纹 60%</strong>；底纹<strong>不计入</strong>「中性表面 ≥85%」配额；禁标识平铺；深色换噪声图不反相。渐变共 6 个变体（取值表见 VIS §3.10；对比实验稿已退役删除）</td></tr>
     </tbody>
   </table>
 

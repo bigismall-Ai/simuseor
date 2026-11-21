@@ -15,7 +15,6 @@
     layout: 'reference/layout.html',
     components: 'reference/components.html',
     cards: 'prototypes/cards.html',
-    backgrounds: 'prototypes/backgrounds.html',
     audit: 'reference/audit.html'
   };
 
@@ -54,7 +53,6 @@
     { type: 'link', page: 'layout', label: '布局', icon: 'layout' },
     { type: 'link', page: 'components', label: '组件', icon: 'components' },
     { type: 'link', page: 'cards', label: '资产卡片', icon: 'prototype' },
-    { type: 'link', page: 'backgrounds', label: '背景实验', icon: 'prototype' },
     { type: 'link', page: 'audit', label: '审计', icon: 'audit' }
   ];
 

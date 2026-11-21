@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SiMuseor · VIS 视觉识别系统 v2.9</title>
+<title>SiMuseor · VIS 视觉识别系统 v2.10</title>
 <style>
 /* ============================================================
    SiMuseor VIS 手册样式
@@ -184,7 +184,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
 <div class="wrap">
 <nav class="toc" aria-label="目录">
   <div class="tc-brand">SiMuseor</div>
-  <div class="tc-sub">Visual Identity System · v2.9</div>
+  <div class="tc-sub">Visual Identity System · v2.10</div>
   <p class="tc-back"><a href="vis-reference.html">← 返回手册站总览</a></p>
   <ol>
     <li><a href="#s0">卷首 · 状态声明</a></li>
@@ -215,7 +215,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;margin-top:60px;font-si
     <h1>视觉识别系统</h1>
     <p class="lede">把现有项目里分散的品牌稿、界面样式与交互惯例，收敛成一套可执行、可验收、可演进的规范。全篇区分「现状 / 目标态 / 冻结后」，本手册描述的是<strong>目标态</strong>。</p>
     <dl class="meta">
-      <div><dt>版本</dt><dd>v2.9 · 2026-11-21</dd></div>
+      <div><dt>版本</dt><dd>v2.10 · 2026-11-21</dd></div>
       <div><dt>品牌名</dt><dd>SiMuseor</dd></div>
       <div><dt>LOGO 状态</dt><dd><span class="pill wip">基线锁定 · 字形未冻结</span></dd></div>
       <div><dt>落地状态</dt><dd><span class="pill neutral">零落地（规范）</span></dd></div>
@@ -691,9 +691,9 @@ const isAccent = (r, g, b) =&gt; {
   </table>
   <ul class="small">
     <li><strong>落地</strong>：<code>web/src/styles.css</code> 与 VIS 手册站 <code>artifacts/vis/assets/vis.css</code> 的 <code>body</code> 同款接线 —— <code>background-image: var(--texture-site-paper), var(--grad-site-wash), var(--grad-site-glow)</code> + <code>background-blend-mode: multiply, normal, normal</code>（深色 <code>screen, normal, normal</code>）+ 三层都 <code>background-attachment: fixed</code>。</li>
-    <li><strong>浓度口径</strong>：色场 70% / 纸纹 60% 是原型页 <code>prototypes/backgrounds.html</code> 两个滑杆的当前值，且该页默认值已与产品对齐 —— <strong>页面上的值 = 线上值</strong>；滑到 100% 是设计上限，不是现状。</li>
+    <li><strong>浓度口径</strong>：浓度不再由原型页滑杆承载（该页已于 2026-11-21 退役），<strong>直接写死在两枚 token 的取值里</strong> —— 色场 <code>--grad-site-wash</code> 峰值 α <strong>0.063</strong>（= 设计上限 0.090 的 <strong>70%</strong>），纸纹 <code>--texture-site-paper</code> opacity <strong>0.204</strong>（浓度 <strong>60%</strong>）。<strong>页面上的值 = 线上值</strong>；要调浓度只改这两枚 token 的取值。</li>
     <li><strong>八条硬约束</strong>：① 峰值 α ≤ 0.07，底仍读作中性灰；② 纸纹中性无彩（不带黄、不带暖）；③ 深色<strong>换噪声图</strong>而非反相；④ <strong>禁把标识铺成底纹</strong>（蝉形线稿平铺 2026-11-21 已否）；⑤ 底纹不计入 §3.4 的「中性表面 ≥85%」；⑥ 导出物 / 分享卡 / 打印<strong>不带</strong>底纹；⑦ 两层都 <code>background-attachment: fixed</code>；⑧ 噪声一次性栅格化，若实测掉帧改 <code>scroll</code> 而不是删底纹；⑨ <strong>侧栏透明渐变</strong> —— 左缘实面给文字、右缘化到透明，站点底纹从内容区铺进导航栏，窄屏横条改竖向 180deg 向下化开，侧栏不加投影。</li>
-    <li><strong>变体集</strong>：渐变共 6 个变体（v2 单束柔光<strong>已定稿</strong> / v1 暖弧 / v3 靛紫场 / v4 晨光竖落 / v5 对角双光 / v6 色带横铺），同屏对比见 <code>prototypes/backgrounds.html</code>。<strong>纯色、单独渐变、单独纸纹三形态均不采用</strong>。</li>
+    <li><strong>变体集</strong>：渐变共 6 个变体（v2 单束柔光<strong>已定稿</strong> / v1 暖弧 / v3 靛紫场 / v4 晨光竖落 / v5 对角双光 / v6 色带横铺），<strong>取值见下表</strong> —— 对比实验稿已于 2026-11-21 退役删除，结论固化于本表（候选不再是候选，留着只会让人以为还能改）。<strong>纯色、单独渐变、单独纸纹三形态均不采用</strong>。</li>
   </ul>
 
   <h3 id="s3-11">3.11 资产守门员 <code>vis-asset-guard.mjs</code> <span class="pill v2">v2.8 新增</span></h3>
@@ -739,6 +739,31 @@ const isAccent = (r, g, b) =&gt; {
     <li><strong>只读承诺</strong>：默认只调用 <code>fs.readFileSync</code> / <code>readdirSync</code> / <code>git ls-files</code>，结果打到 stdout。唯一会写资产的路径是 <code>normalize --write --file &lt;path&gt;</code>（先备份 <code>.bak</code> 再原地覆盖）；<strong>拒绝</strong>不带 <code>--file</code> 的批量覆盖，避免误伤并行改版中的资产。本工具<strong>不会</strong>"修复"资产、不删属性、不改属性值。</li>
     <li><strong>零依赖</strong>：只用 Node 内置模块。Playwright 是可选增强 —— 从 <code>tests/node_modules</code> 显式解析，解析不到或浏览器起不来 → 相关断言标记 SKIPPED，其余照跑，绝不崩溃、绝不联网。</li>
     <li><strong>当前实况</strong>（2026-11-21）：跟踪资产 16 个 / 现存 9 个 / 已删 7 个（被另一工作流删除的 <code>-mono</code> 剪影与 <code>_flat_*</code> 底座，<strong>跳过不修复</strong>）。现存 9 个：A1/A2/A4/A6/A7 全通过，A3 为 INFO，A5 三项（max / mid / min 的深浅两版逐字节相同）<strong>等于基线</strong>，A8 已豁免为 INFO。<strong>注意</strong>：蝉形资产正被另一工作流改版，本工具<strong>只读</strong>，基线会随改版变化。</li>
+  </ul>
+
+  <h3 id="s3-12">3.12 原型页生成管线 <span class="pill v2">v2.10 新增</span></h3>
+  <p class="notice"><strong>裁决：原型页是展示面（render surface），不是手写页面。</strong>手写的展示面会「看起来正常」地漂 —— 样式改了、字段改了、版本号改了，都要人去同步三处，而且<strong>没人知道它跟真值脱节了</strong>。</p>
+  <table>
+    <tr><th style="width:70px">层</th><th style="width:290px">文件</th><th>职责</th></tr>
+    <tr><td><strong>类型</strong></td><td><code>artifacts/vis/prototypes/_types.mjs</code></td><td>形状定义 —— 一类原型长什么样、由哪几块拼成、每块怎么渲染</td></tr>
+    <tr><td><strong>定义</strong></td><td><code>artifacts/vis/prototypes/_defs.mjs</code></td><td>数据 —— <strong>唯一手写处</strong>。每个原型一份：id / type / file / status</td></tr>
+    <tr><td><strong>展示面</strong></td><td><code>artifacts/vis/prototypes/*.html</code></td><td><strong>生成物，勿手改</strong></td></tr>
+  </table>
+  <p class="small">工具 <code>artifacts/vis/vis-proto.mjs</code>（Node 零依赖）：<code>build</code> 从定义重新生成展示面；<code>check</code> 防漂移 + 生命周期（只读）。</p>
+  <h4>check 管四件事（任一阻塞项 → 退出码 2）</h4>
+  <table>
+    <tr><th style="width:80px">检查</th><th style="width:290px">判据</th><th>拦的是什么</th></tr>
+    <tr><td><strong>漂移</strong></td><td>重新渲染 ↔ 入库展示面<strong>逐字节</strong>比对</td><td>手改了生成物；或改了定义忘了重新生成</td></tr>
+    <tr><td><strong>退役</strong></td><td><code>status: 'retired'</code> 的原型，展示面文件必须<strong>已不存在</strong></td><td>实验结束了还留着 —— 读者会以为候选还能改</td></tr>
+    <tr><td><strong>野生文件</strong></td><td><code>prototypes/</code> 下有 <code>.html</code> 但注册表里没有</td><td>绕过管线的手写页</td></tr>
+    <tr><td><strong>类覆盖</strong></td><td>展示面用到的固定 class 必须在样式表里有定义</td><td>改名后静默失效（家族色类 <code>f-*</code> 是<strong>开放集合</strong>，未定义 = 中性兜底，符合 §s-16）</td></tr>
+  </table>
+  <ul class="small">
+    <li><code>vis-check.mjs</code> 的 <strong>[3.6]</strong> 段调 <code>vis-proto check</code>，漂移即阻塞。</li>
+    <li><strong>生命周期口径</strong>：实验类原型的使命是「比选」，<strong>裁决落地就退役</strong> —— 留着会让读者以为候选还在可选。退役 = 定义里 <code>status</code> 改 <code>retired</code> + <strong>删掉展示面文件</strong> + 从 <code>shell.js</code> 的 <code>P</code>/<code>NAV</code> 与总览页索引卡移除。退役记录<strong>保留在册</strong>，是「不许复活」的凭据。</li>
+    <li><strong>已退役</strong>：<code>backgrounds</code>（站点底纹变体集）—— 2026-11-21 随 v2 单束柔光定稿退役；六个变体的取值固化在 §3.10，浓度口径改为直接写死在 <code>--grad-site-wash</code> / <code>--texture-site-paper</code> 两枚 token 的取值里。</li>
+    <li><strong>版本标签不手写</strong>：展示面的版本号取自 <code>SiMuseor-VIS.md</code> 标题行 —— VIS 升版后原型页的版本标签跟着变；改了定义忘了重新生成，<code>check</code> 会报漂移。</li>
+    <li><strong>首个实例</strong>：<code>cards</code>（资产卡片骨架原型，14 张样张 = 模型 5 / 工作流 5 / 节点 4）。改造前后<strong>结构与像素均完全一致</strong>：标签序列、可见文本、class 集合、引用路径逐项比对通过，且同视口 PNG <strong>字节完全相同</strong>（含全部照片解码后比对）。</li>
   </ul>
 </section>
 
@@ -1083,11 +1108,12 @@ const isAccent = (r, g, b) =&gt; {
   <br><br>
   <p class="small"><strong>v2.5（2026-11-17 · §3.7.1 表格标注版本 + hover 描边条款 + 资产同步纪律）</strong>：① <strong>§3.7.1 逐档实测表的标题行标注版本口径</strong> —— 「<strong>口径：favicon v2.4 资产</strong>」，并写明构建脚本随 <code>642dc4b</code> / <code>06a682e</code> / <code>9c4e096</code> 入库、数字取自已落盘 PNG（alpha &gt; 10 阈值）、<strong>资产包与部署版逐档一致</strong>。② <strong>§3.7.1 补「档位生成纪律」</strong> —— <code>favicon.svg</code> <strong>仅为 32px 档的矢量源</strong>，其余档位必须由 <code>make_favicon_l3.py</code> 按 <code>CANVAS</code> <strong>逐档生成</strong>，<strong>禁止缩放导出</strong>（v2.4 下 48/64/180 与 32px 不同构）。③ <strong>§3.7.3 新增「卡片 hover 描边统一画在 <code>::after</code>」条款</strong> —— 本体 inset 描边在铺满型封面下会被盖住（实测 off=37 / on=37），<code>::after</code> 在两种封面结构下都成立；并澄清 <strong><code>box-shadow</code> 外圈不被元素自身的 <code>overflow</code> 裁剪</strong>。④ <strong>§3.7.4 更正「部署版 vs 资产库版不可混称」</strong> —— 二者现已<strong>逐字节相同</strong>（都是「语义 id + 4 分组 + 82 条渐变」这一版），「不可混称」作废；<code>_flat_cicada-max.svg</code> 更正标注为<strong>纯色底座</strong>（<code>add_facet_gradients.py</code> 的<strong>输入源</strong>，0 渐变、84 条 path）—— <strong>交付用渐变版</strong> <code>cicada-max.svg</code>，<code>_flat_*.svg</code> 不得直接用于交付。⑤ <strong>补「部署同步纪律」</strong> —— 后端服务 <code>web/dist/browser/</code>，<strong>不是</strong> <code>web/public/</code>；改 favicon 后必须 <code>rm -rf dist &amp;&amp; npm run build</code>。⑥ <strong><code>_phase2-cicada.md</code> 同步 v2.4 定案</strong> —— favicon 底色改透明、尺寸档改画布比例随档位变、验收项 66 / 67 改写为实测口径。</p>
   <p class="small"><strong>v2.6（2026-11-19 · 蝉形与 favicon 手工重制）</strong>：① <strong>蝉形三帧换稿</strong> —— <code>cicada-{max,mid,min}.svg</code> 改为主理人手工重绘（max 82 / mid 57 / min 36 个面片 + 4 条触角 path，纯色 class 上色、零渐变）；深色与浅色共用同一份彩色资产，纯反白改用线稿 <code>cicada-max-lineart{-b}.svg</code>。② <strong>favicon 重做</strong> —— 七档方形画布（16 / 24 / 32 / 48 / 64 / 128 / 256）逐档独立出图、透明底，产品侧为合并 ICO + PNG 备用档 + 256 档内嵌 SVG；旧的 2:1 长方形画布与 16px x 压缩作废。③ <strong>旧管线退役</strong> —— <code>_flat_*.svg</code>、<code>add_facet_gradients.py</code>、<code>vectorize.py</code>、<code>make_favicon_l3.py</code>、<code>-mono</code> 剪影、<code>png/</code> 与 <code>ico/</code> 旧导出全部删除。</p>
-  <p class="small"><strong>v2.7（2026-11-21 · 渐变层 / 色域约束 / 站点底纹）</strong>：① <strong>§3.8 渐变层</strong> —— 全站 6 类渐变收口成 4 级 12 枚 <code>--grad-*</code> token（设计层 + 生效层同步声明，取值逐字一致）。② <strong>§3.9 色域约束摘要</strong> —— 完整 13 条约束表与 Pantone / 红点国际锚点落在 <code>reference/color.html</code> §s-17 / §s-18。③ <strong>§3.10 站点背景与底纹</strong> —— 站点底定稿 v2 单束柔光（色场 70% / 纸纹 60%），含 9 条硬约束（第 9 条为侧栏透明渐变）；配套实验稿 <code>prototypes/backgrounds.html</code>。④ 色彩规范页新增 §s-16…§s-19 四节（家族色模型卡美术色域 / 约束总表 / 国际锚点 / 渐变层）。</p>
+  <p class="small"><strong>v2.7（2026-11-21 · 渐变层 / 色域约束 / 站点底纹）</strong>：① <strong>§3.8 渐变层</strong> —— 全站 6 类渐变收口成 4 级 12 枚 <code>--grad-*</code> token（设计层 + 生效层同步声明，取值逐字一致）。② <strong>§3.9 色域约束摘要</strong> —— 完整 13 条约束表与 Pantone / 红点国际锚点落在 <code>reference/color.html</code> §s-17 / §s-18。③ <strong>§3.10 站点背景与底纹</strong> —— 站点底定稿 v2 单束柔光（色场 70% / 纸纹 60%），含 9 条硬约束（第 9 条为侧栏透明渐变）；配套对比实验稿（后于 v2.10 退役删除）。④ 色彩规范页新增 §s-16…§s-19 四节（家族色模型卡美术色域 / 约束总表 / 国际锚点 / 渐变层）。</p>
   <p class="small"><strong>v2.8（2026-11-21 · 资产守门员 + 事实更正）</strong>：① <strong>§3.11 新增「资产守门员 <code>vis-asset-guard.mjs</code>」</strong> —— 「SVG 是唯一图片资产真值」的可机检契约：4 子命令（<code>normalize</code> / <code>fingerprint</code> / <code>assert</code> / <code>report</code>）、8 条断言（A1–A8）、<strong>与 <code>vis-check.mjs</code> 同一套棘轮口径</strong>（等于基线退出 1 仅提示，超基线退出 2 阻塞）；A8 按 WCAG 1.4.11 免除 logo 的规定，对品牌标记主色对比度<strong>报 INFO 不阻塞</strong>。工具落位 <code>artifacts/vis/vis-asset-guard.mjs</code>，验证 <code>tests/vis-asset-guard.mjs</code>（26 条断言全通过），台账 <code>artifacts/vis/asset-ledger.json</code>。② <strong>§3.7.4 事实更正</strong> —— 上色方式原写 <code>.cls-1…cls-86</code>，实测为 <strong>max 44 个类 / 86 次引用</strong>（引用数 ≠ 类数，86 = 82 polygon + 4 path），mid 45 类 / min 21 类；定义与使用<strong>零差集</strong>。③ <strong>§3.8 G0 事实更正</strong> —— 「蝉形 82 条面片微渐变」作废：蝉形自 v2.6 手工重制后为 <strong>82 面片纯色、零渐变</strong>，G0 现只承载 favicon 5 档色带。</p>
   <p class="small"><strong>v2.9（2026-11-21 · 棘轮清零 + 违规热力）</strong>：① <strong>§8.3 M1 落地一条</strong> —— 组件 scoped 的 <code>.btn.primary</code> 原用 <code>--accent</code> 当填充底色 + 裸 <code>#fff</code> 字色，深色主题下白字压 <code>--accent</code> #a5b4fc 仅 <strong>1.99:1</strong>、hover 的 <code>--accent-hover</code> #c7d2fe 仅 <strong>1.49:1</strong>（均不达 AA，且属裸色值）。按 §3.3「填充型用 <code>--primary</code>」与 §8.5 裁决 5 / M1-d 既定裁决改为 <code>--primary</code> + <code>--on-primary</code>，hover 保持 <code>background: var(--primary)</code> 只改 <code>border-color</code>，四态实测 <strong>6.29:1</strong>（浅深一致）。② <strong>§3.3 产品层新增两枚 token</strong> —— <code>--plate-chip-ink #3b3a35</code> / <code>--plate-chip-line rgb(0 0 0 / .18)</code>（封面铭牌照片上的白底芯片，<strong>与主题无关、两主题同值</strong>），原先内联在 <code>cover-plate.component.ts</code> 的两个裸色值上提，改值零、视觉零变化。③ <strong><code>vis-check.mjs</code> 新增 [3.5] 违规热力</strong> —— 棘轮逐 key 的超基线 / 可收敛明细，按规则与按文件两套排序，直接排出「先修哪个」；并据此把 1.12 基线由 110 收紧至 <strong>108</strong>（只降不升）。④ 超基线清零：<code>vis-check</code> 退出码由 2 回到 <strong>1</strong>（旧债仍在，按设计不阻塞 CI）。⑤ <strong>§8.2 对比度实算数字更正</strong> —— 实跑为 PASS 19 / FAIL 7 / INFO 1，原文「18 / 8」为旧数。</p>
+  <p class="small"><strong>v2.10（2026-11-21 · 原型页生成管线 + 背景实验退役）</strong>：① <strong>§3.12 新增「原型页生成管线」</strong> —— 原型页是<strong>展示面</strong>不是手写页面，按 <strong>类型</strong>（<code>_types.mjs</code>，形状与渲染器）/ <strong>定义</strong>（<code>_defs.mjs</code>，唯一手写处）/ <strong>展示面</strong>（<code>prototypes/*.html</code>，生成物）三层拆开；新工具 <code>artifacts/vis/vis-proto.mjs</code> 提供 <code>build</code>（重新生成）与 <code>check</code>（防漂移）。② <strong>防漂移四道</strong> —— 漂移（重新渲染 ↔ 入库展示面<strong>逐字节</strong>比对）、退役（<code>status: retired</code> 的原型展示面必须已不存在）、野生文件（<code>prototypes/</code> 下有 <code>.html</code> 但注册表没有）、类覆盖（展示面用到的 class 必须在样式表有定义；家族色类 <code>f-*</code> 为开放集合，未定义 = 中性兜底）。任一阻塞项 → 退出码 2。③ <strong><code>vis-check.mjs</code> 新增 [3.6] 段</strong>调 <code>vis-proto check</code>，漂移即阻塞。④ <strong><code>cards.html</code> 改造成首个生成式原型</strong>（14 张样张 = 模型 5 / 工作流 5 / 节点 4），改造前后<strong>结构与像素完全一致</strong>（标签序列 / 可见文本 / class 集合 / 引用路径逐项比对 + 同视口 PNG 字节相同）。⑤ <strong>背景实验退役</strong> —— v2 单束柔光已定稿落产品，比选使命完成，删除 <code>prototypes/backgrounds.html</code> 与 <code>_proto-bg.css</code>，并从 <code>shell.js</code> 的 <code>P</code>/<code>NAV</code> 与总览页索引卡移除；退役记录保留在 <code>_defs.mjs</code> 作为「不许复活」的凭据。⑥ <strong>§3.10 浓度口径改写</strong> —— 浓度不再由原型页滑杆承载（该页已退役），直接写死在 <code>--grad-site-wash</code> 峰值 α0.063（上限 0.090 的 70%）与 <code>--texture-site-paper</code> opacity 0.204（60%）；六个变体的取值表固化在 §3.10。</p>
   <footer>
-    SiMuseor · Visual Identity System v2.9 · 2026-11-21<br>
+    SiMuseor · Visual Identity System v2.10 · 2026-11-21<br>
     编制：UI 设计全栈专家团（视觉设计架构师 / 体验设计师 / 前端工程专家），主理人汇编。<br>
     本手册描述目标态，不代表代码已落地；所有落地改动须按 M0–M3 排期并跑通 E2E 回归。LOGO 冻结后须按 §9.3 回写并升版。
   </footer>

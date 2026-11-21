@@ -48,6 +48,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));   // artifacts/vis
 const ROOT = path.resolve(HERE, '..', '..');                  // 项目根
@@ -1241,6 +1242,45 @@ say(HR2);
     say('  基线可收紧：共 ' + tightenable + ' 个 key 的实际值已低于登记基线。');
   }
   say('');
+}
+say('');
+
+/* ==========================================================================
+ * 3.6 原型页防漂移（vis-proto check）
+ * --------------------------------------------------------------------------
+ * 原型展示面是**生成物**（定义层 -> 类型层 -> 展示面）。这里只调
+ * vis-proto check，它管四件事：漂移 / 退役 / 野生文件 / 类覆盖。
+ * 任一阻塞项 -> 退出码 2（生成物与真值脱节，不许带病合）。
+ * ========================================================================== */
+{
+  say('');
+  say(HR2);
+  say('[3.6] 原型页防漂移（artifacts/vis/vis-proto.mjs check）');
+  say(HR2);
+  const protoTool = path.join(HERE, 'vis-proto.mjs');
+  if (!fs.existsSync(protoTool)) {
+    say('    [FAIL] vis-proto.mjs 不存在 —— 原型页防漂移门禁缺失');
+    deliverableFail++;
+  } else {
+    const r = spawnSync(process.execPath, [protoTool, 'check'], {
+      cwd: ROOT, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+    });
+    const out = String(r.stdout || '') + String(r.stderr || '');
+    for (const line of out.split('\n')) {
+      if (/^\s{4}\[/.test(line) || /^\s{4}(阻塞项|提示项|版本真值)/.test(line)) say(line);
+    }
+    if (r.status === 2) {
+      say('    ^ 原型页漂移 / 退役未删 / 野生文件 -> 阻塞');
+      deliverableFail++;
+    } else if (r.status === 3) {
+      say('    [FAIL] vis-proto 自身出错 -> 阻塞');
+      deliverableFail++;
+    } else if (r.status === 1) {
+      say('    [提示] 有提示项，不阻塞');
+    } else {
+      say('    [PASS] 原型页无漂移，生命周期合规');
+    }
+  }
 }
 say('');
 
