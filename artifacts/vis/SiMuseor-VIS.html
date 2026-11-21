@@ -800,7 +800,8 @@ const isAccent = (r, g, b) =&gt; {
   </table>
   <p class="small"><code>vis-check.mjs</code> 的 <strong>[3.8]</strong> 段调 <code>vis-layout check</code>，阻塞级。</p>
   <ul class="small">
-    <li><strong>渲染验收</strong>（Playwright / Chromium，72 页全量）：0 JS 错、0 横向溢出、0 样式不符（<code>.doc-head h1</code> 22px / <code>section</code> <code>margin-bottom</code> 56px / <code>section &gt; h3</code> 14px / <code>section &gt; h4</code> 12px / <code>section &gt; p.lead</code> 12.5px）、左侧导航每页都渲染得出来。</li>
+    <li><strong>渲染验收</strong>：工具 <code>artifacts/vis/vis-render.mjs</code>（Playwright + Chromium 实跑，逐页量<strong>计算样式</strong>）—— <code>node artifacts/vis/vis-render.mjs</code>。72 页全量结果：0 JS 错、0 横向溢出、0 样式不符（<code>.doc-head h1</code> 22px / <code>section</code> <code>margin-bottom</code> 56px / <code>section &gt; h3</code> 14px / <code>section &gt; h4</code> 12px / <code>section &gt; p.lead</code> 12.5px）、左侧导航每页都渲染得出来。</li>
+    <li><strong>为什么不进 <code>vis-check</code></strong> —— <code>vis-check</code> 是<strong>纯静态、零依赖、秒级</strong>的门禁，CI 每次都跑；本脚本要起浏览器跑 72 页、耗时分钟级，属于「改样式后 / 发布前跑一次」的重检查。<strong>静态检查管「契约」，渲染验收管「画出来对不对」</strong>，两者不可互相替代。</li>
     <li><strong>拆分是幂等的</strong>：<code>vis-manual split</code> 连跑两次 → 逐字节相同。节页由 <code>split</code> 从 git 里的旧章页按 <strong>DOM 级块</strong>拆分生成（不是按文本位置切）；<code>vis-manual check</code> 对<strong>章首页与导航块</strong>做逐字节比对，节页的漂移靠拆分幂等 + <code>[3.8]</code> 的结构检查兜底。</li>
   </ul>
 </section>
@@ -1017,6 +1018,8 @@ const isAccent = (r, g, b) =&gt; {
     <tr><td><code>vis-tokens.css</code></td><td>独立 token 层，M0 可直接追加</td></tr>
     <tr><td><code>vis-manual.mjs</code> + <code>reference/&lt;章&gt;/</code></td><td>手册分页：节页手写、章首页与导航块生成、check 防漂移</td></tr>
     <tr><td><code>vis-check.mjs</code> / <code>vis-check-report.txt</code></td><td>只读校验脚本 / 主理人实跑报告</td></tr>
+<tr><td><code>vis-dom.mjs</code> / <code>vis-layout.mjs</code></td><td>真实 HTML 解析器 / 手册站结构·样式·骨架检查（§3.13，<code>vis-check</code> 的 [3.8] 段）</td></tr>
+<tr><td><code>vis-render.mjs</code></td><td>渲染验收：Chromium 实跑 72 页，逐页量计算样式（§3.13）</td></tr>
     <tr><td><code>_phase1-visual.md</code>（v1.1 / 620 行）</td><td>基础系统规范全文</td></tr>
     <tr><td><code>_phase2-experience.md</code>（888 行 / 61 条验收项）</td><td>应用与体验规范全文</td></tr>
     <tr><td><code>_phase3-engineering.md</code>（871 行 / 11 章）</td><td>工程落地方案全文（token 表、M0–M3、字体、构建冲突规避、E2E 回归矩阵）</td></tr>

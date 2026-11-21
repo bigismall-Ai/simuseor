@@ -690,7 +690,10 @@ PrimeNG **仅存在于实验区**，且**已按需装载**，不在产品首屏�
 
 `vis-check.mjs` 的 **[3.8]** 段调 `vis-layout check`，阻塞级。
 
-**渲染验收**（Playwright / Chromium，72 页全量）：0 JS 错、0 横向溢出、0 样式不符（`.doc-head h1` 22px / `section` `margin-bottom` 56px / `section > h3` 14px / `section > h4` 12px / `section > p.lead` 12.5px）、左侧导航每页都渲染得出来。
+**渲染验收**：工具 `artifacts/vis/vis-render.mjs`（Playwright + Chromium 实跑，逐页量**计算样式**）——
+`node artifacts/vis/vis-render.mjs`。72 页全量结果：0 JS 错、0 横向溢出、0 样式不符（`.doc-head h1` 22px / `section` `margin-bottom` 56px / `section > h3` 14px / `section > h4` 12px / `section > p.lead` 12.5px）、左侧导航每页都渲染得出来。
+
+> **为什么不进 `vis-check`** —— `vis-check` 是**纯静态、零依赖、秒级**的门禁，CI 每次都跑；本脚本要起浏览器跑 72 页、耗时分钟级，属于「改样式后 / 发布前跑一次」的重检查。**静态检查管「契约」，渲染验收管「画出来对不对」**，两者不可互相替代。
 
 **拆分是幂等的**：`vis-manual split` 连跑两次 → 逐字节相同。节页由 `split` 从 git 里的旧章页按 **DOM 级块**拆分生成（不是按文本位置切）；`vis-manual check` 对**章首页与导航块**做逐字节比对，节页的漂移靠拆分幂等 + `[3.8]` 的结构检查兜底。
 
@@ -860,6 +863,8 @@ M0–M2 与 LOGO 冻结解耦，可立即排期。每阶段的文件 + 行号 + 
 | `vis-manual.mjs` + `reference/<章>/` | 手册分页：节页手写、章首页与导航块生成、check 防漂移 |
 | `vis-tokens.css` | 独立 token 层，M0 可追加 |
 | `vis-check.mjs` / `vis-check-report.txt` | 只读校验脚本 / 实跑报告 |
+| `vis-dom.mjs` / `vis-layout.mjs` | 真实 HTML 解析器 / 手册站结构·样式·骨架检查（§3.13，`vis-check` 的 [3.8] 段） |
+| `vis-render.mjs` | 渲染验收：Chromium 实跑 72 页，逐页量计算样式（§3.13） |
 | `_phase1-visual.md`（v1.1 / 620 行） | 基础系统规范全文 |
 | `_phase2-experience.md`（888 行 / 61 条验收项） | 应用与体验规范全文 |
 | `_phase3-engineering.md`（871 行 / 11 章） | 工程落地方案全文 |
