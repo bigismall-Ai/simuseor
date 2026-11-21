@@ -66,7 +66,7 @@ export const PROTO_DEFS = [
         ['② 身份行', '32×32 标识块，内部图形 24×24；右侧「厂名 / 作者」上下两行。'],
         ['③ 原站', '右上角固定为原站链接，本地库与发现页同一个位置、同一种样式。'],
         ['④ 状态槽', '左状态 · 半透明白线 · 右大小（权重 / 磁盘 / 节点类数）。'],
-        ['⑤ 分类标签', '只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = 安装方式。'],
+        ['⑤ 分类标签', '只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = **它提供什么**（节点类代表名 + 「+N」；一个节点类都不提供的给「管理面板」）。'],
         ['⑥ 动作行', '⋯ 在左，主按钮在右。危险、补齐依赖等次要操作收进菜单。'],
       ],
       sections: [
@@ -183,43 +183,65 @@ export const PROTO_DEFS = [
         {
           id: 'pc-node',
           title: '节点',
-          sub: '真实预览图 / 计数兜底 · 白线右侧 = 节点类数',
+          sub: '真实预览图 / 铭牌兜底 · 白线右侧 = 节点类数',
           cards: [
             {
               onShot: true, family: 'sd3', motif: 1, photo: '../../wf-covers/flux-kontext.jpg',
               mark: { type: 'text', text: 'CM' },
               brand: 'Manager', author: 'ltdrdata', origin: 'GitHub',
               name: 'ComfyUI-Manager', meta: '扩展管理',
-              slot: { text: '已启用', state: 'is-ok', size: '42 节点类' },
-              tag: 'Git 安装', cta: '查看',
+              slot: { text: '已启用', state: 'is-ok', size: '0 节点类' },
+              tags: [
+                { text: '管理面板', title: 'ComfyUI-Manager 的 NODE_CLASS_MAPPINGS 是空的 —— 它只提供面板，不提供节点类' },
+              ],
+              cta: '查看',
             },
             {
-              family: 'other', motif: 3, count: '18',
+              family: 'other', motif: 3, plateMark: { mark: 'IP', label: 'Impact Pack' },
               mark: { type: 'text', text: 'IP' },
               brand: 'Impact', author: 'ltdrdata', origin: 'GitHub',
               name: 'ComfyUI-Impact-Pack', meta: '图像处理',
               slot: { text: '已启用', state: 'is-ok', size: '18 节点类' },
-              tag: '一键安装', cta: '查看',
+              tags: [
+                { text: 'ImpactWildcardProcessor', mono: true, title: 'ImpactWildcardProcessor 等 18 个节点类' },
+                { text: '+17', more: true },
+              ],
+              cta: '查看',
             },
             {
-              family: 'wan', motif: 0, count: '12',
+              family: 'wan', motif: 0, plateMark: { mark: 'WV', label: 'WanVideo' },
               mark: { type: 'text', text: 'WV' },
               brand: 'WanVideo', author: 'kijai', origin: 'GitHub',
               name: 'ComfyUI-WanVideoWrapper', meta: '视频生成',
               slot: { text: '缺 kornia、einops', state: 'is-warn', size: '12 节点类' },
-              tag: '手动安装', cta: '补齐依赖',
+              tags: [
+                { text: 'WanVideoModelLoader', mono: true, title: 'WanVideoModelLoader 等 12 个节点类' },
+                { text: '+11', more: true },
+              ],
+              cta: '补齐依赖',
             },
             {
-              family: 'krea', motif: 2, count: '8',
+              family: 'krea', motif: 2, plateMark: { mark: 'AC', label: 'ControlNet' },
               mark: { type: 'text', text: 'AC' },
               brand: 'ControlNet', author: 'Fannovel16', origin: 'GitHub',
               name: 'ComfyUI-Advanced-ControlNet', meta: '控制网',
               slot: { text: '未安装', size: '8 节点类' },
-              tag: '一键安装', cta: '安装',
+              tags: [
+                { text: 'AdvancedControlNetApply', mono: true, title: 'AdvancedControlNetApply 等 8 个节点类' },
+                { text: '+7', more: true },
+              ],
+              cta: '安装',
             },
           ],
-          caption: '节点没有天然封面：有预览图就铺满整卡，没有就把节点类数放在遮罩上方的' +
-            '可见区域。节点类名属于详情页信息，不再上卡；标签只标安装方式（Git / 一键 / 手动），' +
+          caption: '节点没有天然封面：有预览图就铺满整卡，没有就用**扩展铭牌**（标识 + 名字）填满封面区 —— ' +
+            '与模型卡的家族铭牌同一逻辑，不再拿数字占位（同一个「N 节点类」也不该在封面上报两次）。' +
+            '白线右侧是节点类数（节点没有磁盘大小，规模就是它提供多少节点类）。' +
+            '标签栏放**它提供什么**：有节点类的给代表类名 + 「+N」（完整清单在详情页），' +
+            '一个节点类都不提供的给「管理面板」（ComfyUI-Manager 的 NODE_CLASS_MAPPINGS 是空的 —— ' +
+            '这类扩展**节点类数恒为 0**，别拿数字硬凑）。' +
+            '这是节点扩展唯一独有的决策问题：「我要的那个节点类在不在这个包里」；' +
+            '模型卡答「是什么文件」（Checkpoint / LoRA）、工作流卡答「属于哪类内容」（人物 / 电商），' +
+            '同一层。安装方式不再进标签栏：动作按钮已经表达了（安装 / 补齐依赖 / 查看）。' +
             '标识块、双行身份、原站链接与模型卡一致。',
         },
         {

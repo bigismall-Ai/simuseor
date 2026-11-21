@@ -292,6 +292,19 @@ body { background: var(--bg); }
 }
 .ref .ac-tags .pill.is-more { flex: none; max-width: none; }
 .ref .ac-tags .pill-link:hover { background: rgb(255 255 255 / 0.24); color: #fff; }
+/* 标识类标签（节点类名）：等宽小字，与分类胶囊（Checkpoint / 人物）不同调。
+   节点类名比分类胶囊长得多（ImpactWildcardProcessor 24 字符），单独放宽到 68%，
+   否则会被 42% 的分类胶囊上限截成「ImpactWildcard…」。 */
+.ref .ac-tags .pill.is-mono {
+  flex: 0 1 auto;
+  max-width: 68%;
+  font-family: "Cascadia Mono", Consolas, "SF Mono", monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  background: rgb(255 255 255 / 0.12);
+  color: rgb(255 255 255 / 0.82);
+}
 
 /* ---- 动作行：⋯ 在左，主按钮在右 ---- */
 .ref .ac-foot {
@@ -329,6 +342,7 @@ body { background: var(--bg); }
 }
 
 /* ---- 节点兜底封面：没有预览图时，把「节点类数」放在上半区 ---- */
+/* 节点卡现已改用「铭牌兜底」（标识 + 名字），数字只保留在状态槽右侧一处 */
 .ref .ac-count {
   position: absolute;
   left: 0;
@@ -358,6 +372,16 @@ body { background: var(--bg); }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   opacity: 0.78;
+}
+/* 铭牌兜底：标识 + 名字，替掉「用数字占位」的旧写法 */
+.ref .ac-count.is-mark strong {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.ref .ac-count.is-mark span {
+  font-size: 9px;
+  letter-spacing: 0.12em;
 }
 
 /* ---- 坏文件：沿用「斜纹 = 这条资产残了」的通用语言 ---- */

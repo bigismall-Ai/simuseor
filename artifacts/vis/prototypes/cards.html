@@ -38,7 +38,7 @@
             <div><b>② 身份行</b><span>32×32 标识块，内部图形 24×24；右侧「厂名 / 作者」上下两行。</span></div>
             <div><b>③ 原站</b><span>右上角固定为原站链接，本地库与发现页同一个位置、同一种样式。</span></div>
             <div><b>④ 状态槽</b><span>左状态 · 半透明白线 · 右大小（权重 / 磁盘 / 节点类数）。</span></div>
-            <div><b>⑤ 分类标签</b><span>只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = 安装方式。</span></div>
+            <div><b>⑤ 分类标签</b><span>只放一枚：模型 = 文件类型，工作流 = 自定义分组，节点 = **它提供什么**（节点类代表名 + 「+N」；一个节点类都不提供的给「管理面板」）。</span></div>
             <div><b>⑥ 动作行</b><span>⋯ 在左，主按钮在右。危险、补齐依赖等次要操作收进菜单。</span></div>
           </div>
 
@@ -373,7 +373,7 @@
           </div>
 
           <div class="proto-anchor" id="pc-node">
-            <div class="proto-anchor-head"><b>节点</b><span>真实预览图 / 计数兜底 · 白线右侧 = 节点类数</span></div>
+            <div class="proto-anchor-head"><b>节点</b><span>真实预览图 / 铭牌兜底 · 白线右侧 = 节点类数</span></div>
             <div class="ac-grid">
 
               <article class="ac on-shot">
@@ -395,8 +395,8 @@
                 <div class="ac-body">
                   <h3 class="ac-name">ComfyUI-Manager</h3>
                   <p class="ac-meta"><span>扩展管理</span></p>
-                  <div class="ac-slot"><span class="is-ok">已启用</span><span class="ac-rule"></span><span class="ac-size">42 节点类</span></div>
-                  <div class="ac-tags"><span class="pill">Git 安装</span></div>
+                  <div class="ac-slot"><span class="is-ok">已启用</span><span class="ac-rule"></span><span class="ac-size">0 节点类</span></div>
+                  <div class="ac-tags"><span class="pill" title="ComfyUI-Manager 的 NODE_CLASS_MAPPINGS 是空的 —— 它只提供面板，不提供节点类">管理面板</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
                     <button class="primary btn-xs" type="button">查看</button>
@@ -409,7 +409,7 @@
                   <div class="ac-plate">
                     <div class="cp"><div class="plate f-other mo-3">
                       <span class="motif"></span><span class="scrim"></span>
-                      <div class="ac-count"><strong>18</strong><span>节点类</span></div>
+                      <div class="ac-count is-mark"><strong>IP</strong><span>Impact Pack</span></div>
                     </div></div>
                   </div>
                 </div>
@@ -424,7 +424,7 @@
                   <h3 class="ac-name">ComfyUI-Impact-Pack</h3>
                   <p class="ac-meta"><span>图像处理</span></p>
                   <div class="ac-slot"><span class="is-ok">已启用</span><span class="ac-rule"></span><span class="ac-size">18 节点类</span></div>
-                  <div class="ac-tags"><span class="pill">一键安装</span></div>
+                  <div class="ac-tags"><span class="pill is-mono" title="ImpactWildcardProcessor 等 18 个节点类">ImpactWildcardProcessor</span><span class="pill is-more">+17</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
                     <button class="primary btn-xs" type="button">查看</button>
@@ -437,7 +437,7 @@
                   <div class="ac-plate">
                     <div class="cp"><div class="plate f-wan mo-0">
                       <span class="motif"></span><span class="scrim"></span>
-                      <div class="ac-count"><strong>12</strong><span>节点类</span></div>
+                      <div class="ac-count is-mark"><strong>WV</strong><span>WanVideo</span></div>
                     </div></div>
                   </div>
                 </div>
@@ -452,7 +452,7 @@
                   <h3 class="ac-name">ComfyUI-WanVideoWrapper</h3>
                   <p class="ac-meta"><span>视频生成</span></p>
                   <div class="ac-slot"><span class="is-warn">缺 kornia、einops</span><span class="ac-rule"></span><span class="ac-size">12 节点类</span></div>
-                  <div class="ac-tags"><span class="pill">手动安装</span></div>
+                  <div class="ac-tags"><span class="pill is-mono" title="WanVideoModelLoader 等 12 个节点类">WanVideoModelLoader</span><span class="pill is-more">+11</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
                     <button class="primary btn-xs" type="button">补齐依赖</button>
@@ -465,7 +465,7 @@
                   <div class="ac-plate">
                     <div class="cp"><div class="plate f-krea mo-2">
                       <span class="motif"></span><span class="scrim"></span>
-                      <div class="ac-count"><strong>8</strong><span>节点类</span></div>
+                      <div class="ac-count is-mark"><strong>AC</strong><span>ControlNet</span></div>
                     </div></div>
                   </div>
                 </div>
@@ -480,7 +480,7 @@
                   <h3 class="ac-name">ComfyUI-Advanced-ControlNet</h3>
                   <p class="ac-meta"><span>控制网</span></p>
                   <div class="ac-slot"><span>未安装</span><span class="ac-rule"></span><span class="ac-size">8 节点类</span></div>
-                  <div class="ac-tags"><span class="pill">一键安装</span></div>
+                  <div class="ac-tags"><span class="pill is-mono" title="AdvancedControlNetApply 等 8 个节点类">AdvancedControlNetApply</span><span class="pill is-more">+7</span></div>
                   <div class="ac-foot">
                     <button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>
                     <button class="primary btn-xs" type="button">安装</button>
@@ -488,7 +488,7 @@
                 </div>
               </article>
             </div>
-            <p class="proto-caption">节点没有天然封面：有预览图就铺满整卡，没有就把节点类数放在遮罩上方的可见区域。节点类名属于详情页信息，不再上卡；标签只标安装方式（Git / 一键 / 手动），标识块、双行身份、原站链接与模型卡一致。</p>
+            <p class="proto-caption">节点没有天然封面：有预览图就铺满整卡，没有就用**扩展铭牌**（标识 + 名字）填满封面区 —— 与模型卡的家族铭牌同一逻辑，不再拿数字占位（同一个「N 节点类」也不该在封面上报两次）。白线右侧是节点类数（节点没有磁盘大小，规模就是它提供多少节点类）。标签栏放**它提供什么**：有节点类的给代表类名 + 「+N」（完整清单在详情页），一个节点类都不提供的给「管理面板」（ComfyUI-Manager 的 NODE_CLASS_MAPPINGS 是空的 —— 这类扩展**节点类数恒为 0**，别拿数字硬凑）。这是节点扩展唯一独有的决策问题：「我要的那个节点类在不在这个包里」；模型卡答「是什么文件」（Checkpoint / LoRA）、工作流卡答「属于哪类内容」（人物 / 电商），同一层。安装方式不再进标签栏：动作按钮已经表达了（安装 / 补齐依赖 / 查看）。标识块、双行身份、原站链接与模型卡一致。</p>
           </div>
 
           <div class="proto-anchor" id="pc-diff">

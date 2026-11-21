@@ -75,6 +75,10 @@ function assetCard(c, indent = '              ') {
   if (c.count) {
     art.push(`${inner4}<div class="ac-count"><strong>${c.count}</strong><span>${c.countLabel || '节点类'}</span></div>`);
   }
+  /* 铭牌兜底：没有预览图时用标识 + 名字填满封面区（与模型卡的家族铭牌同一逻辑） */
+  if (c.plateMark) {
+    art.push(`${inner4}<div class="ac-count is-mark"><strong>${c.plateMark.mark}</strong><span>${c.plateMark.label}</span></div>`);
+  }
   const plateCls = ['plate', `f-${c.family}`, `mo-${c.motif}`].concat(c.onShot ? ['on-shot'] : []).join(' ');
 
   L.push(`${I}<article class="ac${c.onShot ? ' on-shot' : ''}">`);
@@ -111,7 +115,14 @@ function assetCard(c, indent = '              ') {
   L.push(`${inner2}<h3 class="ac-name">${c.name}</h3>`);
   L.push(`${inner2}<p class="ac-meta"><span>${c.meta}</span></p>`);
   L.push(slot(c.slot, inner2));
-  L.push(`${inner2}<div class="ac-tags"><span class="pill">${c.tag}</span></div>`);
+  /* 标签行：一枚或一组。mono=true 是「标识类」内容（节点类名），
+     与分类胶囊（Checkpoint / 人物 / 安装方式）不同调，故另给样式。 */
+  const tags = Array.isArray(c.tags) ? c.tags : [{ text: c.tag }];
+  L.push(`${inner2}<div class="ac-tags">${tags.map((t) => {
+    const cls = ['pill', t.more ? 'is-more' : '', t.mono ? 'is-mono' : ''].filter(Boolean).join(' ');
+    const title = t.title ? ` title="${t.title}"` : '';
+    return `<span class="${cls}"${title}>${t.text}</span>`;
+  }).join('')}</div>`);
   L.push(`${inner2}<div class="ac-foot">`);
   L.push(`${inner3}<button class="ac-kebab" type="button" aria-label="更多操作">⋯</button>`);
   L.push(`${inner3}<button class="primary btn-xs" type="button">${c.cta}</button>`);
