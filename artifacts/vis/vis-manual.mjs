@@ -583,18 +583,27 @@ function build() {
     const list = ch.items.map((it) =>
       `    <a class="proto-index-card" href="${it.file}"><b>${it.label}</b><span>${it.title}</span><em>${ch.dir}/${it.file}</em></a>`
     ).join(eol);
+    /* 标记行缩进必须**原样保留**：
+       旧写法 `idx.slice(0, i) + toc` 会把标记前的原有缩进留着、toc 里又带 2 个空格 ——
+       每 build 一次就多 2 格，**生成不幂等**（拆页/建目录的地基就是幂等，见 VIS §3.13）。
+       这里改成：按行首切、缩进从原文取出来再写回去。 */
+    const lineStart = (s, pos) => s.lastIndexOf('\n', pos) + 1;
+    const i = idx.indexOf('<!-- BEGIN toc -->');
+    const j = idx.indexOf('<!-- END toc -->');
+    if (i === -1 || j === -1) { console.log('  !! 章首页缺目录标记: ' + ch.dir); continue; }
+    const iLine = lineStart(idx, i);
+    const jLine = lineStart(idx, j);
+    const indentBegin = idx.slice(iLine, i);
+    const indentEnd = idx.slice(jLine, j);
     const toc = [
-      '  <!-- BEGIN toc -->',
+      indentBegin + '<!-- BEGIN toc -->',
       `  <h3 id="toc-${ch.dir}">本章目录</h3>`,
       '  <div class="proto-index">',
       list,
       '  </div>',
-      '  <!-- END toc -->',
+      indentEnd + '<!-- END toc -->',
     ].join(eol);
-    const i = idx.indexOf('<!-- BEGIN toc -->');
-    const j = idx.indexOf('<!-- END toc -->');
-    if (i === -1 || j === -1) { console.log('  !! 章首页缺目录标记: ' + ch.dir); continue; }
-    const out = idx.slice(0, i) + toc + idx.slice(j + '<!-- END toc -->'.length);
+    const out = idx.slice(0, iLine) + toc + idx.slice(j + '<!-- END toc -->'.length);
     fs.writeFileSync(idxPath, out, 'utf8');
   }
 
@@ -705,6 +714,12 @@ function check() {
       const idx = path.join(REF, ch.dir, 'index.html');
       if (!fs.existsSync(idx)) { problems.push('缺章首页: ' + ch.dir + '/index.html'); continue; }
       const t = fs.readFileSync(idx, 'utf8');
+      /* 章首页也是**生成物**：必须与重新生成的结果逐字节相同。
+         旧写法只查「目录里有没有这个 href」，生成物自己漂了也发现不了
+         —— 后果是每 build 一次 toc 标记就多 2 格空格，文件一天天变形。 */
+      if (idxBak.has(idx) && t !== idxBak.get(idx)) {
+        problems.push(`章首页与重新生成的结果不一致（生成物漂移）: ${ch.dir}/index.html —— 跑 \`node artifacts/vis/vis-manual.mjs build\``);
+      }
       for (const it of ch.items) {
         if (!t.includes(`href="${it.file}"`)) {
           problems.push(`章首页目录缺项: ${ch.dir}/index.html -> ${it.file}`);
