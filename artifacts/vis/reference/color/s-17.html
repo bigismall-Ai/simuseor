@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>色域约束总表（可判定） · SiMuseor VIS</title>
 <meta name="nav-label" content="约束表">
-  <meta name="description" content="SiMuseor 视觉规范：色域约束总表（可判定）">
+<meta name="description" content="SiMuseor 视觉规范：色域约束总表（可判定）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="color/s-17" data-root="../../">
@@ -13,49 +13,49 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-17">色域约束总表（可判定）</h1>
   <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
 </div>
 
-  <section id="sec-color-s-17">
+<section id="sec-color-s-17" class="ref">
   <p class="lead">
-    「克制」不是形容词。下面每一条都能被量出来：要么数面积、要么算比值、要么查色相与彩度。
-    <strong>区间里的数字全部来自实测</strong>（家族色 25 组 / 任务色 12 组 / 明暗两套，
+    「克制」不是形容词。下面每一条都能被量出来：要么数面积、要么算比值、要么查色相与彩度。<strong>区间里的数字全部来自实测</strong>（家族色 25 组 / 任务色 12 组 / 明暗两套，
     脚本 <code>artifacts/vis/vis-color-domain.py</code>），不是经验值。
   </p>
   <table class="t">
-    <thead><tr><th style="width:56px">#</th><th style="width:160px">维度</th><th>约束（可判定）</th><th style="width:230px">依据 / 实测</th></tr></thead>
+    <thead>
+      <tr><th style="width:56px">#</th><th style="width:160px">维度</th><th>约束（可判定）</th><th style="width:230px">依据 / 实测</th></tr>
+    </thead>
     <tbody>
       <tr><td>1</td><td>面积配额<strong>（产品 UI 单屏）</strong></td><td>中性表面 + 文字 <strong>≥85%</strong>；边框 / 结构线 ~10%；交互强调色 <strong>≤5%</strong>；实心靛紫块 <strong>≤2 处 / 屏</strong>；语义色 ≤3%</td><td>VIS §3.4</td></tr>
       <tr><td>2</td><td>面积配额<strong>（品牌展示面）</strong></td><td>暖纸底 ≥75%；线 / 装饰 ≤5%；墨黑字标与文字 ≤20%；<strong>语义色 0</strong></td><td>VIS §3.4</td></tr>
       <tr><td>3</td><td>交互色域</td><td>靛紫只允许 50 / 100 / 300 / 600 / 700 五档；<strong>400 / 500 档禁作前景</strong>（白字 2.98 / 4.47:1 双双 FAIL）；深色 <code>--primary</code> 不翻（仍 600）</td><td>实算见 §s-15</td></tr>
       <tr><td>4</td><td>家族底域</td><td>L* ∈ [93, 96]、彩度 <strong>C* ≤ 12</strong> —— 底永远是低彩度纸感；不得出现高彩度家族底</td><td>实测 25 族</td></tr>
-      <tr><td>5</td><td>家族字域</td><td><code>ink</code> on <code>bg</code> <strong>≥4.5:1</strong>；<code>strong</code> on <code>bg</code> ≥6:1</td><td>实测最低 4.24:1（lumina）—— <strong>唯一未达标项</strong>，该家族 ink 不得承载小字，或把 ink 提到 ≥4.5:1</td></tr>
-      <tr><td>6</td><td>家族纹样域</td><td><code>mark</code> <strong>永不承载文本</strong>；只作纹样 / 图形 / 渐变端点</td><td>实测 mark/bg 仅 1.68–2.81:1</td></tr>
+      <tr><td>5</td><td>家族字域</td><td><code>ink</code> on <code>bg</code><strong>≥4.5:1</strong>；<code>strong</code> on <code>bg</code> ≥6:1</td><td>实测最低 4.24:1（lumina）—— <strong>唯一未达标项</strong>，该家族 ink 不得承载小字，或把 ink 提到 ≥4.5:1</td></tr>
+      <tr><td>6</td><td>家族纹样域</td><td><code>mark</code><strong>永不承载文本</strong>；只作纹样 / 图形 / 渐变端点</td><td>实测 mark/bg 仅 1.68–2.81:1</td></tr>
       <tr><td>7</td><td>任务色域</td><td>12 类固定映射，<strong>不得新增第 13 类</strong>；认不出家族也不许把任务色当家族色</td><td>实测最低 4.56:1 全部达标</td></tr>
       <tr><td>8</td><td>中性兜底域</td><td>家族、任务都认不出 → 中性灰 <code>#f2f1ed</code> / <code>#232321</code>；<strong>不得猜色</strong></td><td>model-tone.ts:99-100</td></tr>
       <tr><td>9</td><td>语义色域</td><td>success / warning / danger 三通道固定；<strong>500 档禁作前景</strong>；深色 soft 底用半透明（<code>rgb(… / .12)</code>）而非浅实色</td><td>VIS §3.3 / §3.4</td></tr>
-      <tr><td>10</td><td>暖冷中性隔离</td><td>品牌暖纸 <code>#f8f6f1</code> 与 UI 冷白 <code>#ffffff</code> <strong>不得混用于同一文本块</strong>；品牌层不设交互色、不引 <code>--accent</code></td><td>VIS §3.2</td></tr>
+      <tr><td>10</td><td>暖冷中性隔离</td><td>品牌暖纸 <code>#f8f6f1</code> 与 UI 冷白 <code>#ffffff</code><strong>不得混用于同一文本块</strong>；品牌层不设交互色、不引 <code>--accent</code></td><td>VIS §3.2</td></tr>
       <tr><td>11</td><td>明暗映射</td><td>保持<strong>相对层级</strong>而非逐一取反：表面四层一一对应、文字四档一一对应、深色强线更亮、文字型强调翻明度、<strong>填充型不翻</strong>；禁第二套主题开关、禁 <code>filter:invert()</code></td><td>VIS §3.6</td></tr>
       <tr><td>12</td><td>色觉安全</td><td>红 / 绿状态必须<strong>双编码</strong>（颜色 + 图标或文字），不得单靠色相；实心靛紫作白字填充时白字对比度须 ≥4.5:1</td><td>WCAG 2.2 §1.4.1</td></tr>
       <tr><td>13</td><td>渐变域</td><td>色相位移 / 明度跨度 / 角度白名单 / 面积上限 / 遮罩 alpha 下限 —— 共 9 条硬约束，见 §s-19</td><td>VIS §3.8</td></tr>
       <tr><td>14</td><td>站点底纹域</td><td>站点底 = 中性底 + 一束光（色场）+ 中性纸纹（无彩）；底纹<strong>不计入</strong>「中性表面 ≥85%」配额（它铺在页面底，不是表面）；<strong>禁把标识铺成底纹</strong>；深色主题<strong>换噪声图</strong>而非反相；<strong>侧栏用透明渐变</strong>（左缘实面、右缘化到透明），不加实色面板、不加投影</td><td>VIS §3.10（v2.7 裁决）</td></tr>
     </tbody>
   </table>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

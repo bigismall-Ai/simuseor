@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>主理人裁决记录（v1.0 收口） · SiMuseor VIS</title>
 <meta name="nav-label" content="裁决记录">
-  <meta name="description" content="SiMuseor 视觉规范：主理人裁决记录（v1.0 收口）">
+<meta name="description" content="SiMuseor 视觉规范：主理人裁决记录（v1.0 收口）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="decisions/s-101" data-root="../../">
@@ -13,25 +13,27 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-101">主理人裁决记录（v1.0 收口）</h1>
   <p class="doc-sub">10 裁决与附录 · 本章共 4 节</p>
 </div>
 
-  <section id="sec-decisions-s-101">
+<section id="sec-decisions-s-101" class="ref">
   <table class="t">
-    <thead><tr><th style="width:40px">#</th><th style="width:210px">议题</th><th>裁决</th></tr></thead>
+    <thead>
+      <tr><th style="width:40px">#</th><th style="width:210px">议题</th><th>裁决</th></tr>
+    </thead>
     <tbody>
       <tr><td>1</td><td>900px 图标分支与「冻结只改 3 处」矛盾</td><td><strong>全断点横版字标</strong>：占位期文字 / 冻结后同一元素换 SVG 字标，≤900 只隐藏中文副行；30×30 图标仅用于 favicon 与未来紧凑场景，<strong>不设互斥 CSS 分支</strong></td></tr>
       <tr><td>2</td><td>加载 Inter 是否会改变正文观感</td><td><strong>M0 只落 Barlow 一个 woff2</strong>；Inter 的 <code>@font-face</code> 保留为预留声明但不放 woff2 文件（缺文件时被忽略，正文继续走系统回退栈，零渲染回归）。将来统一到 Inter 须单独排期 + 截图回归</td></tr>
@@ -42,11 +44,9 @@
   </table>
   <p class="hint">
     <strong>仍需主理人拍板的两件事</strong>：① <strong>LOGO 冻结</strong>（先裁「负形 D / 正形 L1」路线，再定字形、叶数、横竖版）—— M3 唯一门禁；
-    ② 将来是否把正文统一到 Inter（须单独排期 + 截图回归）。
-    <code>cover-plate</code> 3 处圆角已按裁决 3 定性为「适用域外」，<strong>不再是待拍板项</strong>。<strong>M0–M2 不需要等这两件事。</strong>
+    ② 将来是否把正文统一到 Inter（须单独排期 + 截图回归）。<code>cover-plate</code> 3 处圆角已按裁决 3 定性为「适用域外」，<strong>不再是待拍板项</strong>。<strong>M0–M2 不需要等这两件事。</strong>
   </p>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

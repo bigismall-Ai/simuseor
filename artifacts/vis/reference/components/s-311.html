@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>导航 · SiMuseor VIS</title>
 <meta name="nav-label" content="导航">
-  <meta name="description" content="SiMuseor 视觉规范：导航">
+<meta name="description" content="SiMuseor 视觉规范：导航">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="components/s-311" data-root="../../">
@@ -13,34 +13,36 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-311">导航</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
 
-  <section id="sec-components-s-311">
+<section id="sec-components-s-311" class="ref">
   <div style="display:flex;gap:24px;flex-wrap:wrap">
     <div style="width:236px;padding:14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)">
       <div class="nav">
-        <div class="nav-group">Library</div>
-        <a class="nav-item" href="#c-comp"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11v8h-11z"/></svg>模型库</a>
-        <a class="nav-item active" href="#c-comp" aria-current="page"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l5 2.5v3c0 3-2.2 5.3-5 6-2.8-.7-5-3-5-6V5z"/></svg>已安装</a>
-        <a class="nav-item" href="#c-comp"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2"/></svg>发现</a>
-        <a class="nav-item is-disabled" href="#c-comp"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>不可用</a>
+        <div class="nav-group">
+          Library
+        </div>
+        <a class="nav-item" href="index.html"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11v8h-11z"></path></svg>模型库</a>
+        <a class="nav-item active" href="index.html" aria-current="page"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5l5 2.5v3c0 3-2.2 5.3-5 6-2.8-.7-5-3-5-6V5z"></path></svg>已安装</a>
+        <a class="nav-item" href="index.html"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2"></circle></svg>发现</a>
+        <a class="nav-item is-disabled" href="index.html"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"></path></svg>不可用</a>
         <div class="nav-sub">
-          <a class="nav-sub-item" href="#c-comp">文生图</a>
-          <a class="nav-sub-item active" href="#c-comp">图生图</a>
+          <a class="nav-sub-item" href="index.html">文生图</a>
+          <a class="nav-sub-item active" href="index.html">图生图</a>
         </div>
       </div>
     </div>
@@ -52,14 +54,12 @@
       </div>
       <p class="hint" style="margin-top:12px">
         <strong>nav-item</strong>：32px 高 · padding 0 9px · radius 8px · 13px/500 ·
-        选中态 <code>--accent-soft</code> 底 + <code>--accent</code> 字 + 600。
-        <strong>segmented</strong>：外框 radius 999px，按钮 24px 高，
+        选中态 <code>--accent-soft</code> 底 + <code>--accent</code> 字 + 600。<strong>segmented</strong>：外框 radius 999px，按钮 24px 高，
         选中态实心 <code>--primary</code> + 白字（与 <code>.filter-chip.active</code> 同口径）。
       </p>
     </div>
   </div>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

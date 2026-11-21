@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>卡片 —— 工作流卡的四种态 · SiMuseor VIS</title>
 <meta name="nav-label" content="卡片">
-  <meta name="description" content="SiMuseor 视觉规范：卡片 —— 工作流卡的四种态">
+<meta name="description" content="SiMuseor 视觉规范：卡片 —— 工作流卡的四种态">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="components/s-37" data-root="../../">
@@ -13,37 +13,32 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-37">卡片 —— 工作流卡的四种态</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
 
-  <section id="sec-components-s-37">
+<section id="sec-components-s-37" class="ref">
   <p class="lead">
     <code>app-workflow-card</code> 的四态：<strong>普通 / hover / 缺依赖 / 无法解析</strong>。
-    状态由 <code>state()</code> 决定：<code>format==='broken'</code> → 无法解析；
-    <code>format==='api'</code> → API 格式；缺依赖数 &gt; 0 → 缺依赖；否则 → 普通。
+    状态由 <code>state()</code> 决定：<code>format==='broken'</code> → 无法解析；<code>format==='api'</code> → API 格式；缺依赖数 &gt; 0 → 缺依赖；否则 → 普通。
     下方为<strong>静态等价物</strong>，几何与配色取自组件 scoped 样式。
   </p>
   <p class="lead">
     封面左上角不再放<strong>主模型厂牌</strong>：一条工作流经常同时串起多个家族的模型
     （例如 WAN 主模型 + Qwen 文本编码器 + LTX 放大），标一个厂牌会误导。
-    这里改放<strong>工作流类型</strong>，词表与后端 <code>weight_class.TASK_LABELS</code> 对齐：
-    <code>文生图</code> · <code>图生图</code> · <code>文生视频</code> · <code>图生视频</code> ·
-    <code>图文生视频</code> · <code>文本生成</code> · <code>图像理解</code> · <code>语音合成</code> ·
-    <code>语音识别</code> · <code>向量嵌入</code> · <code>LoRA 风格</code> · <code>图像放大</code> ·
-    <code>ControlNet 控制</code> · <code>未标注</code>。工作流卡实际只会落到前 6 类与「未标注」。
+    这里改放<strong>工作流类型</strong>，词表与后端 <code>weight_class.TASK_LABELS</code> 对齐：<code>文生图</code> · <code>图生图</code> · <code>文生视频</code> · <code>图生视频</code> ·<code>图文生视频</code> · <code>文本生成</code> · <code>图像理解</code> · <code>语音合成</code> ·<code>语音识别</code> · <code>向量嵌入</code> · <code>LoRA 风格</code> · <code>图像放大</code> ·<code>ControlNet 控制</code> · <code>未标注</code>。工作流卡实际只会落到前 6 类与「未标注」。
   </p>
   <div class="cards wide">
     <div class="cardcell wfc">
@@ -51,11 +46,13 @@
         <div class="wc-cover">
           <div class="cp mo-1" style="aspect-ratio:16/10">
             <div class="plate f-wan">
-              <span class="motif"></span><span class="scrim"></span>
+              <span class="motif"></span>
+              <span class="scrim"></span>
               <div class="head">
                 <span class="brand-slot"><span class="fm-code">WAN</span></span>
-                <span class="label">WAN</span><span class="specs">14B · Q4_K_S</span>
-                <a class="origin" href="#c-comp">来源 ↗</a>
+                <span class="label">WAN</span>
+                <span class="specs">14B · Q4_K_S</span>
+                <a class="origin" href="index.html">来源 ↗</a>
               </div>
             </div>
           </div>
@@ -63,29 +60,44 @@
             <div class="wc-top">
               <span class="pill-ident wc-kind">文生视频</span>
               <span class="wc-count"><span>12 节点</span><span>3 依赖</span></span>
-              <div class="wc-acts"><button class="wc-kebab" type="button" aria-label="更多操作">⋯</button></div>
+              <div class="wc-acts">
+                <button class="wc-kebab" type="button" aria-label="更多操作">⋯</button>
+              </div>
             </div>
-            <div class="wc-name"><h3>wan22-t2v.json</h3><p>24.5 MB · 3 天前</p></div>
+            <div class="wc-name">
+              <h3>
+                wan22-t2v.json
+              </h3>
+              <p>
+                24.5 MB · 3 天前
+              </p>
+            </div>
           </div>
         </div>
-        <div class="wc-body"><div class="wc-split">
-          <div class="wc-meta"><span class="wc-tag">视频生成</span><span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span></div>
-          <button class="wc-primary" type="button">编辑</button>
-        </div></div>
+        <div class="wc-body">
+          <div class="wc-split">
+            <div class="wc-meta">
+              <span class="wc-tag">视频生成</span>
+              <span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span>
+            </div>
+            <button class="wc-primary" type="button">编辑</button>
+          </div>
+        </div>
       </article>
       <span class="cardcell-cap">普通（ready）</span>
     </div>
-
     <div class="cardcell wfc">
       <article class="wc st-hover">
         <div class="wc-cover">
           <div class="cp mo-0" style="aspect-ratio:16/10">
             <div class="plate f-flux">
-              <span class="motif"></span><span class="scrim"></span>
+              <span class="motif"></span>
+              <span class="scrim"></span>
               <div class="head">
                 <span class="brand-slot"><span class="fm-code">FLUX</span></span>
-                <span class="label">FLUX</span><span class="specs">12B · fp8</span>
-                <a class="origin" href="#c-comp">来源 ↗</a>
+                <span class="label">FLUX</span>
+                <span class="specs">12B · fp8</span>
+                <a class="origin" href="index.html">来源 ↗</a>
               </div>
             </div>
           </div>
@@ -93,29 +105,44 @@
             <div class="wc-top">
               <span class="pill-ident wc-kind">文生图</span>
               <span class="wc-count"><span>8 节点</span><span>2 依赖</span></span>
-              <div class="wc-acts"><button class="wc-kebab" type="button" aria-label="更多操作">⋯</button></div>
+              <div class="wc-acts">
+                <button class="wc-kebab" type="button" aria-label="更多操作">⋯</button>
+              </div>
             </div>
-            <div class="wc-name"><h3>flux1-dev.json</h3><p>11.9 GB · 今天</p></div>
+            <div class="wc-name">
+              <h3>
+                flux1-dev.json
+              </h3>
+              <p>
+                11.9 GB · 今天
+              </p>
+            </div>
           </div>
         </div>
-        <div class="wc-body"><div class="wc-split">
-          <div class="wc-meta"><span class="wc-tag is-none">未分组</span><span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span></div>
-          <button class="wc-primary" type="button">编辑</button>
-        </div></div>
+        <div class="wc-body">
+          <div class="wc-split">
+            <div class="wc-meta">
+              <span class="wc-tag is-none">未分组</span>
+              <span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span>
+            </div>
+            <button class="wc-primary" type="button">编辑</button>
+          </div>
+        </div>
       </article>
       <span class="cardcell-cap">hover（::after 描边转 var(--accent)）</span>
     </div>
-
     <div class="cardcell wfc">
       <article class="wc">
         <div class="wc-cover">
           <div class="cp mo-3" style="aspect-ratio:16/10">
             <div class="plate f-qwen">
-              <span class="motif"></span><span class="scrim"></span>
+              <span class="motif"></span>
+              <span class="scrim"></span>
               <div class="head">
                 <span class="brand-slot"><span class="fm-code">QWEN</span></span>
-                <span class="label">QWEN</span><span class="specs">7B · Q4</span>
-                <a class="origin" href="#c-comp">来源 ↗</a>
+                <span class="label">QWEN</span>
+                <span class="specs">7B · Q4</span>
+                <a class="origin" href="index.html">来源 ↗</a>
               </div>
             </div>
           </div>
@@ -123,47 +150,72 @@
             <div class="wc-top">
               <span class="pill-ident wc-kind">图生图</span>
               <span class="wc-dep"><span>缺 2 模型</span></span>
-              <div class="wc-acts"><button class="wc-kebab" type="button" aria-label="更多操作">⋯</button></div>
+              <div class="wc-acts">
+                <button class="wc-kebab" type="button" aria-label="更多操作">⋯</button>
+              </div>
             </div>
-            <div class="wc-name"><h3>qwen-txt2img.json</h3><p>4.2 MB · 昨天</p></div>
+            <div class="wc-name">
+              <h3>
+                qwen-txt2img.json
+              </h3>
+              <p>
+                4.2 MB · 昨天
+              </p>
+            </div>
           </div>
         </div>
-        <div class="wc-body"><div class="wc-split">
-          <div class="wc-meta"><span class="wc-tag">图像生成</span><span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span></div>
-          <button class="wc-primary" type="button">编辑</button>
-        </div></div>
+        <div class="wc-body">
+          <div class="wc-split">
+            <div class="wc-meta">
+              <span class="wc-tag">图像生成</span>
+              <span class="wc-fmt"><span class="wc-fmt-o on">UI</span><span class="wc-fmt-s"></span><span class="wc-fmt-o">API</span></span>
+            </div>
+            <button class="wc-primary" type="button">编辑</button>
+          </div>
+        </div>
       </article>
       <span class="cardcell-cap">缺依赖（missing）</span>
     </div>
-
     <div class="cardcell wfc">
       <article class="wc broken">
         <div class="wc-cover">
           <!-- broken 态：铭牌用 visibility:hidden 保留占位（display:none 会让封面高度塌成 0），
-               斜纹底从底下透出来 —— 与 workflow-card.component.ts:214 的口径一致 -->
+                 斜纹底从底下透出来 —— 与 workflow-card.component.ts:214 的口径一致 -->
           <div class="cp" style="aspect-ratio:16/10">
-            <div class="plate f-other" style="visibility:hidden"><span class="scrim"></span></div>
+            <div class="plate f-other" style="visibility:hidden">
+              <span class="scrim"></span>
+            </div>
           </div>
           <div class="wc-broken">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
-              <path d="M12 8v5" /><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
-              <path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5"></path><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none"></circle><path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
             <span class="wc-broken-title">无法解析</span>
             <span class="wc-broken-msg">JSON 语法错误：第 12 行缺少逗号</span>
           </div>
           <div class="wc-over">
             <div class="wc-top">
               <span class="pill-ident wc-kind">未标注</span>
-              <div class="wc-acts"><button class="wc-kebab" type="button" aria-label="更多操作">⋯</button></div>
+              <div class="wc-acts">
+                <button class="wc-kebab" type="button" aria-label="更多操作">⋯</button>
+              </div>
             </div>
-            <div class="wc-name"><h3>broken-workflow.json</h3><p>1.1 KB · 今天</p></div>
+            <div class="wc-name">
+              <h3>
+                broken-workflow.json
+              </h3>
+              <p>
+                1.1 KB · 今天
+              </p>
+            </div>
           </div>
         </div>
-        <div class="wc-body"><div class="wc-split">
-          <div class="wc-meta"><span class="wc-tag is-none">未分组</span></div>
-          <button class="wc-primary" type="button">编辑</button>
-        </div></div>
+        <div class="wc-body">
+          <div class="wc-split">
+            <div class="wc-meta">
+              <span class="wc-tag is-none">未分组</span>
+            </div>
+            <button class="wc-primary" type="button">编辑</button>
+          </div>
+        </div>
       </article>
       <span class="cardcell-cap">无法解析（broken）· 斜纹底 + 封面内说明</span>
     </div>
@@ -176,8 +228,7 @@
     左上类型胶囊 <code>.pill-ident</code> 18px 高 / <code>padding 0 8px</code> / 10.5px · 500 ——
     未压图时是面板底 + 1px 描边，压图时翻成白 14% 玻璃底。
   </p>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

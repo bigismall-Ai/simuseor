@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>semantic 层 —— 用途语义（--sem-*） · SiMuseor VIS</title>
 <meta name="nav-label" content="语义层">
-  <meta name="description" content="SiMuseor 视觉规范：semantic 层 —— 用途语义（--sem-*）">
+<meta name="description" content="SiMuseor 视觉规范：semantic 层 —— 用途语义（--sem-*）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="color/s-12" data-root="../../">
@@ -13,316 +13,566 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-12">semantic 层 —— 用途语义（<code>--sem-*</code>）</h1>
   <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
 </div>
 
-  <section id="sec-color-s-12">
-  <p class="lead">必须引用 primitive，不引用别的 semantic。明暗在这里换档 —— 深色「保持相对层级」而非逐一取反（§3.6）。</p>
+<section id="sec-color-s-12" class="ref">
+  <p class="lead">
+    必须引用 primitive，不引用别的 semantic。明暗在这里换档 —— 深色「保持相对层级」而非逐一取反（§3.6）。
+  </p>
   <div class="swatches">
     <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-bg)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-bg</code>
-    <div class="sw-hex"><span class="sw-light">#f5f5f6</span><span class="sw-dark">#0b0b0d</span></div>
-    <div class="sw-note">页面底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-bg-deep)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-bg-deep</code>
-    <div class="sw-hex"><span class="sw-light">#ededef</span><span class="sw-dark">#070708</span></div>
-    <div class="sw-note">更深的底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-surface)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-surface</code>
-    <div class="sw-hex"><span class="sw-light">#ffffff</span><span class="sw-dark">#141417</span></div>
-    <div class="sw-note">面板 / 卡片底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-surface-raised)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-surface-raised</code>
-    <div class="sw-hex"><span class="sw-light">#fafafa</span><span class="sw-dark">#1a1a1e</span></div>
-    <div class="sw-note">次级面板底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-surface-sunken)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-surface-sunken</code>
-    <div class="sw-hex"><span class="sw-light">#f4f4f5</span><span class="sw-dark">#202025</span></div>
-    <div class="sw-note">三级面板底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-field-bg)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-field-bg</code>
-    <div class="sw-hex"><span class="sw-light">#ffffff</span><span class="sw-dark">#17171b</span></div>
-    <div class="sw-note">输入框底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-hover)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-hover</code>
-    <div class="sw-hex"><span class="sw-light">#f4f4f5</span><span class="sw-dark">#1e1e23</span></div>
-    <div class="sw-note">悬停底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-text)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-text</code>
-    <div class="sw-hex"><span class="sw-light">#18181b</span><span class="sw-dark">#ededf0</span></div>
-    <div class="sw-note">正文</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-text-secondary)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-text-secondary</code>
-    <div class="sw-hex"><span class="sw-light">#3f3f46</span><span class="sw-dark">#d4d4d8</span></div>
-    <div class="sw-note">次级正文</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-text-muted)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-text-muted</code>
-    <div class="sw-hex"><span class="sw-light">#71717a</span><span class="sw-dark">#8b8b94</span></div>
-    <div class="sw-note">辅助文字</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-text-faint)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-text-faint</code>
-    <div class="sw-hex"><span class="sw-light">#a1a1aa</span><span class="sw-dark">#5f5f68</span></div>
-    <div class="sw-note">弱字（禁承载文本）</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-text-placeholder)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-text-placeholder</code>
-    <div class="sw-hex"><span class="sw-light">#a1a1aa</span><span class="sw-dark">#5f5f68</span></div>
-    <div class="sw-note">占位符</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-border-subtle)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-border-subtle</code>
-    <div class="sw-hex"><span class="sw-light">#e4e4e7</span><span class="sw-dark">#26262b</span></div>
-    <div class="sw-note">结构分隔线</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-border-hairline)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-border-hairline</code>
-    <div class="sw-hex"><span class="sw-light">#f0f0f1</span><span class="sw-dark">#1e1e22</span></div>
-    <div class="sw-note">发丝线</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-border-strong)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-border-strong</code>
-    <div class="sw-hex"><span class="sw-light">#d4d4d8</span><span class="sw-dark">#34343a</span></div>
-    <div class="sw-note">强分隔线</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-control-border)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-control-border</code>
-    <div class="sw-hex"><span class="sw-light">#8b8b94</span></div>
-    <div class="sw-note">控件边界（input / select / textarea 静止边框）</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-accent)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-accent</code>
-    <div class="sw-hex"><span class="sw-light">#4f46e5</span><span class="sw-dark">#a5b4fc</span></div>
-    <div class="sw-note">交互色的文字 / 描边 / 图标态</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-accent-hover)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-accent-hover</code>
-    <div class="sw-hex"><span class="sw-light">#4338ca</span><span class="sw-dark">#c7d2fe</span></div>
-    <div class="sw-note">交互色 hover（文字态）</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-accent-soft)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-accent-soft</code>
-    <div class="sw-hex"><span class="sw-light">#eef2ff</span><span class="sw-dark">rgb(79 70 229 / 0.18)</span></div>
-    <div class="sw-note">交互色软底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-accent-line)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-accent-line</code>
-    <div class="sw-hex"><span class="sw-light">#c7d2fe</span><span class="sw-dark">#4338ca</span></div>
-    <div class="sw-note">交互色描边</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-fill-accent)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-fill-accent</code>
-    <div class="sw-hex"><span class="sw-light">#4f46e5</span></div>
-    <div class="sw-note">交互色的实心填充态</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-fill-accent-hover)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-fill-accent-hover</code>
-    <div class="sw-hex"><span class="sw-light">#4338ca</span><span class="sw-dark">#6366f1</span></div>
-    <div class="sw-note">实心填充 hover</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-on-accent)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-on-accent</code>
-    <div class="sw-hex"><span class="sw-light">#ffffff</span></div>
-    <div class="sw-note">实心块上的字色（白）</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-success)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-success</code>
-    <div class="sw-hex"><span class="sw-light">#15803d</span><span class="sw-dark">#4ade80</span></div>
-    <div class="sw-note">成功</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-success-soft)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-success-soft</code>
-    <div class="sw-hex"><span class="sw-light">#f0fdf4</span><span class="sw-dark">rgb(74 222 128 / 0.12)</span></div>
-    <div class="sw-note">成功软底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-warning)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-warning</code>
-    <div class="sw-hex"><span class="sw-light">#b45309</span><span class="sw-dark">#fbbf24</span></div>
-    <div class="sw-note">警告</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-warning-soft)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-warning-soft</code>
-    <div class="sw-hex"><span class="sw-light">#fffbeb</span><span class="sw-dark">rgb(251 191 36 / 0.12)</span></div>
-    <div class="sw-note">警告软底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-danger)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-danger</code>
-    <div class="sw-hex"><span class="sw-light">#b91c1c</span><span class="sw-dark">#f87171</span></div>
-    <div class="sw-note">危险</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-danger-soft)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-danger-soft</code>
-    <div class="sw-hex"><span class="sw-light">#fef2f2</span><span class="sw-dark">rgb(248 113 113 / 0.12)</span></div>
-    <div class="sw-note">危险软底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-attention)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-attention</code>
-    <div class="sw-hex"><span class="sw-light">#d97706</span><span class="sw-dark">#fbbf24</span></div>
-    <div class="sw-note">星标</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-track)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-track</code>
-    <div class="sw-hex"><span class="sw-light">#ececee</span><span class="sw-dark">#232329</span></div>
-    <div class="sw-note">进度轨道</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-chip)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-chip</code>
-    <div class="sw-hex"><span class="sw-light">#f4f4f5</span><span class="sw-dark">#232329</span></div>
-    <div class="sw-note">chip 底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-pill-bg)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-pill-bg</code>
-    <div class="sw-hex"><span class="sw-light">#f1f1f3</span><span class="sw-dark">#26262c</span></div>
-    <div class="sw-note">分类胶囊底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-pill-bg-hover)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-pill-bg-hover</code>
-    <div class="sw-hex"><span class="sw-light">#e7e7ea</span><span class="sw-dark">#32323a</span></div>
-    <div class="sw-note">分类胶囊悬停底</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-pill-ink)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-pill-ink</code>
-    <div class="sw-hex"><span class="sw-light">#52525b</span><span class="sw-dark">#b4b4bc</span></div>
-    <div class="sw-note">分类胶囊文字</div>
-  </div>
-</div>
-    <div class="sw">
-  <div class="sw-chip" style="background:var(--sem-pill-ink-hover)"></div>
-  <div class="sw-body">
-    <code class="sw-name">--sem-pill-ink-hover</code>
-    <div class="sw-hex"><span class="sw-light">#18181b</span><span class="sw-dark">#ededf0</span></div>
-    <div class="sw-note">分类胶囊悬停文字</div>
-  </div>
-</div>
-  </div>
-  </section>
+      <div class="sw-chip" style="background:var(--sem-bg)">
 
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-bg</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f5f5f6</span>
+          <span class="sw-dark">#0b0b0d</span>
+        </div>
+        <div class="sw-note">
+          页面底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-bg-deep)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-bg-deep</code>
+        <div class="sw-hex">
+          <span class="sw-light">#ededef</span>
+          <span class="sw-dark">#070708</span>
+        </div>
+        <div class="sw-note">
+          更深的底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-surface)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-surface</code>
+        <div class="sw-hex">
+          <span class="sw-light">#ffffff</span>
+          <span class="sw-dark">#141417</span>
+        </div>
+        <div class="sw-note">
+          面板 / 卡片底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-surface-raised)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-surface-raised</code>
+        <div class="sw-hex">
+          <span class="sw-light">#fafafa</span>
+          <span class="sw-dark">#1a1a1e</span>
+        </div>
+        <div class="sw-note">
+          次级面板底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-surface-sunken)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-surface-sunken</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f4f4f5</span>
+          <span class="sw-dark">#202025</span>
+        </div>
+        <div class="sw-note">
+          三级面板底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-field-bg)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-field-bg</code>
+        <div class="sw-hex">
+          <span class="sw-light">#ffffff</span>
+          <span class="sw-dark">#17171b</span>
+        </div>
+        <div class="sw-note">
+          输入框底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-hover)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-hover</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f4f4f5</span>
+          <span class="sw-dark">#1e1e23</span>
+        </div>
+        <div class="sw-note">
+          悬停底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-text)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-text</code>
+        <div class="sw-hex">
+          <span class="sw-light">#18181b</span>
+          <span class="sw-dark">#ededf0</span>
+        </div>
+        <div class="sw-note">
+          正文
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-text-secondary)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-text-secondary</code>
+        <div class="sw-hex">
+          <span class="sw-light">#3f3f46</span>
+          <span class="sw-dark">#d4d4d8</span>
+        </div>
+        <div class="sw-note">
+          次级正文
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-text-muted)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-text-muted</code>
+        <div class="sw-hex">
+          <span class="sw-light">#71717a</span>
+          <span class="sw-dark">#8b8b94</span>
+        </div>
+        <div class="sw-note">
+          辅助文字
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-text-faint)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-text-faint</code>
+        <div class="sw-hex">
+          <span class="sw-light">#a1a1aa</span>
+          <span class="sw-dark">#5f5f68</span>
+        </div>
+        <div class="sw-note">
+          弱字（禁承载文本）
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-text-placeholder)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-text-placeholder</code>
+        <div class="sw-hex">
+          <span class="sw-light">#a1a1aa</span>
+          <span class="sw-dark">#5f5f68</span>
+        </div>
+        <div class="sw-note">
+          占位符
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-border-subtle)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-border-subtle</code>
+        <div class="sw-hex">
+          <span class="sw-light">#e4e4e7</span>
+          <span class="sw-dark">#26262b</span>
+        </div>
+        <div class="sw-note">
+          结构分隔线
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-border-hairline)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-border-hairline</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f0f0f1</span>
+          <span class="sw-dark">#1e1e22</span>
+        </div>
+        <div class="sw-note">
+          发丝线
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-border-strong)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-border-strong</code>
+        <div class="sw-hex">
+          <span class="sw-light">#d4d4d8</span>
+          <span class="sw-dark">#34343a</span>
+        </div>
+        <div class="sw-note">
+          强分隔线
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-control-border)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-control-border</code>
+        <div class="sw-hex">
+          <span class="sw-light">#8b8b94</span>
+        </div>
+        <div class="sw-note">
+          控件边界（input / select / textarea 静止边框）
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-accent)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-accent</code>
+        <div class="sw-hex">
+          <span class="sw-light">#4f46e5</span>
+          <span class="sw-dark">#a5b4fc</span>
+        </div>
+        <div class="sw-note">
+          交互色的文字 / 描边 / 图标态
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-accent-hover)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-accent-hover</code>
+        <div class="sw-hex">
+          <span class="sw-light">#4338ca</span>
+          <span class="sw-dark">#c7d2fe</span>
+        </div>
+        <div class="sw-note">
+          交互色 hover（文字态）
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-accent-soft)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-accent-soft</code>
+        <div class="sw-hex">
+          <span class="sw-light">#eef2ff</span>
+          <span class="sw-dark">rgb(79 70 229 / 0.18)</span>
+        </div>
+        <div class="sw-note">
+          交互色软底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-accent-line)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-accent-line</code>
+        <div class="sw-hex">
+          <span class="sw-light">#c7d2fe</span>
+          <span class="sw-dark">#4338ca</span>
+        </div>
+        <div class="sw-note">
+          交互色描边
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-fill-accent)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-fill-accent</code>
+        <div class="sw-hex">
+          <span class="sw-light">#4f46e5</span>
+        </div>
+        <div class="sw-note">
+          交互色的实心填充态
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-fill-accent-hover)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-fill-accent-hover</code>
+        <div class="sw-hex">
+          <span class="sw-light">#4338ca</span>
+          <span class="sw-dark">#6366f1</span>
+        </div>
+        <div class="sw-note">
+          实心填充 hover
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-on-accent)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-on-accent</code>
+        <div class="sw-hex">
+          <span class="sw-light">#ffffff</span>
+        </div>
+        <div class="sw-note">
+          实心块上的字色（白）
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-success)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-success</code>
+        <div class="sw-hex">
+          <span class="sw-light">#15803d</span>
+          <span class="sw-dark">#4ade80</span>
+        </div>
+        <div class="sw-note">
+          成功
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-success-soft)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-success-soft</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f0fdf4</span>
+          <span class="sw-dark">rgb(74 222 128 / 0.12)</span>
+        </div>
+        <div class="sw-note">
+          成功软底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-warning)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-warning</code>
+        <div class="sw-hex">
+          <span class="sw-light">#b45309</span>
+          <span class="sw-dark">#fbbf24</span>
+        </div>
+        <div class="sw-note">
+          警告
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-warning-soft)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-warning-soft</code>
+        <div class="sw-hex">
+          <span class="sw-light">#fffbeb</span>
+          <span class="sw-dark">rgb(251 191 36 / 0.12)</span>
+        </div>
+        <div class="sw-note">
+          警告软底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-danger)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-danger</code>
+        <div class="sw-hex">
+          <span class="sw-light">#b91c1c</span>
+          <span class="sw-dark">#f87171</span>
+        </div>
+        <div class="sw-note">
+          危险
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-danger-soft)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-danger-soft</code>
+        <div class="sw-hex">
+          <span class="sw-light">#fef2f2</span>
+          <span class="sw-dark">rgb(248 113 113 / 0.12)</span>
+        </div>
+        <div class="sw-note">
+          危险软底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-attention)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-attention</code>
+        <div class="sw-hex">
+          <span class="sw-light">#d97706</span>
+          <span class="sw-dark">#fbbf24</span>
+        </div>
+        <div class="sw-note">
+          星标
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-track)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-track</code>
+        <div class="sw-hex">
+          <span class="sw-light">#ececee</span>
+          <span class="sw-dark">#232329</span>
+        </div>
+        <div class="sw-note">
+          进度轨道
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-chip)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-chip</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f4f4f5</span>
+          <span class="sw-dark">#232329</span>
+        </div>
+        <div class="sw-note">
+          chip 底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-pill-bg)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-pill-bg</code>
+        <div class="sw-hex">
+          <span class="sw-light">#f1f1f3</span>
+          <span class="sw-dark">#26262c</span>
+        </div>
+        <div class="sw-note">
+          分类胶囊底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-pill-bg-hover)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-pill-bg-hover</code>
+        <div class="sw-hex">
+          <span class="sw-light">#e7e7ea</span>
+          <span class="sw-dark">#32323a</span>
+        </div>
+        <div class="sw-note">
+          分类胶囊悬停底
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-pill-ink)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-pill-ink</code>
+        <div class="sw-hex">
+          <span class="sw-light">#52525b</span>
+          <span class="sw-dark">#b4b4bc</span>
+        </div>
+        <div class="sw-note">
+          分类胶囊文字
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip" style="background:var(--sem-pill-ink-hover)">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">--sem-pill-ink-hover</code>
+        <div class="sw-hex">
+          <span class="sw-light">#18181b</span>
+          <span class="sw-dark">#ededf0</span>
+        </div>
+        <div class="sw-note">
+          分类胶囊悬停文字
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
   </main>
 </div>

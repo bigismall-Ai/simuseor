@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>vis-check.mjs —— 主理人独立实跑 · SiMuseor VIS</title>
 <meta name="nav-label" content="实跑报告">
-  <meta name="description" content="SiMuseor 视觉规范：vis-check.mjs —— 主理人独立实跑">
+<meta name="description" content="SiMuseor 视觉规范：vis-check.mjs —— 主理人独立实跑">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="engineering/s-82" data-root="../../">
@@ -13,26 +13,30 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-82"><code>vis-check.mjs</code> —— 主理人独立实跑</h1>
   <p class="doc-sub">08 工程落地 · 本章共 4 节</p>
 </div>
 
-  <section id="sec-engineering-s-82">
-  <p>Node ≥ 18、无第三方依赖、只读（<code>readFileSync</code> / <code>readdirSync</code>）。退出码：<code>0</code> 全通过 / <code>1</code> 仅现状基线 FAIL（预期）/ <code>2</code> 交付物校验失败。完整报告 <code>vis-check-report.txt</code>。</p>
+<section id="sec-engineering-s-82" class="ref">
+  <p>
+    Node ≥ 18、无第三方依赖、只读（<code>readFileSync</code> / <code>readdirSync</code>）。退出码：<code>0</code> 全通过 / <code>1</code> 仅现状基线 FAIL（预期）/ <code>2</code> 交付物校验失败。完整报告 <code>vis-check-report.txt</code>。
+  </p>
   <table class="t">
-    <thead><tr><th style="width:210px">检查项</th><th>结果</th></tr></thead>
+    <thead>
+      <tr><th style="width:210px">检查项</th><th>结果</th></tr>
+    </thead>
     <tbody>
       <tr><td>零覆盖 / token 文件自检</td><td><strong>全部 PASS</strong>（39 / 18 / 0；@font-face 恰好 2 条；4 URL 均 <code>none</code>；无组件实现、无 <code>filter:invert()</code>、无实验稿字形）</td></tr>
       <tr><td>字重白名单违规</td><td><strong>全量 26 处</strong> = <code>styles.css</code> 17 + 组件 scoped 9（Phase 1/2 审计盲区）</td></tr>
@@ -50,8 +54,7 @@
   <p class="hint">
     <strong>审计盲区（全量口径补遗）</strong>：组件 scoped 样式还有字重 +9、<code>--faint</code> 文本 +17、圆角中间档 +4，共 30 处同类项 —— Phase 1/2 只审了全局 <code>styles.css</code>。落地时须按<strong>全量</strong>清点：字重 <strong>26 处</strong>、<code>--faint</code> 文本 <strong>39 处</strong>。只改登记值会让「<code>--faint</code> 永不承载文本」无法真正成立。
   </p>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

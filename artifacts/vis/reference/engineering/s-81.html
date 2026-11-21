@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>vis-tokens.css（独立 token 层） · SiMuseor VIS</title>
 <meta name="nav-label" content="token层">
-  <meta name="description" content="SiMuseor 视觉规范：vis-tokens.css（独立 token 层）">
+<meta name="description" content="SiMuseor 视觉规范：vis-tokens.css（独立 token 层）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="engineering/s-81" data-root="../../">
@@ -13,33 +13,32 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-81"><code>vis-tokens.css</code>（独立 token 层）</h1>
   <p class="doc-sub">08 工程落地 · 本章共 4 节</p>
 </div>
 
-  <section id="sec-engineering-s-81">
+<section id="sec-engineering-s-81" class="ref">
   <ul class="small">
     <li><strong>零覆盖承诺</strong>：不重新赋值 <code>styles.css:17-74 / :77-122</code> 中任何已有 <code>--*</code>。实测：现有赋值变量 <strong>39</strong> / 新增 <strong>18</strong> / 交集 <strong>0</strong> → PASS。</li>
     <li>建议 M0 追加到 <code>angular.json</code> 的 <code>styles</code> 数组<strong>最末</strong>（<code>tailwind.css</code>、<code>styles.css</code> 之后），不写 <code>@layer</code> 避免与 Tailwind v4 层序歧义。</li>
     <li>新增：<code>--brand-*</code> 六枚 + <code>--brand-surface/-fg/-rule</code> 语义别名（深色指向反白组）、<code>--border-control #8b8b94</code>、<code>--radius-lg:16px</code>、四个 URL 变量（占位期一律 <code>none</code>）、三个标识常量（<code>--brand-clear-space:10px</code> / <code>--brand-min-width:120px</code> / <code>--brand-icon-min:32px</code>）。</li>
     <li>两条 <code>@font-face</code>：Barlow 仅 400 / Inter 100 900，均 <code>font-display:swap</code>。生效 CSS 只有两条 @font-face + 两个 <code>:root</code> 块；接入片段全在注释里，不会被误当成已落地组件。</li>
     <li>字体性能：<code>pyftsubset --flavor=woff2 --unicodes=U+0020-007E</code> 子集化（Barlow 102KB → 约 14KB）；只给品牌类声明 Barlow；<code>preload</code> 只给 Barlow；<strong>M0 只落 Barlow 一个 woff2</strong>。</li>
-    <li>构建规避：Tailwind v4 不引 preflight；组件类名加 2–3 字母前缀（历史事故：工具类命中 <code>.ring</code> / <code>.grid</code> / <code>.m-2</code>）；PrimeNG Aura preset <strong>不自继承</strong> <code>--brand-*</code>，需在 <code>semantic.colorScheme.light/dark</code> 组件段显式映射；归一 <code>{primary.400}→{primary.300}</code> 只改色值、不动 <code>contrastColor</code>；<code>borderRadius 3/6/10→5/8/12</code>、<code>dialog 16</code> 保留。</li>
+    <li>构建规避：Tailwind v4 不引 preflight；组件类名加 2–3 字母前缀（历史事故：工具类命中 <code>.ring</code> / <code>.grid</code> / <code>.m-2</code>）；PrimeNG Aura preset <strong>不自继承</strong><code>--brand-*</code>，需在 <code>semantic.colorScheme.light/dark</code> 组件段显式映射；归一 <code>{primary.400}→{primary.300}</code> 只改色值、不动 <code>contrastColor</code>；<code>borderRadius 3/6/10→5/8/12</code>、<code>dialog 16</code> 保留。</li>
   </ul>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

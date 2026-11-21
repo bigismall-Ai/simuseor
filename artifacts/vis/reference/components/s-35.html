@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>面板 —— 全部状态 · SiMuseor VIS</title>
 <meta name="nav-label" content="面板">
-  <meta name="description" content="SiMuseor 视觉规范：面板 —— 全部状态">
+<meta name="description" content="SiMuseor 视觉规范：面板 —— 全部状态">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="components/s-35" data-root="../../">
@@ -13,68 +13,95 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-35">面板 —— 全部状态</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
 
-  <section id="sec-components-s-35">
-<div class="srow">
-  <div class="srow-label">默认（带标题）</div>
-  <div class="srow-items">
-    <div class="ui-panel" style="width:320px">
-      <div class="ui-panel-head">
-        <div class="ui-panel-heading"><h2>面板标题</h2><p class="ui-panel-hint">一句话说明。</p></div>
-        <div class="ui-panel-actions"><button class="btn-xs" type="button">操作</button></div>
+<section id="sec-components-s-35" class="ref">
+  <div class="srow">
+    <div class="srow-label">
+      默认（带标题）
+    </div>
+    <div class="srow-items">
+      <div class="ui-panel" style="width:320px">
+        <div class="ui-panel-head">
+          <div class="ui-panel-heading">
+            <h2>
+              面板标题
+            </h2>
+            <p class="ui-panel-hint">
+              一句话说明。
+            </p>
+          </div>
+          <div class="ui-panel-actions">
+            <button class="btn-xs" type="button">操作</button>
+          </div>
+        </div>
+        <p style="margin:0;font-size:12.5px;color:var(--muted)">
+          面板内容。
+        </p>
       </div>
-      <p style="margin:0;font-size:12.5px;color:var(--muted)">面板内容。</p>
     </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">无标题</div>
-  <div class="srow-items">
-    <div class="ui-panel" style="width:220px">
-      <p style="margin:0;font-size:12.5px;color:var(--muted)">无标题时不画分隔线。</p>
+  <div class="srow">
+    <div class="srow-label">
+      无标题
+    </div>
+    <div class="srow-items">
+      <div class="ui-panel" style="width:220px">
+        <p style="margin:0;font-size:12.5px;color:var(--muted)">
+          无标题时不画分隔线。
+        </p>
+      </div>
     </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">折叠</div>
-  <div class="srow-items">
-    <details class="fold" style="width:320px"><summary>可折叠面板</summary><div>展开内容。</div></details>
-    <span class="st-error-note">静态等价物</span>
-    <span class="spec">规范要求折叠态，实现中 ui-panel 尚无折叠能力（见 6 节）</span>
-  </div>
-</div>
-<div class="srow">
-  <div class="srow-label">加载</div>
-  <div class="srow-items">
-    <div class="ui-panel" style="width:320px">
-      <div class="loading-line"><span class="dot-spin"></span><span>正在读取…</span></div>
+  <div class="srow">
+    <div class="srow-label">
+      折叠
     </div>
-    <span class="st-error-note">静态等价物</span>
-    <span class="spec">ui-panel 无 loading 输入，此处用 .loading-line 拼装</span>
+    <div class="srow-items">
+      <details class="fold" style="width:320px">
+        <summary>可折叠面板</summary>
+        <div>
+          展开内容。
+        </div>
+      </details>
+      <span class="st-error-note">静态等价物</span>
+      <span class="spec">规范要求折叠态，实现中 ui-panel 尚无折叠能力（见 6 节）</span>
+    </div>
   </div>
-</div>
+  <div class="srow">
+    <div class="srow-label">
+      加载
+    </div>
+    <div class="srow-items">
+      <div class="ui-panel" style="width:320px">
+        <div class="loading-line">
+          <span class="dot-spin"></span>
+          <span>正在读取…</span>
+        </div>
+      </div>
+      <span class="st-error-note">静态等价物</span>
+      <span class="spec">ui-panel 无 loading 输入，此处用 .loading-line 拼装</span>
+    </div>
+  </div>
   <p class="hint">
-    <strong>面板几何：</strong><code>padding: 18px 20px 20px</code>（上 18 / 右 20 / 下 20 / 左 20）·
-    <code>border-radius: var(--radius)</code>（12px）· <code>1px solid var(--border)</code> ·
+    <strong>面板几何：</strong><code>padding: 18px 20px 20px</code>（上 18 / 右 20 / 下 20 / 左 20）·<code>border-radius: var(--radius)</code>（12px）· <code>1px solid var(--border)</code> ·
     标题栏 <code>margin-bottom:16px; padding-bottom:13px</code> · 分隔线 <code>var(--border-soft)</code>。
   </p>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

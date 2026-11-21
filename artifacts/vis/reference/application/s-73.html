@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>无障碍（WCAG 2.2 AA） · SiMuseor VIS</title>
 <meta name="nav-label" content="无障碍">
-  <meta name="description" content="SiMuseor 视觉规范：无障碍（WCAG 2.2 AA）">
+<meta name="description" content="SiMuseor 视觉规范：无障碍（WCAG 2.2 AA）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="application/s-73" data-root="../../">
@@ -13,31 +13,30 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-73">无障碍（WCAG 2.2 AA）</h1>
   <p class="doc-sub">07 应用系统 · 本章共 6 节</p>
 </div>
 
-  <section id="sec-application-s-73">
+<section id="sec-application-s-73" class="ref">
   <ul class="small">
     <li><strong>键盘</strong>：Esc 按 z-index 关最顶层并归还焦点；<code>T</code> 键补 <code>isComposing</code> / <code>keyCode 229</code> / <code>repeat</code> / <code>defaultPrevented</code> 守卫 + 可关闭开关（2.1.4）；方向键 roving tabindex；<code>scroll-padding-bottom:80px</code> 防吸底条遮挡焦点（2.4.11）。</li>
     <li><strong>结构</strong>：<code>ui-field</code> 补 <code>&lt;label for&gt;</code> / <code>id</code>（保留 <code>#comfy-tag</code>）；<code>&lt;table&gt;</code> 保持隐式 table role，<code>th</code> 补 <code>scope="col"</code>；结果容器 <code>aria-live="polite"</code>，徽章本身不加 live。</li>
     <li><strong>动效</strong>：全局 <code>prefers-reduced-motion</code>（现状仅 1 处）；spinner 降为静态环 + <code>role="status"</code> 文字，<strong>不能凭空消失</strong>。</li>
     <li><strong>尺寸</strong>：触摸目标 ≥24×24（≤900 建议 ≥40px）；装饰图标 <code>aria-hidden="true"</code>。</li>
   </ul>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

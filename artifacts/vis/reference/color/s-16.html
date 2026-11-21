@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>模型卡美术色域 —— 家族色 / 任务色（--plate-*） · SiMuseor VIS</title>
 <meta name="nav-label" content="色域">
-  <meta name="description" content="SiMuseor 视觉规范：模型卡美术色域 —— 家族色 / 任务色（--plate-*）">
+<meta name="description" content="SiMuseor 视觉规范：模型卡美术色域 —— 家族色 / 任务色（--plate-*）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="color/s-16" data-root="../../">
@@ -13,23 +13,23 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-16">模型卡美术色域 —— 家族色 / 任务色（<code>--plate-*</code>）</h1>
   <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
 </div>
 
-  <section id="sec-color-s-16">
+<section id="sec-color-s-16" class="ref">
   <p class="lead">
     这一层<strong>不进 UI token</strong>，但它是产品里唯一大面积出彩色的地方：模型卡的封面底、铭牌、
     构图纹样全部取自它。纪律只有两条 —— ① 每个家族 / 任务给<strong>四槽</strong>（底 / 字 / 强调 / 纹样）；
@@ -45,375 +45,631 @@
     下面色块的<strong>四段色带</strong>就是该家族自己的 ramp（底 → 字 → 强调 → 纹样），
     左侧值 = 浅色主题、右侧值 = 深色主题（按右上角「切换主题」看整页翻转）。
   </p>
-
-
   <table class="t">
-    <thead><tr><th style="width:150px">槽位</th><th style="width:110px">变量</th><th style="width:210px">浅色实测域</th><th style="width:210px">深色实测域</th><th>职责</th></tr></thead>
+    <thead>
+      <tr><th style="width:150px">槽位</th><th style="width:110px">变量</th><th style="width:210px">浅色实测域</th><th style="width:210px">深色实测域</th><th>职责</th></tr>
+    </thead>
     <tbody>
-      <tr><td><strong>底</strong></td><td><code>--plate-bg</code></td>
-        <td>L* 93–96 · C* 1–12</td>
-        <td>L* 10–14 · C* 2–18</td>
-        <td>整块封面底 / 分类胶囊底</td></tr>
-      <tr><td><strong>字</strong></td><td><code>--plate-ink</code></td>
-        <td>L* 35–48 · C* 3–50</td>
-        <td>L* 71–84 · C* 4–42</td>
-        <td>铭牌正文、发布方、规格行</td></tr>
-      <tr><td><strong>强调</strong></td><td><code>--plate-strong</code></td>
-        <td>L* 20–35 · C* 3–55</td>
-        <td>L* 86–92 · C* 3–32</td>
-        <td>家族码、参数行、芯片文字</td></tr>
-      <tr><td><strong>纹样</strong></td><td><code>--plate-mark</code></td>
-        <td>L* 60–76 · C* 4–45</td>
-        <td>L* 60–76 · C* 4–45</td>
-        <td>构图纹样、芯片底、渐变端点</td></tr>
+      <tr><td><strong>底</strong></td><td><code>--plate-bg</code></td><td>L* 93–96 · C* 1–12</td><td>L* 10–14 · C* 2–18</td><td>整块封面底 / 分类胶囊底</td></tr>
+      <tr><td><strong>字</strong></td><td><code>--plate-ink</code></td><td>L* 35–48 · C* 3–50</td><td>L* 71–84 · C* 4–42</td><td>铭牌正文、发布方、规格行</td></tr>
+      <tr><td><strong>强调</strong></td><td><code>--plate-strong</code></td><td>L* 20–35 · C* 3–55</td><td>L* 86–92 · C* 3–32</td><td>家族码、参数行、芯片文字</td></tr>
+      <tr><td><strong>纹样</strong></td><td><code>--plate-mark</code></td><td>L* 60–76 · C* 4–45</td><td>L* 60–76 · C* 4–45</td><td>构图纹样、芯片底、渐变端点</td></tr>
     </tbody>
   </table>
-
-
   <p class="lead">
     <strong>读法：</strong>家族底永远是一张<strong>纸</strong>（L* 93–96、
     彩度 C* ≤ 12），字与强调往下压两级（明度差 55–75），纹样是唯一不随主题变的槽
     （明暗共用，靠 opacity 压深）—— 这就是「一屏卡片不同色但成一套」的全部机关。
   </p>
-
-  <h4 id="s-16-1">家族色 · 25 组</h4>
+  <h4 id="s-16-1">
+    家族色 · 25 组
+  </h4>
   <div class="swatches">
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-flux"></div>
-  <div class="sw-body">
-    <code class="sw-name">flux</code>
-    <div class="sw-hex"><span class="sw-light">底 #f1eefc</span><span class="sw-dark">底 #1e1b33</span></div>
-    <div class="sw-note">字 #574f8c / #c3bcfa · 强调 #3c3489 / #ded9ff · 纹样 #8f86d6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-wan"></div>
-  <div class="sw-body">
-    <code class="sw-name">wan</code>
-    <div class="sw-hex"><span class="sw-light">底 #e1f5ee</span><span class="sw-dark">底 #10241f</span></div>
-    <div class="sw-note">字 #2f7563 / #8fdfca · 强调 #085041 / #bdf2e2 · 纹样 #59b79f</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-sdxl"></div>
-  <div class="sw-body">
-    <code class="sw-name">sdxl</code>
-    <div class="sw-hex"><span class="sw-light">底 #fbeaf0</span><span class="sw-dark">底 #2a1620</span></div>
-    <div class="sw-note">字 #95516b / #f2adc3 · 强调 #72243e / #ffd2e0 · 纹样 #d78aa6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-sd15"></div>
-  <div class="sw-body">
-    <code class="sw-name">sd15</code>
-    <div class="sw-hex"><span class="sw-light">底 #f1f3f4</span><span class="sw-dark">底 #202326</span></div>
-    <div class="sw-note">字 #5b6165 / #a8b0b4 · 强调 #41474a / #d3d9dc · 纹样 #a3abaf</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-pony"></div>
-  <div class="sw-body">
-    <code class="sw-name">pony</code>
-    <div class="sw-hex"><span class="sw-light">底 #fbebf6</span><span class="sw-dark">底 #281626</span></div>
-    <div class="sw-note">字 #8a4a74 / #f3b6df · 强调 #6d2a55 / #ffd6ee · 纹样 #d18cb8</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-hunyuan"></div>
-  <div class="sw-body">
-    <code class="sw-name">hunyuan</code>
-    <div class="sw-hex"><span class="sw-light">底 #e7f0fa</span><span class="sw-dark">底 #131f2c</span></div>
-    <div class="sw-note">字 #3a6291 / #9dcbf3 · 强调 #14487a / #cce6ff · 纹样 #8cb4de</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-ltx"></div>
-  <div class="sw-body">
-    <code class="sw-name">ltx</code>
-    <div class="sw-hex"><span class="sw-light">底 #ecf4e3</span><span class="sw-dark">底 #1b2313</span></div>
-    <div class="sw-note">字 #55703a / #b4d68a · 强调 #3a5a1e / #d9efbb · 纹样 #9dbe7c</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-qwen"></div>
-  <div class="sw-body">
-    <code class="sw-name">qwen</code>
-    <div class="sw-hex"><span class="sw-light">底 #f7efdd</span><span class="sw-dark">底 #232220</span></div>
-    <div class="sw-note">字 #8b6421 / #eec48a · 强调 #633806 / #ffdfae · 纹样 #d3a862</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-minimax"></div>
-  <div class="sw-body">
-    <code class="sw-name">minimax</code>
-    <div class="sw-hex"><span class="sw-light">底 #fdeef3</span><span class="sw-dark">底 #2a1620</span></div>
-    <div class="sw-note">字 #9c3f68 / #f0a3c1 · 强调 #6d2645 / #ffc8dc · 纹样 #e88ab0</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-krea"></div>
-  <div class="sw-body">
-    <code class="sw-name">krea</code>
-    <div class="sw-hex"><span class="sw-light">底 #e2f2f5</span><span class="sw-dark">底 #10282c</span></div>
-    <div class="sw-note">字 #2c6d78 / #8fd6e0 · 强调 #0d4a54 / #bdeef5 · 纹样 #66b3bf</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-zimage"></div>
-  <div class="sw-body">
-    <code class="sw-name">zimage</code>
-    <div class="sw-hex"><span class="sw-light">底 #e9ebfa</span><span class="sw-dark">底 #1a1b33</span></div>
-    <div class="sw-note">字 #464c8e / #b0b6f2 · 强调 #262a63 / #d9dcff · 纹样 #8d94d6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-hidream"></div>
-  <div class="sw-body">
-    <code class="sw-name">hidream</code>
-    <div class="sw-hex"><span class="sw-light">底 #fdeae6</span><span class="sw-dark">底 #2b1a15</span></div>
-    <div class="sw-note">字 #93503f / #f0b5a2 · 强调 #70301f / #ffd6c7 · 纹样 #dda08c</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-ernie"></div>
-  <div class="sw-body">
-    <code class="sw-name">ernie</code>
-    <div class="sw-hex"><span class="sw-light">底 #e8edfc</span><span class="sw-dark">底 #141d33</span></div>
-    <div class="sw-note">字 #2f4fa0 / #a8bdf0 · 强调 #16306e / #d3e0ff · 纹样 #7f9ede</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-noobai"></div>
-  <div class="sw-body">
-    <code class="sw-name">noobai</code>
-    <div class="sw-hex"><span class="sw-light">底 #eef2df</span><span class="sw-dark">底 #202415</span></div>
-    <div class="sw-note">字 #67703c / #c3cf95 · 强调 #474e1f / #e2ecc0 · 纹样 #a8b477</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-sd3"></div>
-  <div class="sw-body">
-    <code class="sw-name">sd3</code>
-    <div class="sw-hex"><span class="sw-light">底 #e8ecf3</span><span class="sw-dark">底 #191e2b</span></div>
-    <div class="sw-note">字 #475573 / #b3bfd3 · 强调 #22314c / #d8e1f0 · 纹样 #8b9ab8</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-cogvideo"></div>
-  <div class="sw-body">
-    <code class="sw-name">cogvideo</code>
-    <div class="sw-hex"><span class="sw-light">底 #e3efe7</span><span class="sw-dark">底 #12261e</span></div>
-    <div class="sw-note">字 #34694f / #93d3b5 · 强调 #124a33 / #c4ecd8 · 纹样 #74b391</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-kolors"></div>
-  <div class="sw-body">
-    <code class="sw-name">kolors</code>
-    <div class="sw-hex"><span class="sw-light">底 #fdefe0</span><span class="sw-dark">底 #2b1c0f</span></div>
-    <div class="sw-note">字 #8f5a1e / #e8bc85 · 强调 #6b3c05 / #ffd9ac · 纹样 #daa464</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-mochi"></div>
-  <div class="sw-body">
-    <code class="sw-name">mochi</code>
-    <div class="sw-hex"><span class="sw-light">底 #eef1dc</span><span class="sw-dark">底 #21240f</span></div>
-    <div class="sw-note">字 #6b7233 / #cfd68f · 强调 #49500f / #e9edb9 · 纹样 #adb46f</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-lumina"></div>
-  <div class="sw-body">
-    <code class="sw-name">lumina</code>
-    <div class="sw-hex"><span class="sw-light">底 #f8f0d9</span><span class="sw-dark">底 #26200f</span></div>
-    <div class="sw-note">字 #86701f / #e4cb84 · 强调 #665100 / #ffe6ab · 纹样 #d2ba70</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-skyreels"></div>
-  <div class="sw-body">
-    <code class="sw-name">skyreels</code>
-    <div class="sw-hex"><span class="sw-light">底 #e6f0f8</span><span class="sw-dark">底 #131f2b</span></div>
-    <div class="sw-note">字 #3b6488 / #a8cbe8 · 强调 #163f63 / #d3e6f7 · 纹样 #84b0d4</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-kandinsky"></div>
-  <div class="sw-body">
-    <code class="sw-name">kandinsky</code>
-    <div class="sw-hex"><span class="sw-light">底 #f6e9f3</span><span class="sw-dark">底 #291726</span></div>
-    <div class="sw-note">字 #84406f / #e3b3d1 · 强调 #62244f / #f8d6ea · 纹样 #c88cb4</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-playground"></div>
-  <div class="sw-body">
-    <code class="sw-name">playground</code>
-    <div class="sw-hex"><span class="sw-light">底 #e4f3ef</span><span class="sw-dark">底 #12241f</span></div>
-    <div class="sw-note">字 #2f6d5f / #95d6c4 · 强调 #0d4a3d / #c3f0e2 · 纹样 #6fb9a6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-pixart"></div>
-  <div class="sw-body">
-    <code class="sw-name">pixart</code>
-    <div class="sw-hex"><span class="sw-light">底 #f9eae6</span><span class="sw-dark">底 #2b1a15</span></div>
-    <div class="sw-note">字 #8f4a3a / #ecb3a3 · 强调 #6b2a1c / #ffd5c8 · 纹样 #d99c8b</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-illustrious"></div>
-  <div class="sw-body">
-    <code class="sw-name">illustrious</code>
-    <div class="sw-hex"><span class="sw-light">底 #f3ebf7</span><span class="sw-dark">底 #251a2b</span></div>
-    <div class="sw-note">字 #7a4a8c / #d9b2e6 · 强调 #582866 / #f2d9fb · 纹样 #b789c9</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-chroma"></div>
-  <div class="sw-body">
-    <code class="sw-name">chroma</code>
-    <div class="sw-hex"><span class="sw-light">底 #f7ece2</span><span class="sw-dark">底 #2a2018</span></div>
-    <div class="sw-note">字 #7d5a3a / #d8b596 · 强调 #5a3c1e / #f2dcc4 · 纹样 #c39a72</div>
-  </div>
-</div>
-  </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-flux">
 
-  <h4 id="s-16-2">任务色 · 12 组（认不出家族时的第二维度）</h4>
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">flux</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f1eefc</span>
+          <span class="sw-dark">底 #1e1b33</span>
+        </div>
+        <div class="sw-note">
+          字 #574f8c / #c3bcfa · 强调 #3c3489 / #ded9ff · 纹样 #8f86d6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-wan">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">wan</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e1f5ee</span>
+          <span class="sw-dark">底 #10241f</span>
+        </div>
+        <div class="sw-note">
+          字 #2f7563 / #8fdfca · 强调 #085041 / #bdf2e2 · 纹样 #59b79f
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-sdxl">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">sdxl</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fbeaf0</span>
+          <span class="sw-dark">底 #2a1620</span>
+        </div>
+        <div class="sw-note">
+          字 #95516b / #f2adc3 · 强调 #72243e / #ffd2e0 · 纹样 #d78aa6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-sd15">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">sd15</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f1f3f4</span>
+          <span class="sw-dark">底 #202326</span>
+        </div>
+        <div class="sw-note">
+          字 #5b6165 / #a8b0b4 · 强调 #41474a / #d3d9dc · 纹样 #a3abaf
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-pony">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">pony</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fbebf6</span>
+          <span class="sw-dark">底 #281626</span>
+        </div>
+        <div class="sw-note">
+          字 #8a4a74 / #f3b6df · 强调 #6d2a55 / #ffd6ee · 纹样 #d18cb8
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-hunyuan">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">hunyuan</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e7f0fa</span>
+          <span class="sw-dark">底 #131f2c</span>
+        </div>
+        <div class="sw-note">
+          字 #3a6291 / #9dcbf3 · 强调 #14487a / #cce6ff · 纹样 #8cb4de
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-ltx">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">ltx</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #ecf4e3</span>
+          <span class="sw-dark">底 #1b2313</span>
+        </div>
+        <div class="sw-note">
+          字 #55703a / #b4d68a · 强调 #3a5a1e / #d9efbb · 纹样 #9dbe7c
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-qwen">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">qwen</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f7efdd</span>
+          <span class="sw-dark">底 #232220</span>
+        </div>
+        <div class="sw-note">
+          字 #8b6421 / #eec48a · 强调 #633806 / #ffdfae · 纹样 #d3a862
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-minimax">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">minimax</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fdeef3</span>
+          <span class="sw-dark">底 #2a1620</span>
+        </div>
+        <div class="sw-note">
+          字 #9c3f68 / #f0a3c1 · 强调 #6d2645 / #ffc8dc · 纹样 #e88ab0
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-krea">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">krea</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e2f2f5</span>
+          <span class="sw-dark">底 #10282c</span>
+        </div>
+        <div class="sw-note">
+          字 #2c6d78 / #8fd6e0 · 强调 #0d4a54 / #bdeef5 · 纹样 #66b3bf
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-zimage">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">zimage</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e9ebfa</span>
+          <span class="sw-dark">底 #1a1b33</span>
+        </div>
+        <div class="sw-note">
+          字 #464c8e / #b0b6f2 · 强调 #262a63 / #d9dcff · 纹样 #8d94d6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-hidream">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">hidream</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fdeae6</span>
+          <span class="sw-dark">底 #2b1a15</span>
+        </div>
+        <div class="sw-note">
+          字 #93503f / #f0b5a2 · 强调 #70301f / #ffd6c7 · 纹样 #dda08c
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-ernie">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">ernie</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e8edfc</span>
+          <span class="sw-dark">底 #141d33</span>
+        </div>
+        <div class="sw-note">
+          字 #2f4fa0 / #a8bdf0 · 强调 #16306e / #d3e0ff · 纹样 #7f9ede
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-noobai">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">noobai</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #eef2df</span>
+          <span class="sw-dark">底 #202415</span>
+        </div>
+        <div class="sw-note">
+          字 #67703c / #c3cf95 · 强调 #474e1f / #e2ecc0 · 纹样 #a8b477
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-sd3">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">sd3</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e8ecf3</span>
+          <span class="sw-dark">底 #191e2b</span>
+        </div>
+        <div class="sw-note">
+          字 #475573 / #b3bfd3 · 强调 #22314c / #d8e1f0 · 纹样 #8b9ab8
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-cogvideo">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">cogvideo</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e3efe7</span>
+          <span class="sw-dark">底 #12261e</span>
+        </div>
+        <div class="sw-note">
+          字 #34694f / #93d3b5 · 强调 #124a33 / #c4ecd8 · 纹样 #74b391
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-kolors">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">kolors</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fdefe0</span>
+          <span class="sw-dark">底 #2b1c0f</span>
+        </div>
+        <div class="sw-note">
+          字 #8f5a1e / #e8bc85 · 强调 #6b3c05 / #ffd9ac · 纹样 #daa464
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-mochi">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">mochi</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #eef1dc</span>
+          <span class="sw-dark">底 #21240f</span>
+        </div>
+        <div class="sw-note">
+          字 #6b7233 / #cfd68f · 强调 #49500f / #e9edb9 · 纹样 #adb46f
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-lumina">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">lumina</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f8f0d9</span>
+          <span class="sw-dark">底 #26200f</span>
+        </div>
+        <div class="sw-note">
+          字 #86701f / #e4cb84 · 强调 #665100 / #ffe6ab · 纹样 #d2ba70
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-skyreels">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">skyreels</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e6f0f8</span>
+          <span class="sw-dark">底 #131f2b</span>
+        </div>
+        <div class="sw-note">
+          字 #3b6488 / #a8cbe8 · 强调 #163f63 / #d3e6f7 · 纹样 #84b0d4
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-kandinsky">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">kandinsky</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f6e9f3</span>
+          <span class="sw-dark">底 #291726</span>
+        </div>
+        <div class="sw-note">
+          字 #84406f / #e3b3d1 · 强调 #62244f / #f8d6ea · 纹样 #c88cb4
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-playground">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">playground</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e4f3ef</span>
+          <span class="sw-dark">底 #12241f</span>
+        </div>
+        <div class="sw-note">
+          字 #2f6d5f / #95d6c4 · 强调 #0d4a3d / #c3f0e2 · 纹样 #6fb9a6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-pixart">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">pixart</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f9eae6</span>
+          <span class="sw-dark">底 #2b1a15</span>
+        </div>
+        <div class="sw-note">
+          字 #8f4a3a / #ecb3a3 · 强调 #6b2a1c / #ffd5c8 · 纹样 #d99c8b
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-illustrious">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">illustrious</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f3ebf7</span>
+          <span class="sw-dark">底 #251a2b</span>
+        </div>
+        <div class="sw-note">
+          字 #7a4a8c / #d9b2e6 · 强调 #582866 / #f2d9fb · 纹样 #b789c9
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-chroma">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">chroma</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f7ece2</span>
+          <span class="sw-dark">底 #2a2018</span>
+        </div>
+        <div class="sw-note">
+          字 #7d5a3a / #d8b596 · 强调 #5a3c1e / #f2dcc4 · 纹样 #c39a72
+        </div>
+      </div>
+    </div>
+  </div>
+  <h4 id="s-16-2">
+    任务色 · 12 组（认不出家族时的第二维度）
+  </h4>
   <p class="lead">
     家族认不出时用任务色兜底 —— 真实库里 68% 的模型落进 <code>other</code>（原型实测），
     全用同一个中性色就等于一屏同色、再精致的布局也像毛坯房。任务色与家族色<strong>不可混用同一身份</strong>：
     家族色回答「谁家的」，任务色回答「干什么的」。
   </p>
   <div class="swatches">
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-text_to_image"></div>
-  <div class="sw-body">
-    <code class="sw-name">text_to_image</code>
-    <div class="sw-hex"><span class="sw-light">底 #f1eefc</span><span class="sw-dark">底 #1e1b33</span></div>
-    <div class="sw-note">字 #574f8c / #c3bcfa · 强调 #3c3489 / #ded9ff · 纹样 #8f86d6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-image_to_image"></div>
-  <div class="sw-body">
-    <code class="sw-name">image_to_image</code>
-    <div class="sw-hex"><span class="sw-light">底 #fbeaf0</span><span class="sw-dark">底 #2a1620</span></div>
-    <div class="sw-note">字 #95516b / #f2adc3 · 强调 #72243e / #ffd2e0 · 纹样 #d78aa6</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-text_to_video"></div>
-  <div class="sw-body">
-    <code class="sw-name">text_to_video</code>
-    <div class="sw-hex"><span class="sw-light">底 #e7f0fa</span><span class="sw-dark">底 #132336</span></div>
-    <div class="sw-note">字 #3a6291 / #8fc0e8 · 强调 #14487a / #c3e0f7 · 纹样 #8cb4de</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-image_to_video"></div>
-  <div class="sw-body">
-    <code class="sw-name">image_to_video</code>
-    <div class="sw-hex"><span class="sw-light">底 #e1f5ee</span><span class="sw-dark">底 #10241f</span></div>
-    <div class="sw-note">字 #2f7563 / #8fdfca · 强调 #085041 / #bdf2e2 · 纹样 #59b79f</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-text_generation"></div>
-  <div class="sw-body">
-    <code class="sw-name">text_generation</code>
-    <div class="sw-hex"><span class="sw-light">底 #f7efdd</span><span class="sw-dark">底 #2b2113</span></div>
-    <div class="sw-note">字 #8b6421 / #d6b571 · 强调 #633806 / #f0d9a6 · 纹样 #d3a862</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-embedding"></div>
-  <div class="sw-body">
-    <code class="sw-name">embedding</code>
-    <div class="sw-hex"><span class="sw-light">底 #ecf4e3</span><span class="sw-dark">底 #1a2612</span></div>
-    <div class="sw-note">字 #55703a / #a5c782 · 强调 #3a5a1e / #d3ecb6 · 纹样 #9dbe7c</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-lora"></div>
-  <div class="sw-body">
-    <code class="sw-name">lora</code>
-    <div class="sw-hex"><span class="sw-light">底 #fdf0e6</span><span class="sw-dark">底 #2a1c10</span></div>
-    <div class="sw-note">字 #9a5a24 / #e0a874 · 强调 #7a3d10 / #f3cf9f · 纹样 #dfa06a</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-upscaler"></div>
-  <div class="sw-body">
-    <code class="sw-name">upscaler</code>
-    <div class="sw-hex"><span class="sw-light">底 #eef0f7</span><span class="sw-dark">底 #1a1e2c</span></div>
-    <div class="sw-note">字 #4a5578 / #9aa4cd · 强调 #333c5c / #c6cdea · 纹样 #8d97bd</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-controlnet"></div>
-  <div class="sw-body">
-    <code class="sw-name">controlnet</code>
-    <div class="sw-hex"><span class="sw-light">底 #f4ecf7</span><span class="sw-dark">底 #241a2c</span></div>
-    <div class="sw-note">字 #75418f / #c294d8 · 强调 #5a2f70 / #e2c4ee · 纹样 #b98fd0</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-speech_to_text"></div>
-  <div class="sw-body">
-    <code class="sw-name">speech_to_text</code>
-    <div class="sw-hex"><span class="sw-light">底 #eef6f3</span><span class="sw-dark">底 #10241f</span></div>
-    <div class="sw-note">字 #3f7a68 / #8fdfca · 强调 #2a5f4f / #bdf2e2 · 纹样 #7fbfa8</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-text_to_speech"></div>
-  <div class="sw-body">
-    <code class="sw-name">text_to_speech</code>
-    <div class="sw-hex"><span class="sw-light">底 #f7eef1</span><span class="sw-dark">底 #2a1a20</span></div>
-    <div class="sw-note">字 #8f4f63 / #dda0b3 · 强调 #6e3849 / #f2c8d5 · 纹样 #cf8b9e</div>
-  </div>
-</div>
-<div class="sw">
-  <div class="sw-chip tone-ramp tone-image_understanding"></div>
-  <div class="sw-body">
-    <code class="sw-name">image_understanding</code>
-    <div class="sw-hex"><span class="sw-light">底 #eef2f4</span><span class="sw-dark">底 #182026</span></div>
-    <div class="sw-note">字 #4e6069 / #a3b6c2 · 强调 #36474e / #c9dae4 · 纹样 #8ea3ad</div>
-  </div>
-</div>
-  </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-text_to_image">
 
-  <h4 id="s-16-3">中性兜底 · 1 组</h4>
-  <p class="lead">家族认不出、任务也没有 —— 才落到中性灰。「未知就是未知，不猜」，不许随手挑一个家族色顶替。</p>
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">text_to_image</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f1eefc</span>
+          <span class="sw-dark">底 #1e1b33</span>
+        </div>
+        <div class="sw-note">
+          字 #574f8c / #c3bcfa · 强调 #3c3489 / #ded9ff · 纹样 #8f86d6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-image_to_image">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">image_to_image</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fbeaf0</span>
+          <span class="sw-dark">底 #2a1620</span>
+        </div>
+        <div class="sw-note">
+          字 #95516b / #f2adc3 · 强调 #72243e / #ffd2e0 · 纹样 #d78aa6
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-text_to_video">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">text_to_video</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e7f0fa</span>
+          <span class="sw-dark">底 #132336</span>
+        </div>
+        <div class="sw-note">
+          字 #3a6291 / #8fc0e8 · 强调 #14487a / #c3e0f7 · 纹样 #8cb4de
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-image_to_video">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">image_to_video</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #e1f5ee</span>
+          <span class="sw-dark">底 #10241f</span>
+        </div>
+        <div class="sw-note">
+          字 #2f7563 / #8fdfca · 强调 #085041 / #bdf2e2 · 纹样 #59b79f
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-text_generation">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">text_generation</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f7efdd</span>
+          <span class="sw-dark">底 #2b2113</span>
+        </div>
+        <div class="sw-note">
+          字 #8b6421 / #d6b571 · 强调 #633806 / #f0d9a6 · 纹样 #d3a862
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-embedding">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">embedding</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #ecf4e3</span>
+          <span class="sw-dark">底 #1a2612</span>
+        </div>
+        <div class="sw-note">
+          字 #55703a / #a5c782 · 强调 #3a5a1e / #d3ecb6 · 纹样 #9dbe7c
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-lora">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">lora</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #fdf0e6</span>
+          <span class="sw-dark">底 #2a1c10</span>
+        </div>
+        <div class="sw-note">
+          字 #9a5a24 / #e0a874 · 强调 #7a3d10 / #f3cf9f · 纹样 #dfa06a
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-upscaler">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">upscaler</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #eef0f7</span>
+          <span class="sw-dark">底 #1a1e2c</span>
+        </div>
+        <div class="sw-note">
+          字 #4a5578 / #9aa4cd · 强调 #333c5c / #c6cdea · 纹样 #8d97bd
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-controlnet">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">controlnet</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f4ecf7</span>
+          <span class="sw-dark">底 #241a2c</span>
+        </div>
+        <div class="sw-note">
+          字 #75418f / #c294d8 · 强调 #5a2f70 / #e2c4ee · 纹样 #b98fd0
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-speech_to_text">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">speech_to_text</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #eef6f3</span>
+          <span class="sw-dark">底 #10241f</span>
+        </div>
+        <div class="sw-note">
+          字 #3f7a68 / #8fdfca · 强调 #2a5f4f / #bdf2e2 · 纹样 #7fbfa8
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-text_to_speech">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">text_to_speech</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f7eef1</span>
+          <span class="sw-dark">底 #2a1a20</span>
+        </div>
+        <div class="sw-note">
+          字 #8f4f63 / #dda0b3 · 强调 #6e3849 / #f2c8d5 · 纹样 #cf8b9e
+        </div>
+      </div>
+    </div>
+    <div class="sw">
+      <div class="sw-chip tone-ramp tone-image_understanding">
+
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">image_understanding</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #eef2f4</span>
+          <span class="sw-dark">底 #182026</span>
+        </div>
+        <div class="sw-note">
+          字 #4e6069 / #a3b6c2 · 强调 #36474e / #c9dae4 · 纹样 #8ea3ad
+        </div>
+      </div>
+    </div>
+  </div>
+  <h4 id="s-16-3">
+    中性兜底 · 1 组
+  </h4>
+  <p class="lead">
+    家族认不出、任务也没有 —— 才落到中性灰。「未知就是未知，不猜」，不许随手挑一个家族色顶替。
+  </p>
   <div class="swatches">
     <div class="sw">
-  <div class="sw-chip tone-ramp tone-neutral"></div>
-  <div class="sw-body">
-    <code class="sw-name">neutral</code>
-    <div class="sw-hex"><span class="sw-light">底 #f2f1ed</span><span class="sw-dark">底 #232321</span></div>
-    <div class="sw-note">字 #6b6a63 / #b0afa6 · 强调 #57564f / #d7d6cd · 纹样 #b3b2aa</div>
-  </div>
-</div>
-  </div>
+      <div class="sw-chip tone-ramp tone-neutral">
 
-
+      </div>
+      <div class="sw-body">
+        <code class="sw-name">neutral</code>
+        <div class="sw-hex">
+          <span class="sw-light">底 #f2f1ed</span>
+          <span class="sw-dark">底 #232321</span>
+        </div>
+        <div class="sw-note">
+          字 #6b6a63 / #b0afa6 · 强调 #57564f / #d7d6cd · 纹样 #b3b2aa
+        </div>
+      </div>
+    </div>
+  </div>
   <table class="t">
-    <thead><tr><th style="width:260px">色对</th><th style="width:120px">实测</th><th>判定 / 处置</th></tr></thead>
+    <thead>
+      <tr><th style="width:260px">色对</th><th style="width:120px">实测</th><th>判定 / 处置</th></tr>
+    </thead>
     <tbody>
       <tr><td>家族底 <code>bg</code> vs 页底（浅 <code>#f5f5f6</code>）</td><td>16.60–17.67:1</td><td><strong>PASS</strong> → 家族底与页面底永远分得开，不会「陷进页面」</td></tr>
       <tr><td>家族字 <code>ink</code> on 家族底</td><td>最低 4.24:1（lumina）</td><td><strong>FAIL</strong> → lumina 的 <code>ink</code> 未达 4.5:1，<strong>不得承载小字</strong>（见 §s-17 约束 5）</td></tr>
       <tr><td>家族强调 <code>strong</code> on 家族底</td><td>最低 6.73:1（lumina）</td><td><strong>PASS</strong> → 家族码 / 参数行可安全承载文字</td></tr>
-      <tr><td>家族纹样 <code>mark</code> on 家族底</td><td>1.68–2.81:1</td><td><strong>FAIL</strong> → <code>mark</code> <strong>永不承载文字</strong>，只作纹样 / 图形 / 渐变端点</td></tr>
+      <tr><td>家族纹样 <code>mark</code> on 家族底</td><td>1.68–2.81:1</td><td><strong>FAIL</strong> → <code>mark</code><strong>永不承载文字</strong>，只作纹样 / 图形 / 渐变端点</td></tr>
       <tr><td>深色家族字 <code>ink</code> on 家族底</td><td>7.17–10.49:1</td><td><strong>PASS</strong> → 深色整套换色后对比度反而更宽裕</td></tr>
       <tr><td>深色家族纹样 <code>mark</code> on 家族底</td><td>5.20–8.49:1</td><td><strong>PASS</strong> → 同一条纹样在深底上可读（浅底上不可读）</td></tr>
       <tr><td>任务字 <code>ink</code> on 任务底</td><td>最低 4.56:1（speech_to_text）</td><td><strong>PASS</strong> → 12 组任务色全部达标</td></tr>
       <tr><td>家族底 vs 页底（深 <code>#0b0b0d</code>）</td><td>1.15–1.28:1</td><td>设计值（深底上家族底本就贴近页面，靠描边与纹样分层）</td></tr>
     </tbody>
   </table>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>国际色彩锚点（Pantone / Red Dot） · SiMuseor VIS</title>
 <meta name="nav-label" content="国际锚点">
-  <meta name="description" content="SiMuseor 视觉规范：国际色彩锚点（Pantone / Red Dot）">
+<meta name="description" content="SiMuseor 视觉规范：国际色彩锚点（Pantone / Red Dot）">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="color/s-18" data-root="../../">
@@ -13,32 +13,33 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-18">国际色彩锚点（Pantone / Red Dot）</h1>
   <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
 </div>
 
-  <section id="sec-color-s-18">
+<section id="sec-color-s-18" class="ref">
   <p class="lead">
     色彩范围要有<strong>外部坐标</strong>，否则「合规」只是自说自话。下表是国际设计体系里可查证的颜色锚点，
     用途有二：① 给我们的色域<strong>定标尺</strong>（什么算「纸感」、什么算「冷灰」、什么算「高彩度」）；
-    ② 给印刷物料<strong>定打样目标</strong>。
-    <strong>但 Pantone 色号不能直接搬进 UI</strong> —— 专色的 sRGB 值只是近似，屏幕与印刷必然有色差，
+    ② 给印刷物料<strong>定打样目标</strong>。<strong>但 Pantone 色号不能直接搬进 UI</strong> —— 专色的 sRGB 值只是近似，屏幕与印刷必然有色差，
     最终以实物色卡打样为准。
   </p>
   <table class="t">
-    <thead><tr><th style="width:210px">锚点</th><th style="width:120px">HEX</th><th style="width:170px">对应我方</th><th>借来的方法</th></tr></thead>
+    <thead>
+      <tr><th style="width:210px">锚点</th><th style="width:120px">HEX</th><th style="width:170px">对应我方</th><th>借来的方法</th></tr>
+    </thead>
     <tbody>
       <tr><td><strong>Red Dot 官方红</strong><br><small>红点传达设计奖标识色</small></td><td><code>#e3000f</code></td><td>—</td><td>「单主色 + 大面积中性」：全站只允许一处高纯度成块，其余全留给中性面</td></tr>
       <tr><td><strong>Red Dot 官方绿</strong><br><small>Elf Green</small></td><td><code>#099862</code></td><td>—</td><td>双主色体系：一个主色负责「可点」，一个辅色负责「第二语义」，语义色另走通道</td></tr>
@@ -47,7 +48,8 @@
       <tr><td>Pantone 11-0602 TCX<br><small>Snow White 暖白</small></td><td><code>#f2f0eb</code></td><td><code>--brand-paper #f8f6f1</code></td><td>「书卷气」来自<strong>暖白 + 窄体 + 留白</strong>，不是来自给全站刷暖色；品牌暖白只准出现在品牌展示面</td></tr>
       <tr><td>Pantone Black 6 C<br><small>冷调近黑</small></td><td><code>#101820</code></td><td><code>--brand-ink #1b1b1e</code><br><code>--brand-paper-reverse #15151a</code></td><td>深色底用<strong>近黑而非纯黑</strong>，带一点蓝；纯黑在屏幕上发闷、在印刷上堵版</td></tr>
       <tr><td>Pantone Cool Gray 1–11<br><small>冷灰阶</small></td><td><code>#d9d9d6</code> …<br><code>#53565a</code></td><td>zinc 中性 33 档</td><td>中性层<strong>永远冷色</strong>：冷灰负责层级，暖白负责品牌，两者不混</td></tr>
-      <tr><td>Pantone 2330 C<br><small>近中性暖灰</small></td><td><code>#cfcdc9</code></td><td>家族浅底域</td><td>家族底 C* ≤ 12 的标尺来源 —— 底是「带一点色的纸」，不是「淡色块」</td></tr>      <tr><td>Pantone 4525 C<br><small>低彩度金</small></td><td><code>#c5b783</code></td><td>品牌点缀 <code>#9a7b3f</code><br>蝉形暖端</td><td>金色靠<strong>明度差</strong>做强调，不靠彩度；品牌点缀只用于文字强调，不进图形</td></tr>
+      <tr><td>Pantone 2330 C<br><small>近中性暖灰</small></td><td><code>#cfcdc9</code></td><td>家族浅底域</td><td>家族底 C* ≤ 12 的标尺来源 —— 底是「带一点色的纸」，不是「淡色块」</td></tr>
+      <tr><td>Pantone 4525 C<br><small>低彩度金</small></td><td><code>#c5b783</code></td><td>品牌点缀 <code>#9a7b3f</code><br>蝉形暖端</td><td>金色靠<strong>明度差</strong>做强调，不靠彩度；品牌点缀只用于文字强调，不进图形</td></tr>
       <tr><td>Pantone 219 C<br><small>热粉</small></td><td><code>#da1884</code></td><td>蝉形品红端<br><code>#a3389c</code></td><td>跨色相渐变的起点：品红 → 橙的暖弧是<strong>刻意</strong>的，不是「彩虹渐变」</td></tr>
       <tr><td>Pantone 1505 C<br><small>鲜橙</small></td><td><code>#ff6900</code></td><td>蝉形橙端<br><code>#f4776a</code></td><td>渐变暖端的高彩度上限；端点白字仅 2.73:1 → 暖端<strong>不承载白字</strong></td></tr>
       <tr><td>Pantone 361 C / Green C</td><td><code>#43b02a</code><br><code>#00ab84</code></td><td>家族绿系<br>wan / krea / playground</td><td>绿系分<strong>深墨绿</strong>与<strong>亮松绿</strong>两端分档，不取中间灰绿</td></tr>
@@ -61,8 +63,7 @@
     &gt; 5 明显不同）；印刷件一律以<strong>实物色卡打样</strong>为准，不许拿屏幕值当印刷色。
     ② 红点（Red Dot）借的是<strong>配额方法</strong> —— 高纯度主色成块 + 大面积中性 —— 不是借它的红。
   </p>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

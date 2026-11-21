@@ -1320,6 +1320,45 @@ say('');
     }
   }
 }
+/* ==========================================================================
+ * 3.8 手册站结构 / 样式 / 骨架检查（vis-layout check）
+ * --------------------------------------------------------------------------
+ * 手册站刚经历一次「一节一页」拆分，拆分是按 <h3> 文本位置切的，切在了嵌套
+ * 容器中间 —— 页面看着「像模像样」，实际标签不配平、样式打不中、链接失效。
+ * vis-layout.mjs 用**真实 HTML 解析**（不是正则）逐页核：
+ *   标签配平 / class 能否命中 / 关键结构 / 内部链接。
+ * 任一阻塞项 -> 退出码 2（结构坏掉的页面不许带病合）。
+ * ========================================================================== */
+{
+  say('');
+  say(HR2);
+  say('[3.8] 手册站结构 / 样式 / 骨架检查（artifacts/vis/vis-layout.mjs check）');
+  say(HR2);
+  const layoutTool = path.join(HERE, 'vis-layout.mjs');
+  if (!fs.existsSync(layoutTool)) {
+    say('    [FAIL] vis-layout.mjs 不存在 —— 手册站结构门禁缺失');
+    deliverableFail++;
+  } else {
+    const r = spawnSync(process.execPath, [layoutTool, 'check'], {
+      cwd: ROOT, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+    });
+    const out = String(r.stdout || '') + String(r.stderr || '');
+    for (const line of out.split('\n')) {
+      if (/^\s{4}\[/.test(line) || /^\s{2}(页面|全部通过|问题)/.test(line)) say(line);
+    }
+    if (r.status === 2) {
+      say('    ^ 标签不配平 / class 打不中 / 骨架缺失 / 链接失效 -> 阻塞');
+      say('      处置：跑 `node artifacts/vis/vis-layout.mjs pages` 定位，');
+      say('            结构坏了用 `node artifacts/vis/vis-manual.mjs split` 从 git 旧章页重切。');
+      deliverableFail++;
+    } else if (r.status === 3) {
+      say('    [FAIL] vis-layout 自身出错 -> 阻塞');
+      deliverableFail++;
+    } else {
+      say('    [PASS] 72 个页面：标签配平 / class 可命中 / 骨架齐全 / 链接可达');
+    }
+  }
+}
 say('');
 say(HR);
 say('[4] SUMMARY');

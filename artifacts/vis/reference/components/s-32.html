@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>输入框 —— 全部状态 · SiMuseor VIS</title>
 <meta name="nav-label" content="输入框">
-  <meta name="description" content="SiMuseor 视觉规范：输入框 —— 全部状态">
+<meta name="description" content="SiMuseor 视觉规范：输入框 —— 全部状态">
 <link rel="stylesheet" href="../../assets/vis.css">
 </head>
 <body data-page="components/s-32" data-root="../../">
@@ -13,91 +13,111 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.13</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.14</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.13 · 2026</small>
+      <small>VIS v2.14 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.13</p>
+  <p class="kicker">SiMuseor · VIS v2.14</p>
   <h1 id="s-32">输入框 —— 全部状态</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
 
-  <section id="sec-components-s-32">
-<div class="srow">
-  <div class="srow-label">默认</div>
-  <div class="srow-items">
-    <input class="inp" type="text" placeholder="搜索模型关键词，如 qwen / lora / flux" aria-label="搜索模型" />
-    <span class="spec">32px 高 · padding 0 10px · radius 8px</span>
+<section id="sec-components-s-32" class="ref">
+  <div class="srow">
+    <div class="srow-label">
+      默认
+    </div>
+    <div class="srow-items">
+      <input class="inp" type="text" placeholder="搜索模型关键词，如 qwen / lora / flux" aria-label="搜索模型">
+      <span class="spec">32px 高 · padding 0 10px · radius 8px</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">有值</div>
-  <div class="srow-items">
-    <input class="inp" type="text" value="flux1-dev" aria-label="有值" />
-    <span class="spec">text: var(--text)</span>
+  <div class="srow">
+    <div class="srow-label">
+      有值
+    </div>
+    <div class="srow-items">
+      <input class="inp" type="text" value="flux1-dev" aria-label="有值">
+      <span class="spec">text: var(--text)</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">focus</div>
-  <div class="srow-items">
-    <input class="inp st-focus" type="text" value="flux1-dev" aria-label="focus" />
-    <span class="spec">border var(--accent) + box-shadow var(--ring)</span>
+  <div class="srow">
+    <div class="srow-label">
+      focus
+    </div>
+    <div class="srow-items">
+      <input class="inp st-focus" type="text" value="flux1-dev" aria-label="focus">
+      <span class="spec">border var(--accent) + box-shadow var(--ring)</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">placeholder</div>
-  <div class="srow-items">
-    <input class="inp" type="text" placeholder="搜索模型关键词" aria-label="placeholder" />
-    <span class="spec">::placeholder → var(--muted)</span>
+  <div class="srow">
+    <div class="srow-label">
+      placeholder
+    </div>
+    <div class="srow-items">
+      <input class="inp" type="text" placeholder="搜索模型关键词" aria-label="placeholder">
+      <span class="spec">::placeholder → var(--muted)</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">readonly</div>
-  <div class="srow-items">
-    <input class="inp" type="text" value="只读值" readonly aria-label="readonly" />
-    <span class="spec">背景 var(--panel-2) · 字 var(--muted)</span>
+  <div class="srow">
+    <div class="srow-label">
+      readonly
+    </div>
+    <div class="srow-items">
+      <input class="inp" type="text" value="只读值" readonly aria-label="readonly">
+      <span class="spec">背景 var(--panel-2) · 字 var(--muted)</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">disabled</div>
-  <div class="srow-items">
-    <input class="inp" type="text" value="禁用" disabled aria-label="disabled" />
-    <select class="inp" disabled aria-label="select disabled"><option>选项</option></select>
-    <span class="spec">select:disabled → opacity .6</span>
+  <div class="srow">
+    <div class="srow-label">
+      disabled
+    </div>
+    <div class="srow-items">
+      <input class="inp" type="text" value="禁用" disabled aria-label="disabled">
+      <select class="inp" disabled aria-label="select disabled"><option>选项</option></select>
+      <span class="spec">select:disabled → opacity .6</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">error</div>
-  <div class="srow-items">
-    <input class="inp st-error" type="text" value="不合法路径" aria-invalid="true" aria-label="error" />
-    <span class="st-error-note">参考提案 · 实现缺失</span>
-    <span class="spec">规范要求 error 态，实现中无 aria-invalid / :invalid 样式（见 6 节）</span>
+  <div class="srow">
+    <div class="srow-label">
+      error
+    </div>
+    <div class="srow-items">
+      <input class="inp st-error" type="text" value="不合法路径" aria-invalid="true" aria-label="error">
+      <span class="st-error-note">参考提案 · 实现缺失</span>
+      <span class="spec">规范要求 error 态，实现中无 aria-invalid / :invalid 样式（见 6 节）</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">单选块</div>
-  <div class="srow-items">
-    <label class="radio-row"><input type="radio" name="ref-radio" checked /><span>已选中</span></label>
-    <label class="radio-row"><input type="radio" name="ref-radio" /><span>未选中</span></label>
-    <span class="spec">radio-row：min-height 34px · padding 0 11px · radius 8px</span>
+  <div class="srow">
+    <div class="srow-label">
+      单选块
+    </div>
+    <div class="srow-items">
+      <label class="radio-row"><input type="radio" name="ref-radio" checked><span>已选中</span></label>
+      <label class="radio-row"><input type="radio" name="ref-radio"><span>未选中</span></label>
+      <span class="spec">radio-row：min-height 34px · padding 0 11px · radius 8px</span>
+    </div>
   </div>
-</div>
-<div class="srow">
-  <div class="srow-label">字段标签</div>
-  <div class="srow-items">
-    <div class="ui-field"><label class="field-label">下载源</label><input class="inp" type="text" aria-label="下载源" /></div>
-    <span class="spec">ui-field label：11.5px / 500 / margin-bottom 6px</span>
+  <div class="srow">
+    <div class="srow-label">
+      字段标签
+    </div>
+    <div class="srow-items">
+      <div class="ui-field">
+        <label class="field-label">下载源</label>
+        <input class="inp" type="text" aria-label="下载源">
+      </div>
+      <span class="spec">ui-field label：11.5px / 500 / margin-bottom 6px</span>
+    </div>
   </div>
-</div>
-  </section>
-
+</section>
     </div>
   </main>
 </div>

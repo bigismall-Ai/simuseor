@@ -2522,3 +2522,123 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .fm-meta { min-width: 0; }
 .fm-name { display: block; font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fm-code { display: block; margin-top: 1px; font-family: "Cascadia Mono", Consolas, monospace; font-size: 9.5px; color: var(--muted); }
+
+/* ============================================================================
+ * 08 补齐：拆页后暴露的悬空 class + 色彩章的四槽色带
+ * ---------------------------------------------------------------------------
+ * 下面这些 class 之前只存在于产品源码（web/src/）或章页内联 <style> 里，
+ * 手册站**没有对应规则** —— 页面看着「像模像样」，实际这一段样式是空的。
+ * 2026-11-21「一节一页」归一化时补齐（见 _work/layout-audit.md 的 R5）。
+ * ============================================================================ */
+
+/* ---- 圆角 / 间距实样的单项容器（.rad-row / .sp-row 的 flex 子项） ---- */
+.rad-item { display: flex; flex-direction: column; }
+.sp-item { display: flex; flex-direction: column; }
+
+/* ---- 厂牌列的说明行（栏头下的一句话） ---- */
+.fm-col-note { margin: 0 0 10px; font-size: 11.5px; color: var(--muted); }
+
+/* ---- 表格的「大小」列（数值取自 web/src/styles.css:960,967） ---- */
+.ref th.col-size, .ref td.col-size { text-align: right; font-variant-numeric: tabular-nums; }
+.ref .col-size { width: 104px; }
+
+/* ---- 字段标签（产品端 JS 钩子：field.component.ts:34 靠它找 label；样式由 .ui-field label 给） ---- */
+.ref .ui-field label.field-label { margin-bottom: 6px; }
+
+/* ---- 加载中按钮（状态钩子，与 st-hover / st-active 同族） ---- */
+.ref button.st-loading { cursor: progress; }
+
+/* ---- 导航项禁用态（数值取自 web/src/styles.css:337,338） ---- */
+.ref .nav-item.is-disabled { opacity: 0.42; cursor: default; }
+.ref .nav-item.is-disabled:hover { background: none; color: var(--muted); }
+
+/* ---- 工作流类型胶囊（工作流卡顶部的「文生图 / 文生视频」，语义同 .kind-pill） ---- */
+.ref .pill-ident.wc-kind { font-weight: 500; }
+
+/* ---- 紧凑清单（应用 / 工程 / 裁决章的短清单） ---- */
+.ref ul.small, .ref ol.small {
+  margin: 0 0 12px; padding-left: 22px;
+  font-size: 12.5px; color: var(--text-2); }
+.ref ul.small li, .ref ol.small li { margin: 3px 0; }
+
+/* ---- 家族色 / 任务色的四槽色带（浅色左、深色右随主题切换）
+       原为色彩章页内联 <style>：s-15 与 s-16 两节共用同一套 tone-*，
+       内联样式只会落在它所在的那一节 —— 提到样式表里，两节都拿得到。 ---- */
+  .tone-ramp{background:linear-gradient(90deg,var(--t-bg) 0 25%,var(--t-ink) 25% 50%,var(--t-strong) 50% 75%,var(--t-mark) 75% 100%)}
+  .tone-flux{--t-bg:#f1eefc;--t-ink:#574f8c;--t-strong:#3c3489;--t-mark:#8f86d6}
+  :root[data-theme="dark"] .tone-flux{--t-bg:#1e1b33;--t-ink:#c3bcfa;--t-strong:#ded9ff;--t-mark:#8f86d6}
+  .tone-wan{--t-bg:#e1f5ee;--t-ink:#2f7563;--t-strong:#085041;--t-mark:#59b79f}
+  :root[data-theme="dark"] .tone-wan{--t-bg:#10241f;--t-ink:#8fdfca;--t-strong:#bdf2e2;--t-mark:#59b79f}
+  .tone-sdxl{--t-bg:#fbeaf0;--t-ink:#95516b;--t-strong:#72243e;--t-mark:#d78aa6}
+  :root[data-theme="dark"] .tone-sdxl{--t-bg:#2a1620;--t-ink:#f2adc3;--t-strong:#ffd2e0;--t-mark:#d78aa6}
+  .tone-sd15{--t-bg:#f1f3f4;--t-ink:#5b6165;--t-strong:#41474a;--t-mark:#a3abaf}
+  :root[data-theme="dark"] .tone-sd15{--t-bg:#202326;--t-ink:#a8b0b4;--t-strong:#d3d9dc;--t-mark:#a3abaf}
+  .tone-pony{--t-bg:#fbebf6;--t-ink:#8a4a74;--t-strong:#6d2a55;--t-mark:#d18cb8}
+  :root[data-theme="dark"] .tone-pony{--t-bg:#281626;--t-ink:#f3b6df;--t-strong:#ffd6ee;--t-mark:#d18cb8}
+  .tone-hunyuan{--t-bg:#e7f0fa;--t-ink:#3a6291;--t-strong:#14487a;--t-mark:#8cb4de}
+  :root[data-theme="dark"] .tone-hunyuan{--t-bg:#131f2c;--t-ink:#9dcbf3;--t-strong:#cce6ff;--t-mark:#8cb4de}
+  .tone-ltx{--t-bg:#ecf4e3;--t-ink:#55703a;--t-strong:#3a5a1e;--t-mark:#9dbe7c}
+  :root[data-theme="dark"] .tone-ltx{--t-bg:#1b2313;--t-ink:#b4d68a;--t-strong:#d9efbb;--t-mark:#9dbe7c}
+  .tone-qwen{--t-bg:#f7efdd;--t-ink:#8b6421;--t-strong:#633806;--t-mark:#d3a862}
+  :root[data-theme="dark"] .tone-qwen{--t-bg:#232220;--t-ink:#eec48a;--t-strong:#ffdfae;--t-mark:#d3a862}
+  .tone-minimax{--t-bg:#fdeef3;--t-ink:#9c3f68;--t-strong:#6d2645;--t-mark:#e88ab0}
+  :root[data-theme="dark"] .tone-minimax{--t-bg:#2a1620;--t-ink:#f0a3c1;--t-strong:#ffc8dc;--t-mark:#e88ab0}
+  .tone-krea{--t-bg:#e2f2f5;--t-ink:#2c6d78;--t-strong:#0d4a54;--t-mark:#66b3bf}
+  :root[data-theme="dark"] .tone-krea{--t-bg:#10282c;--t-ink:#8fd6e0;--t-strong:#bdeef5;--t-mark:#66b3bf}
+  .tone-zimage{--t-bg:#e9ebfa;--t-ink:#464c8e;--t-strong:#262a63;--t-mark:#8d94d6}
+  :root[data-theme="dark"] .tone-zimage{--t-bg:#1a1b33;--t-ink:#b0b6f2;--t-strong:#d9dcff;--t-mark:#8d94d6}
+  .tone-hidream{--t-bg:#fdeae6;--t-ink:#93503f;--t-strong:#70301f;--t-mark:#dda08c}
+  :root[data-theme="dark"] .tone-hidream{--t-bg:#2b1a15;--t-ink:#f0b5a2;--t-strong:#ffd6c7;--t-mark:#dda08c}
+  .tone-ernie{--t-bg:#e8edfc;--t-ink:#2f4fa0;--t-strong:#16306e;--t-mark:#7f9ede}
+  :root[data-theme="dark"] .tone-ernie{--t-bg:#141d33;--t-ink:#a8bdf0;--t-strong:#d3e0ff;--t-mark:#7f9ede}
+  .tone-noobai{--t-bg:#eef2df;--t-ink:#67703c;--t-strong:#474e1f;--t-mark:#a8b477}
+  :root[data-theme="dark"] .tone-noobai{--t-bg:#202415;--t-ink:#c3cf95;--t-strong:#e2ecc0;--t-mark:#a8b477}
+  .tone-sd3{--t-bg:#e8ecf3;--t-ink:#475573;--t-strong:#22314c;--t-mark:#8b9ab8}
+  :root[data-theme="dark"] .tone-sd3{--t-bg:#191e2b;--t-ink:#b3bfd3;--t-strong:#d8e1f0;--t-mark:#8b9ab8}
+  .tone-cogvideo{--t-bg:#e3efe7;--t-ink:#34694f;--t-strong:#124a33;--t-mark:#74b391}
+  :root[data-theme="dark"] .tone-cogvideo{--t-bg:#12261e;--t-ink:#93d3b5;--t-strong:#c4ecd8;--t-mark:#74b391}
+  .tone-kolors{--t-bg:#fdefe0;--t-ink:#8f5a1e;--t-strong:#6b3c05;--t-mark:#daa464}
+  :root[data-theme="dark"] .tone-kolors{--t-bg:#2b1c0f;--t-ink:#e8bc85;--t-strong:#ffd9ac;--t-mark:#daa464}
+  .tone-mochi{--t-bg:#eef1dc;--t-ink:#6b7233;--t-strong:#49500f;--t-mark:#adb46f}
+  :root[data-theme="dark"] .tone-mochi{--t-bg:#21240f;--t-ink:#cfd68f;--t-strong:#e9edb9;--t-mark:#adb46f}
+  .tone-lumina{--t-bg:#f8f0d9;--t-ink:#86701f;--t-strong:#665100;--t-mark:#d2ba70}
+  :root[data-theme="dark"] .tone-lumina{--t-bg:#26200f;--t-ink:#e4cb84;--t-strong:#ffe6ab;--t-mark:#d2ba70}
+  .tone-skyreels{--t-bg:#e6f0f8;--t-ink:#3b6488;--t-strong:#163f63;--t-mark:#84b0d4}
+  :root[data-theme="dark"] .tone-skyreels{--t-bg:#131f2b;--t-ink:#a8cbe8;--t-strong:#d3e6f7;--t-mark:#84b0d4}
+  .tone-kandinsky{--t-bg:#f6e9f3;--t-ink:#84406f;--t-strong:#62244f;--t-mark:#c88cb4}
+  :root[data-theme="dark"] .tone-kandinsky{--t-bg:#291726;--t-ink:#e3b3d1;--t-strong:#f8d6ea;--t-mark:#c88cb4}
+  .tone-playground{--t-bg:#e4f3ef;--t-ink:#2f6d5f;--t-strong:#0d4a3d;--t-mark:#6fb9a6}
+  :root[data-theme="dark"] .tone-playground{--t-bg:#12241f;--t-ink:#95d6c4;--t-strong:#c3f0e2;--t-mark:#6fb9a6}
+  .tone-pixart{--t-bg:#f9eae6;--t-ink:#8f4a3a;--t-strong:#6b2a1c;--t-mark:#d99c8b}
+  :root[data-theme="dark"] .tone-pixart{--t-bg:#2b1a15;--t-ink:#ecb3a3;--t-strong:#ffd5c8;--t-mark:#d99c8b}
+  .tone-illustrious{--t-bg:#f3ebf7;--t-ink:#7a4a8c;--t-strong:#582866;--t-mark:#b789c9}
+  :root[data-theme="dark"] .tone-illustrious{--t-bg:#251a2b;--t-ink:#d9b2e6;--t-strong:#f2d9fb;--t-mark:#b789c9}
+  .tone-chroma{--t-bg:#f7ece2;--t-ink:#7d5a3a;--t-strong:#5a3c1e;--t-mark:#c39a72}
+  :root[data-theme="dark"] .tone-chroma{--t-bg:#2a2018;--t-ink:#d8b596;--t-strong:#f2dcc4;--t-mark:#c39a72}
+  .tone-text_to_image{--t-bg:#f1eefc;--t-ink:#574f8c;--t-strong:#3c3489;--t-mark:#8f86d6}
+  :root[data-theme="dark"] .tone-text_to_image{--t-bg:#1e1b33;--t-ink:#c3bcfa;--t-strong:#ded9ff;--t-mark:#8f86d6}
+  .tone-image_to_image{--t-bg:#fbeaf0;--t-ink:#95516b;--t-strong:#72243e;--t-mark:#d78aa6}
+  :root[data-theme="dark"] .tone-image_to_image{--t-bg:#2a1620;--t-ink:#f2adc3;--t-strong:#ffd2e0;--t-mark:#d78aa6}
+  .tone-text_to_video{--t-bg:#e7f0fa;--t-ink:#3a6291;--t-strong:#14487a;--t-mark:#8cb4de}
+  :root[data-theme="dark"] .tone-text_to_video{--t-bg:#132336;--t-ink:#8fc0e8;--t-strong:#c3e0f7;--t-mark:#8cb4de}
+  .tone-image_to_video{--t-bg:#e1f5ee;--t-ink:#2f7563;--t-strong:#085041;--t-mark:#59b79f}
+  :root[data-theme="dark"] .tone-image_to_video{--t-bg:#10241f;--t-ink:#8fdfca;--t-strong:#bdf2e2;--t-mark:#59b79f}
+  .tone-text_generation{--t-bg:#f7efdd;--t-ink:#8b6421;--t-strong:#633806;--t-mark:#d3a862}
+  :root[data-theme="dark"] .tone-text_generation{--t-bg:#2b2113;--t-ink:#d6b571;--t-strong:#f0d9a6;--t-mark:#d3a862}
+  .tone-embedding{--t-bg:#ecf4e3;--t-ink:#55703a;--t-strong:#3a5a1e;--t-mark:#9dbe7c}
+  :root[data-theme="dark"] .tone-embedding{--t-bg:#1a2612;--t-ink:#a5c782;--t-strong:#d3ecb6;--t-mark:#9dbe7c}
+  .tone-lora{--t-bg:#fdf0e6;--t-ink:#9a5a24;--t-strong:#7a3d10;--t-mark:#dfa06a}
+  :root[data-theme="dark"] .tone-lora{--t-bg:#2a1c10;--t-ink:#e0a874;--t-strong:#f3cf9f;--t-mark:#dfa06a}
+  .tone-upscaler{--t-bg:#eef0f7;--t-ink:#4a5578;--t-strong:#333c5c;--t-mark:#8d97bd}
+  :root[data-theme="dark"] .tone-upscaler{--t-bg:#1a1e2c;--t-ink:#9aa4cd;--t-strong:#c6cdea;--t-mark:#8d97bd}
+  .tone-controlnet{--t-bg:#f4ecf7;--t-ink:#75418f;--t-strong:#5a2f70;--t-mark:#b98fd0}
+  :root[data-theme="dark"] .tone-controlnet{--t-bg:#241a2c;--t-ink:#c294d8;--t-strong:#e2c4ee;--t-mark:#b98fd0}
+  .tone-speech_to_text{--t-bg:#eef6f3;--t-ink:#3f7a68;--t-strong:#2a5f4f;--t-mark:#7fbfa8}
+  :root[data-theme="dark"] .tone-speech_to_text{--t-bg:#10241f;--t-ink:#8fdfca;--t-strong:#bdf2e2;--t-mark:#7fbfa8}
+  .tone-text_to_speech{--t-bg:#f7eef1;--t-ink:#8f4f63;--t-strong:#6e3849;--t-mark:#cf8b9e}
+  :root[data-theme="dark"] .tone-text_to_speech{--t-bg:#2a1a20;--t-ink:#dda0b3;--t-strong:#f2c8d5;--t-mark:#cf8b9e}
+  .tone-image_understanding{--t-bg:#eef2f4;--t-ink:#4e6069;--t-strong:#36474e;--t-mark:#8ea3ad}
+  :root[data-theme="dark"] .tone-image_understanding{--t-bg:#182026;--t-ink:#a3b6c2;--t-strong:#c9dae4;--t-mark:#8ea3ad}
+  /* 中性兜底（§s-16-3）：家族认不出、任务也没有 —— 数值取自该节色板自述 */
+  .tone-neutral{--t-bg:#f2f1ed;--t-ink:#6b6a63;--t-strong:#57564f;--t-mark:#b3b2aa}
+  :root[data-theme="dark"] .tone-neutral{--t-bg:#232321;--t-ink:#b0afa6;--t-strong:#d7d6cd;--t-mark:#b3b2aa}
