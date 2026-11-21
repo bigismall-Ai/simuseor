@@ -1,0 +1,118 @@
+{
+  "tool": "vis-asset-guard",
+  "version": "1.0.0",
+  "assetDir": "artifacts/vis/assets/cicada/svg",
+  "assets": [
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-max-dark.svg",
+      "bytes": 13021,
+      "rawSha256": "64f829be0e7dda476303b7c40ef0bd7b85a3e31be9815f957c0eabc86e7ade4c",
+      "normalizedBytes": 16018,
+      "normalizedSha256": "e493e8655e9299c29c942cf4f5c57b476abc0e2a749f3a78f09a6df19d2ac78f",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-max-lineart-b.svg",
+      "bytes": 7146,
+      "rawSha256": "5a12630215ed3d60b67466194c414eaf9fedb7f41288c9efb8a7f2cd03f8d873",
+      "normalizedBytes": 11030,
+      "normalizedSha256": "95af357f472a9f7cfadb0f3deb8d6f9ab382f98faf6c164bc5aede3a2400e73e",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-max-lineart.svg",
+      "bytes": 7149,
+      "rawSha256": "26a5a552cd263a6d7e16d87990b790ee19e023314f2abbe270a69b1e64709084",
+      "normalizedBytes": 11033,
+      "normalizedSha256": "fbc27c1769682b1ef77d279e709fb3783ec60ba0a89f3019b7cb7e69b36b8aad",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-max.svg",
+      "bytes": 13021,
+      "rawSha256": "64f829be0e7dda476303b7c40ef0bd7b85a3e31be9815f957c0eabc86e7ade4c",
+      "normalizedBytes": 16018,
+      "normalizedSha256": "e493e8655e9299c29c942cf4f5c57b476abc0e2a749f3a78f09a6df19d2ac78f",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-mid-dark.svg",
+      "bytes": 10102,
+      "rawSha256": "2b7fe7ffca8e5e559dd62f2dbabd156825f8d06a360aaee759d3de93570bbf08",
+      "normalizedBytes": 12350,
+      "normalizedSha256": "901ac1262c8dec0d8facb2ddbb2d7003fc16549b77549c7b8ea2730ce5d4ec7d",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-mid.svg",
+      "bytes": 10102,
+      "rawSha256": "2b7fe7ffca8e5e559dd62f2dbabd156825f8d06a360aaee759d3de93570bbf08",
+      "normalizedBytes": 12350,
+      "normalizedSha256": "901ac1262c8dec0d8facb2ddbb2d7003fc16549b77549c7b8ea2730ce5d4ec7d",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-min-dark.svg",
+      "bytes": 6370,
+      "rawSha256": "4709ed5a1623a82ec3625650bf2defd08c5b18a906156e602277c935ea3e0889",
+      "normalizedBytes": 8026,
+      "normalizedSha256": "d619ed3611eda4e66e4aa0931221506cb0557b8ed34b9d37717dfc36377f5c97",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-min.svg",
+      "bytes": 6370,
+      "rawSha256": "4709ed5a1623a82ec3625650bf2defd08c5b18a906156e602277c935ea3e0889",
+      "normalizedBytes": 8026,
+      "normalizedSha256": "d619ed3611eda4e66e4aa0931221506cb0557b8ed34b9d37717dfc36377f5c97",
+      "semanticSafe": true,
+      "needsNormalize": true
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/favicon.svg",
+      "bytes": 41841,
+      "rawSha256": "c44d99ee0d040744525c1c2b54202ee40e3bdf7cf31f80b9df7ea3c2e649a89b",
+      "normalizedBytes": 41859,
+      "normalizedSha256": "9c96d3057fa40e6b49410484606f3323ba991bc66f4bf26675367b5396c5046e",
+      "semanticSafe": true,
+      "needsNormalize": true
+    }
+  ],
+  "missing": [
+    {
+      "path": "artifacts/vis/assets/cicada/svg/_flat_cicada-max-dark.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/_flat_cicada-max.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/_flat_cicada-mid.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/_flat_cicada-min.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-max-mono.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-mid-mono.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    },
+    {
+      "path": "artifacts/vis/assets/cicada/svg/cicada-min-mono.svg",
+      "reason": "git 已跟踪但工作区文件不存在（被另一工作流删除）"
+    }
+  ]
+}

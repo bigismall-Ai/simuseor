@@ -39,6 +39,10 @@ artifacts/*
 !artifacts/vis/*.md
 !artifacts/vis/*.html
 !artifacts/vis/*.txt
+# 例外：VIS 目录下的工具脚本与台账同样是交付物（照着规范就能复跑，缺了就跑不了）
+!artifacts/vis/*.mjs
+!artifacts/vis/*.py
+!artifacts/vis/*.json
 !artifacts/vis/assets/
 !artifacts/vis/assets/**/
 # cicada 过程产物与已废弃稿，不入库（交付资产在 assets/cicada/{svg,png,ico}/）
@@ -49,24 +53,6 @@ artifacts/vis/assets/cicada/svg/SVG/
 artifacts/vis/_work/
 # 但 tests/artifacts/ 是 E2E 截图产物，仍要忽略
 tests/artifacts/
-!artifacts/vis/
-# 例外：VIS 视觉规范是交付物，不是测试产物，必须进版本库
-!artifacts/vis/*.md
-!artifacts/vis/*.html
-!artifacts/vis/*.txt
-!artifacts/vis/assets/
-!artifacts/vis/assets/**/
-# cicada 过程产物与已废弃稿，不入库（交付资产在 assets/cicada/{svg,png,ico}/）
-artifacts/vis/assets/cicada-preview/
-artifacts/vis/assets/cicada/svg/cicada-FULL.ai
-artifacts/vis/assets/cicada/svg/SVG/
-# 例外之外：_work/ 是探针脚本与临时图，不入库
-artifacts/vis/_work/
-# 例外：VIS 视觉规范是交付物，不是测试产物，必须进版本库
-!artifacts/vis/
-!artifacts/vis/*.md
-!artifacts/vis/*.html
-!artifacts/vis/*.txt
 test-results/
 playwright-report/
 # tests/ 根层的一次性调试 / 截图脚本（E2E 用例是 tests/e2e/ 下的 .ts，不受影响）
@@ -76,6 +62,7 @@ tests/*.mjs
 !tests/family-table-sync.mjs
 !tests/wt-ink.mjs
 !tests/wt-tune.mjs
+!tests/vis-asset-guard.mjs
 # 例外：CNB 的 CI 配置必须入库。`.*` 规则会把它挡掉，但 CI 配置不跟着仓库走，
 # 门禁就等于没有 —— 那正是这套机制当初缺的那一环。
 !.cnb.yml
