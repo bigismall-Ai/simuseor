@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vis-check.mjs —— 主理人独立实跑 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：vis-check.mjs —— 主理人独立实跑">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="engineering/s-82" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>vis-check.mjs —— 主理人独立实跑</h1>
+  <p class="doc-sub">08 工程落地 · 本章共 4 节</p>
+</div>
+<h3 id="s-82"><code>vis-check.mjs</code> —— 主理人独立实跑</h3>
+  <p>Node ≥ 18、无第三方依赖、只读（<code>readFileSync</code> / <code>readdirSync</code>）。退出码：<code>0</code> 全通过 / <code>1</code> 仅现状基线 FAIL（预期）/ <code>2</code> 交付物校验失败。完整报告 <code>vis-check-report.txt</code>。</p>
+  <table class="t">
+    <thead><tr><th style="width:210px">检查项</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>零覆盖 / token 文件自检</td><td><strong>全部 PASS</strong>（39 / 18 / 0；@font-face 恰好 2 条；4 URL 均 <code>none</code>；无组件实现、无 <code>filter:invert()</code>、无实验稿字形）</td></tr>
+      <tr><td>字重白名单违规</td><td><strong>全量 26 处</strong> = <code>styles.css</code> 17 + 组件 scoped 9（Phase 1/2 审计盲区）</td></tr>
+      <tr><td><code>--faint</code> 文本用法</td><td><strong>全量 39 处</strong> = <code>styles.css</code> 22 + 组件 scoped 17（非文本装饰引用按色彩章保留）</td></tr>
+      <tr><td>圆角中间档 / <code>--accent</code> 类白字填充</td><td>5 处（其中 3 处 <code>cover-plate</code> 属适用域外）/ 4 处（含 <code>button.primary:hover</code>），与登记值吻合</td></tr>
+      <tr><td>@font-face / 源码引用新增 token</td><td>0 条 / 0 处（印证基线字体未生效）</td></tr>
+      <tr><td><code>filter:invert()</code> / <code>.brand-wordmark</code> / reduced-motion</td><td>0 / 0 / 仅 1 处（作全仓范本）</td></tr>
+      <tr><td>对比度实算</td><td><strong>PASS 19 / FAIL 7 / INFO 1（共 27 组）</strong>。7 个 FAIL = 4 个已登记现状违规 + 2 个「白字 on <code>--accent</code> / <code>--accent-hover</code>」禁止组合 + 1 个「白字 on indigo 400 = 2.98:1」禁止组合示例；INFO 1 组是 <code>--brand-line</code> 1px 装饰细线（非文本，豁免）</td></tr>
+      <tr><td>违规热力</td><td>报告 <strong>[3.5] 违规热力</strong> 分节：按规则（超基线优先 → 旧债条数）+ <strong>按文件</strong>（旧债集中处 = 一次改动消掉最多的地方）两套排序，直接给出「先修哪个」</td></tr>
+      <tr><td>原型页防漂移</td><td>报告 <strong>[3.6]</strong> 段调 <code>vis-proto check</code>：漂移 / 退役 / 野生文件 / 类覆盖四道，漂移即阻塞</td></tr>
+      <tr><td>裁决 G 边界正向验收</td><td><strong>5 项全部 PASS</strong> —— <code>lab-theme.ts:72 contrastColor</code> 深字方案未被误报为 FAIL</td></tr>
+      <tr><td>退出码</td><td><strong>1</strong>（预期：现状基线违规，非脚本或交付物缺陷）</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">
+    <strong>审计盲区（全量口径补遗）</strong>：组件 scoped 样式还有字重 +9、<code>--faint</code> 文本 +17、圆角中间档 +4，共 30 处同类项 —— Phase 1/2 只审了全局 <code>styles.css</code>。落地时须按<strong>全量</strong>清点：字重 <strong>26 处</strong>、<code>--faint</code> 文本 <strong>39 处</strong>。只改登记值会让「<code>--faint</code> 永不承载文本」无法真正成立。
+  </p>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

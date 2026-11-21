@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>primitive 层 —— 原始值（--pri-*） · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：primitive 层 —— 原始值（--pri-*）">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="color/s-11" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>primitive 层 —— 原始值（--pri-*）</h1>
+  <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
+</div>
+<h3 id="s-11">primitive 层 —— 原始值（<code>--pri-*</code>）</h3>
+  <p class="lead">主题无关的字面值层。同一个 primitive 同时供给浅色与深色语义层。</p>
+  <div class="swatches">
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-0)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-0</code>
+    <div class="sw-hex"><span class="sw-light">#ffffff</span></div>
+    <div class="sw-note">面板底 / 输入框底 / 实心块上的白字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-25)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-25</code>
+    <div class="sw-hex"><span class="sw-light">#fafafa</span></div>
+    <div class="sw-note">次级面板</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-50)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-50</code>
+    <div class="sw-hex"><span class="sw-light">#f5f5f6</span></div>
+    <div class="sw-note">页面底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-75)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-75</code>
+    <div class="sw-hex"><span class="sw-light">#f4f4f5</span></div>
+    <div class="sw-note">三级面板 / 悬停 / chip</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-100)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-100</code>
+    <div class="sw-hex"><span class="sw-light">#f1f1f3</span></div>
+    <div class="sw-note">分类胶囊底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-125)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-125</code>
+    <div class="sw-hex"><span class="sw-light">#f0f0f1</span></div>
+    <div class="sw-note">发丝线</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-150)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-150</code>
+    <div class="sw-hex"><span class="sw-light">#ededf0</span></div>
+    <div class="sw-note">深色主题正文色</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-175)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-175</code>
+    <div class="sw-hex"><span class="sw-light">#ededef</span></div>
+    <div class="sw-note">浅色深底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-200)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-200</code>
+    <div class="sw-hex"><span class="sw-light">#ececee</span></div>
+    <div class="sw-note">进度轨道</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-225)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-225</code>
+    <div class="sw-hex"><span class="sw-light">#e7e7ea</span></div>
+    <div class="sw-note">胶囊悬停底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-250)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-250</code>
+    <div class="sw-hex"><span class="sw-light">#e4e4e7</span></div>
+    <div class="sw-note">结构分隔线</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-275)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-275</code>
+    <div class="sw-hex"><span class="sw-light">#d4d4d8</span></div>
+    <div class="sw-note">强分隔线 / 深色次级正文</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-300)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-300</code>
+    <div class="sw-hex"><span class="sw-light">#b4b4bc</span></div>
+    <div class="sw-note">深色胶囊文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-325)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-325</code>
+    <div class="sw-hex"><span class="sw-light">#a1a1aa</span></div>
+    <div class="sw-note">浅色弱字 / 占位符</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-350)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-350</code>
+    <div class="sw-hex"><span class="sw-light">#8b8b94</span></div>
+    <div class="sw-note">控件边界色 / 深色次级文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-375)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-375</code>
+    <div class="sw-hex"><span class="sw-light">#71717a</span></div>
+    <div class="sw-note">浅色次级文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-400)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-400</code>
+    <div class="sw-hex"><span class="sw-light">#5f5f68</span></div>
+    <div class="sw-note">深色弱字 / 占位符</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-425)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-425</code>
+    <div class="sw-hex"><span class="sw-light">#52525b</span></div>
+    <div class="sw-note">浅色胶囊文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-450)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-450</code>
+    <div class="sw-hex"><span class="sw-light">#3f3f46</span></div>
+    <div class="sw-note">浅色次级正文</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-475)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-475</code>
+    <div class="sw-hex"><span class="sw-light">#34343a</span></div>
+    <div class="sw-note">深色强分隔线</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-500)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-500</code>
+    <div class="sw-hex"><span class="sw-light">#32323a</span></div>
+    <div class="sw-note">深色胶囊悬停底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-525)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-525</code>
+    <div class="sw-hex"><span class="sw-light">#26262c</span></div>
+    <div class="sw-note">深色胶囊底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-550)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-550</code>
+    <div class="sw-hex"><span class="sw-light">#26262b</span></div>
+    <div class="sw-note">深色分隔线</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-575)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-575</code>
+    <div class="sw-hex"><span class="sw-light">#232329</span></div>
+    <div class="sw-note">深色轨道 / chip</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-600)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-600</code>
+    <div class="sw-hex"><span class="sw-light">#202025</span></div>
+    <div class="sw-note">深色三级面板</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-625)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-625</code>
+    <div class="sw-hex"><span class="sw-light">#1e1e23</span></div>
+    <div class="sw-note">深色悬停</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-650)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-650</code>
+    <div class="sw-hex"><span class="sw-light">#1e1e22</span></div>
+    <div class="sw-note">深色发丝线</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-675)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-675</code>
+    <div class="sw-hex"><span class="sw-light">#1a1a1e</span></div>
+    <div class="sw-note">深色次级面板</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-700)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-700</code>
+    <div class="sw-hex"><span class="sw-light">#18181b</span></div>
+    <div class="sw-note">浅色正文</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-725)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-725</code>
+    <div class="sw-hex"><span class="sw-light">#17171b</span></div>
+    <div class="sw-note">深色输入框底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-750)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-750</code>
+    <div class="sw-hex"><span class="sw-light">#141417</span></div>
+    <div class="sw-note">深色面板底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-775)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-775</code>
+    <div class="sw-hex"><span class="sw-light">#0b0b0d</span></div>
+    <div class="sw-note">深色页面底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-neutral-800)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-neutral-800</code>
+    <div class="sw-hex"><span class="sw-light">#070708</span></div>
+    <div class="sw-note">深色深底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-50)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-50</code>
+    <div class="sw-hex"><span class="sw-light">#eef2ff</span></div>
+    <div class="sw-note">浅色强调底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-100)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-100</code>
+    <div class="sw-hex"><span class="sw-light">#c7d2fe</span></div>
+    <div class="sw-note">浅色描边 / 深色 hover 文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-300)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-300</code>
+    <div class="sw-hex"><span class="sw-light">#a5b4fc</span></div>
+    <div class="sw-note">深色主题强调文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-400)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-400</code>
+    <div class="sw-hex"><span class="sw-light">#818cf8</span></div>
+    <div class="sw-note">lab 实验区 400 档（产品不引用）</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-500)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-500</code>
+    <div class="sw-hex"><span class="sw-light">#6366f1</span></div>
+    <div class="sw-note">深色主题填充 hover</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-600)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-600</code>
+    <div class="sw-hex"><span class="sw-light">#4f46e5</span></div>
+    <div class="sw-note">交互主色：实心填充 + 浅色强调</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-700)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-700</code>
+    <div class="sw-hex"><span class="sw-light">#4338ca</span></div>
+    <div class="sw-note">浅色强调 hover / 深色描边</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-indigo-950)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-indigo-950</code>
+    <div class="sw-hex"><span class="sw-light">#1e1b4b</span></div>
+    <div class="sw-note">lab 实验区深字（产品不引用）</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-green-50)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-green-50</code>
+    <div class="sw-hex"><span class="sw-light">#f0fdf4</span></div>
+    <div class="sw-note">浅色成功软底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-green-400)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-green-400</code>
+    <div class="sw-hex"><span class="sw-light">#4ade80</span></div>
+    <div class="sw-note">深色成功</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-green-600)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-green-600</code>
+    <div class="sw-hex"><span class="sw-light">#15803d</span></div>
+    <div class="sw-note">浅色成功</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-amber-50)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-amber-50</code>
+    <div class="sw-hex"><span class="sw-light">#fffbeb</span></div>
+    <div class="sw-note">浅色警告软底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-amber-400)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-amber-400</code>
+    <div class="sw-hex"><span class="sw-light">#fbbf24</span></div>
+    <div class="sw-note">深色警告 / 深色星标</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-amber-500)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-amber-500</code>
+    <div class="sw-hex"><span class="sw-light">#d97706</span></div>
+    <div class="sw-note">浅色星标</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-amber-600)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-amber-600</code>
+    <div class="sw-hex"><span class="sw-light">#b45309</span></div>
+    <div class="sw-note">浅色警告</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-red-50)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-red-50</code>
+    <div class="sw-hex"><span class="sw-light">#fef2f2</span></div>
+    <div class="sw-note">浅色危险软底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-red-400)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-red-400</code>
+    <div class="sw-hex"><span class="sw-light">#f87171</span></div>
+    <div class="sw-note">深色危险</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--pri-red-700)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--pri-red-700</code>
+    <div class="sw-hex"><span class="sw-light">#b91c1c</span></div>
+    <div class="sw-note">浅色危险</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-paper)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-paper</code>
+    <div class="sw-hex"><span class="sw-light">#f8f6f1</span></div>
+    <div class="sw-note">品牌层纸（浅）· 品牌展示面底</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-ink)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-ink</code>
+    <div class="sw-hex"><span class="sw-light">#1b1b1e</span></div>
+    <div class="sw-note">品牌层墨 · 字标 / 品牌文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-line)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-line</code>
+    <div class="sw-hex"><span class="sw-light">#dedbd3</span></div>
+    <div class="sw-note">品牌层线 · 1px 品牌展示面分隔</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-muted)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-muted</code>
+    <div class="sw-hex"><span class="sw-light">#6d6a64</span></div>
+    <div class="sw-note">品牌层弱字 · 品牌展示面辅助文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-paper-reverse)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-paper-reverse</code>
+    <div class="sw-hex"><span class="sw-light">#15151a</span></div>
+    <div class="sw-note">品牌层纸（深 / 反白）</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--brand-ink-reverse)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--brand-ink-reverse</code>
+    <div class="sw-hex"><span class="sw-light">#f1ede4</span></div>
+    <div class="sw-note">品牌层墨（反白）· 暖白非纯白</div>
+  </div>
+</div>
+  </div>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

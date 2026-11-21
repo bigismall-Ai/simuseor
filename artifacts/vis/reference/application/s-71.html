@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>品牌落位（10 处） · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：品牌落位（10 处）">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="application/s-71" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>品牌落位（10 处）</h1>
+  <p class="doc-sub">07 应用系统 · 本章共 6 节</p>
+</div>
+<h3 id="s-71">品牌落位（10 处）</h3>
+  <table class="t">
+    <thead><tr><th style="width:190px">位置</th><th style="width:150px">允许？</th><th>规则</th></tr></thead>
+    <tbody>
+      <tr><td>侧栏 <code>.brand</code></td><td><strong>唯一常驻位</strong></td><td>占位期纯文字；冻结后同一元素换资产，节点不增删</td></tr>
+      <tr><td><code>&lt;title&gt;</code></td><td>必须</td><td>现状 <code>Model Downloader</code> → 目标态 <code>SiMuseor</code></td></tr>
+      <tr><td>favicon</td><td><strong>蝉形唯一单独出现位</strong></td><td>目标态 <code>data:,</code>（不含字形）；冻结后换 L3 简化版（5 档量化色带 + 深紫描边 + 白色接缝网，自带底色），16/32/48 三档 ICO + SVG</td></tr>
+      <tr><td>页头 <code>ui-page-header</code></td><td>禁止</td><td>保持 <code>&lt;h1&gt;</code> 单页唯一；不得加品牌徽章（破坏首个 <code>ui-badge</code> 断言）</td></tr>
+      <tr><td>空状态 / 弹层 / 错误态</td><td>禁止</td><td>保持功能文案；<code>.empty-icon</code> 加 <code>aria-hidden</code>；错误用 <code>role="alert"</code></td></tr>
+      <tr><td>封面铭牌</td><td><strong>硬禁止</strong></td><td>20px 槽位是第三方家族标</td></tr>
+      <tr><td><strong>蝉形 · 其他一切位置</strong></td><td><strong>硬禁止</strong></td><td>蝉形<strong>只出现在 favicon 与侧栏组合标</strong>两处。页头 / 空状态 / 弹层 / 错误态 / 卡片角标 / 移动端顶栏 / 打印物 / 关于页 —— 蝉形与字标<strong>都不许进</strong></td></tr>
+      <tr><td>关于 / 设置（目标态新增）</td><td>允许一次</td><td>品牌层纸墨 + <code>role="group"</code> + 一个 <code>h2</code>；不做 banner / 渐变 / notice</td></tr>
+      <tr><td>分享卡 / 导出（冻结后）</td><td>品牌展示面</td><td>暖纸底 + 墨黑字标 + 暖白反白资产，不用交互靛紫</td></tr>
+    </tbody>
+  </table>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

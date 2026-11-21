@@ -4,23 +4,7 @@
   var BASE = body.getAttribute('data-root') || './';
   var CURRENT = body.getAttribute('data-page') || '';
 
-  var P = {
-    overview: 'vis-reference.html',
-    spec: 'SiMuseor-VIS.html',
-    brand: 'reference/brand.html',
-    families: 'reference/families.html',
-    color: 'reference/color.html',
-    typography: 'reference/typography.html',
-    icons: 'reference/icons.html',
-    layout: 'reference/layout.html',
-    components: 'reference/components.html',
-    cards: 'prototypes/cards.html',
-    application: 'reference/application.html',
-    engineering: 'reference/engineering.html',
-    acceptance: 'reference/acceptance.html',
-    decisions: 'reference/decisions.html',
-    audit: 'reference/audit.html'
-  };
+  /* P 映射与 NAV 在下方「BEGIN nav-data」块内，由 vis-manual.mjs build 生成 —— 别手改 */
 
   var ICONS = {
     overview: '<rect x="2.5" y="2.5" width="4.4" height="4.4" rx="1"/><rect x="9.1" y="2.5" width="4.4" height="4.4" rx="1"/><rect x="2.5" y="9.1" width="4.4" height="4.4" rx="1"/><rect x="9.1" y="9.1" width="4.4" height="4.4" rx="1"/>',
@@ -51,128 +35,205 @@
   /* 两级导航：一级 = 章（章头可点击进章 / 箭头展开），二级 = 章内的节（锚点直链）。
      「整份读」就是这么来的 —— 顺着章 -> 节读下来，不需要另一个单文件版。
      二级项的 hash 必须与页面里真实的锚点一致，由 vis-check.mjs [3.7] 核对。 */
+  /* BEGIN nav-data */
+  var P = {
+    overview: 'vis-reference.html',
+    cards: 'prototypes/cards.html',
+    'brand': 'reference/brand/index.html',
+    'brand/s-51': 'reference/brand/s-51.html',
+    'brand/s-52': 'reference/brand/s-52.html',
+    'brand/s-53': 'reference/brand/s-53.html',
+    'brand/s-54': 'reference/brand/s-54.html',
+    'brand/s-55': 'reference/brand/s-55.html',
+    'families': 'reference/families/index.html',
+    'families/s-fam-default': 'reference/families/s-fam-default.html',
+    'families/s-fam-official': 'reference/families/s-fam-official.html',
+    'families/s-fam-redraw': 'reference/families/s-fam-redraw.html',
+    'color': 'reference/color/index.html',
+    'color/s-11': 'reference/color/s-11.html',
+    'color/s-12': 'reference/color/s-12.html',
+    'color/s-13': 'reference/color/s-13.html',
+    'color/s-14': 'reference/color/s-14.html',
+    'color/s-15': 'reference/color/s-15.html',
+    'color/s-16': 'reference/color/s-16.html',
+    'color/s-17': 'reference/color/s-17.html',
+    'color/s-18': 'reference/color/s-18.html',
+    'color/s-19': 'reference/color/s-19.html',
+    'typography': 'reference/typography/index.html',
+    'typography/s-21': 'reference/typography/s-21.html',
+    'typography/s-22': 'reference/typography/s-22.html',
+    'typography/s-23': 'reference/typography/s-23.html',
+    'typography/s-24': 'reference/typography/s-24.html',
+    'icons': 'reference/icons/index.html',
+    'icons/s-icon-grid': 'reference/icons/s-icon-grid.html',
+    'icons/s-icon-size': 'reference/icons/s-icon-size.html',
+    'layout': 'reference/layout/index.html',
+    'layout/s-41': 'reference/layout/s-41.html',
+    'layout/s-42': 'reference/layout/s-42.html',
+    'layout/s-43': 'reference/layout/s-43.html',
+    'layout/s-44': 'reference/layout/s-44.html',
+    'layout/s-45': 'reference/layout/s-45.html',
+    'layout/s-46': 'reference/layout/s-46.html',
+    'components': 'reference/components/index.html',
+    'components/s-31': 'reference/components/s-31.html',
+    'components/s-310': 'reference/components/s-310.html',
+    'components/s-311': 'reference/components/s-311.html',
+    'components/s-312': 'reference/components/s-312.html',
+    'components/s-32': 'reference/components/s-32.html',
+    'components/s-33': 'reference/components/s-33.html',
+    'components/s-34': 'reference/components/s-34.html',
+    'components/s-35': 'reference/components/s-35.html',
+    'components/s-36': 'reference/components/s-36.html',
+    'components/s-37': 'reference/components/s-37.html',
+    'components/s-38': 'reference/components/s-38.html',
+    'components/s-39': 'reference/components/s-39.html',
+    'application': 'reference/application/index.html',
+    'application/s-71': 'reference/application/s-71.html',
+    'application/s-72': 'reference/application/s-72.html',
+    'application/s-73': 'reference/application/s-73.html',
+    'application/s-74': 'reference/application/s-74.html',
+    'application/s-75': 'reference/application/s-75.html',
+    'application/s-76': 'reference/application/s-76.html',
+    'engineering': 'reference/engineering/index.html',
+    'engineering/s-81': 'reference/engineering/s-81.html',
+    'engineering/s-82': 'reference/engineering/s-82.html',
+    'engineering/s-83': 'reference/engineering/s-83.html',
+    'engineering/s-84': 'reference/engineering/s-84.html',
+    'acceptance': 'reference/acceptance/index.html',
+    'acceptance/s-91': 'reference/acceptance/s-91.html',
+    'acceptance/s-92': 'reference/acceptance/s-92.html',
+    'decisions': 'reference/decisions/index.html',
+    'decisions/s-101': 'reference/decisions/s-101.html',
+    'decisions/s-a1': 'reference/decisions/s-a1.html',
+    'decisions/s-b1': 'reference/decisions/s-b1.html',
+    'decisions/s-c1': 'reference/decisions/s-c1.html',
+    'audit': 'reference/audit/index.html',
+    'audit/s-61': 'reference/audit/s-61.html',
+  };
+
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
     {
-      type: 'group', key: 'brand', page: 'brand', label: '标识', icon: 'brand', keys: ['brand'],
+      type: 'group', key: 'brand', page: 'brand', label: "标识", icon: 'brand', keys: ['brand'],
       items: [
-        { page: 'brand', hash: 's-51', label: '组合标 / 单独标' },
-        { page: 'brand', hash: 's-52', label: '品牌层纸墨' },
-        { page: 'brand', hash: 's-53', label: '蝉形单独使用' },
-        { page: 'brand', hash: 's-54', label: 'favicon 尺寸档' },
-        { page: 'brand', hash: 's-55', label: '禁用方向' },
+        { page: 'brand/s-51', label: "组合标 / 单独标（侧栏品牌位）" },
+        { page: 'brand/s-52', label: "品牌层纸墨（展示面）" },
+        { page: 'brand/s-53', label: "蝉形单独使用（MAX 全展翅）" },
+        { page: 'brand/s-54', label: "favicon 尺寸档" },
+        { page: 'brand/s-55', label: "禁用方向" },
       ],
     },
     {
-      type: 'group', key: 'families', page: 'families', label: '厂牌', icon: 'family', keys: ['families'],
+      type: 'group', key: 'families', page: 'families', label: "厂牌", icon: 'family', keys: ['families'],
       items: [
-        { page: 'families', hash: 's-fam-default', label: '默认字标 · 兜底' },
-        { page: 'families', hash: 's-fam-official', label: '官方 SVG' },
-        { page: 'families', hash: 's-fam-redraw', label: '位图重绘' },
+        { page: 'families/s-fam-default', label: "默认字标 · 兜底" },
+        { page: 'families/s-fam-official', label: "官方 SVG" },
+        { page: 'families/s-fam-redraw', label: "位图重绘" },
       ],
     },
     {
-      type: 'group', key: 'color', page: 'color', label: '色彩', icon: 'color', keys: ['color'],
+      type: 'group', key: 'color', page: 'color', label: "色彩", icon: 'color', keys: ['color'],
       items: [
-        { page: 'color', hash: 's-11', label: 'primitive 层' },
-        { page: 'color', hash: 's-12', label: 'semantic 层' },
-        { page: 'color', hash: 's-13', label: 'component 层' },
-        { page: 'color', hash: 's-14', label: '品牌层 · 纸墨六枚' },
-        { page: 'color', hash: 's-15', label: '语义色实算对比度' },
-        { page: 'color', hash: 's-16', label: '模型卡美术色域' },
-        { page: 'color', hash: 's-17', label: '色域约束总表' },
-        { page: 'color', hash: 's-18', label: '国际色彩锚点' },
-        { page: 'color', hash: 's-19', label: '渐变层' },
+        { page: 'color/s-11', label: "primitive 层 —— 原始值（--pri-*）" },
+        { page: 'color/s-12', label: "semantic 层 —— 用途语义（--sem-*）" },
+        { page: 'color/s-13', label: "component 层 —— 组件槽位（--cmp-*）" },
+        { page: 'color/s-14', label: "品牌层 —— 纸墨六枚（主题不变）" },
+        { page: 'color/s-15', label: "语义色实算对比度" },
+        { page: 'color/s-16', label: "模型卡美术色域 —— 家族色 / 任务色（--plate-*）" },
+        { page: 'color/s-17', label: "色域约束总表（可判定）" },
+        { page: 'color/s-18', label: "国际色彩锚点（Pantone / Red Dot）" },
+        { page: 'color/s-19', label: "渐变层（--grad-*）〔本轮新增〕" },
       ],
     },
     {
-      type: 'group', key: 'typography', page: 'typography', label: '排版', icon: 'typography', keys: ['typography'],
+      type: 'group', key: 'typography', page: 'typography', label: "排版", icon: 'typography', keys: ['typography'],
       items: [
-        { page: 'typography', hash: 's-21', label: '字体角色' },
-        { page: 'typography', hash: 's-22', label: '字号阶梯实样' },
-        { page: 'typography', hash: 's-23', label: '字重白名单' },
-        { page: 'typography', hash: 's-24', label: '字距四档' },
+        { page: 'typography/s-21', label: "字体角色" },
+        { page: 'typography/s-22', label: "字号阶梯实样" },
+        { page: 'typography/s-23', label: "字重白名单" },
+        { page: 'typography/s-24', label: "字距四档" },
       ],
     },
     {
-      type: 'group', key: 'icons', page: 'icons', label: '图标', icon: 'icons', keys: ['icons'],
+      type: 'group', key: 'icons', page: 'icons', label: "图标", icon: 'icons', keys: ['icons'],
       items: [
-        { page: 'icons', hash: 's-icon-grid', label: '图标集' },
-        { page: 'icons', hash: 's-icon-size', label: '尺寸与描边' },
+        { page: 'icons/s-icon-grid', label: "图标集" },
+        { page: 'icons/s-icon-size', label: "尺寸与描边" },
       ],
     },
     {
-      type: 'group', key: 'layout', page: 'layout', label: '布局', icon: 'layout', keys: ['layout'],
+      type: 'group', key: 'layout', page: 'layout', label: "布局", icon: 'layout', keys: ['layout'],
       items: [
-        { page: 'layout', hash: 's-41', label: '圆角三档' },
-        { page: 'layout', hash: 's-42', label: '间距刻度' },
-        { page: 'layout', hash: 's-43', label: '阴影三档' },
-        { page: 'layout', hash: 's-44', label: '栅格与容器' },
-        { page: 'layout', hash: 's-45', label: '家族色板' },
-        { page: 'layout', hash: 's-46', label: '卡片背景' },
+        { page: 'layout/s-41', label: "圆角三档" },
+        { page: 'layout/s-42', label: "间距刻度" },
+        { page: 'layout/s-43', label: "阴影三档" },
+        { page: 'layout/s-44', label: "栅格与容器" },
+        { page: 'layout/s-45', label: "家族色板（封面铭牌用，非 VIS 品牌层）" },
+        { page: 'layout/s-46', label: "卡片背景（自有海报铭牌）" },
       ],
     },
     {
-      type: 'group', key: 'components', page: 'components', label: '组件', icon: 'components', keys: ['components'],
+      type: 'group', key: 'components', page: 'components', label: "组件", icon: 'components', keys: ['components'],
       items: [
-        { page: 'components', hash: 's-31', label: '按钮' },
-        { page: 'components', hash: 's-32', label: '输入框' },
-        { page: 'components', hash: 's-33', label: 'chip / 胶囊' },
-        { page: 'components', hash: 's-34', label: '徽章' },
-        { page: 'components', hash: 's-35', label: '面板' },
-        { page: 'components', hash: 's-36', label: '页头' },
-        { page: 'components', hash: 's-37', label: '卡片' },
-        { page: 'components', hash: 's-38', label: '模型卡与模型库卡' },
-        { page: 'components', hash: 's-39', label: '空状态 / 加载 / 错误' },
-        { page: 'components', hash: 's-310', label: '表格' },
-        { page: 'components', hash: 's-311', label: '导航' },
-        { page: 'components', hash: 's-312', label: '弹层' },
-      ],
-    },
-    { type: 'link', page: 'cards', label: '资产卡片', icon: 'prototype' },
-    {
-      type: 'group', key: 'application', page: 'application', label: '应用系统', icon: 'app', keys: ['application'],
-      items: [
-        { page: 'application', hash: 's-71', label: '品牌落位（10 处）' },
-        { page: 'application', hash: 's-72', label: '状态机与可程序读出' },
-        { page: 'application', hash: 's-73', label: '无障碍（WCAG 2.2 AA）' },
-        { page: 'application', hash: 's-74', label: '响应式' },
-        { page: 'application', hash: 's-75', label: '文案与命名' },
-        { page: 'application', hash: 's-76', label: 'E2E 保护清单' },
+        { page: 'components/s-31', label: "按钮 —— 全部状态" },
+        { page: 'components/s-310', label: "表格" },
+        { page: 'components/s-311', label: "导航" },
+        { page: 'components/s-312', label: "弹层（静态样张）" },
+        { page: 'components/s-32', label: "输入框 —— 全部状态" },
+        { page: 'components/s-33', label: "chip / 胶囊 —— 全部状态" },
+        { page: 'components/s-34', label: "徽章 —— 全部状态" },
+        { page: 'components/s-35', label: "面板 —— 全部状态" },
+        { page: 'components/s-36', label: "页头" },
+        { page: 'components/s-37', label: "卡片 —— 工作流卡的四种态" },
+        { page: 'components/s-38', label: "模型卡与模型库卡" },
+        { page: 'components/s-39', label: "空状态 / 加载 / 错误" },
       ],
     },
     {
-      type: 'group', key: 'engineering', page: 'engineering', label: '工程落地', icon: 'settings', keys: ['engineering'],
+      type: 'group', key: 'application', page: 'application', label: "应用系统", icon: 'app', keys: ['application'],
       items: [
-        { page: 'engineering', hash: 's-81', label: 'token 层 vis-tokens.css' },
-        { page: 'engineering', hash: 's-82', label: '校验脚本实跑' },
-        { page: 'engineering', hash: 's-83', label: '四阶段迁移' },
-        { page: 'engineering', hash: 's-84', label: '交付物' },
+        { page: 'application/s-71', label: "品牌落位（10 处）" },
+        { page: 'application/s-72', label: "状态机与可程序读出" },
+        { page: 'application/s-73', label: "无障碍（WCAG 2.2 AA）" },
+        { page: 'application/s-74', label: "响应式" },
+        { page: 'application/s-75', label: "文案与命名" },
+        { page: 'application/s-76', label: "E2E 保护清单" },
       ],
     },
     {
-      type: 'group', key: 'acceptance', page: 'acceptance', label: '验收与治理', icon: 'check', keys: ['acceptance'],
+      type: 'group', key: 'engineering', page: 'engineering', label: "工程落地", icon: 'settings', keys: ['engineering'],
       items: [
-        { page: 'acceptance', hash: 's-91', label: '验收清单（78 条）' },
-        { page: 'acceptance', hash: 's-92', label: '冻结后需同步' },
+        { page: 'engineering/s-81', label: "vis-tokens.css（独立 token 层）" },
+        { page: 'engineering/s-82', label: "vis-check.mjs —— 主理人独立实跑" },
+        { page: 'engineering/s-83', label: "四阶段迁移" },
+        { page: 'engineering/s-84', label: "交付物" },
       ],
     },
     {
-      type: 'group', key: 'decisions', page: 'decisions', label: '裁决与附录', icon: 'gavel', keys: ['decisions'],
+      type: 'group', key: 'acceptance', page: 'acceptance', label: "验收与治理", icon: 'check', keys: ['acceptance'],
       items: [
-        { page: 'decisions', hash: 's-101', label: '主理人裁决记录' },
-        { page: 'decisions', hash: 's-a1', label: '附录 A · LOGO 迭代档案' },
-        { page: 'decisions', hash: 's-b1', label: '附录 B · 三条教训' },
-        { page: 'decisions', hash: 's-c1', label: '附录 C · 版本记录' },
+        { page: 'acceptance/s-91', label: "验收清单（62 条正式口径 + 蝉形 16 条 = 78 条）" },
+        { page: 'acceptance/s-92', label: "冻结后需同步" },
       ],
     },
     {
-      type: 'group', key: 'audit', page: 'audit', label: '审计', icon: 'audit', keys: ['audit'],
+      type: 'group', key: 'decisions', page: 'decisions', label: "裁决与附录", icon: 'gavel', keys: ['decisions'],
       items: [
-        { page: 'audit', hash: 's-61', label: '本页自身的口径声明' },
+        { page: 'decisions/s-101', label: "主理人裁决记录（v1.0 收口）" },
+        { page: 'decisions/s-a1', label: "附录 A · LOGO 迭代档案（状态表）" },
+        { page: 'decisions/s-b1', label: "附录 B · 三条教训" },
+        { page: 'decisions/s-c1', label: "附录 C · 版本记录" },
       ],
-    }
+    },
+    {
+      type: 'group', key: 'audit', page: 'audit', label: "规范 vs 实现", icon: 'audit', keys: ['audit'],
+      items: [
+        { page: 'audit/s-61', label: "本页自身的口径声明" },
+      ],
+    },
+    { type: 'link', page: 'cards', label: '资产卡片', icon: 'prototype' }
   ];
+  /* END nav-data */
 
   function href(page, hash) {
     return BASE + P[page] + (hash ? '#' + hash : '');
@@ -220,6 +281,7 @@
       lead.className = 'nav-lead';
       lead.href = href(item.page);
       lead.title = item.label;
+      if (item.page === CURRENT) lead.className += ' on';
       lead.innerHTML = icon(item.icon) + '<span class="label">' + item.label + '</span>';
       var chev = document.createElement('button');
       chev.type = 'button';
@@ -228,7 +290,9 @@
       chev.innerHTML = '<span class="chev">›</span>';
       head.appendChild(lead);
       head.appendChild(chev);
-      if (item.keys && item.keys.indexOf(CURRENT) !== -1) {
+      if (item.keys && item.keys.some(function (k) {
+        return CURRENT === k || CURRENT.indexOf(k + '/') === 0;
+      })) {
         currentGroup = item.key;
         head.className += ' has-current';
       }

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>渐变层（--grad-*）〔本轮新增〕 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：渐变层（--grad-*）〔本轮新增〕">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="color/s-19" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>渐变层（--grad-*）〔本轮新增〕</h1>
+  <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
+</div>
+<h3 id="s-19">渐变层（<code>--grad-*</code>）〔本轮新增〕</h3>
+  <p class="lead">
+    VIS §3.4 只禁了「大面积渐变铺底」，但产品里<strong>本来就有 6 类渐变</strong>：蝉形 82 条面片微渐变、
+    favicon 5 档色带、卡片信息区遮罩、封面照片 scrim、封面 5 构图纹理、家族铭牌底 ——
+    它们此前<strong>既没有 token 也没有口径</strong>，全是就地硬编码的 rgba 串，谁改谁都漂。
+    本轮把渐变收口成 <strong>4 级 12 枚 <code>--grad-*</code> token</strong>
+    （<code>vis-tokens.css</code> §4 与 <code>vis.css</code> 同名同值），并补齐可判定约束。
+  </p>
+
+  <h4 id="s-19-1">分级：每级渐变各管什么</h4>
+  <table class="t">
+    <thead><tr><th style="width:60px">级</th><th style="width:150px">名称</th><th style="width:200px">现状出处</th><th>规则</th></tr></thead>
+    <tbody>
+      <tr><td><strong>G0</strong></td><td>品牌色带</td><td>蝉形 82 条面片渐变 / favicon 5 档</td><td>品红 → 橙暖弧，<strong>跨色相是刻意的</strong>；每面片独立成条，禁止改成一条全局贯穿渐变（会压平面片差异、拼块感消失）</td></tr>
+      <tr><td><strong>G1</strong></td><td>家族色渐变</td><td>家族铭牌底（model-tone 三槽派生）</td><td><strong>同色相、只走明度阶</strong>：Δh ≤ 10°，不引入第二个色相</td></tr>
+      <tr><td><strong>G2</strong></td><td>遮罩 scrim</td><td>卡片信息区遮罩 / 封面照片 scrim</td><td>文字压照片的唯一手段；<strong>alpha 下限 0.57</strong>（见下表）</td></tr>
+      <tr><td><strong>G3</strong></td><td>构图纹理</td><td>封面 5 变体中的斜纹 / 点阵 / 柔光</td><td>只出<strong>家族色派生</strong>，不引入独立色；深色主题浓度自动下调</td></tr>
+      <tr><td><strong>G4</strong></td><td>交互渐变</td><td>本轮新增（主按钮 / 选中态）</td><td>受限：面积 ≤2 处/屏，两端白字都 ≥4.5:1，深浅各一套</td></tr>
+      <tr><td><strong>G5</strong></td><td>站点底纹</td><td>站点整体背景（§3.10 · v2.7 裁决）</td><td>纯中性底 + 一束光（色场）+ 中性纸纹；<strong>定稿 v2 单束柔光，色场 70% / 纸纹 60%</strong>；底纹<strong>不计入</strong>「中性表面 ≥85%」配额；禁标识平铺；深色换噪声图不反相。渐变共 6 个变体（取值表见 VIS §3.10；对比实验稿已退役删除）</td></tr>
+    </tbody>
+  </table>
+
+  <h4 id="s-19-2">token 一览</h4>
+  <div class="swatches">
+
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-brand-spectrum)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-brand-spectrum</code>
+    <div class="sw-hex"><span class="sw-light">G0 品牌色带（5 档）</span></div>
+    <div class="sw-note">蝉形同源 #3a0a3f → #f4776a · 90° · 跨色相暖弧</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-brand-spectrum-warm)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-brand-spectrum-warm</code>
+    <div class="sw-hex"><span class="sw-light">G0 品牌色带（亮段）</span></div>
+    <div class="sw-note">#a3389c → #d2477e → #f4776a · 只用亮三档</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:linear-gradient(160deg,#f1eefc,#8f86d6)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-family-veil</code>
+    <div class="sw-hex"><span class="sw-light">G1 家族色渐变（示例 flux）</span></div>
+    <div class="sw-note">var(--plate-bg) → var(--plate-mark) · 160° · Δh 7.2° / ΔL* 31</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:linear-gradient(to top,#3c3489,transparent)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-family-ink-veil</code>
+    <div class="sw-hex"><span class="sw-light">G1 家族色压字渐变（示例 flux）</span></div>
+    <div class="sw-note">var(--plate-strong) → 透明 · 用于家族色面上的文字</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-scrim-card),linear-gradient(135deg,#e9e4d9,#b7c3d3)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-scrim-card</code>
+    <div class="sw-hex"><span class="sw-light">G2 卡片信息区遮罩</span></div>
+    <div class="sw-note">162° 三段 rgb(10 12 18 / .45→.38→.28) · 示意图叠在浅色照片上</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-scrim-card-fade),linear-gradient(135deg,#e9e4d9,#b7c3d3)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-scrim-card-fade</code>
+    <div class="sw-hex"><span class="sw-light">G2 遮罩上沿化开段</span></div>
+    <div class="sw-note">24px 化开，避免照片与遮罩之间一道硬边</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-scrim-shot),linear-gradient(135deg,#e9e4d9,#b7c3d3)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-scrim-shot</code>
+    <div class="sw-hex"><span class="sw-light">G2 封面照片双层 scrim</span></div>
+    <div class="sw-note">顶部 .52→0 @34% + 底部 .94/.66/0 · 示意图叠在浅色照片上</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:linear-gradient(to top,#f1eefc,#dcd8f2 28%,transparent)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-scrim-plate</code>
+    <div class="sw-hex"><span class="sw-light">G2 生成构图底部遮罩</span></div>
+    <div class="sw-note">var(--plate-bg) → 88% 混合 → 透明 @64%</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:repeating-linear-gradient(-58deg,#8f86d6 0 12px,transparent 12px 38px)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-motif-stripe</code>
+    <div class="sw-hex"><span class="sw-light">G3 斜纹构图</span></div>
+    <div class="sw-note">家族纹样 17% · 条距 12/38 · 深色降至 13%</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:radial-gradient(circle,#8f86d6 1.1px,transparent 1.4px);background-size:6px 6px"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-motif-dot</code>
+    <div class="sw-hex"><span class="sw-light">G3 点阵构图</span></div>
+    <div class="sw-note">需另配 background-size 6px 6px + 向下渐隐 mask</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:radial-gradient(62% 72% at 10% 0%,#8f86d6,transparent 70%),radial-gradient(52% 62% at 98% 30%,#b8b0e6,transparent 72%),#f1eefc"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-motif-glow</code>
+    <div class="sw-hex"><span class="sw-light">G3 柔光构图</span></div>
+    <div class="sw-note">双 radial，唯一没有硬边的变体</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-accent)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-accent</code>
+    <div class="sw-hex"><span class="sw-light">G4 交互渐变（靛紫）</span></div>
+    <div class="sw-note">135° · #4f46e5 → #4338ca · 白字 6.29:1 → 7.90:1</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-site-wash)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-site-wash</code>
+    <div class="sw-hex"><span class="sw-light">G5 站点级洗底（色场）</span></div>
+    <div class="sw-note">158° linear 暖弧 · 峰值 alpha ≤0.07 · 底仍读作中性灰</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--grad-site-glow)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--grad-site-glow</code>
+    <div class="sw-hex"><span class="sw-light">G5 站点级柔光（右上）</span></div>
+    <div class="sw-note">radial 78%×58% at 94% -8% · alpha ≤0.062</div>
+  </div>
+</div>
+    <div class="sw">
+  <div class="sw-chip" style="background:var(--texture-site-paper)"></div>
+  <div class="sw-body">
+    <code class="sw-name">--texture-site-paper</code>
+    <div class="sw-hex"><span class="sw-light">G5 站点级纸纹（肌理）</span></div>
+    <div class="sw-note">feTurbulence 噪声 tile 220px · 中性无彩 · 浅底 multiply / 深底 screen</div>
+  </div>
+</div>
+  </div>
+
+  <h4 id="s-19-3">渐变硬约束（9 条）</h4>
+  <table class="t">
+    <thead><tr><th style="width:56px">#</th><th style="width:190px">约束</th><th>判定口径</th><th style="width:170px">依据</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>色相位移上限</td><td>G1 家族渐变 Δh ≤ <strong>10°</strong>；G2 遮罩为中性色不适用；G0 品牌色带是<strong>唯一豁免</strong>（跨暖弧是刻意的）</td><td>实测 flux 7.2° / qwen 9.3°</td></tr>
+      <tr><td>2</td><td>明度跨度</td><td>G1 走明度阶 ΔL* 18–70；G0 面片级微渐变 ΔL* ≤ 6（×0.97→1.03）</td><td>蝉形 82 条渐变口径</td></tr>
+      <tr><td>3</td><td>彩度上限</td><td>任一端点彩度不得高于另一端的 <strong>1.04 倍</strong>；禁止用高彩度端点承载白字</td><td>蝉形 ×1.04→1.00</td></tr>
+      <tr><td>4</td><td>角度白名单</td><td>只准 <code>90°</code> / <code>135°</code> / <code>160°</code> / <code>162°</code> / <code>to top</code> / <code>to bottom</code> / <code>-58°</code> / <code>radial</code>；<strong>禁 0°/180° 平铺彩虹</strong></td><td>现行实现盘点</td></tr>
+      <tr><td>5</td><td>面积上限</td><td>G4 交互渐变 ≤2 处/屏；G1 家族渐变 ≤卡面 40%；<strong>禁大面积铺底</strong>（VIS §3.4）</td><td>VIS §3.4 + 本轮收紧</td></tr>
+      <tr><td>6</td><td>文字禁则</td><td><strong>禁给文字上渐变</strong>；文字压在渐变上时，渐变两端都要与文字色 ≥4.5:1</td><td>WCAG 2.2 §1.4.3</td></tr>
+      <tr><td>7</td><td>遮罩 alpha</td><td>照片卡白字：遮罩 alpha <strong>≥ 0.57</strong>（对最亮照片成立）；现行 0.45 在纯白照片上只有 3.12:1</td><td>实算见下表</td></tr>
+      <tr><td>8</td><td>明暗双版</td><td>渐变必须<strong>明暗各一套</strong>，禁 <code>filter:invert()</code> 取反；G1/G2/G3 由 <code>--plate-*</code> 派生自动跟随</td><td>VIS §3.6</td></tr>
+      <tr><td>9</td><td>印刷口径</td><td>渐变在印刷里是网点过渡，色域外自动陷色；品牌物料须给<strong>两端专色 + 打样</strong>，不许拿渐变截图上机</td><td>§s-18 锚点</td></tr>
+    </tbody>
+  </table>
+
+  <h4 id="s-19-4">遮罩 alpha 下限（白字 4.5:1 实算）</h4>
+  <table class="t">
+    <thead><tr><th style="width:200px">照片底</th><th style="width:150px">所需 alpha</th><th style="width:190px">现行 0.45 实算</th><th>判定</th></tr></thead>
+    <tbody>
+      <tr><td>纯白照片 <code>#ffffff</code></td><td><strong>≥ 0.57</strong></td><td>3.12:1</td><td><strong>FAIL</strong> → 最坏情况不达标，遮罩须提到 0.57 或照片区不留正文</td></tr>
+      <tr><td>浅灰照片 <code>#c8c8c8</code></td><td>≥ 0.44</td><td>4.70:1</td><td><strong>PASS</strong>（现行值恰好压线）</td></tr>
+      <tr><td>中灰照片 <code>#808080</code></td><td>≥ 0.09</td><td>8.59:1</td><td><strong>PASS</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h4 id="s-19-5">渐变端点白字实算</h4>
+  <table class="t">
+    <thead><tr><th style="width:260px">端点</th><th style="width:110px">白字</th><th style="width:110px">黑字</th><th>判定</th></tr></thead>
+    <tbody>
+      <tr><td>G4 交互渐变 浅 <code>#4f46e5 → #4338ca</code></td><td>6.29 → 7.90:1</td><td>3.34 → 2.66:1</td><td><strong>PASS</strong> 白字，两端都达标</td></tr>
+      <tr><td>G4 交互渐变 深 <code>#4338ca → #3730a3</code></td><td>7.90 → 9.93:1</td><td>2.66 → 2.11:1</td><td><strong>PASS</strong> 白字；深色下两端一起压深</td></tr>
+      <tr><td>G0 品牌色带 中段 <code>#a3389c</code></td><td>5.83:1</td><td>3.60:1</td><td><strong>PASS</strong> 白字可承载</td></tr>
+      <tr><td>G0 品牌色带 亮端 <code>#d2477e / #f4776a</code></td><td>4.25 / 2.73:1</td><td>4.94 / 7.69:1</td><td><strong>FAIL</strong> → 暖端不承载白字，改用深色文字或压深</td></tr>
+    </tbody>
+  </table>
+<!-- END vis-color-sections -->
+  <p class="hint">
+    <strong>站点整体背景</strong>：2026-11-21 裁决（VIS §3.10）——
+    <strong>纯中性底 + 低浓度品牌暖弧洗底 + 中性纸纹</strong>三件套，新增
+    <code>--grad-site-wash</code> / <code>--texture-site-paper</code> 两枚站点级 token，
+    已在 <code>web/src/styles.css</code> 的 <code>body</code> 落地。
+    黑白线稿平铺方案<strong>已否</strong>（观感 + 撞 §2.0.6 / §2.4⑤）。
+    三方案同屏对比的取值表见 VIS §3.10（配套对比实验稿已于 2026-11-21 退役删除）；浓度写死在 <code>--grad-site-wash</code> / <code>--texture-site-paper</code> 两枚 token 的取值里。
+  </p>
+</section>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

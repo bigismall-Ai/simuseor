@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>栅格与容器 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：栅格与容器">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="layout/s-44" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>栅格与容器</h1>
+  <p class="doc-sub">LAYOUT 布局 · 本章共 6 节</p>
+</div>
+<h3 id="s-44">栅格与容器</h3>
+  <table class="t">
+    <thead><tr><th style="width:150px">项</th><th style="width:280px">值</th><th>定位</th></tr></thead>
+    <tbody>
+      <tr><td>侧栏宽</td><td><code>--sidebar-w: 236px</code></td><td>styles.css</td></tr>
+      <tr><td>内容上限</td><td><code>.container max-width:1240px; padding:26px 28px 72px</code></td><td>≤900 改 <code>18px 16px 56px</code></td></tr>
+      <tr><td>卡片网格</td><td><code>repeat(auto-fill,minmax(250px,1fr)); gap:14px</code></td><td><code>.grid</code></td></tr>
+      <tr><td>环境页</td><td><code>minmax(0,1fr) 320px</code></td><td>两栏，gap 14</td></tr>
+      <tr><td>设置页</td><td><code>3fr 7fr</code></td><td>两栏，gap 14</td></tr>
+      <tr><td>安装弹层</td><td><code>46fr 54fr</code></td><td>gap 18</td></tr>
+      <tr><td>响应式断点</td><td><code>1040 / 900 / 860px</code></td><td>≤1040 双栏改单列；≤900 隐藏品牌副行、侧栏转横条</td></tr>
+      <tr><td>z-index</td><td>铭牌内部 0/1/2 · 吸底条 5 · 侧栏 20 · 主题菜单 40 · 弹层 100</td><td>新增浮层不得插入中间值</td></tr>
+    </tbody>
+  </table>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

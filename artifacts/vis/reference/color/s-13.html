@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>component 层 —— 组件槽位（--cmp-*） · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：component 层 —— 组件槽位（--cmp-*）">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="color/s-13" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>component 层 —— 组件槽位（--cmp-*）</h1>
+  <p class="doc-sub">COLOR 色彩 · 本章共 9 节</p>
+</div>
+<h3 id="s-13">component 层 —— 组件槽位（<code>--cmp-*</code>）</h3>
+  <p class="lead">
+    <strong>本层只建结构、不写值</strong>（VIS §3.7.5 + vis-tokens.css §4）：值为空是刻意的 ——
+    styles.css 里已有大量组件类，现在赋值只会变成「定义了但没人用」的死变量。
+    下表是规划中的槽位命名，「已定义」一列说明当前是否已赋值。
+  </p>
+  <table class="t">
+    <thead><tr><th style="width:280px">槽位 token</th><th style="width:130px">已定义</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>--cmp-button-primary-bg</code></td><td>否（只建结构）</td><td>主按钮底</td></tr>
+      <tr><td><code>--cmp-button-primary-fg</code></td><td>否（只建结构）</td><td>主按钮字</td></tr>
+      <tr><td><code>--cmp-button-primary-radius</code></td><td>否（只建结构）</td><td>主按钮圆角</td></tr>
+      <tr><td><code>--cmp-button-ghost-border</code></td><td>否（只建结构）</td><td>文字按钮边框</td></tr>
+      <tr><td><code>--cmp-button-ghost-fg</code></td><td>否（只建结构）</td><td>文字按钮字</td></tr>
+      <tr><td><code>--cmp-input-bg</code></td><td>否（只建结构）</td><td>输入框底</td></tr>
+      <tr><td><code>--cmp-input-border</code></td><td>否（只建结构）</td><td>输入框边框</td></tr>
+      <tr><td><code>--cmp-input-fg</code></td><td>否（只建结构）</td><td>输入框字</td></tr>
+      <tr><td><code>--cmp-input-radius</code></td><td>否（只建结构）</td><td>输入框圆角</td></tr>
+      <tr><td><code>--cmp-card-bg</code></td><td>否（只建结构）</td><td>卡片底</td></tr>
+      <tr><td><code>--cmp-card-border</code></td><td>否（只建结构）</td><td>卡片边框</td></tr>
+      <tr><td><code>--cmp-card-radius</code></td><td>否（只建结构）</td><td>卡片圆角</td></tr>
+      <tr><td><code>--cmp-modal-bg</code></td><td>否（只建结构）</td><td>弹层底</td></tr>
+      <tr><td><code>--cmp-modal-border</code></td><td>否（只建结构）</td><td>弹层边框</td></tr>
+      <tr><td><code>--cmp-modal-radius</code></td><td>否（只建结构）</td><td>弹层圆角</td></tr>
+      <tr><td><code>--cmp-modal-shadow</code></td><td>否（只建结构）</td><td>弹层阴影</td></tr>
+      <tr><td><code>--cmp-chip-bg</code></td><td>否（只建结构）</td><td>chip 底</td></tr>
+      <tr><td><code>--cmp-chip-fg</code></td><td>否（只建结构）</td><td>chip 字</td></tr>
+      <tr><td><code>--cmp-chip-radius</code></td><td>否（只建结构）</td><td>chip 圆角</td></tr>
+      <tr><td><code>--cmp-badge-bg</code></td><td>否（只建结构）</td><td>徽章底</td></tr>
+      <tr><td><code>--cmp-badge-fg</code></td><td>否（只建结构）</td><td>徽章字</td></tr>
+      <tr><td><code>--cmp-wordmark-logo</code></td><td>否（只建结构）</td><td>字标资产</td></tr>
+      <tr><td><code>--cmp-wordmark-fg</code></td><td>否（只建结构）</td><td>字标字色</td></tr>
+      <tr><td><code>--cmp-wordmark-min-width</code></td><td>否（只建结构）</td><td>字标最小宽度</td></tr>
+      <tr><td><code>--cmp-wordmark-icon</code></td><td>否（只建结构）</td><td>紧凑图标资产</td></tr>
+      <tr><td><code>--cmp-wordmark-icon-min</code></td><td>否（只建结构）</td><td>紧凑图标最小尺寸</td></tr>
+    </tbody>
+  </table>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

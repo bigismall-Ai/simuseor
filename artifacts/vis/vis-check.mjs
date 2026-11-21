@@ -1285,8 +1285,42 @@ say('');
 say('');
 
 /* ==========================================================================
- * 4. SUMMARY
+ * 3.7 手册分页防漂移（vis-manual check）
+ * --------------------------------------------------------------------------
+ * 二级导航项 = 各自一页（artifacts/vis/reference/<章>/<节>.html）。
+ * 章首页与 shell.js 的导航块是**生成物**，由 vis-manual build 从节页清单生成。
+ * check 管：生成物漂移 / 导航↔页面双向覆盖 / 野生页面 / 章首页目录一致。
  * ========================================================================== */
+{
+  say('');
+  say(HR2);
+  say('[3.7] 手册分页防漂移（artifacts/vis/vis-manual.mjs check）');
+  say(HR2);
+  const manualTool = path.join(HERE, 'vis-manual.mjs');
+  if (!fs.existsSync(manualTool)) {
+    say('    [FAIL] vis-manual.mjs 不存在 —— 手册分页防漂移门禁缺失');
+    deliverableFail++;
+  } else {
+    const r = spawnSync(process.execPath, [manualTool, 'check'], {
+      cwd: ROOT, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+    });
+    const out = String(r.stdout || '') + String(r.stderr || '');
+    for (const line of out.split('\n')) {
+      if (/^\s{4}\[/.test(line) || /^\s{2}(章节|全部通过|问题)/.test(line)) say(line);
+    }
+    if (r.status === 2) {
+      say('    ^ 导航块 / 章首页漂移，或导航↔页面不一致 -> 阻塞');
+      say('      处置：跑 `node artifacts/vis/vis-manual.mjs build` 重新生成。');
+      deliverableFail++;
+    } else if (r.status === 3) {
+      say('    [FAIL] vis-manual 自身出错 -> 阻塞');
+      deliverableFail++;
+    } else {
+      say('    [PASS] 导航与分页一致，无漂移');
+    }
+  }
+}
+say('');
 say(HR);
 say('[4] SUMMARY');
 say(HR);

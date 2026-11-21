@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>四阶段迁移 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：四阶段迁移">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="engineering/s-83" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>四阶段迁移</h1>
+  <p class="doc-sub">08 工程落地 · 本章共 4 节</p>
+</div>
+<h3 id="s-83">四阶段迁移</h3>
+  <table class="t">
+    <thead><tr><th style="width:80px">阶段</th><th style="width:150px">范围</th><th>要点</th></tr></thead>
+    <tbody>
+      <tr><td><strong>M0</strong></td><td>零风险新增</td><td>接入 <code>vis-tokens.css</code>、只转 Barlow woff2 + <code>@font-face</code>、<code>&lt;title&gt;→SiMuseor</code>、<code>data:,</code> 空 favicon、侧栏品牌位占位替换</td></tr>
+      <tr><td><strong>M1</strong></td><td>机械替换</td><td><strong>全量</strong> 26 处字重、6 处圆角（<code>cover-plate</code> 3 处适用域外不动）、3 处 hover 阴影 / 位移、<strong>4 处</strong>交互亮色白字填充、<strong>全量</strong> 39 处 <code>--faint</code> 文本引用、<code>1.6→1.5</code> 线宽、<code>lab-theme</code> 归一（<strong>只改色值、不动 <code>contrastColor</code> 深字</strong>）；<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + 白字，仅改 <code>border-color:var(--accent)</code></td></tr>
+      <tr><td><strong>M2</strong></td><td>体验与 a11y</td><td><code>aria-*</code> / <code>role</code> 批次、全局 reduced-motion、<code>scroll-padding-bottom</code>、900px 品牌位（仅隐藏副行）、焦点陷阱 / Esc / <code>T</code> 键守卫、<code>↗</code> 三处包裹</td></tr>
+      <tr><td><strong>M3</strong></td><td><strong>依赖 LOGO 冻结</strong></td><td>按标识章只改 3 处接入冻结资产、favicon 换正式图标、回写 VIS 升版号</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">M0–M2 与 LOGO 冻结解耦，可立即排期。每阶段的文件 + 行号 + 改动前后字符串 + 验证命令 + E2E 回归矩阵见 <code>_phase3-engineering.md</code>（871 行 / 11 章）。</p>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

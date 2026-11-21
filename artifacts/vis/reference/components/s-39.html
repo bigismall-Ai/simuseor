@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>空状态 / 加载 / 错误 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：空状态 / 加载 / 错误">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="components/s-39" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>空状态 / 加载 / 错误</h1>
+  <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
+</div>
+<h3 id="s-39">空状态 / 加载 / 错误</h3>
+<div class="srow">
+  <div class="srow-label">空状态</div>
+  <div class="srow-items">
+    <div class="ui-empty">
+      <div class="ui-empty-icon">◍</div>
+      <p class="ui-empty-title">还没有模型</p>
+      <p class="ui-empty-hint">去「发现」页挑一个，或把文件放进 models/ 目录。</p>
+      <button class="primary btn-xs" type="button">去发现页</button>
+    </div>
+    <span class="spec">padding 44px 20px · title 13px/600 · hint 12px</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">加载中</div>
+  <div class="srow-items">
+    <div class="loading-line"><span class="dot-spin"></span><span>正在读取模型列表…</span></div>
+    <span class="spec">dot-spin 20px / border 2px / 顶边 var(--accent)</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">骨架屏</div>
+  <div class="srow-items">
+    <div style="width:220px;display:flex;flex-direction:column;gap:10px">
+      <div class="skeleton skel-line" style="width:80%"></div>
+      <div class="skeleton skel-line" style="width:60%"></div>
+      <div class="skeleton skel-line" style="width:40%"></div>
+    </div>
+    <span class="spec">skeleton radius 5px · shimmer 1.6s</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">错误提示</div>
+  <div class="srow-items">
+    <div class="notice err">删除失败：目录被占用，关闭占用程序后重试</div>
+    <span class="spec">notice：radius 8px · padding 8px 12px · 12px</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">成功提示</div>
+  <div class="srow-items">
+    <div class="notice ok">已安装到实例 A</div>
+    <span class="spec">notice.ok → --ok-soft 底 / --ok 字</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">信息提示</div>
+  <div class="srow-items">
+    <div class="notice info">下载源已切换到 Hugging Face</div>
+    <span class="spec">notice.info → --accent-soft 底 / --accent 字</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">进度条</div>
+  <div class="srow-items">
+    <div class="progress" style="width:200px"><div style="width:62%"></div></div>
+    <div class="progress completed" style="width:200px"><div style="width:100%"></div></div>
+    <div class="progress failed" style="width:200px"><div style="width:38%"></div></div>
+    <span class="spec">6px 高 · radius 999px · 轨道 var(--track)</span>
+  </div>
+</div>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

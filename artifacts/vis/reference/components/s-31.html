@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按钮 —— 全部状态 · SiMuseor VIS</title>
+<meta name="description" content="SiMuseor 视觉规范：按钮 —— 全部状态">
+<link rel="stylesheet" href="../../assets/vis.css">
+</head>
+<body data-page="components/s-31" data-root="../../">
+<div class="app-shell">
+  <aside class="app-side">
+    <div class="app-brand">
+      <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.12</small></span>
+    </div>
+    <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
+    <div class="app-side-foot">
+      <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
+      <small>VIS v2.12 · 2026</small>
+    </div>
+  </aside>
+  <main class="app-main">
+    <div class="wrap">
+<div class="doc-head">
+  <p class="kicker">SiMuseor · VIS v2.12</p>
+  <h1>按钮 —— 全部状态</h1>
+  <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
+</div>
+<h3 id="s-31">按钮 —— 全部状态</h3>
+<div class="srow">
+  <div class="srow-label">默认</div>
+  <div class="srow-items">
+    <button type="button">默认</button>
+    <button class="primary" type="button">主操作</button>
+    <button class="ghost" type="button">文字按钮</button>
+    <button class="danger" type="button">危险</button>
+    <span class="spec">button</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">hover</div>
+  <div class="srow-items">
+    <button class="st-hover" type="button">默认</button>
+    <button class="primary st-hover" type="button">主操作</button>
+    <button class="ghost st-hover" type="button">文字按钮</button>
+    <button class="danger st-hover" type="button">危险</button>
+    <span class="spec">:hover</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">focus-visible</div>
+  <div class="srow-items">
+    <button class="st-focus" type="button">默认</button>
+    <button class="primary st-focus" type="button">主操作</button>
+    <button class="ghost st-focus" type="button">文字按钮</button>
+    <span class="spec">2px solid var(--accent) · offset 2px</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">active</div>
+  <div class="srow-items">
+    <button class="st-active" type="button">默认</button>
+    <button class="primary st-active" type="button">主操作</button>
+    <span class="spec">transform: translateY(.5px)</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">selected</div>
+  <div class="srow-items">
+    <button class="primary" type="button">已选中</button>
+    <span class="spec">button.primary（实心 --primary + 白字）</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">disabled</div>
+  <div class="srow-items">
+    <button type="button" disabled>禁用</button>
+    <button class="primary" type="button" disabled>主操作</button>
+    <button class="ghost" type="button" disabled>文字按钮</button>
+    <span class="spec">opacity .45 · cursor not-allowed</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">loading</div>
+  <div class="srow-items">
+    <button class="st-loading" type="button" disabled><span class="dot-spin"></span>加载中…</button>
+    <span class="spec">真实实现 = disabled + 文案「加载中…」（discover.component.ts:241）</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">error</div>
+  <div class="srow-items">
+    <button class="danger" type="button">重试</button>
+    <span class="spec">危险态 = button.danger（描边红字，hover 转 --err-soft 底）</span>
+  </div>
+</div>
+<div class="srow">
+  <div class="srow-label">empty</div>
+  <div class="srow-items">
+    <button class="primary" type="button">主操作</button>
+    <span class="spec">按钮本身无 empty 态 —— 空态属 ui-empty（见 3.9）</span>
+  </div>
+</div>
+  <p class="hint">
+    <strong>hover 明规则（§8.5 裁决 5）：</strong><code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + 白字（6.29:1），
+    仅以 <code>border-color:var(--accent)</code> 作 1px 装饰描边。<strong>不得</strong>改用 <code>--primary-hover #6366f1</code>（白字 4.47:1）或
+    <code>--accent-hover #c7d2fe</code>（白字 1.49:1）；hover 不加阴影、不加位移（§6.3 边框优先）。
+  </p>
+
+    </div>
+  </main>
+</div>
+<script src="../../assets/shell.js"></script>
+</body>
+</html>

@@ -101,7 +101,7 @@ function assetCard(c, indent = '              ') {
   L.push(identMark(c.mark, inner2));
   L.push(`${inner2}<span class="ac-ident"><b>${c.brand}</b><span>${c.author}</span></span>`);
   if (c.origin) {
-    L.push(`${inner2}<a class="ac-origin" href="../reference/components.html">${c.origin}`);
+    L.push(`${inner2}<a class="ac-origin" href="../reference/components/index.html">${c.origin}`);
     L.push(originSvg(inner3));
     L.push(`${inner2}</a>`);
   }
