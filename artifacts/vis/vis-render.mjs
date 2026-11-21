@@ -160,6 +160,31 @@ for (const p of pages) {
       const h3 = document.querySelector('section.ref > h3');
       const h1 = document.querySelector('.doc-head h1');
       const navItems = document.querySelectorAll('.app-nav a, .app-nav .nav-group').length;
+
+      /* 手册站自己的侧栏 —— 必须等于它发布的导航规格（VIS §4.1 / §5 登记）
+       * 一级可点项 = 产品 .nav-item；二级节项 = 产品 .nav-sub-item
+       * 只量**可见**元素（折叠起来的二级项 rect 高度为 0，量它没有意义），
+       * 并把「选中态」与「常态」分开 —— 选中态本来就该是 600 字重。 */
+      const visible = (sel) => [...document.querySelectorAll(sel)]
+        .find((el) => el.getBoundingClientRect().height > 0) || null;
+      const sideBox = (sel) => {
+        const el = visible(sel);
+        if (!el) return null;
+        const c = getComputedStyle(el);
+        return {
+          h: Math.round(el.getBoundingClientRect().height * 100) / 100,
+          pad: c.padding, radius: c.borderRadius,
+          fs: c.fontSize, fw: c.fontWeight,
+          color: c.color, bg: c.backgroundColor,
+        };
+      };
+      /* 产品导航演示（组件章 §s-311）—— 组标题必须等于产品真实样子 */
+      const demoGroup = document.querySelector('.ref .nav-group');
+      const demoGroupStyle = demoGroup ? (() => {
+        const c = getComputedStyle(demoGroup);
+        return { fs: c.fontSize, fw: c.fontWeight, tt: c.textTransform, pad: c.padding, display: c.display };
+      })() : null;
+
       return {
         scrollW: document.documentElement.scrollWidth,
         innerW: window.innerWidth,
@@ -172,6 +197,11 @@ for (const p of pages) {
         docHeadCount: document.querySelectorAll('.doc-head').length,
         h1Count: document.querySelectorAll('.doc-head h1').length,
         title: (document.querySelector('.doc-head h1') || {}).textContent || '',
+        sideTop: sideBox('.app-nav > a:not(.on)'),
+        sideTopOn: sideBox('.app-nav > a.on'),
+        sideChapter: sideBox('.app-nav .nav-group .nav-lead:not(.on)'),
+        sideSub: sideBox('.app-nav .nav-items a.sub:not(.on)'),
+        demoGroup: demoGroupStyle,
       };
     });
   } catch (e) {
@@ -201,6 +231,36 @@ for (const p of pages) {
     if (metrics.h4 !== null && metrics.h4 !== 12) problems.push('section > h4 font-size=' + metrics.h4 + '（应 12px）');
     if (metrics.lead !== null && metrics.lead !== 12.5) problems.push('section > p.lead font-size=' + metrics.lead + '（应 12.5px）');
     if (metrics.h3 !== null && metrics.h3 !== 14) problems.push('section > h3 font-size=' + metrics.h3 + '（应 14px）');
+
+    /* ---- 手册站自身合规：侧栏必须等于它发布的导航规格 ----
+     * 规范发布 32px / 0 9px / 8px / 13px·500（一级）+ 29px / 0 9px / 8px / 12.5px（二级），
+     * 手册站自己的侧栏也必须长这样 —— 不然就是「规范一套、自己一套」。 */
+    const SPEC = {
+      sideTop: { h: 32, pad: '0px 9px', radius: '8px', fs: '13px', fw: '500' },
+      sideChapter: { h: 32, fs: '13px', fw: '500' },
+      sideSub: { h: 29, pad: '0px 9px', radius: '8px', fs: '12.5px', fw: '500' },
+    };
+    for (const [key, label] of [['sideTop', '侧栏一级项'], ['sideChapter', '侧栏章头'], ['sideSub', '侧栏二级项']]) {
+      const got = metrics[key];
+      if (!got) continue;
+      for (const [prop, want] of Object.entries(SPEC[key])) {
+        if (got[prop] !== want) {
+          problems.push(`${label} ${prop}=${got[prop]}（应 ${want}，手册站必须等于自己发布的导航规格）`);
+        }
+      }
+    }
+    /* 选中态口径：--accent-soft 底 + --accent 字 + 600（与产品 .nav-item.active 同源） */
+    if (metrics.sideTopOn && metrics.sideTopOn.fw !== '600') {
+      problems.push(`侧栏选中项 font-weight=${metrics.sideTopOn.fw}（应 600）`);
+    }
+    /* 产品导航演示的组标题：必须等于产品真实样子（10px/600/uppercase/无内边距） */
+    if (metrics.demoGroup) {
+      const d = metrics.demoGroup;
+      if (d.fs !== '10px') problems.push('产品导航演示·组标题 font-size=' + d.fs + '（应 10px）');
+      if (d.fw !== '600') problems.push('产品导航演示·组标题 font-weight=' + d.fw + '（应 600）');
+      if (d.tt !== 'uppercase') problems.push('产品导航演示·组标题 text-transform=' + d.tt + '（应 uppercase）');
+      if (d.pad !== '0px') problems.push('产品导航演示·组标题 padding=' + d.pad + '（应 0px —— 被手册站侧栏规则污染了？）');
+    }
   }
   results.push({ page: p, problems, metrics });
 }

@@ -2423,10 +2423,14 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .app-brand .brand-sub { font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; font-size: 9.5px; font-weight: 500; letter-spacing: 0; line-height: 1.4; color: var(--muted); }
 .app-nav { display: flex; flex-direction: column; gap: 1px; margin-top: 10px; }
 .app-nav .grp { margin: 12px 8px 3px; font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
-.app-nav a { display: flex; align-items: center; gap: 8px; min-height: 29px; padding: 0 8px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 500; }
-.app-nav a.sub { margin-left: 12px; min-height: 25px; font-size: 11.5px; }
-.nav-ico { display: block; flex: none; width: 16px; height: 16px; opacity: 0.78; }
-.nav-lead { display: flex; align-items: center; gap: 8px; min-width: 0; }
+/* 侧栏几何 = 产品导航规格（VIS §5 登记 / web/src/styles.css）：
+   一级可点项吃 .nav-item（32px 高 / padding 0 9px / radius 8px / 13px·500），
+   二级节项吃 .nav-sub-item（29px 高 / padding 0 9px / radius 8px / 12.5px）。
+   手册站自己的侧栏必须等于它发布的导航规格 —— 不然就是「规范一套、自己一套」。 */
+.app-nav a { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 9px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; }
+.app-nav a.sub { margin-left: 12px; height: 29px; font-size: 12.5px; }
+.app-nav .nav-ico { display: block; flex: none; width: 15px; height: 15px; opacity: 0.9; }
+.app-nav .nav-lead { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .app-nav a:hover { background: var(--hover); color: var(--text); }
 .app-nav a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .app-side-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-soft); display: flex; flex-direction: column; gap: 6px; }
@@ -2438,16 +2442,18 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .doc-head h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
 .doc-head .doc-sub { margin: 6px 0 0; font-size: 12px; color: var(--muted); max-width: 80ch; }
 
-/* 导航分组收放 + 侧栏收起 */
-.nav-group { display: flex; align-items: center; justify-content: space-between; gap: 2px; width: 100%; min-height: 28px; padding: 0 4px 0 8px; border-radius: 6px; color: var(--muted); }
-.nav-group:hover { background: var(--hover); color: var(--text); }
-.nav-group.has-current { color: var(--text); }
-.nav-group .nav-lead { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; padding: 4px 0; color: inherit; font-size: 12px; font-weight: 500; text-decoration: none; }
-.nav-group .nav-lead:hover { color: var(--text); }
-.nav-group .chev-btn { flex: none; width: 20px; height: 20px; display: grid; place-items: center; border: 0; border-radius: 5px; background: none; color: inherit; cursor: pointer; }
-.nav-group .chev-btn:hover { background: var(--border-soft); }
-.nav-group .chev { font-size: 12px; line-height: 1; transition: transform 0.14s ease; }
-.nav-group[aria-expanded="false"] .chev { transform: rotate(-90deg); }
+/* 导航分组收放 + 侧栏收起
+   作用域必须限定 .app-nav —— 不加作用域会污染 §5 演示里的产品 .nav-group
+   （手册站的「章头」与产品的「组标题」同名不同义）。 */
+.app-nav .nav-group { display: flex; align-items: center; justify-content: space-between; gap: 2px; width: 100%; height: 32px; padding: 0 9px; border-radius: 8px; color: var(--muted); }
+.app-nav .nav-group:hover { background: var(--hover); color: var(--text); }
+.app-nav .nav-group.has-current { color: var(--text); }
+.app-nav .nav-group .nav-lead { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; padding: 0; color: inherit; font-size: 13px; font-weight: 500; text-decoration: none; }
+.app-nav .nav-group .nav-lead:hover { color: var(--text); }
+.app-nav .nav-group .chev-btn { flex: none; width: 20px; height: 20px; display: grid; place-items: center; border: 0; border-radius: 5px; background: none; color: inherit; cursor: pointer; }
+.app-nav .nav-group .chev-btn:hover { background: var(--border-soft); }
+.app-nav .nav-group .chev { font-size: 12px; line-height: 1; transition: transform 0.14s ease; }
+.app-nav .nav-group[aria-expanded="false"] .chev { transform: rotate(-90deg); }
 .app-nav .nav-items { display: flex; flex-direction: column; gap: 1px; margin: 1px 0 4px 12px; padding-left: 6px; border-left: 1px solid var(--border-soft); }
 .app-nav .nav-items a.sub { margin-left: 0; }
 .app-nav .nav-items[hidden] { display: none; }
@@ -2463,8 +2469,8 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .app-side.collapsed .app-brand { flex-direction: column; gap: 8px; padding: 2px 0 12px; }
 .app-side.collapsed .side-toggle { margin-left: 0; }
 .app-side.collapsed .app-nav { gap: 4px; }
-.app-side.collapsed .nav-items { display: none !important; }
-.app-side.collapsed .nav-group { justify-content: center; padding: 0; min-height: 30px; }
+.app-side.collapsed .app-nav .nav-items { display: none !important; }
+.app-side.collapsed .app-nav .nav-group { justify-content: center; padding: 0; min-height: 30px; }
 .app-side.collapsed .nav-group.has-current { color: var(--accent); background: var(--accent-soft); }
 .app-side.collapsed .app-nav a { justify-content: center; padding: 0; }
 .app-side.collapsed .nav-lead { gap: 0; }
