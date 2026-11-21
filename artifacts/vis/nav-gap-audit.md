@@ -11,7 +11,7 @@
 | 缺口 | 处置 |
 |---|---|
 | **G-16** 家族色 16 / 25 / 9 三口径 | **已修**：真值是 **25 组**（`model-tone.ts` 的 `FAMILY_TONE` / `FAMILY_TONE_DARK` 各 25 条）。以 `color.html` §s-16 为**唯一口径源**（生成器现场统计，改家族即改数字）；`layout.html` 那 16 组实为**节选样张**，已标注「节选 · 全集 25 组见色彩页 §s-16」并回链；`SiMuseor-VIS.md` 三处「9 家族色」已改正 |
-| **G-18** 版本号三处漂移 | **已修**：12 个手册页（`vis-reference.html` + `reference/*.html` ×8 + `prototypes/*.html` ×2 + `SiMuseor-VIS.html`）版本标签统一 **v2.10**，meta / 页眉 / 页脚三处同源。**自 v2.10 起，原型页的版本标签由生成器从 `SiMuseor-VIS.md` 标题行自动带入，不再手写**（VIS §3.12） |
+| **G-18** 版本号三处漂移 | **已修**：全部 **73 个手册页**（总览 `vis-reference.html` + `reference/<章>/<节>.html` ×70 + `prototypes/cards.html` + 单文件合订本 `SiMuseor-VIS.html`）版本标签统一 **v2.14**，meta / 页眉 / 页脚三处同源。**自 v2.10 起，原型页的版本标签由生成器从 `SiMuseor-VIS.md` 标题行自动带入，不再手写**（VIS §3.12）；**自 v2.12 起，节页与章首页的版本标签也由 `vis-manual split` / `build` 从同一处取**。升版后必须重跑 `vis-manual split` + `build` + `vis-proto build`，否则标签与规范正文脱节（VIS §8.4「版本标签不手写」） |
 | 悬空引用（`_work/build.mjs`） | **已修**：`reference/audit.html` 与 `web/src/app/lab/lab-vis.component.ts` 不再声称本页数值由已不存在的生成器现场解析，改为如实写「一次性快照，真值在产品源码」；`assets/vis.css` 头部注释同步更正 |
 | **G-22** 完整规范 `SiMuseor-VIS.html` 在导航外 | **已修（2026-11-21 二次修正）**：单文件版**降级为「单文件合订本」**，**不再作为站点的渲染面呈现**（从总览索引与导航移除）—— 放进章节列表会读成「另一套标准」。站点的唯一渲染面是 **12 个分章页**；**「整份读」由左侧两级导航实现**（一级=章、二级=章内的节，点二级项直链锚点），不再另设一个平级入口。合订本卷首写明「真值是 VIS.md；三者内容同源、版本同号」 |
 | **G-01 / G-02 / G-03 / G-04** 补页（应用系统 / 工程落地 / 验收与治理 / 裁决与附录） | **已做**：新增 `reference/application.html`（6 节）、`reference/engineering.html`（4 节）、`reference/acceptance.html`（2 节）、`reference/decisions.html`（4 节），**站点从此覆盖 VIS 全篇**（此前 §7–§10 只存在于单文件合订本里，站点整份读是缺的） |
