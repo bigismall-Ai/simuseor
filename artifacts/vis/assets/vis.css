@@ -2432,6 +2432,9 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .app-side-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-soft); display: flex; flex-direction: column; gap: 6px; }
 .app-side-foot .btn-toggle { width: 100%; justify-content: center; }
 .app-side-foot small { font-family: "Cascadia Mono", Consolas, monospace; font-size: 9px; color: var(--muted); text-align: center; }
+/* 「整份读」：VIS 全篇的单文件通读版。与分章页同源同版，不是另一套标准。 */
+.app-side-foot .side-full { display: block; text-align: center; padding: 5px 0; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); color: var(--muted); font-size: 11.5px; text-decoration: none; }
+.app-side-foot .side-full:hover { color: var(--text); background: var(--hover); border-color: var(--border); }
 .app-main { min-width: 0; }
 .doc-head { padding: 4px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 .doc-head .kicker { margin: 0 0 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
@@ -2465,6 +2468,8 @@ details.fold > div { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted
 .app-side.collapsed .nav-lead { gap: 0; }
 .app-side.collapsed .app-side-foot .btn-toggle { width: 32px; height: 32px; padding: 0; font-size: 0; justify-content: center; }
 .app-side.collapsed .app-side-foot .btn-toggle::before { content: '◐'; font-size: 13px; }
+.app-side.collapsed .app-side-foot .side-full .label { display: none; }
+.app-side.collapsed .app-side-foot .side-full::before { content: '全'; font-size: 12px; }
 
 @media (max-width: 900px) {
   .app-shell { grid-template-columns: 1fr; }
