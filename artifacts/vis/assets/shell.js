@@ -6,6 +6,7 @@
 
   var P = {
     overview: 'vis-reference.html',
+    spec: 'SiMuseor-VIS.html',
     brand: 'reference/brand.html',
     families: 'reference/families.html',
     color: 'reference/color.html',
@@ -20,6 +21,7 @@
 
   var ICONS = {
     overview: '<rect x="2.5" y="2.5" width="4.4" height="4.4" rx="1"/><rect x="9.1" y="2.5" width="4.4" height="4.4" rx="1"/><rect x="2.5" y="9.1" width="4.4" height="4.4" rx="1"/><rect x="9.1" y="9.1" width="4.4" height="4.4" rx="1"/>',
+    book: '<path d="M2.6 3.4h4.1a1.7 1.7 0 0 1 1.7 1.7v7.6a1.4 1.4 0 0 0-1.4-1.4H2.6z"/><path d="M13.4 3.4H9.3a1.7 1.7 0 0 0-1.7 1.7v7.6a1.4 1.4 0 0 1 1.4-1.4h4.4z"/>',
     brand: '<path d="M8 2.2l5.7 3.2v5.2L8 13.8l-5.7-3.2V5.4z"/><circle cx="8" cy="8" r="1.6"/>',
     family: '<path d="M2.8 3.5h5.8l5.6 5.6-4.7 4.7-5.6-5.6z"/><circle cx="6.2" cy="6.9" r="1"/>',
     color: '<path d="M8 2.4a5.6 5.6 0 1 0 0 11.2c1.4 0 2-.9 1.4-2-.5-1 .1-2 1.3-2h1.1c.8 0 1.4-.6 1.4-1.4A5.8 5.8 0 0 0 8 2.4z"/><circle cx="5.5" cy="6" r=".7"/><circle cx="8" cy="4.7" r=".7"/><circle cx="10.5" cy="6" r=".7"/>',
@@ -43,6 +45,7 @@
 
   var NAV = [
     { type: 'link', page: 'overview', label: '总览', icon: 'overview' },
+    { type: 'link', page: 'spec', label: '完整规范', icon: 'book' },
     { type: 'link', page: 'brand', label: '标识', icon: 'brand' },
     { type: 'link', page: 'families', label: '厂牌', icon: 'family' },
     { type: 'link', page: 'color', label: '色彩', icon: 'color' },

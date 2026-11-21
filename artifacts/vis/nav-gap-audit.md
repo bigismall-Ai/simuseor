@@ -13,7 +13,9 @@
 | **G-16** 家族色 16 / 25 / 9 三口径 | **已修**：真值是 **25 组**（`model-tone.ts` 的 `FAMILY_TONE` / `FAMILY_TONE_DARK` 各 25 条）。以 `color.html` §s-16 为**唯一口径源**（生成器现场统计，改家族即改数字）；`layout.html` 那 16 组实为**节选样张**，已标注「节选 · 全集 25 组见色彩页 §s-16」并回链；`SiMuseor-VIS.md` 三处「9 家族色」已改正 |
 | **G-18** 版本号三处漂移 | **已修**：12 个手册页（`vis-reference.html` + `reference/*.html` ×8 + `prototypes/*.html` ×2 + `SiMuseor-VIS.html`）版本标签统一 **v2.8**，meta / 页眉 / 页脚三处同源 |
 | 悬空引用（`_work/build.mjs`） | **已修**：`reference/audit.html` 与 `web/src/app/lab/lab-vis.component.ts` 不再声称本页数值由已不存在的生成器现场解析，改为如实写「一次性快照，真值在产品源码」；`assets/vis.css` 头部注释同步更正 |
-| **G-22** 完整规范 `SiMuseor-VIS.html` 在导航外 | **未做**：需改 `assets/shell.js` 的 `P` 映射与 `NAV`（影响全部 12 页导航），属导航结构改造，建议与「导航骨架草案」一并做 |
+| **G-22** 完整规范 `SiMuseor-VIS.html` 在导航外 | **已修**：`assets/shell.js` 的 `P` 映射加 `spec: 'SiMuseor-VIS.html'`、`NAV` 第 2 项加「完整规范」（新 `book` 图标），**全部 12 个手册页的左侧导航现在都能直达规范正文**；总览页 `vis-reference.html` 同步加「完整规范」索引卡。**并补了回路** —— `SiMuseor-VIS.html` 是独立页（不引 shell.js），侧栏加了「← 返回手册站总览」，不再是单向门 |
+| **G-23** 总览页索引卡缺「背景实验」 | **已修**：`vis-reference.html` 的「原型页面」区补 `prototypes/backgrounds.html` 卡（描述：站点底纹 6 个渐变变体 × 色场 / 纸纹双滑杆，当前线上值 v2 单束柔光） |
+| **G-19** 「厂牌」与「标识」易混 | **部分修**：总览页「厂牌」卡补边界声明「第三方模型家族（**非 VIS 品牌层**）」；**左侧导航的标签未改**（改成「厂牌 · 第三方模型家族」会撑破 236px 侧栏，建议留到导航骨架改造时一并做） |
 | **G-03 / G-01 / G-02 / G-04** 补页（验收清单 / 应用系统 / 工程落地 / 裁决） | **未做**：需新写 4 个页面，本轮只做审计不写内容 |
 | **G-17** 图标描边 1.3px vs 1.5px | **未做**：需在 `icons.html` 标注「本站 1.3px 为现状值 / 规范目标 1.5px」双口径，并登记 §8.3 M1 的 `1.6→1.5` 改造 |
 
