@@ -373,7 +373,13 @@ function reportRatchet(label, kind, actual, baseline, detailLines) {
 /* ==========================================================================
  * 0. 头部 / 扫描范围
  * ========================================================================== */
-const files = [STYLES, ...collectTs(APP_DIR)].filter((p) => fs.existsSync(p));
+/* VIS 设计区（/vis）是**设计参考与原型**，不是产品 UI：
+   样张刻意的候选色板、演示圆角与旧 --faint 不应被产品侧棘轮当成新债。
+   与 lab/ 的豁免同源 —— 报告里明写，避免「换个文件就把违规藏起来」。 */
+const isVisDesign = (p) => rel(p).startsWith('web/src/app/vis/');
+const files = [STYLES, ...collectTs(APP_DIR)]
+  .filter((p) => fs.existsSync(p))
+  .filter((p) => !isVisDesign(p));
 const cssFiles = [STYLES, TOKENS_EFFECTIVE].filter((p) => fs.existsSync(p));
 
 say(HR);
@@ -387,6 +393,7 @@ say('[0] 扫描范围');
 say('    styles.css          : ' + rel(STYLES) + '  (' +
   (fs.existsSync(STYLES) ? fs.readFileSync(STYLES, 'utf8').split('\n').length + ' 行' : '缺失') + ')');
 say('    app/**/*.ts         : ' + (files.length - 1) + ' 个文件');
+say('    VIS 设计区样张      : web/src/app/vis/**（设计参考 / 原型，不纳入产品棘轮）');
 say('    token 文件（设计层）: ' + rel(TOKENS_DESIGN) + '  (' +
   (fs.existsSync(TOKENS_DESIGN) ? fs.readFileSync(TOKENS_DESIGN, 'utf8').split('\n').length + ' 行' : '缺失') + ')');
 say('    token 文件（生效层）: ' + rel(TOKENS_EFFECTIVE) + '  (' +
@@ -882,6 +889,7 @@ say(HR2);
   const literalItems = [];
   const exemptHits = [];
   for (const f of collectTs(APP_DIR)) {
+    if (isVisDesign(f)) continue;
     const raw = fs.readFileSync(f, 'utf8');
     const r = rel(f);
     const ex = COLOR_EXEMPT.find((x) => x.re.test(r));
@@ -903,6 +911,7 @@ say(HR2);
      （2026-11-21 资产卡统一骨架时踩过：几何收进 asset-card.css，色值一并搬了过去，
        1.12 扫不到，棘轮还误判成「无新增违规」。盲区必须先堵上。） */
   for (const f of collectCss(APP_DIR)) {
+    if (isVisDesign(f)) continue;
     const raw = fs.readFileSync(f, 'utf8');
     const r = rel(f);
     const ex = COLOR_EXEMPT.find((x) => x.re.test(r));

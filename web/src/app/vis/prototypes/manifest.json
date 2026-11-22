@@ -1,0 +1,42 @@
+[
+  {
+    "id": "resource-manager",
+    "route": "/vis/prototypes/resource-manager",
+    "navLabel": "资源管理器",
+    "title": "资源管理器",
+    "desc": "本地文件管理器：目录、模型、引用关系",
+    "status": "active"
+  },
+  {
+    "id": "downloads",
+    "route": "/vis/prototypes/downloads",
+    "navLabel": "下载页",
+    "title": "下载页",
+    "desc": "下载任务、队列与进度",
+    "status": "active"
+  },
+  {
+    "id": "error-states",
+    "route": "/vis/prototypes/error-states",
+    "navLabel": "错误提示",
+    "title": "错误提示",
+    "desc": "空态 / 加载 / 错误与重试",
+    "status": "active"
+  },
+  {
+    "id": "settings",
+    "route": "/vis/prototypes/settings",
+    "navLabel": "设置页",
+    "title": "设置页",
+    "desc": "外观、路径与运行偏好",
+    "status": "active"
+  },
+  {
+    "id": "source-probe",
+    "route": "/vis/prototypes/source-probe",
+    "navLabel": "源探针",
+    "title": "源探针",
+    "desc": "下载源可达性与测速",
+    "status": "active"
+  }
+]

@@ -1,0 +1,322 @@
+/* ============================================================================
+ * 视觉设计分类页 · 共享样张样式
+ * ----------------------------------------------------------------------------
+ * 从原单页 visual.component.ts 拆出。每个分类页 styleUrls 引入本文件；
+ * 页头、主题切换与内容宽度在 visual-page.component.ts。
+ *
+ * 色板 token（--ink-* / --aurora-*）声明在外壳 .vis-ref 上，这里只消费。
+ * ========================================================================== */
+
+.vis-note {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--accent-line);
+  background: var(--panel-3);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.vis-note code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; color: var(--text-2); }
+
+/* ---- 色彩 ---- */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.color-theme {
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+.color-theme header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.color-theme header b { font-size: 13px; font-weight: 600; }
+.color-theme header span {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--muted);
+  font-family: "Cascadia Mono", Consolas, monospace;
+}
+.color-theme.ink { background: var(--ink-paper); color: var(--ink-ink); border-color: var(--ink-stone); }
+.color-theme.ink header span { color: var(--ink-moss); }
+.color-theme.aurora { background: var(--aurora-bg); color: var(--aurora-text); border-color: var(--aurora-border); }
+.color-theme.aurora header span { color: color-mix(in oklab, var(--aurora-text) 62%, transparent); }
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+  gap: 8px;
+}
+.swatch-card { min-width: 0; }
+.swatch {
+  display: flex;
+  align-items: flex-end;
+  min-height: 64px;
+  padding: 8px;
+  border-radius: 10px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.06);
+}
+.color-theme.aurora .swatch { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); }
+.swatch-card b { display: block; margin-top: 5px; font-size: 11px; font-weight: 600; }
+.swatch-card small { display: block; font-size: 10px; line-height: 1.4; opacity: 0.72; }
+.color-roles {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 14px;
+  font-size: 11.5px;
+}
+.color-roles th,
+.color-roles td {
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+}
+.color-roles th {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 500;
+  background: var(--panel-2);
+}
+.color-roles td:first-child { width: 112px; color: var(--muted); }
+.color-roles tr:last-child td { border-bottom: 0; }
+.color-rules {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.color-rules b { color: var(--text-2); font-weight: 600; }
+@media (max-width: 900px) { .color-grid { grid-template-columns: 1fr; } }
+
+/* ---- 通用样张行 ---- */
+.vis-hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-left: 2px solid var(--border);
+  background: var(--panel-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.vis-hint b { color: var(--text-2); }
+.vis-hint code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; color: var(--text-2); }
+.vis-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-soft);
+}
+.vis-row:last-child { border-bottom: 0; }
+.vis-row-label {
+  flex: none;
+  width: 92px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.vis-row ui-field { flex: 0 1 320px; min-width: 240px; }
+
+/* ---- 按钮样张：浅色「水墨留白」/ 深色「极光界面」 ---- */
+.btn-specimen {
+  --btn-bg: var(--ink-paper);
+  --btn-bg-hover: #e4dfd3;
+  --btn-ink: var(--ink-ink);
+  --btn-primary-bg: var(--ink-ink);
+  --btn-primary-hover: #2f3a35;
+  --btn-primary-ink: var(--ink-paper);
+  --btn-danger-bg: var(--ink-accent);
+  --btn-danger-hover: #c56a59;
+  --btn-danger-ink: #f6f1e8;
+  --btn-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 8px 18px -16px rgb(34 44 40 / 0.4);
+  --btn-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.34),
+    0 14px 28px -18px rgb(34 44 40 / 0.48);
+  --btn-primary-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 10px 24px -18px rgb(34 44 40 / 0.55);
+  --btn-primary-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 16px 32px -18px rgb(34 44 40 / 0.62);
+  display: flex;
+  flex-direction: column;
+}
+:host-context([data-theme='dark']) .btn-specimen {
+  --btn-bg: var(--aurora-panel);
+  --btn-bg-hover: #141832;
+  --btn-ink: var(--aurora-text);
+  --btn-primary-bg: var(--aurora-primary);
+  --btn-primary-hover: #6466ff;
+  --btn-primary-ink: var(--aurora-text);
+  --btn-danger-bg: var(--ink-accent);
+  --btn-danger-hover: #c56a59;
+  --btn-danger-ink: var(--aurora-text);
+  --btn-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 10px 24px -18px rgb(0 0 0 / 0.72);
+  --btn-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 16px 32px -18px rgb(0 0 0 / 0.8);
+  --btn-primary-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    0 12px 28px -18px rgb(86 88 255 / 0.62);
+  --btn-primary-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 18px 36px -18px rgb(86 88 255 / 0.72);
+}
+.btn-specimen button {
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  box-shadow: var(--btn-shadow);
+  transition:
+    transform 0.14s ease,
+    background-color 0.16s ease,
+    box-shadow 0.18s ease,
+    color 0.16s ease;
+}
+.btn-specimen button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--btn-bg-hover);
+  box-shadow: var(--btn-shadow-hover);
+}
+.btn-specimen button:active:not(:disabled) {
+  transform: translateY(0.5px);
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.16),
+    inset 0 1px 0 rgb(255 255 255 / 0.16);
+}
+.btn-specimen button.primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-ink);
+  box-shadow: var(--btn-primary-shadow);
+}
+.btn-specimen button.primary:hover:not(:disabled) {
+  background: var(--btn-primary-hover);
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+.btn-specimen button.ghost {
+  background: transparent;
+  box-shadow: none;
+  color: var(--btn-ink);
+}
+.btn-specimen button.ghost:hover:not(:disabled) {
+  transform: none;
+  background: var(--btn-bg);
+  box-shadow: var(--btn-shadow);
+}
+.btn-specimen button.danger {
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-ink);
+  box-shadow: var(--btn-primary-shadow);
+}
+.btn-specimen button.danger:hover:not(:disabled) {
+  background: var(--btn-danger-hover);
+  box-shadow: var(--btn-primary-shadow-hover);
+}
+.btn-specimen button.btn-xs {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 11.5px;
+  border-radius: var(--radius-lg);
+}
+
+/* ---- 反馈态 / 卡片 / 布局 ---- */
+.vis-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.vis-stack { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.vis-sub { margin: 20px 0 10px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.vis-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.vis-radios { display: flex; flex-wrap: wrap; gap: 16px; }
+.vis-radio { text-align: center; }
+.vis-radio-box {
+  width: 132px;
+  height: 76px;
+  margin-bottom: 6px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+.vis-radio span { font-size: 10.5px; color: var(--muted); }
+.vis-shadows { display: flex; flex-wrap: wrap; gap: 18px; }
+.vis-shadow {
+  width: 180px;
+  height: 72px;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+}
+.vis-shadow span { font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px; color: var(--muted); }
+
+/* ---- 标识 ---- */
+.vis-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.vis-fav { display: flex; gap: 20px; align-items: flex-end; padding: 12px 0; }
+.lv-wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-family: "Barlow Condensed", "Segoe UI", system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.028em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text);
+}
+.lv-sub {
+  font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ---- 弹层样张：真实 .modal-overlay 是 fixed，这里只留静态观感 ---- */
+.vis-modal-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+.vis-modal-stage .modal-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.vis-modal-stage .modal { max-height: none; width: min(680px, 100%); }

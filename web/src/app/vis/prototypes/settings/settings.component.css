@@ -1,0 +1,469 @@
+/* 设置页原型 · 页面级样式。
+   shell 的 .vis-main 不留内边距，页面自己负责宽度与四周留白。
+   只用全局 token（styles.css / vis-tokens.css），不新增 :root 变量。 */
+
+:host {
+  display: block;
+}
+
+.proto-page {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 26px 28px 72px;
+}
+
+.tiny {
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+/* ── 版式：左宽右窄（7 : 3） ── */
+.settings-cols-page {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(286px, 3fr);
+  gap: 16px;
+  align-items: start;
+}
+.col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.col-side {
+  position: sticky;
+  top: 16px;
+  gap: 14px;
+}
+.col-side ui-panel {
+  display: block;
+}
+/* ui-panel 自带的 margin-bottom 落在组件内部，右栏的间距统一交给 .col 的 gap */
+:host ::ng-deep .col-side ui-panel .ui-panel {
+  margin-bottom: 0;
+}
+
+/* ── 全局动作条 ── */
+.probe-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+.bar-note {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+}
+.one-liner {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px dashed var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--text-2);
+  font-size: 12px;
+}
+.one-liner b {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── 站点卡：紧凑几何 ── */
+.src-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.src-card > .rail {
+  height: 2px;
+  background: var(--border-strong);
+}
+.src-card.st-ok > .rail {
+  background: var(--ok);
+}
+.src-card.st-degraded > .rail {
+  background: var(--warn);
+}
+.src-card.st-down > .rail {
+  background: var(--err);
+}
+.src-card.st-unknown > .rail {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-strong) 0 8px,
+    transparent 8px 14px
+  );
+}
+
+.src-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 14px 8px;
+}
+.src-id {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.src-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.src-key {
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.src-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+.src-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.src-speed {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.src-time {
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.src-speed.ok {
+  color: var(--ok);
+}
+.src-speed.degraded {
+  color: var(--warn);
+}
+.src-speed.down {
+  color: var(--err);
+}
+.src-speed.unknown {
+  color: var(--muted);
+}
+
+/* 三段式读数条：一条通路一格 */
+.src-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 14px;
+  background: var(--border-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.pcell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 9px 7px;
+  background: var(--panel-2);
+  min-width: 0;
+}
+.pcell.is-best {
+  background: var(--ok-soft);
+}
+.pcell.is-bad {
+  background: var(--err-soft);
+}
+.pcell.is-skip {
+  background: var(--panel);
+  opacity: 0.85;
+}
+.pc-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.2;
+}
+.pc-top b {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.pc-top .ui-badge {
+  font-size: 10px;
+  padding: 0 6px;
+  line-height: 16px;
+}
+.pc-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.pc-speed {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.pcell.is-best .pc-speed {
+  color: var(--ok);
+}
+.pcell.is-bad .pc-speed {
+  color: var(--err);
+}
+.pcell.is-skip .pc-speed {
+  color: var(--faint);
+}
+.pc-lat {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.pcell.is-best .pc-lat {
+  color: var(--ok);
+}
+.pcell.is-bad .pc-lat {
+  color: var(--err);
+}
+
+.src-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 14px 8px;
+}
+.src-sum {
+  flex: 1 1 auto;
+  font-size: 11.5px;
+  color: var(--text-2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.src-sum b {
+  font-weight: 600;
+}
+.src-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+.edit-btn::after {
+  content: "▾";
+  margin-left: 2px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.edit-btn.is-open {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+.edit-btn.is-open::after {
+  content: "▴";
+}
+.detail-btn::after {
+  content: "▾";
+  margin-left: 2px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.detail-btn.is-open {
+  color: var(--accent);
+}
+.detail-btn.is-open::after {
+  content: "▴";
+}
+
+/* 当前值读数：与编辑面板里的字段一一对应 */
+.src-vals {
+  display: flex;
+  align-items: center;
+  gap: 3px 12px;
+  flex: none;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.src-vals .sv b {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+/* 详情展开 */
+.detail-panel {
+  border-top: 1px solid var(--border-soft);
+  background: var(--panel-2);
+  padding: 9px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.drow {
+  display: grid;
+  grid-template-columns: 46px 58px 62px 68px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.drow b {
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.drow .mono {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.d-reason {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.d-reason code {
+  margin-right: 5px;
+  padding: 0 4px;
+  border-radius: 4px;
+  color: var(--err);
+  background: var(--err-soft);
+}
+.d-sum {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.d-sum b {
+  font-weight: 600;
+}
+
+/* 编辑面板 */
+.edit-panel {
+  border-top: 1px solid var(--accent-line);
+  background: var(--accent-soft);
+  padding: 11px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.edit-grid .tiny {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+}
+.edit-foot {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.edit-foot .tiny {
+  color: var(--muted);
+}
+.check-row {
+  padding-top: 2px;
+}
+
+.src-card.is-testing .src-verdict {
+  opacity: 0.4;
+}
+.src-card.is-testing .src-strip {
+  opacity: 0.45;
+}
+.src-card.is-testing .src-tools {
+  pointer-events: none;
+}
+
+/* ── 右栏：代理配置 / 下载策略 ── */
+.panel-row {
+  margin-top: 12px;
+}
+
+.strategy-wrap.is-unlocked .strategy-now {
+  border-color: color-mix(in oklab, var(--warn) 35%, var(--border));
+  background: var(--warn-soft);
+}
+:host ::ng-deep .strategy-wrap.is-unlocked .ui-panel {
+  border-color: var(--warn);
+}
+.strategy-now {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+.strategy-now b {
+  font-size: 14px;
+  font-weight: 600;
+}
+.strategy-select {
+  width: auto;
+  min-width: 132px;
+  height: 25px;
+  font-size: 12px;
+}
+
+.save-note {
+  margin-left: auto;
+}
+.save-hint {
+  font-size: 11.5px;
+}
+
+@media (max-width: 1080px) {
+  .settings-cols-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .col-side {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .proto-page {
+    padding: 18px 16px 48px;
+  }
+  .src-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .src-head-right {
+    flex-wrap: wrap;
+  }
+  .src-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .src-vals {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}

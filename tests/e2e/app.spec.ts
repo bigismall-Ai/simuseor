@@ -46,18 +46,34 @@ test.describe('Model Downloader Web UI', () => {
   test('三个页面渲染与导航', async ({ page }) => {
     await page.goto('/downloads');
     await expect(page.getByText('新建下载')).toBeVisible();
-    await expect(page.getByRole('link', { name: '下载任务' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '下载' })).toBeVisible();
     await expect(page.locator('select').first().locator('option', { hasText: 'Demo' })).toHaveCount(0);
     await page.screenshot({ path: ART + '/01-downloads.png', fullPage: true });
 
     await page.getByRole('link', { name: '设置' }).click();
-    await expect(page.getByText('默认策略').first()).toBeVisible();
+    await expect(page.getByText('下载策略').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Hugging Face' })).toBeVisible();
     await page.screenshot({ path: ART + '/03-settings.png', fullPage: true });
 
-    await page.locator('.nav > a[href="/models"]').click();
+    await page.locator('.nav a[href="/models"]').click();
     await expect(page.getByRole('heading', { name: '模型库' })).toBeVisible();
     await page.screenshot({ path: ART + '/02-library.png', fullPage: true });
+  });
+
+  test('VIS 独立布局：/vis 使用自己的侧栏，产品侧栏不出现', async ({ page }) => {
+    await page.goto('/vis/overview');
+
+    await expect(page.locator('.vis-sidebar')).toBeVisible();
+    await expect(page.locator('.sidebar')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: '返回站点' })).toBeVisible();
+
+    await page.locator('.vis-sidebar').getByRole('link', { name: '色彩', exact: true }).click();
+    await expect(page).toHaveURL(/\/vis\/visual\/color/);
+    await expect(page.getByRole('heading', { name: '色彩' })).toBeVisible();
+
+    await page.locator('.vis-sidebar').getByRole('link', { name: '资源管理器', exact: true }).click();
+    await expect(page).toHaveURL(/\/vis\/prototypes\/resource-manager/);
+    await expect(page.getByRole('heading', { name: '资源管理器' })).toBeVisible();
   });
 
   test('设置页：保存配置并测试代理', async ({ page }) => {
@@ -94,7 +110,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(firstTask.locator('.head').getByText('已完成').first()).toBeVisible({ timeout: 45_000 });
     await page.screenshot({ path: ART + '/06-task-completed.png', fullPage: true });
 
-    await page.locator('.nav > a[href="/models"]').click();
+    await page.locator('.nav a[href="/models"]').click();
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     await page.screenshot({ path: ART + '/08-library-after-download.png', fullPage: true });
 
