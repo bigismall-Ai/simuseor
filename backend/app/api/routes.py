@@ -28,7 +28,7 @@ from ..library_meta import describe_model, flush_meta_cache, gpu_snapshot
 from ..library_match import match_origin
 from ..library_origin import detect_origin
 from ..weight_class import all_folders, all_tasks
-from ..weight_meta import fmt_bytes
+from ..weight_meta import fmt_bytes, is_weight_file
 from ..config import build_proxy_url, load_settings, relativize_save_dir, save_settings
 from ..db import execute, new_id, now_iso, query
 from ..download.manager import manager
@@ -835,7 +835,9 @@ def scan_library(body: ScanRequest) -> dict:
                 matched += 1
             continue
         files = [f for f in child.rglob("*") if f.is_file()]
-        if not files:
+        # 没有权重文件的目录不是模型（workspace / extensions / dependencies 这类
+        # 运行时目录常被误扫进来）。不导入，避免本地库里多出一堆永远「权重缺失」的条目。
+        if not any(is_weight_file(f) for f in files):
             continue
         model_id = new_id()
         size = sum(f.stat().st_size for f in files)

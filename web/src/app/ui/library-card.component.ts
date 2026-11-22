@@ -186,6 +186,7 @@ import { folderFileTypeLabel } from '../core/task-labels';
             type="button"
             class="acard-primary primary btn-xs"
             data-testid="lib-card-primary"
+            [title]="primaryTip"
             (click)="onPrimary()"
           >{{ primaryLabel }}</button>
         </div>
@@ -463,6 +464,8 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
   readonly remove = output<void>();
   readonly use = output<void>();
   readonly redownload = output<void>();
+  /** 本地导入条目没有远端仓库：主操作改为打开目录，而不是去发现页瞎搜 */
+  readonly open = output<void>();
 
   /** ⋯ 菜单是否展开 */
   menuOpen = false;
@@ -614,8 +617,21 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
   }
 
   /** ⑥ 主按钮：残缺条目的唯一下一步是补救，正常条目去找能跑它的工作流 */
+  /** 只有「有原站的模型」才能按原仓库 / 原版本 / 原文件重下 */
+  get canRedownload(): boolean {
+    return ['huggingface', 'modelscope', 'civitai'].includes(this.model.source) && !!this.model.repo_id;
+  }
+
   get primaryLabel(): string {
-    return this.broken ? '重新下载模型' : '查找适配工作流';
+    if (!this.broken) return '查找适配工作流';
+    return this.canRedownload ? '重新下载模型' : '打开目录';
+  }
+
+  get primaryTip(): string {
+    if (!this.broken) return '查找能运行它的工作流';
+    return this.canRedownload
+      ? '按原仓库 / 原版本 / 原文件重新下载'
+      : '本地导入条目没有原站仓库；打开目录查看或清理';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -669,8 +685,12 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
   }
 
   onPrimary(): void {
-    if (this.broken) this.redownload.emit();
-    else this.use.emit();
+    if (!this.broken) {
+      this.use.emit();
+      return;
+    }
+    if (this.canRedownload) this.redownload.emit();
+    else this.open.emit();
   }
 
   onRemove(): void {

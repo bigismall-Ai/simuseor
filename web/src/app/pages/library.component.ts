@@ -123,6 +123,7 @@ const VIEW_OPTIONS = [
                 (remove)="remove(m)"
                 (use)="findWorkflow(m)"
                 (redownload)="redownload(m)"
+                (open)="openFolder(m)"
               />
             }
           </div>
@@ -490,7 +491,10 @@ export class LibraryComponent implements OnInit {
   redownload(m: LibraryModel): void {
     const remote = ['huggingface', 'modelscope', 'civitai'].includes(m.source) && !!m.repo_id;
     if (!remote) {
-      this.router.navigate(['/models/discover'], { queryParams: { q: m.name } });
+      // 卡片对本地导入条目已经不再显示「重新下载」，这里只做防御：
+      // 没有原站仓库就没有「原来那一个」，不去发现页拿目录名瞎搜。
+      this.message = '本地导入条目没有原站仓库，无法按原文件重下；请从「发现模型」选择同名模型。';
+      this.messageOk = false;
       return;
     }
     const params: Record<string, string | string[]> = {
@@ -502,6 +506,16 @@ export class LibraryComponent implements OnInit {
     const files = (m.files || []).map((f) => f.path).filter(Boolean);
     if (files.length) params['files'] = files;
     this.router.navigate(['/downloads'], { queryParams: params });
+  }
+
+  /** 本地导入的残缺条目：主操作是打开目录查看 / 清理，而不是去发现页搜 */
+  openFolder(m: LibraryModel): void {
+    this.api.openLibrary(m.id).subscribe({
+      error: (err) => {
+        this.message = errMsg(err, '打开目录失败');
+        this.messageOk = false;
+      },
+    });
   }
 
   fmtBytes = fmtBytes;
