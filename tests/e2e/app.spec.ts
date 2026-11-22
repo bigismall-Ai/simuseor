@@ -201,7 +201,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByRole('heading', { name: '发现模型' })).toBeVisible();
     await page.getByRole('button', { name: 'Demo', exact: true }).click();
     await page.getByTestId('search-input').fill('text');
-    await page.getByTestId('search-btn').click();
+    // VIS 定稿：发现模型的搜索是「停 300ms 自动发一次 / 回车」，页面上没有「搜索」按钮了
+    await page.getByTestId('search-input').press('Enter');
     await expect(page.getByText('text-gen-1.5').first()).toBeVisible();
     // URL 同步了筛选状态
     await expect(page).toHaveURL(/\/models\/discover\?.*source=demo/);
@@ -432,19 +433,27 @@ test.describe('Model Downloader Web UI', () => {
 
     await page.goto('/models');
     await expect(page.locator('md-library-card')).toHaveCount(3);
-    // 筛选入口在状态条下的筛选行里，右缘不再有第二枚浮标
-    await expect(page.locator('.rail-fab')).toHaveCount(0);
-    await expect(page.locator('.rail.open')).toHaveCount(0);
-    // 展开后是浮层，四个可多选分面都在
+    // 筛选入口只有筛选条上这一枚「筛选」按钮：右缘不再有第二枚浮标
+    await expect(page.getByRole('button', { name: /^筛选/ })).toHaveCount(1);
+    // 「筛选」浮层默认收起
+    const filterPop = page.getByRole('dialog', { name: '筛选' });
+    await expect(filterPop).toBeHidden();
+    // 展开后是浮层：三个类别分面（存放类型 / 任务类型 / 发布方）都在；
+    // 来源站那一维搬到筛选条上的站点 chip 行，不在浮层里
     await page.getByRole('button', { name: /^筛选/ }).click();
-    await expect(page.locator('.rail.open')).toBeVisible();
-    await expect(page.locator('.rail .facet')).toHaveCount(4);
-    // 发布方是独立于家族的分面：取消 openai 后 gpt2 消失，重置后回来
-    const pub = page.locator('.rail .facet').filter({ hasText: '发布方' });
-    await expect(pub.locator('.fx')).toHaveCount(3);
-    await pub.locator('label', { hasText: 'openai' }).locator('input').uncheck();
-    await expect(page.locator('md-library-card')).toHaveCount(2);
-    await pub.getByRole('button', { name: '重置' }).click();
+    await expect(filterPop).toBeVisible();
+    await expect(filterPop.locator('[data-testid="facet-group"]')).toHaveCount(3);
+    await expect(filterPop.getByText('存放类型', { exact: true })).toBeVisible();
+    await expect(filterPop.getByText('任务类型', { exact: true })).toBeVisible();
+    await expect(filterPop.getByText('发布方', { exact: true })).toBeVisible();
+    await expect(page.getByRole('group', { name: '按站点筛选' })).toBeVisible();
+    // 发布方是独立于家族的分面：点亮 openai 后这一维收窄到只剩 gpt2，清除全部后三张卡都回来
+    const pub = filterPop.locator('[data-testid="facet-group"]').filter({ hasText: '发布方' });
+    await expect(pub.getByRole('button')).toHaveCount(3);
+    await pub.getByRole('button', { name: /^openai/ }).click();
+    await expect(page.locator('md-library-card')).toHaveCount(1);
+    await expect(page.getByText('gpt2').first()).toBeVisible();
+    await filterPop.getByRole('button', { name: '清除全部' }).click();
     await expect(page.locator('md-library-card')).toHaveCount(3);
     // 三种形态都在；显存压力条按统一骨架撤掉了，不该再有
     await expect(page.locator('md-library-card .gauge')).toHaveCount(0);
@@ -458,8 +467,8 @@ test.describe('Model Downloader Web UI', () => {
     await expect(src).toHaveText('HF');
     await expect(page.locator('md-library-card .pill-author').first()).toHaveText('black-forest-labs');
 
-    // 搜索在客户端过滤
-    await page.getByTestId('lib-search').fill('gpt2');
+    // 搜索在客户端过滤（筛选条上的搜索框，没有单独的 data-testid，按无障碍名定位）
+    await page.getByRole('searchbox', { name: '搜索名称或路径' }).fill('gpt2');
     await expect(page.locator('md-library-card')).toHaveCount(1);
     await page.screenshot({ path: ART + '/61-library-card.png', fullPage: false });
   });

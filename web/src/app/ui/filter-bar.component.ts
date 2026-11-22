@@ -198,7 +198,7 @@ export interface FilterFacetChange {
               </div>
               <div class="sf-pop-body">
                 @for (g of facets; track g.key) {
-                  <div class="sf-facet">
+                  <div class="sf-facet" data-testid="facet-group">
                     <div class="sf-facet-head">
                       <span>{{ g.label }}</span>
                       <b>{{ g.options.length }}</b>
