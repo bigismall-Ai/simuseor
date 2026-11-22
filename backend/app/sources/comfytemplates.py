@@ -25,7 +25,7 @@ class ComfyTemplatesAdapter(SourceAdapter):
         if not name:
             raise SourceError("缺少模板名称")
         path = f"{name}.json"
-        url = gh_url(f"{RAW_BASE}/{quote(path)}")
+        url = gh_url(f"{RAW_BASE}/{quote(path)}", cfg)
         size = 0
         try:
             # 关掉压缩协商，否则 HEAD 的 content-length 是压缩后大小，和实际下载字节不一致

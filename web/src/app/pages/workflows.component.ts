@@ -3,11 +3,18 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ApiService } from '../core/api.service';
+import { ProbeService } from '../core/probe.service';
 import { proxied } from '../core/cover';
 import { focusFirst, trapTab } from '../core/a11y';
 import { LocalWorkflow, WorkflowItem, WorkflowModelDep, WorkflowNodeDep, errMsg, fmtNum, fmtSize } from '../core/types';
 import { BadgeComponent } from '../ui/badge.component';
-import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
+import {
+  CollectionFact,
+  FilterBarComponent,
+  FilterFacetChange,
+  FilterFacetGroup,
+  FilterSite,
+} from '../ui/filter-bar.component';
 import { CoverPlateComponent } from '../ui/cover-plate.component';
 import { FamilyMarkComponent } from '../ui/family-mark.component';
 import { HubCardComponent } from '../ui/hub-card.component';
@@ -62,16 +69,23 @@ const SOURCE_TONES: Record<string, 'blue' | 'green' | 'orange' | 'gray'> = {
   github: 'gray',
 };
 
+/** 排序：原生 select，选项「按 X」句式 */
 const SORTS = [
-  { key: 'downloads', label: '热门' },
-  { key: 'latest', label: '最新' },
+  { key: 'downloads', label: '按热门' },
+  { key: 'latest', label: '按最新' },
 ];
 
-/** 我的工作流的排序选项：点按钮弹出来选，不再点一下换一个。 */
+/** 我的工作流的排序选项：与其它页同一套写法（原生 select ＋「按 X」句式）。 */
 const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
-  { key: 'mtime', label: '最近修改' },
+  { key: 'mtime', label: '按最近修改' },
   { key: 'nodes', label: '按节点数' },
   { key: 'name', label: '按名称' },
+];
+
+/** 视图切换（segmented）：本地库 / 发现 */
+const VIEW_OPTIONS = [
+  { key: 'mine', label: '本地库' },
+  { key: 'discover', label: '发现' },
 ];
 
 @Component({
@@ -79,19 +93,22 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
   // Esc 逐层退出（菜单 → 编辑 → 删除 → 抽屉）：键盘用户不该被弹层困住
   host: {
     '(document:keydown.escape)': 'onEsc()',
-    '(document:click)': 'closeSortMenu()',
   },
   standalone: true,
-  imports: [FormsModule, RouterLink, BadgeComponent, CollectionBarComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, HubCardComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
+  imports: [FormsModule, RouterLink, BadgeComponent, FilterBarComponent, CoverPlateComponent, EmptyComponent, FamilyMarkComponent, HubCardComponent, PageHeaderComponent, PanelComponent, WorkflowCardComponent],
   template: `
+    <!-- 分层页头（VIS §3.7.7 定稿）：kicker 只标区，视图切换用 segmented；
+         本地页只留一个主操作，「去发现」由视图切换承担（同一件事一个入口）。 -->
     <ui-page-header
-      [kicker]="tab === 'discover' ? 'Workflows · Discover' : 'Workflows'"
+      kicker="Workflows"
       [title]="tab === 'discover' ? '发现工作流' : '工作流'"
-      hint=""
+      [hint]="tab === 'discover' ? '从各来源找工作流，下载后就能跑。' : '本机的工作流：装了什么、能不能直接跑。'"
+      [viewOptions]="viewOptions"
+      [view]="tab"
+      (viewChange)="onViewChange($event)"
     >
       @if (tab === 'mine') {
-        <button type="button" (click)="openGroupManager()" data-testid="lw-groups-manage">分组管理</button>
-        <button class="primary" routerLink="/workflows/discover">发现工作流</button>
+        <button type="button" class="primary" (click)="openGroupManager()" data-testid="lw-groups-manage">分组管理</button>
       }
     </ui-page-header>
 
@@ -107,102 +124,31 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
           </ui-empty>
         </ui-panel>
       } @else {
-        <ui-collection-bar
+        <!-- 一行筛选条（VIS §3.7.8 定稿）。本地工作流没有来源站维度，
+             所以行内不放站点 chip：分组与健康度收进「筛选」浮层。 -->
+        <ui-filter-bar
+          [search]="localQ"
+          searchPlaceholder="搜索名称、原文件名或分组"
+          (searchChange)="localQ = $event"
+          [facets]="localFacets"
+          [facetSelected]="localFacetSelected"
+          (facetChange)="onLocalFacetChange($event)"
+          [sortOptions]="localSortOptions"
+          [sort]="sortKey"
+          (sortChange)="setSortKey($event)"
+          [view]="localView"
+          (viewChange)="setLocalView($event)"
           [count]="localLoading && !local.length ? null : filtered.length"
           [total]="hasLocalFilter ? local.length : null"
           unit="个工作流"
+          [hasFilter]="hasLocalFilter"
+          (clearAll)="clearLocalFilters()"
           [facts]="localFacts"
           [loading]="localLoading"
           [progress]="localLoading && local.length ? '读取中…' : ''"
           refreshLabel="重新读取工作流目录"
           (refresh)="loadLocal()"
-        >
-          <label class="cb-search" [title]="localDir">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.4" />
-              <path d="M10.3 10.3 13.6 13.6" />
-            </svg>
-            <input
-              [(ngModel)]="localQ"
-              placeholder="搜索名称、原文件名或分组"
-              data-testid="lw-search"
-            />
-          </label>
-
-          <!-- 分组筛选：分组名来自侧车里设的名称，一条都没分组时整组不出现
-               —— 空的分组栏只会让人以为哪里坏了。 -->
-          @if (groupNames.length) {
-            <div class="cb-chips" role="group" aria-label="按分组筛选" data-testid="lw-groups">
-              <button class="cb-chip" [class.on]="groupFilter === null" (click)="setGroup(null)">
-                全部<b>{{ allCount }}</b>
-              </button>
-              @for (g of groupNames; track g.name) {
-                <button class="cb-chip" [class.on]="groupFilter === g.name" (click)="setGroup(g.name)">
-                  {{ g.name }}<b>{{ groupCount(g.name) }}</b>
-                </button>
-              }
-              @if (ungroupedCount) {
-                <button class="cb-chip" [class.on]="groupFilter === UNGROUPED" (click)="setGroup(UNGROUPED)">
-                  未分组<b>{{ groupCount(UNGROUPED) }}</b>
-                </button>
-              }
-            </div>
-          }
-
-          <!-- 健康度只在这里报一次：再点一次已选中的状态就退回全部。
-               两组 chips 各自有底色，不再插分隔线 —— 换行时分隔线会孤零零留在行尾。 -->
-          <div class="cb-chips" role="group" aria-label="按状态筛选" data-testid="lw-status">
-            @for (s of statusFilters; track s.key) {
-              @if (s.key !== 'all') {
-                <button
-                  class="cb-chip"
-                  [class.on]="statusFilter === s.key"
-                  [class.is-warn]="s.key === 'missing'"
-                  [class.is-err]="s.key === 'broken'"
-                  (click)="toggleStatus(s.key)"
-                >
-                  {{ s.label }}<b>{{ countOf(s.key) }}</b>
-                </button>
-              }
-            }
-          </div>
-
-          <div class="cb-tools">
-            <!-- 排序不再点一下换一个：展开一个选择，当前项有对勾 -->
-            <div class="wf-sort-wrap">
-              <button class="cb-select" [class.on]="sortMenu" (click)="toggleSortMenu($event)"
-                      data-testid="lw-sort" aria-haspopup="menu" [attr.aria-expanded]="sortMenu" title="排序方式">
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-                </svg>
-                {{ sortLabel }}
-                <svg class="caret" viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="m4.4 6.4 3.6 3.4 3.6-3.4" />
-                </svg>
-              </button>
-              @if (sortMenu) {
-                <div class="wf-sort-menu" role="menu" data-testid="lw-sort-menu">
-                  @for (s of localSorts; track s.key) {
-                    <button role="menuitem" [class.on]="sortKey === s.key" (click)="setSortKey(s.key)">
-                      <span>{{ s.label }}</span>
-                      @if (sortKey === s.key) {
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                             stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-                          <path d="M3.2 8.4 6.4 11.6 12.8 5.2" />
-                        </svg>
-                      }
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-
-            <div class="cb-view" role="group" aria-label="视图切换">
-              <button type="button" [class.on]="view === 'card'" (click)="setView('card')" title="卡片视图">▦</button>
-              <button type="button" [class.on]="view === 'list'" (click)="setView('list')" title="列表视图" aria-label="列表视图">☰</button>
-            </div>
-          </div>
-        </ui-collection-bar>
+        />
 
         @if (!filtered.length) {
           <ui-panel>
@@ -283,66 +229,41 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
     } @else {
 
     @if (items.length || loading) {
-      <ui-collection-bar
+      <!-- 一行筛选条（VIS §3.7.8 定稿）：搜索框 → 站点筛选 → 排序 → 视图切换
+           → 结果读数与清除全部。发现工作流只有「来源站」一维，其余维度没有，
+           所以不放「筛选」浮层。 -->
+      <ui-filter-bar
+        [search]="q"
+        searchPlaceholder="搜索工作流，如 flux / wan"
+        [searchDebounceMs]="300"
+        searchTestId="wf-search"
+        (searchChange)="onHubSearch($event)"
+        [sites]="hubSites"
+        [site]="source"
+        (siteChange)="setSource($event)"
+        [sortOptions]="hubSortOptions"
+        [sort]="sort"
+        (sortChange)="setSort($event)"
+        [view]="hubView"
+        (viewChange)="setHubView($event)"
         [count]="loading && !items.length ? null : items.length + (done ? '' : '+')"
+        [total]="null"
         unit="个工作流"
+        [hasFilter]="hasHubFilter"
+        (clearAll)="clearHubFilters()"
         [facts]="hubFacts"
         [loading]="loading && !items.length"
         [progress]="loading && items.length ? '检索中…' : ''"
         refreshLabel="重新检索各站工作流"
         (refresh)="search()"
-      >
-        <div class="cb-field">
-          <label class="cb-search">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.4" />
-              <path d="M10.3 10.3 13.6 13.6" />
-            </svg>
-            <input
-              [(ngModel)]="q"
-              (keyup.enter)="search()"
-              placeholder="搜索工作流，如 flux / wan"
-              data-testid="wf-search"
-            />
-          </label>
-          <button class="primary cb-go" (click)="search()" [disabled]="loading">
-            {{ loading ? '检索中…' : '搜索' }}
-          </button>
-        </div>
-
-        <div class="cb-chips" role="group" aria-label="来源">
-          @for (s of sources; track s.key) {
-            <button class="cb-chip" [class.on]="source === s.key" (click)="setSource(s.key)">
-              {{ s.label }}
-            </button>
-          }
-        </div>
-
-        <div class="cb-tools">
-          <label class="cb-select" title="排序">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-            </svg>
-            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
-              @for (s of sorts; track s.key) {
-                <option [value]="s.key">{{ s.label }}</option>
-              }
-            </select>
-          </label>
-          <!-- 视图切换：网格（卡）/ 列表。与模型发现页同一组控件、同一套位置。 -->
-          <div class="cb-view" role="group" aria-label="视图切换">
-            <button type="button" [class.on]="hubView === 'grid'" (click)="setHubView('grid')" title="网格视图" aria-label="网格视图">▦</button>
-            <button type="button" [class.on]="hubView === 'list'" (click)="setHubView('list')" title="列表视图" aria-label="列表视图">☰</button>
-          </div>
-        </div>
-      </ui-collection-bar>
+      />
     }
 
     @if (errorText) {
-      <div class="notice err">{{ errorText }}</div>
+      <div class="notice err" role="alert">{{ errorText }}</div>
     }
     @if (sourceErrors.length) {
-      <div class="notice err">
+      <div class="notice err" role="alert">
         @for (e of sourceErrors; track e.label) {
           <div>{{ e.label }}：{{ e.message }}</div>
         }
@@ -733,7 +654,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       </div>
     }
   `,
-  styleUrls: ['../ui/collection-bar.css'],
   styles: `
     /* 列表上方一条读数：共几条、目录在哪、刷新。目录用等宽字截断，路径长也不换行 */
     /* ---- 卡片视图工具栏 ---- */
@@ -808,43 +728,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       color: var(--accent);
       box-shadow: none;
     }
-    /* 排序按钮独立于 chip 组，给它自己的边框与下拉层。
-       层级留在抽屉（40/41）之下：抽屉打开时它是模态的，任何页内浮层都不该压上去。 */
-    .wf-sort-wrap { position: relative; z-index: 30; flex: none; }
-    .wf-sort-wrap > .cb-select:hover,
-    .wf-sort-wrap > .cb-select.on { border-color: var(--border-strong); color: var(--text); }
-    .wf-sort-wrap > .cb-select.on { box-shadow: inset 0 0 0 1px var(--accent-line); }
-    .wf-sort-menu {
-      position: absolute;
-      right: 0;
-      top: calc(100% + 6px);
-      min-width: 148px;
-      padding: 4px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      box-shadow: 0 16px 34px -22px rgb(0 0 0 / 0.55);
-    }
-    .wf-sort-menu button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      padding: 7px 9px;
-      border: 0;
-      border-radius: var(--radius-xs);
-      background: none;
-      color: var(--text-2);
-      font: inherit;
-      font-size: 12.5px;
-      text-align: left;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .wf-sort-menu button:hover { background: var(--panel-3); color: var(--text); }
-    .wf-sort-menu button.on { color: var(--accent); font-weight: 600; }
-
     /* ---- 分组筛选：独立一行，分组多了横向滚，不换行把工具栏顶下去 ---- */
     .wf-groups {
       display: flex;
@@ -1642,9 +1525,6 @@ const LOCAL_SORTS: Array<{ key: 'mtime' | 'nodes' | 'name'; label: string }> = [
       align-items: stretch;
     }
 
-    /* 视图切换按钮只有符号，padding 收紧一点才不会占掉半条工具栏 */
-    .view-toggle button { padding: 0 8px; letter-spacing: 0.02em; }
-
     .wf-list {
       display: flex;
       flex-direction: column;
@@ -1774,10 +1654,14 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private probe = inject(ProbeService);
 
   readonly sources = SOURCES;
   readonly sorts = SORTS;
   readonly localSorts = LOCAL_SORTS;
+  readonly hubSortOptions = SORTS;
+  readonly localSortOptions = LOCAL_SORTS;
+  readonly viewOptions = VIEW_OPTIONS;
   /** 视图由路由决定：/workflows 是我的工作流，/workflows/discover 是发现 */
   tab: 'mine' | 'discover' = 'mine';
   local: LocalWorkflow[] = [];
@@ -1791,7 +1675,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   view: 'card' | 'list' = 'card';
   /** 排序方式：由下拉选择决定，偏好里持久化 */
   sortKey: 'mtime' | 'nodes' | 'name' = 'mtime';
-  sortMenu = false;
   readonly statusFilters = [
     { key: 'all' as const, label: '全部' },
     { key: 'missing' as const, label: '缺依赖' },
@@ -1891,6 +1774,8 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // 探针结论决定哪些来源站可选（不可达 / 未探测的灰置不可点）
+    this.probe.ensure();
     this.restorePrefs();
     // 从模型库「查找适配工作流」跳过来：/workflows/discover?q=<模型名>。
     // 发现页直接用这个关键词检索一次；之后的输入由页面自己维护。
@@ -2058,23 +1943,102 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.savePrefs();
   }
 
-  get sortLabel(): string {
-    return LOCAL_SORTS.find((s) => s.key === this.sortKey)?.label || '排序';
+  /** 本地工作流的视图切换：卡片 / 列表 ↔ 筛选条里的网格 / 列表 */
+  get localView(): 'grid' | 'list' {
+    return this.view === 'card' ? 'grid' : 'list';
+  }
+
+  setLocalView(view: 'grid' | 'list'): void {
+    this.setView(view === 'grid' ? 'card' : 'list');
+  }
+
+  /** 「筛选」浮层里的分组：分组 ＋ 健康度 */
+  get localFacets(): FilterFacetGroup[] {
+    const groups: FilterFacetGroup[] = [];
+    if (this.groupNames.length) {
+      const options = this.groupNames.map((g) => ({
+        key: g.name,
+        label: g.name,
+        count: this.groupCount(g.name),
+      }));
+      if (this.ungroupedCount) {
+        options.push({
+          key: this.UNGROUPED,
+          label: '未分组',
+          count: this.groupCount(this.UNGROUPED),
+        });
+      }
+      groups.push({ key: 'group', label: '分组', options });
+    }
+    groups.push({
+      key: 'status',
+      label: '健康度',
+      options: this.statusFilters
+        .filter((s) => s.key !== 'all')
+        .map((s) => ({ key: s.key, label: s.label, count: this.countOf(s.key) })),
+    });
+    return groups;
+  }
+
+  /** 浮层里已点亮的 chip */
+  get localFacetSelected(): Record<string, string[]> {
+    return {
+      group: this.groupFilter === null ? [] : [this.groupFilter],
+      status: this.statusFilter === 'all' ? [] : [this.statusFilter],
+    };
+  }
+
+  onLocalFacetChange(e: FilterFacetChange): void {
+    if (e.group === 'group') this.setGroup(e.on ? e.key : null);
+    else if (e.group === 'status') {
+      this.setStatus(e.on ? (e.key as 'missing' | 'ready' | 'api' | 'broken') : 'all');
+    }
+  }
+
+  /** 清除全部筛选 */
+  clearLocalFilters(): void {
+    this.localQ = '';
+    this.groupFilter = null;
+    this.statusFilter = 'all';
+    this.savePrefs();
+  }
+
+  /** 发现页的站点筛选（行内 chip 行）：来源站 ＋ 探针门控 */
+  get hubSites(): FilterSite[] {
+    return this.sources.map((s) => ({
+      key: s.key,
+      label: s.key === 'all' ? '全部站点' : s.label,
+      disabled: s.key === 'all' ? false : this.probe.isGated(s.key),
+      tip: s.key === 'all' ? '' : this.probe.tip(s.key),
+    }));
+  }
+
+  /** 发现页的搜索框回填：停 300ms 自动检索一次 */
+  onHubSearch(v: string): void {
+    if (v === this.q) return;
+    this.q = v;
+    this.search();
+  }
+
+  get hasHubFilter(): boolean {
+    return !!this.q.trim() || this.source !== 'all';
+  }
+
+  clearHubFilters(): void {
+    this.q = '';
+    this.source = 'all';
+    this.load(1);
+  }
+
+  /** 视图切换：本地库 ↔ 发现 */
+  onViewChange(key: string): void {
+    if (key === 'discover') this.router.navigate(['/workflows/discover']);
+    else this.router.navigate(['/workflows']);
   }
 
   /** 按钮自身要阻止冒泡，否则 document 上的关闭监听会把它刚打开的菜单立刻收掉 */
-  toggleSortMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.sortMenu = !this.sortMenu;
-  }
-
-  closeSortMenu(): void {
-    this.sortMenu = false;
-  }
-
-  setSortKey(key: 'mtime' | 'nodes' | 'name'): void {
-    this.sortKey = key;
-    this.sortMenu = false;
+  setSortKey(key: string): void {
+    this.sortKey = key as 'mtime' | 'nodes' | 'name';
     this.savePrefs();
   }
 
@@ -2636,10 +2600,6 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
 
   /** Esc 逐层退出：菜单 → 封面管理 / 分组管理 / 更换分组 → 编辑 → 删除 → 整理 → 抽屉 */
   onEsc(): void {
-    if (this.sortMenu) {
-      this.sortMenu = false;
-      return;
-    }
     if (this.menuOf) {
       this.closeMenu();
       return;

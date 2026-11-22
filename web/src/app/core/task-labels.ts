@@ -70,3 +70,39 @@ export function sourceTaskLabel(task: string): string {
   if (!task) return '';
   return SOURCE_TASK_LABELS[task] || task;
 }
+
+/* ---------------------------------------------------------------------------
+ * 存放目录 → 文件类型（VIS §3.7.3「模型 = 文件类型，发现页与本地库同一套词」）
+ *
+ * 为什么需要这张表：同一件事在两页由两个来源回答 ——
+ *   · 发现页取**源站的 modelType**（Civitai 的 Checkpoint / LORA / Embedding…）
+ *   · 本地库取**存放目录**（ComfyUI 的 checkpoints / loras / embeddings…）
+ * 两边都落到本文件的产品词表上，同一个文件在两页才说同一个词。
+ *
+ * 键用目录名（稳定的标识符），不用后端的中文标签（那是显示文本，会被改写）。
+ * 表里只列**发现页有对应文件类型**的目录：本地库独有的目录（sams / photomaker…）
+ * 没有对应词，继续用后端给的标签。
+ * -------------------------------------------------------------------------- */
+const FOLDER_FILE_TYPE: Record<string, string> = {
+  checkpoints: 'Checkpoint',
+  loras: 'LORA',
+  vae: 'VAE',
+  text_encoders: 'TextEncoder',
+  controlnet: 'Controlnet',
+  upscale_models: 'Upscaler',
+  style_models: 'Style Model',
+  embeddings: 'Embedding',
+  hypernetworks: 'Hypernetwork',
+};
+
+/**
+ * 存放目录 → 产品词表里的中文词。
+ *
+ * 认不出的目录回退到调用方给的后端标签（那个词没有跨页对应物，保留即可）。
+ */
+export function folderFileTypeLabel(folder: string | undefined, fallback = ''): string {
+  if (!folder) return fallback;
+  const key = FOLDER_FILE_TYPE[folder];
+  if (!key) return fallback;
+  return SOURCE_TASK_LABELS[key] || key;
+}

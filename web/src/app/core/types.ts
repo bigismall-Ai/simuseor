@@ -5,15 +5,89 @@ export interface SourceConfig {
   full_catalog?: boolean;
   mirror?: string;
   use_mirror?: boolean;
+  /** 逃生口：用户显式说「别管探针」，探针判不可用也不门控。页面暂时没有它的入口。 */
+  always_enabled?: boolean;
 }
 
 export interface AppSettings {
   app: { host: string; port: number };
   aria2: { rpc_port: number; rpc_secret: string; connections: number; split: number; max_concurrent: number };
   default_strategy: string;
-  download: { save_dir: string; strategy: string };
+  download: {
+    save_dir: string;
+    strategy: string;
+    /** 下载策略的手动指定："" = 自动（按探针实测吞吐选），否则 direct / mirror / proxy */
+    path_override?: string;
+  };
   proxy: { host: string; port: number | string };
   sources: Record<string, SourceConfig>;
+}
+
+// ---------------- 源探针（可达性 + 测速） ----------------
+
+/** 四态结论：可用 / 已降级 / 不可用 / 未探测。只有「不可用」才门控。 */
+export type ProbeVerdict = 'ok' | 'degraded' | 'down' | 'unknown';
+
+/** 三条通路：直连 / 镜像 / 代理 */
+export type ProbePath = 'direct' | 'mirror' | 'proxy';
+
+/** 单条通路的读数状态：ok 可用 / blocked 不通 / skip 不测 / unknown 判不了 */
+export type ProbePathState = 'ok' | 'blocked' | 'skip' | 'unknown';
+
+export interface ProbePathResult {
+  path: ProbePath;
+  state: ProbePathState;
+  /** 建连到首字节（毫秒） */
+  latency_ms: number | null;
+  /** 实测吞吐（MB/s） */
+  speed_mbps: number | null;
+  /** 失败原因分类码（dns / timeout / tls / refused / rate_limited / forbidden / server / unknown） */
+  reason: string;
+  /** 一句人话 */
+  reason_text: string;
+  /** 补充：地址 */
+  detail: string;
+  /** 不测的原因：not_configured / not_enabled / not_probed */
+  skip: string;
+  /** 可达但受限（401 / 403 / 429） */
+  restricted: boolean;
+}
+
+export interface SourceProbe {
+  source: string;
+  label: string;
+  verdict: ProbeVerdict;
+  paths: Record<ProbePath, ProbePathResult>;
+  /** 该站实际会走的通路 */
+  path: ProbePath | '';
+  /** 一行人话结论 */
+  path_text: string;
+  /** 手动指定的通路不可用 → 已回退到最快的可用通路 */
+  fallback: boolean;
+  /** 是否被门控（只有 down 才门控） */
+  gated: boolean;
+  checked_at: number;
+  age_seconds: number | null;
+}
+
+export interface ProbeStrategy {
+  mode: 'auto' | 'manual';
+  path: ProbePath | '';
+  /** 一句结论：「默认走直连」/「已指定代理」 */
+  text: string;
+  /** 自动判定出来的通路 */
+  auto_path: ProbePath | '';
+  auto_text: string;
+  /** 手动指定（空串 = 自动） */
+  override: string;
+}
+
+export interface ProbeStatus {
+  sources: SourceProbe[];
+  strategy: ProbeStrategy;
+  summary: { ok: number; degraded: number; down: number; unknown: number };
+  /** 手动重探的冷却剩余秒数 */
+  cooldown: number;
 }
 
 /** host/port 拼成代理 URL；host 可自带 scheme（socks5:// 等）。 */

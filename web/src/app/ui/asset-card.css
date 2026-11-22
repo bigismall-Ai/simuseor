@@ -23,7 +23,8 @@
  * 【类名约定】
  *   .acard*    外壳与几何（本文件，共享）
  *   卡片自有的内容类名（.mname / .wc-title / .nd-tile …）**保持原样**，
- *   这样 E2E 已有的选择器（`.card-name` / `.wf-title` / `.nd-row` …）继续有效。
+ *   这样 E2E 已有的选择器（`.card-name` / `.wf-title` / `.nd-card` …）继续有效。
+ *   （`.nd-row` 已随 v2.15 的节点卡改造退役 —— 节点列表改出 `.nd-card`。）
  *
  * 【色值纪律】
  *   遮罩用 VIS 登记的 scrim token（§3.8 `--grad-scrim-card` / `--grad-scrim-card-fade`），
@@ -55,7 +56,9 @@
 .acard:hover::after,
 .acard:focus-within::after { box-shadow: inset 0 0 0 1px var(--accent); }
 @media (prefers-reduced-motion: reduce) {
-  .acard { transition: none; }
+  /* 过渡声明在 .acard::after 上（hover 描边），守卫也得落在同一个元素上 ——
+     写 .acard 是空操作，那条过渡照样跑（VIS §7.3 动效须在 reduced-motion 下被抑制）。 */
+  .acard::after { transition: none; }
 }
 
 /* ---- ① 封面：铺满整卡，不再分上下两段 ---- */

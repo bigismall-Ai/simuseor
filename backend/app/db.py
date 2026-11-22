@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   repo_id TEXT NOT NULL,
   revision TEXT,
   strategy TEXT,
+  -- 探针选定的通路（direct / mirror / proxy）；空串 = 旧口径，按 strategy 走
+  path TEXT,
   save_dir TEXT,
   target_dir TEXT,
   status TEXT DEFAULT 'pending',
@@ -92,6 +94,7 @@ def init_db() -> None:
         _migrate_library_columns(conn)
         _ensure_library_columns(conn)
         _ensure_task_file_columns(conn)
+        _ensure_task_path_column(conn)
         _backfill_library_origin(conn)
         conn.commit()
 
@@ -159,6 +162,24 @@ def _ensure_task_file_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE task_files ADD COLUMN {name} TEXT")
         except sqlite3.Error:
             continue
+
+
+def _ensure_task_path_column(conn: sqlite3.Connection) -> None:
+    """给老库的 tasks 补上「这条任务走哪条通路」一列。
+
+    通路是探针按实测吞吐选出来的（规格 §3.6），记在任务行上，
+    下载开始时才知道该用官方地址还是镜像地址 —— 中途重试也不会选错。
+    """
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(tasks)")}
+    except sqlite3.Error:
+        return
+    if "path" in cols:
+        return
+    try:
+        conn.execute("ALTER TABLE tasks ADD COLUMN path TEXT")
+    except sqlite3.Error:
+        return
 
 
 def _backfill_library_origin(conn: sqlite3.Connection) -> None:

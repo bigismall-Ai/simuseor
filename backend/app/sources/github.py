@@ -70,14 +70,16 @@ class GithubAdapter(SourceAdapter):
         entries = tree_files(rid, branch, cfg)
         if not entries:
             raise SourceError("仓库里没有文件")
-        files = [
-            RemoteFile(
-                path=path,
-                size=size,
-                candidates=[gh_url(f"{RAW_BASE}/{rid}/{quote(branch)}/{quote(path)}")],
-            )
-            for path, size in entries
-        ]
+        files = []
+        for path, size in entries:
+            raw_url = f"{RAW_BASE}/{rid}/{quote(branch)}/{quote(path)}"
+            prefixed = gh_url(raw_url)
+            if (cfg or {}).get("_route"):
+                # 探针选定了通路：官方地址与加速前缀都留着，下载链路按选中的那条挑
+                candidates = [raw_url] if prefixed == raw_url else [raw_url, prefixed]
+            else:
+                candidates = [prefixed]
+            files.append(RemoteFile(path=path, size=size, candidates=candidates))
         return RepoInfo(
             repo_id=rid,
             display_name=rid.split("/")[-1],

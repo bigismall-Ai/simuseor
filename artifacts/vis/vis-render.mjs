@@ -37,6 +37,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PROTO_DEFS } from './prototypes/_defs.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
@@ -107,7 +108,8 @@ for (const chap of fs.readdirSync(path.join(siteRoot, 'reference'))) {
   }
 }
 pages.push(PREFIX + '/vis-reference.html');
-pages.push(PREFIX + '/prototypes/cards.html');
+/* 原型页：在架的展示面按注册表全收（不再硬编码单页，新原型漏检才是真风险） */
+for (const d of PROTO_DEFS.filter((x) => x.status === 'active')) pages.push(PREFIX + '/' + d.file);
 
 /* ---- 浏览器：VIS_CHROME → Playwright 自带 → 本机 ms-playwright 缓存 ---- */
 function chromePath() {
@@ -223,7 +225,8 @@ for (const p of pages) {
       problems.push('横向溢出: scrollWidth=' + metrics.scrollW + ' > innerWidth=' + metrics.innerW);
     }
     if (metrics.navItems === 0) problems.push('左侧导航没渲染出来');
-    const isProto = p.endsWith('/prototypes/cards.html');
+    /* 原型页用 .proto-view 壳（没有 .doc-head / section.ref），不适用手册站那套断言 */
+    const isProto = p.includes('/prototypes/');
     if (!isProto && metrics.docHeadCount !== 1) problems.push('.doc-head 数量=' + metrics.docHeadCount);
     if (!isProto && metrics.h1Count !== 1) problems.push('.doc-head h1 数量=' + metrics.h1Count);
     if (!isProto && metrics.docH1 !== 22) problems.push('.doc-head h1 font-size=' + metrics.docH1 + '（应 22px）');

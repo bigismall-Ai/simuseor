@@ -559,6 +559,22 @@ body {
 .w-160 { max-width: 160px; }
 .w-320 { max-width: 320px; }
 
+/* 只对读屏可见：元素还留在无障碍树里，但屏幕上不留位置。
+   VIS §7.4 要求 ≤900 断点的组标签改成这个，而不是 display:none ——
+   藏掉就等于从无障碍树里删了，屏幕阅读器用户会失去分组结构。 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .toolbar {
   display: flex;
   gap: 10px;
@@ -616,6 +632,497 @@ body {
   max-width: 74ch;
 }
 .ui-page-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ================= 5.1 列表顶部 · 统一筛选条 ================= */
+/* 来源：artifacts/vis/prototypes/page-header.html「搜索 + 筛选」定稿形态
+   ＋ artifacts/vis/prototypes/page-status.html 的 .ps-* 既有语汇。
+   一行：搜索框 → 站点筛选 → 「筛选」按钮 → 排序 → 视图 → 读数与清除全部。
+   其余类别筛选收进「筛选」浮层（.sf-pop*）。灰置站点项（.ps-chip.is-off）不可点，
+   原因只进 hover 气泡（.sf-tipbox），不印在页面上。 */
+
+/* ---- 外壳：状态行 ＋ 筛选行 ---- */
+.ps-bar {
+  position: relative;
+  z-index: 20;
+  margin: 0 0 14px;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+
+/* ---- 状态行：只读事实 · 刷新（主读数按定稿移到筛选条右端） ---- */
+.ps-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+/* 没有筛选行时，状态行就是整条，底边不画 */
+.ps-status:last-child { border-bottom: 0; }
+
+/* 事实槽：只放只读聚合。可点的一律去筛选行，避免「看着能点」 */
+.ps-facts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+.ps-facts li {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ps-facts li + li {
+  padding-left: 12px;
+  border-left: 1px solid var(--border-strong);
+}
+.ps-fact-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--faint);
+}
+.ps-fact-value {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+}
+.ps-fact-value.is-ok { color: var(--ok); }
+.ps-fact-value.is-warn { color: var(--warn); }
+.ps-fact-value.is-err { color: var(--err); }
+
+.ps-status-actions {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ps-progress {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.ps-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.ps-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ps-icon svg.is-spin { animation: ps-spin 0.9s linear infinite; }
+@keyframes ps-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ps-icon svg.is-spin { animation: none; }
+}
+
+/* ---- 筛选行：一行放得下就一行，窄屏折行，不横向溢出 ---- */
+.ps-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+}
+.sf-row { gap: 5px; }
+
+/* 搜索框不抢宽（flex-grow: 0）—— 抢了会把行尾的读数挤到第二行 */
+.ps-search {
+  flex: 0 1 236px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--muted);
+}
+.ps-search svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.ps-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+.ps-search input::placeholder { color: var(--muted); }
+
+/* 搜索框里的清空按钮（有内容才出现） */
+.ps-clear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: var(--panel-3);
+  color: var(--muted);
+  font: inherit;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ps-clear:hover { background: var(--border-strong); color: var(--text); }
+
+/* ---- 站点筛选：chip 行 ---- */
+.ps-chips {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-3);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.ps-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ps-chip:hover { color: var(--text); }
+.ps-chip.on {
+  background: var(--panel);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.ps-chip b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-xs);
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ps-chip.on b {
+  background: var(--accent-line);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+/* 灰置的站点项：不可点（渲染成 span），原因不印在页面上 */
+.ps-chip.is-off {
+  color: var(--faint);
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1px var(--border-soft);
+  cursor: not-allowed;
+}
+.ps-chip.is-off:hover { color: var(--faint); }
+
+/* ---- 排序 / 视图 ---- */
+.ps-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 29px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ps-select select {
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+}
+.ps-select svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ps-select svg.caret { opacity: 0.6; width: 10px; height: 10px; }
+
+.ps-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-line);
+  color: var(--accent);
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ps-badge.is-warn { background: var(--warn-soft); color: var(--warn); }
+.ps-badge.is-err { background: var(--err-soft); color: var(--err); }
+
+.ps-view {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--panel-3);
+}
+.ps-view button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 23px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ps-view button.on {
+  background: var(--panel);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+/* ---- 右端一组：排序 · 视图切换 · 结果读数与清除全部 ----
+   三者绑成一组，靠筛选条右端右对齐；窄屏时整组换行，仍贴右。 */
+.sf-right {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- 行尾：结果读数 + 清除全部筛选 ---- */
+.sf-tail {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ps-count {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ps-count b {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.ps-count.is-loading {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.ps-total {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--faint);
+}
+.ps-unit {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.sf-clear {
+  flex: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+.sf-clear:hover { color: var(--accent); background: var(--hover); }
+
+/* ---- 「筛选」按钮点开的浮层（其余类别维度都在里面） ---- */
+.sf-pop-wrap { position: relative; flex: none; }
+.sf-pop-trigger { cursor: pointer; }
+.sf-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: 340px;
+  padding: 10px 11px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+.sf-pop[hidden] { display: none; }
+.sf-pop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 9px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.sf-pop-head b { font-size: 12px; font-weight: 600; }
+.sf-pop-sel { font-size: 10.5px; color: var(--muted); }
+.sf-pop-x {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+.sf-pop-x:hover { background: var(--hover); color: var(--text); }
+.sf-pop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.sf-pop-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border-soft);
+}
+.sf-pop-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.sf-pop-clear:hover { text-decoration: underline; }
+.sf-pop-foot .primary { margin-left: auto; }
+
+/* ---- 浮层里的分组（选项沿用既有 chip 语汇，只加一层分组头） ---- */
+.sf-facet + .sf-facet {
+  padding-top: 9px;
+  border-top: 1px solid var(--border-soft);
+}
+.sf-facet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.sf-facet-head b { color: var(--faint); font-weight: 500; }
+.sf-facet-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.sf-facet-list .ps-chip { height: 22px; padding: 0 7px; font-size: 11px; }
+
+/* ---- 提示气泡：hover 才出（原因不常驻，页面保持干净） ---- */
+.sf-tipbox {
+  position: fixed;
+  z-index: 200;
+  max-width: 280px;
+  padding: 6px 9px;
+  border-radius: var(--radius-xs);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+  pointer-events: none;
+}
+.sf-tipbox[hidden] { display: none; }
+
+@media (max-width: 900px) {
+  .ps-facts li:nth-child(n + 3) { display: none; }
+}
+@media (max-width: 640px) {
+  .ps-status {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 10px 12px;
+  }
+  .ps-facts { order: 3; flex-basis: 100%; overflow: visible; }
+  .ps-facts li:nth-child(n + 3) { display: flex; }
+  .ps-search { flex-basis: 100%; max-width: none; }
+}
 
 /* ================= 6. 面板 ================= */
 .ui-panel {
@@ -1784,7 +2291,9 @@ details.files[open] summary::before { transform: rotate(90deg); }
      而蝉形单独出现按 VIS §2.0 只允许用于 favicon。 */
   .brand-sub { display: none; }
   .nav { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px; }
-  .nav-group, .nav-item.is-disabled { display: none; }
+  /* 组标签不藏进无障碍树里，只是不再占位（VIS §7.4）；不可用的导航项照旧不出现 */
+  .nav-group { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  .nav-item.is-disabled { display: none; }
   .nav-item { white-space: nowrap; }
   /* 横条里没有竖排缩进的位置：「发现」展开后子项整体另起一行平铺 */
   .nav-parent { width: auto; }

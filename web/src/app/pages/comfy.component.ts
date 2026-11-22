@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { focusFirst, rememberFocus, restoreFocus, trapTab } from '../core/a11y';
 import { ApiService } from '../core/api.service';
 import {
   ComfyEnv,
@@ -74,7 +75,10 @@ function formatDuration(seconds: number): string {
     PanelComponent,
   ],
   template: `
-    <ui-page-header kicker="Environments" title="环境管理" />
+    <!-- 分层页头（VIS §3.7.7 定稿）。环境管理是单页区，没有第二个视图，
+         不放视图切换；本页也没有「列表集合」这一层（是运行时与实例的管理面板），
+         故不挂筛选条。 -->
+    <ui-page-header kicker="Environments" title="环境管理" hint="本机的运行环境与 ComfyUI 实例。" />
 
     <!-- 右栏在 DOM 里放前面：基础环境是实例的前置条件，Tab / 读屏顺序也该先环境再实例；
          视觉上用 grid 列位把它摆到右侧，实例独占主栏。 -->
@@ -88,7 +92,7 @@ function formatDuration(seconds: number): string {
           </div>
 
           @if (error) {
-            <div class="notice err">
+            <div class="notice err" role="alert">
               {{ error }}
               <button (click)="reload(true)">重试</button>
             </div>
@@ -244,13 +248,22 @@ function formatDuration(seconds: number): string {
         </div>
 
         @if (instanceError) {
-          <div class="notice err">{{ instanceError }}</div>
+          <div class="notice err" role="alert">{{ instanceError }}</div>
         }
 
         <div class="inst-list">
           <!-- 安装转后台后仍然看得见：点这一行就能回到进度弹层，不用刷新页面 -->
           @if (installingInstance) {
-            <div class="instance-row installing" (click)="showInstallDialog()">
+            <!-- 这一行整体可点，键盘也要能走到：role=button + tabindex + Enter/Space
+                 （VIS §7.2 点名这一行；样式表里早就有 .instance-row.installing:focus-visible） -->
+            <div
+              class="instance-row installing"
+              role="button"
+              tabindex="0"
+              (click)="showInstallDialog()"
+              (keydown.enter)="showInstallDialog()"
+              (keydown.space)="showInstallDialog(); $event.preventDefault()"
+            >
               <span class="inst-dot busy"></span>
               <div class="instance-meta">
                 <div class="inst-title"><strong>{{ installingName }}</strong></div>
@@ -377,9 +390,22 @@ function formatDuration(seconds: number): string {
     @if (preview; as pv) {
       @if (dialogOpen) {
         <div class="modal-overlay" (click)="closeDialog()">
-          <div class="modal" [class.install-modal]="installingView" (click)="$event.stopPropagation()">
+          <!-- 弹层三件套（VIS §7.2）：role=dialog + aria-modal + aria-labelledby，
+               焦点陷阱用 core/a11y.ts 的 trapTab，Esc 关最顶层。 -->
+          <div
+            #installDialog
+            class="modal"
+            [class.install-modal]="installingView"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="install-dialog-title"
+            tabindex="-1"
+            (click)="$event.stopPropagation()"
+            (keydown.tab)="trapTab($event, installDialog)"
+            (keydown.escape)="closeDialog()"
+          >
             <div class="modal-head">
-              <strong class="mc-title">{{ dialogTitle }}</strong>
+              <strong class="mc-title" id="install-dialog-title">{{ dialogTitle }}</strong>
               <span class="grow"></span>
               @if (installingView) {
                 <ui-badge [tone]="statusTone">{{ statusText }}</ui-badge>
@@ -598,6 +624,10 @@ export class ComfyComponent implements OnInit, OnDestroy {
   ringCircumference = RING_CIRCUMFERENCE;
 
   @ViewChild('logView') logView?: ElementRef<HTMLDivElement>;
+  @ViewChild('installDialog') installDialog?: ElementRef<HTMLElement>;
+
+  /** 弹层的 Tab 焦点陷阱（core/a11y.ts 的通用件） */
+  readonly trapTab = trapTab;
 
   /** 改名输入框一出现就聚焦并全选，省一次点击 */
   @ViewChild('renameInput') set renameInput(ref: ElementRef<HTMLInputElement> | undefined) {
@@ -709,8 +739,11 @@ export class ComfyComponent implements OnInit, OnDestroy {
   /** 后台运行时点提示行/按钮，回到进度弹层（不重新发起安装） */
   showInstallDialog(): void {
     if (!this.installing) return;
+    rememberFocus();
     this.dialogOpen = true;
     this.scrollLogs();
+    // 焦点要跟着进弹层，否则键盘用户还得从页面顶部 Tab 过来（VIS §7.2）
+    setTimeout(() => focusFirst(this.installDialog?.nativeElement));
   }
 
   // ---------------- 实时进度 ----------------
@@ -925,8 +958,10 @@ export class ComfyComponent implements OnInit, OnDestroy {
       steps: [],
       total_gb: 0,
     };
+    rememberFocus();
     this.dialogOpen = true;
     this.loadPreview();
+    setTimeout(() => focusFirst(this.installDialog?.nativeElement));
   }
 
   /** 拉一次安装预演。换版本时复用：后端只生成步骤，不写盘，几百毫秒。 */
@@ -985,6 +1020,8 @@ export class ComfyComponent implements OnInit, OnDestroy {
   closeDialog(): void {
     this.previewSeq += 1; // 还没回来的预演响应作废
     this.previewLoading = false;
+    // 关掉之前先把焦点还回去（VIS §7.2 三件套的第三件）
+    restoreFocus();
     if (this.installing) {
       // 任务在服务后端跑，隐藏弹层即可，轮询继续
       this.dialogOpen = false;

@@ -163,10 +163,9 @@ const FILE_TYPES = new Set([
             </div>
           }
 
-          @if (inLibrary) {
-            <span class="in-lib">已在库</span>
-          }
-
+          <!-- ⑥ 动作行：⋯ 在左，主按钮在右。发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
+               其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：
+               「已在库」由状态条事实槽「已入库 N」与列表视图的徽章报。 -->
           <button class="acard-primary primary btn-xs" (click)="download.emit()" data-testid="card-download">
             下载
           </button>
@@ -240,12 +239,6 @@ const FILE_TYPES = new Set([
         box-shadow: inset 0 0 0 1px var(--border-strong), var(--shadow-md);
       }
 
-      /* 已在库：内容型标记，不是外壳几何。 */
-      .in-lib {
-        font-size: 11px;
-        color: var(--ok);
-        white-space: nowrap;
-      }
     `,
   ],
 })

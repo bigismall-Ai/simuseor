@@ -17,6 +17,7 @@ import {
   NodeJob,
   NodeMissingReport,
   NodeStats,
+  ProbeStatus,
   InstalledNode,
   RepoInfo,
   SearchItem,
@@ -345,6 +346,19 @@ export class ApiService {
 
   testProxy(url: string): Observable<{ proxy: { ok: boolean; status?: number; error?: string; latency_ms: number }; direct: { ok: boolean; status?: number; error?: string; latency_ms: number } }> {
     return this.http.post<any>(`${this.base}/proxy/test`, { url });
+  }
+
+  /**
+   * 源探针的最新结论（可达性 + 延迟/吞吐）。
+   * 结论与速度在**同一份**进程内缓存里：可达 15 / 降级 10 / 不可达 3 分钟。
+   */
+  getProbeStatus(): Observable<ProbeStatus> {
+    return this.http.get<ProbeStatus>(`${this.base}/probe`);
+  }
+
+  /** 强制重探一轮（设置页的「重新测试连通性」）。 */
+  refreshProbe(): Observable<ProbeStatus> {
+    return this.http.post<ProbeStatus>(`${this.base}/probe/refresh`, {});
   }
 
   browseFolder(path: string): Observable<{ path: string | null; error?: string }> {

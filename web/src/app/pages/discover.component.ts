@@ -1,14 +1,21 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { focusFirst, rememberFocus, restoreFocus, trapTab } from '../core/a11y';
 import { ApiService } from '../core/api.service';
 import { DiscoverCacheService } from '../core/discover-cache.service';
+import { ProbeService } from '../core/probe.service';
 import { RepoInfo, RemoteFile, SearchItem, errMsg, fmtNum, fmtSize } from '../core/types';
 import { sourceTaskLabel } from '../core/task-labels';
 import { matchedWeightFiles, weightFiles } from '../core/weight-files';
 import { BadgeComponent } from '../ui/badge.component';
-import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
+import {
+  CollectionFact,
+  FilterBarComponent,
+  FilterFacetChange,
+  FilterFacetGroup,
+  FilterSite,
+} from '../ui/filter-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { ModelCardComponent } from '../ui/model-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -56,6 +63,20 @@ const SOURCE_LABELS: Record<string, string> = {
 const HOT_KEYWORDS = ['qwen', 'flux', 'lora', 'sdxl', 'whisper', 'embedding'];
 const PAGE_SIZE = 20;
 
+/** 排序：原生 select，选项「按 X」句式 */
+const SORT_OPTIONS = [
+  { key: 'trending', label: '按综合' },
+  { key: 'downloads', label: '按下载量' },
+  { key: 'likes', label: '按点赞' },
+  { key: 'recent', label: '按最新入库' },
+];
+
+/** 视图切换（segmented）：本地库 / 发现 */
+const VIEW_OPTIONS = [
+  { key: 'mine', label: '本地库' },
+  { key: 'discover', label: '发现' },
+];
+
 /** 追加下一页时按 (source,id) 去重，保持先到先得。 */
 function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
   const seen = new Set(prev.map((i) => `${i.source}:${i.id}`));
@@ -66,81 +87,54 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
 @Component({
   selector: 'app-discover',
   standalone: true,
-  imports: [FormsModule, BadgeComponent, CollectionBarComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, BadgeComponent, FilterBarComponent, EmptyComponent, ModelCardComponent, PageHeaderComponent, PanelComponent],
   template: `
+    <!-- 分层页头（VIS §3.7.7 定稿）：kicker 只标区，视图切换用 segmented -->
     <ui-page-header
-      kicker="Models · Discover"
+      kicker="Models"
       title="发现模型"
-      hint="跨源搜索合并为一个列表；同一模型多来源时，卡片上并列标出。"
+      hint="跨源搜索合并为一个列表。"
+      [viewOptions]="viewOptions"
+      view="discover"
+      (viewChange)="onViewChange($event)"
     />
 
-    <!-- 列表顶部统一骨架：读数 + 搜索 / 来源 / 任务 / 排序 / 视图 -->
+    <!-- 一行筛选条（VIS §3.7.8 定稿）：搜索框 → 站点筛选 → 「筛选」浮层
+         → 排序 → 视图切换 → 结果读数与清除全部。搜索改为停 300ms 自动发一次，
+         不再要人点「搜索」按钮。 -->
     @if (rows.length > 0 || loading) {
-      <ui-collection-bar
+      <ui-filter-bar
+        [search]="q"
+        searchPlaceholder="搜索模型关键词，如 qwen"
+        [searchDebounceMs]="300"
+        searchTestId="search-input"
+        (searchChange)="onSearch($event)"
+        [sites]="siteChips"
+        [site]="source"
+        (siteChange)="setSource($event)"
+        [facets]="facetGroups"
+        [facetSelected]="facetSelected"
+        (facetChange)="onFacetChange($event)"
+        [sortOptions]="sortOptions"
+        [sort]="sort"
+        (sortChange)="setSort($event)"
+        [view]="view"
+        (viewChange)="setView($event)"
         [count]="loading && rows.length === 0 ? null : rows.length + (done ? '' : '+')"
+        [total]="hasFilter ? rawCount : null"
         unit="个模型"
+        [hasFilter]="hasFilter"
+        (clearAll)="clearAll()"
         [facts]="facts"
         [loading]="loading && rows.length === 0"
         [progress]="loading && rows.length ? '检索中…' : ''"
         refreshLabel="重新检索"
         (refresh)="searchNow()"
-      >
-        <div class="cb-field">
-          <label class="cb-search">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.4" />
-              <path d="M10.3 10.3 13.6 13.6" />
-            </svg>
-            <input
-              [(ngModel)]="q"
-              placeholder="搜索模型关键词，如 qwen"
-              (input)="onQInput()"
-              (keyup.enter)="searchNow()"
-              data-testid="search-input"
-            />
-          </label>
-          <button class="primary cb-go" (click)="searchNow()" [disabled]="loading" data-testid="search-btn">搜索</button>
-        </div>
-
-        <div class="cb-chips" role="group" aria-label="来源">
-          @for (t of sourceTabs; track t.key) {
-            <button class="cb-chip" [class.on]="source === t.key" (click)="setSource(t.key)">{{ t.label }}</button>
-          }
-        </div>
-
-        @if (taskChips.length > 1 || task) {
-          <div class="cb-chips" role="group" aria-label="任务类型">
-            <button class="cb-chip" [class.on]="task === ''" (click)="setTask('')">全部类型</button>
-            @for (c of taskChips; track c.key) {
-              <button class="cb-chip" [class.on]="task === c.key" (click)="setTask(c.key)">
-                {{ taskLabel(c.key) }}<b>{{ c.count }}</b>
-              </button>
-            }
-          </div>
-        }
-
-        <div class="cb-tools">
-          <label class="cb-select" title="排序">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-            </svg>
-            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
-              <option value="trending">综合</option>
-              <option value="downloads">下载量</option>
-              <option value="likes">点赞</option>
-              <option value="recent">最新</option>
-            </select>
-          </label>
-          <div class="cb-view" role="group" aria-label="视图切换">
-            <button type="button" [class.on]="view === 'grid'" (click)="setView('grid')" title="网格视图" aria-label="网格视图">▦</button>
-            <button type="button" [class.on]="view === 'list'" (click)="setView('list')" title="列表视图" aria-label="列表视图">☰</button>
-          </div>
-        </div>
-      </ui-collection-bar>
+      />
     }
 
     @for (e of errors; track e.label) {
-      <div class="notice err">{{ e.label }} 搜索失败：{{ e.message }}</div>
+      <div class="notice err" role="alert">{{ e.label }} 搜索失败：{{ e.message }}</div>
     }
 
     <!-- 首次加载骨架：形状与海报卡一致，不要先给一个列表再跳成网格 -->
@@ -255,10 +249,22 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
     <!-- 行内下载弹层（多来源可切换） -->
     @if (dlg) {
       <div class="modal-overlay" (click)="closeDialog()">
-        <div class="modal" (click)="$event.stopPropagation()">
+        <!-- 弹层三件套（VIS §7.2）：role=dialog + aria-modal + aria-labelledby，
+             焦点陷阱用 core/a11y.ts 的 trapTab，Esc 关最顶层。 -->
+        <div
+          #downloadDialog
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="download-dialog-title"
+          tabindex="-1"
+          (click)="$event.stopPropagation()"
+          (keydown.tab)="trapTab($event, downloadDialog)"
+          (keydown.escape)="closeDialog()"
+        >
           <div class="modal-head">
             <div class="modal-title">
-              <strong class="mc-title">{{ activeItem()?.name }}</strong>
+              <strong class="mc-title" id="download-dialog-title">{{ activeItem()?.name }}</strong>
               <span class="muted">
                 {{ sourceLabel(activeItem()?.source || '') }}
                 @if (activeItem()?.author) {
@@ -292,7 +298,7 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
               <p class="muted">解析仓库文件中…</p>
             }
             @if (dlg.error) {
-              <div class="notice err">{{ dlg.error }}</div>
+              <div class="notice err" role="alert">{{ dlg.error }}</div>
             }
             @if (dlg.repo) {
               <div class="toolbar mb">
@@ -372,16 +378,17 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
       </div>
     }
   `,
-  styleUrls: ['../ui/collection-bar.css'],
   styles: [
     `
-      /* 骨架用海报卡的形状，加载完不会从「一列文本」跳成「一格格海报」 */
+      /* 骨架用海报卡的形状，加载完不会从「一列文本」跳成「一格格海报」。
+         高度取资产卡骨架登记的 min-height（235px，asset-card.css），
+         与本地库同值 —— 骨架与卡片不等高，首屏落地时整墙会跳一次。 */
       .skel-card {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         gap: 7px;
-        min-height: 202px;
+        min-height: 235px;
         padding: 13px;
         border-radius: var(--radius);
         background: var(--panel);
@@ -394,8 +401,6 @@ function mergeUnique(prev: SearchItem[], next: SearchItem[]): SearchItem[] {
       /* 列表视图里来源徽章也是入口：点它直接去原始仓库。去掉下划线，
          箭头留在徽章文字里，不靠颜色表达「可点」。 */
       .src-badge { text-decoration: none; display: inline-flex; }
-
-      .view-toggle button { padding: 0 8px; letter-spacing: 0.02em; }
 
       .modal-title {
         display: flex;
@@ -415,6 +420,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   task = '';
   view: 'grid' | 'list' = 'grid';
   showDemo = false;
+  readonly sortOptions = SORT_OPTIONS;
+  readonly viewOptions = VIEW_OPTIONS;
 
   rows: MergedRow[] = [];
   errors: SourceError[] = [];
@@ -425,13 +432,17 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   dlg: DownloadDialog | null = null;
   dlgStrategy = 'direct';
 
+  @ViewChild('downloadDialog') downloadDialog?: ElementRef<HTMLElement>;
+
+  /** 弹层的 Tab 焦点陷阱（core/a11y.ts 的通用件） */
+  readonly trapTab = trapTab;
+
   readonly hotKeywords = HOT_KEYWORDS;
   readonly skeletons = [1, 2, 3, 4, 5];
 
   private rawItems: SearchItem[] = [];
   private page = 1;
   private libraryKeys = new Set<string>();
-  private debounceSub: Subscription | null = null;
   private suppressParamSync = false;
   /** 封面批次号：重新搜索时自增，旧批次的回调直接丢弃 */
   private coverBatch = 0;
@@ -442,9 +453,16 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   readonly cache = inject(DiscoverCacheService);
 
-  constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private probe: ProbeService,
+  ) {}
 
   ngOnInit(): void {
+    // 探针结论决定哪些来源站可选（不可达 / 未探测的灰置不可点）
+    this.probe.ensure();
     this.route.queryParams.subscribe((p) => {
       if (this.suppressParamSync) {
         this.suppressParamSync = false;
@@ -469,7 +487,6 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.debounceSub?.unsubscribe();
     this.coverBatch++; // 丢弃还在路上的封面回调
   }
 
@@ -492,14 +509,74 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   // ---------- 搜索触发 ----------
 
-  onQInput(): void {
-    this.debounceSub?.unsubscribe();
-    this.debounceSub = timer(300).subscribe(() => this.searchNow());
+  /** 搜索框回填：筛选条停 300ms 触发一次，不用再点「搜索」 */
+  onSearch(v: string): void {
+    if (v === this.q) return;
+    this.q = v;
+    this.searchNow();
   }
 
   searchNow(): void {
-    this.debounceSub?.unsubscribe();
     this.applyFilters();
+  }
+
+  /** 检索到的原始条数（合并前的总量）：有筛选时读数写成「42 / 128」 */
+  get rawCount(): number {
+    return this.rawItems.length;
+  }
+
+  /** 站点筛选（行内 chip 行）：来源站 + 探针门控 */
+  get siteChips(): FilterSite[] {
+    return this.sourceTabs.map((t) => ({
+      key: t.key,
+      label: t.key === 'all' ? '全部站点' : t.label,
+      disabled: t.key === 'all' ? false : this.probe.isGated(t.key),
+      tip: t.key === 'all' ? '' : this.probe.tip(t.key),
+    }));
+  }
+
+  /** 「筛选」浮层里的分组：任务类型 */
+  get facetGroups(): FilterFacetGroup[] {
+    if (!this.taskChips.length) return [];
+    return [
+      {
+        key: 'task',
+        label: '任务类型',
+        options: this.taskChips.map((c) => ({
+          key: c.key,
+          label: this.taskLabel(c.key),
+          count: c.count,
+        })),
+      },
+    ];
+  }
+
+  /** 浮层里已点亮的 chip */
+  get facetSelected(): Record<string, string[]> {
+    return { task: this.task ? [this.task] : [] };
+  }
+
+  onFacetChange(e: FilterFacetChange): void {
+    if (e.group !== 'task') return;
+    this.setTask(e.on ? e.key : '');
+  }
+
+  get hasFilter(): boolean {
+    return !!this.q.trim() || this.source !== 'all' || !!this.task;
+  }
+
+  /** 清除全部筛选 */
+  clearAll(): void {
+    this.q = '';
+    this.source = 'all';
+    this.task = '';
+    this.searchNow();
+  }
+
+  /** 视图切换：本地库 ↔ 发现 */
+  onViewChange(key: string): void {
+    if (key === 'mine') this.router.navigate(['/models']);
+    else this.router.navigate(['/models/discover']);
   }
 
   searchKeyword(kw: string): void {
@@ -795,6 +872,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   // ---------- 行内下载弹层 ----------
 
   openDialog(row: MergedRow): void {
+    rememberFocus();
     this.dlg = {
       row,
       active: 0,
@@ -809,6 +887,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       error: '',
     };
     this.loadRepo();
+    // 焦点要跟着进弹层，否则键盘用户还得从页面顶部 Tab 过来（VIS §7.2）
+    setTimeout(() => focusFirst(this.downloadDialog?.nativeElement));
   }
 
   activeItem(): SearchItem | null {
@@ -857,6 +937,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
   closeDialog(): void {
     this.dlg = null;
+    // 关掉之前先把焦点还回去（VIS §7.2 三件套的第三件）
+    restoreFocus();
   }
 
   dlgSize(): number {

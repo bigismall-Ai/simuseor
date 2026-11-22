@@ -108,7 +108,7 @@ const BASELINE_1_2_SCOPED = {
 };
 const BASELINE_1_6_SCOPED = {
   'web/src/app/lab/lab-primeng.component.ts|border-radius:10px': 1,
-  'web/src/app/pages/library.component.ts|border-radius:10px': 1,
+  // library.component.ts 的 10px 圆角随 .rail-fab 死样式删除后归零，基线同步收紧（只降不升）
   'web/src/app/pages/library.component.ts|border-radius:6px': 2,
   'web/src/app/pages/workflow-editor.component.ts|border-radius:10px': 1,
   'web/src/app/pages/workflow-editor.component.ts|border-radius:4px': 3,
@@ -1386,7 +1386,9 @@ say('');
       say('    [FAIL] vis-layout 自身出错 -> 阻塞');
       deliverableFail++;
     } else {
-      say('    [PASS] 72 个页面：标签配平 / class 可命中 / 骨架齐全 / 链接可达');
+      /* 页数从工具实跑输出里取，不写死（原型页增减后这条消息不会变成假话） */
+      const m = out.match(/页面\s*(\d+)\s*个/);
+      say('    [PASS] ' + (m ? m[1] : '全部') + ' 个页面：标签配平 / class 可命中 / 骨架齐全 / 链接可达');
     }
   }
 }

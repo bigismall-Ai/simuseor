@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设置页原型 · 站点卡片 · 探针测速与下载策略 · SiMuseor VIS 草稿</title>
+<meta name="description" content="SiMuseor VIS 草稿：设置页原型，左宽栏 6 张紧凑站点卡，右窄栏本地代理与下载策略">
+<style>
+:root {
+  /* ── 产品层 token（照抄 artifacts/vis/assets/vis.css 的 :root 块） ── */
+  --bg:#f5f5f6; --bg-deep:#ededef; --panel:#ffffff; --panel-2:#fafafa; --panel-3:#f4f4f5;
+  --input-bg:#ffffff; --hover:#f4f4f5;
+  --text:#18181b; --text-2:#3f3f46; --muted:#71717a; --faint:#a1a1aa; --placeholder:#a1a1aa;
+  --border:#e4e4e7; --border-soft:#f0f0f1; --border-strong:#d4d4d8; --border-control:#8b8b94;
+  --accent:#4f46e5; --accent-hover:#4338ca; --accent-soft:#eef2ff; --accent-line:#c7d2fe;
+  --primary:#4f46e5; --primary-hover:#4338ca; --on-primary:#ffffff;
+  --ok:#15803d; --ok-soft:#f0fdf4; --warn:#b45309; --warn-soft:#fffbeb; --err:#b91c1c; --err-soft:#fef2f2;
+  --track:#ececee; --chip:#f4f4f5; --star:#d97706;
+  --pill-bg:#f1f1f3; --pill-bg-hover:#e7e7ea; --pill-ink:#52525b; --pill-ink-hover:#18181b;
+  --radius:12px; --radius-sm:8px; --radius-xs:5px; --radius-lg:16px;
+  --shadow-sm:0 1px 2px rgb(24 24 27 / .04);
+  --shadow-md:0 14px 36px -16px rgb(24 24 27 / .22), 0 2px 8px -4px rgb(24 24 27 / .08);
+  --shadow-lg:0 32px 64px -24px rgb(24 24 27 / .32);
+  --ring:0 0 0 3px rgb(79 70 229 / .14);
+  --grad-site-wash:radial-gradient(98% 78% at 76% -14%, rgba(217,119,6,.063), rgba(244,119,106,0) 64%);
+  --grad-site-glow:none;
+  --texture-site-paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.204'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"] {
+  --bg:#0b0b0d; --bg-deep:#070708; --panel:#141417; --panel-2:#1a1a1e; --panel-3:#202025;
+  --input-bg:#17171b; --hover:#1e1e23;
+  --text:#ededf0; --text-2:#d4d4d8; --muted:#8b8b94; --faint:#5f5f68; --placeholder:#5f5f68;
+  --border:#26262b; --border-soft:#1e1e22; --border-strong:#34343a; --border-control:#8b8b94;
+  --accent:#a5b4fc; --accent-hover:#c7d2fe; --accent-soft:rgb(79 70 229 / .18); --accent-line:#4338ca;
+  --primary-hover:#6366f1;
+  --ok:#4ade80; --ok-soft:rgb(74 222 128 / .12); --warn:#fbbf24; --warn-soft:rgb(251 191 36 / .12);
+  --err:#f87171; --err-soft:rgb(248 113 113 / .12);
+  --track:#232329; --chip:#232329; --star:#fbbf24;
+  --pill-bg:#26262c; --pill-bg-hover:#32323a; --pill-ink:#b4b4bc; --pill-ink-hover:#ededf0;
+  --shadow-sm:0 1px 2px rgb(0 0 0 / .4);
+  --shadow-md:0 14px 36px -16px rgb(0 0 0 / .7), 0 2px 8px -4px rgb(0 0 0 / .4);
+  --shadow-lg:0 32px 64px -24px rgb(0 0 0 / .8);
+  --ring:0 0 0 3px rgb(99 102 241 / .28);
+  --texture-site-paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.048 0.048 0.048 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+* { box-sizing: border-box; }
+/* hidden 属性要压过 button{display:inline-flex} 这类组件规则，否则「隐藏」的元素照样露出来 */
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: var(--texture-site-paper), var(--grad-site-wash), var(--grad-site-glow);
+  background-size: 220px 220px, cover, cover;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, fixed;
+  background-blend-mode: multiply, normal, normal;
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+:root[data-theme="dark"] body { background-blend-mode: screen, normal, normal; }
+::selection { background: var(--accent-soft); color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-decoration: none; }
+code, kbd, .mono { font-family: "Cascadia Mono", Consolas, "JetBrains Mono", ui-monospace, monospace; }
+code { font-size: 11.5px; }
+
+.shell { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: 0; height: 100vh; overflow: auto;
+  display: flex; flex-direction: column; padding: 14px 12px;
+  border-right: 1px solid var(--border); background: var(--panel);
+}
+.brand { display: flex; align-items: center; gap: 9px; padding: 2px 4px 14px; border-bottom: 1px solid var(--border-soft); }
+.brand-mark {
+  flex: none; width: 30px; height: 30px; border-radius: 8px;
+  background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center; font: 700 11px/1 "Cascadia Mono", Consolas, monospace;
+}
+.brand-wordmark { font-family: "Barlow Condensed", "Segoe UI", sans-serif; font-weight: 400; letter-spacing: .028em; font-size: 20px; line-height: 1.1; color: var(--text); }
+.brand-sub { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.nav { display: flex; flex-direction: column; gap: 1px; margin-top: 10px; }
+.nav a { display: flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 8px; border-radius: 6px; color: var(--muted); font-size: 11.5px; font-weight: 500; }
+.nav a:hover { background: var(--hover); color: var(--text); }
+.nav a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.side-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-soft); display: flex; flex-direction: column; gap: 6px; }
+.side-foot small { font-size: 10.5px; color: var(--faint); }
+.main { min-width: 0; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 24px 32px 96px; }
+
+section { margin: 0 0 56px; scroll-margin-top: 16px; }
+section > h2 {
+  display: flex; align-items: baseline; gap: 10px;
+  margin: 0 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  font-size: 20px; font-weight: 600; letter-spacing: -.02em;
+}
+section > h2 .num { font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px; font-weight: 400; letter-spacing: .09em; color: var(--muted); }
+section > h3 { margin: 28px 0 10px; font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+section > p.lead { margin: 0 0 16px; color: var(--muted); font-size: 12.5px; max-width: 84ch; }
+.hint {
+  margin: 10px 0 0; padding: 8px 12px;
+  border-left: 2px solid var(--accent-line);
+  background: var(--panel-3); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 11.5px; color: var(--muted);
+}
+.hint strong { color: var(--text-2); font-weight: 600; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+.tiny { font-size: 10.5px; line-height: 1.5; }
+
+.card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); overflow: hidden; }
+.card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 13px 15px; border-bottom: 1px solid var(--border); }
+.card-kicker { margin: 0 0 2px; font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.card-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--text); }
+.card-hint { margin: 4px 0 0; font-size: 11.5px; color: var(--muted); max-width: 78ch; }
+.card-body { padding: 14px; background: var(--bg); display: flex; flex-direction: column; gap: 12px; }
+.card-body.flat { background: var(--panel); }
+
+button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 0 13px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--panel); color: var(--text-2);
+  font-family: inherit; font-size: 12.5px; font-weight: 500; line-height: 1;
+  white-space: nowrap; cursor: pointer;
+  transition: background .13s ease, border-color .13s ease, color .13s ease, box-shadow .13s ease;
+}
+button:hover { background: var(--hover); border-color: var(--border-strong); color: var(--text); }
+button.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); box-shadow: 0 1px 2px rgb(79 70 229 / .28), inset 0 1px 0 rgb(255 255 255 / .14); }
+button.primary:hover { background: var(--primary); border-color: var(--accent); color: var(--on-primary); }
+button.ghost { border-color: transparent; background: none; color: var(--muted); box-shadow: none; }
+button.ghost:hover { background: var(--hover); border-color: transparent; color: var(--text); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button:disabled:hover { background: var(--panel); border-color: var(--border); color: var(--text-2); }
+.btn-xs { height: 25px; padding: 0 9px; font-size: 11.5px; border-radius: var(--radius-sm); }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+input, select, textarea {
+  width: 100%; height: 32px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 12.5px; font-family: inherit; background: var(--input-bg); color: var(--text);
+  outline: none; transition: border-color .13s ease, box-shadow .13s ease, background .13s ease;
+}
+input:hover, select:hover { border-color: var(--border-strong); }
+input:focus, select:focus { border-color: var(--accent); box-shadow: var(--ring); }
+input::placeholder { color: var(--muted); }
+input[readonly] { background: var(--panel-2); color: var(--muted); }
+input[type="checkbox"], input[type="radio"] { width: auto; height: auto; padding: 0; accent-color: var(--accent); cursor: pointer; }
+.ui-field { min-width: 0; }
+.ui-field label { display: block; margin-bottom: 6px; font-size: 11.5px; font-weight: 500; letter-spacing: .01em; color: var(--muted); }
+.ui-field .tiny { display: block; margin-top: 5px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.form-grid > * { min-width: 0; }
+.radio-group { display: flex; flex-direction: column; gap: 6px; }
+.radio-row {
+  display: flex; align-items: center; gap: 9px; min-height: 34px; padding: 0 11px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
+  transition: border-color .13s ease, background .13s ease;
+}
+.radio-row:hover { background: var(--hover); }
+.radio-row.on { border-color: var(--accent-line); background: var(--accent-soft); }
+.radio-row .radio-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.radio-row .radio-text b { font-size: 12.5px; font-weight: 500; color: var(--text); }
+.radio-row .radio-text .tiny { font-size: 10.5px; color: var(--muted); }
+.radio-row.on .radio-text b { color: var(--accent); }
+.radio-row.on .radio-text .tiny { color: var(--muted); }
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.ui-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 500;
+  line-height: 18px; white-space: nowrap;
+}
+.ui-badge.gray { background: var(--chip); color: var(--muted); }
+.ui-badge.blue { background: var(--accent-soft); color: var(--accent); }
+.ui-badge.green { background: var(--ok-soft); color: var(--ok); }
+.ui-badge.orange { background: var(--warn-soft); color: var(--warn); }
+.ui-badge.red { background: var(--err-soft); color: var(--err); }
+.notice { border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; margin-top: 12px; border: 1px solid transparent; }
+.notice.ok { background: var(--ok-soft); color: var(--ok); border-color: color-mix(in oklab, var(--ok) 18%, transparent); }
+.notice.err { background: var(--err-soft); color: var(--err); border-color: color-mix(in oklab, var(--err) 18%, transparent); }
+.notice.info { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in oklab, var(--accent) 18%, transparent); }
+.notice.warn { background: var(--warn-soft); color: var(--warn); border-color: color-mix(in oklab, var(--warn) 18%, transparent); }
+.notice.is-inline { margin: 0; }
+.save-bar {
+  position: sticky; bottom: 16px; z-index: 5;
+  display: flex; align-items: center; gap: 12px; margin-top: 4px; padding: 10px 14px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-md);
+}
+.save-hint { font-size: 11.5px; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; }
+th, td { text-align: left; padding: 9px 10px; font-size: 12.5px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+th { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .02em; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+
+.foot { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--faint); }
+.foot b { color: var(--muted); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .side { position: static; height: auto; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); }
+  .side-foot { flex-direction: row; align-items: center; }
+  .wrap { padding: 16px 16px 56px; }
+}
+
+/* ══════════ 本页专用：设置页原型 ══════════ */
+.page-head { padding: 4px 0 18px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.page-head .kicker { margin: 0 0 3px; font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.page-head h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+.page-head .lead { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); max-width: 88ch; }
+
+.settings-cols { display: grid; grid-template-columns: minmax(0, 7fr) minmax(286px, 3fr); gap: 16px; align-items: start; }
+@media (max-width: 1080px) { .settings-cols { grid-template-columns: minmax(0, 1fr); } }
+.col { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.col-side { position: sticky; top: 16px; gap: 14px; }
+@media (max-width: 1080px) { .col-side { position: static; } }
+
+.probe-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--panel); box-shadow: var(--shadow-sm);
+}
+.probe-bar .bar-note { margin-left: auto; font-size: 11px; color: var(--muted); }
+/* 一句话说明（第四轮收窄：只留这一句） */
+.one-liner {
+  padding: 8px 12px; border: 1px dashed var(--accent-line); border-radius: var(--radius-sm);
+  background: var(--accent-soft); color: var(--text-2); font-size: 12px;
+}
+.one-liner b { color: var(--accent); font-weight: 600; }
+
+/* ══ 站点卡：紧凑几何（VIS §3.7.3 卡片几何，基准取自 .ui-panel / .acard-body） ══ */
+.src-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--panel); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.src-card > .rail { height: 2px; background: var(--border-strong); }
+.src-card.st-ok > .rail { background: var(--ok); }
+.src-card.st-degraded > .rail { background: var(--warn); }
+.src-card.st-down > .rail { background: var(--err); }
+.src-card.st-unknown > .rail { background: repeating-linear-gradient(90deg, var(--border-strong) 0 8px, transparent 8px 14px); }
+.src-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 14px 8px;
+}
+.src-id { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.src-title { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.src-key { font-size: 10.5px; color: var(--faint); }
+.src-sub { font-size: 12px; color: var(--muted); }
+.src-head-right { display: flex; align-items: center; gap: 8px; flex: none; }
+.src-speed { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.src-time { font-size: 10.5px; color: var(--faint); }
+.src-speed.ok { color: var(--ok); }
+.src-speed.degraded { color: var(--warn); }
+.src-speed.down { color: var(--err); }
+.src-speed.unknown { color: var(--muted); }
+
+/* 三段式读数条：一条通路一格 */
+.src-strip {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+  margin: 0 14px; background: var(--border-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.pcell {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 6px 9px 7px; background: var(--panel-2); min-width: 0;
+}
+.pcell.is-best { background: var(--ok-soft); }
+.pcell.is-bad { background: var(--err-soft); }
+.pcell.is-skip { background: var(--panel); opacity: .85; }
+.pc-top { display: flex; align-items: center; gap: 6px; line-height: 1.2; }
+.pc-top b { font-size: 11.5px; font-weight: 600; color: var(--text-2); }
+.pc-top .ui-badge { font-size: 10px; padding: 0 6px; line-height: 16px; }
+.pc-line { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.pc-speed { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.25; }
+.pcell.is-best .pc-speed { color: var(--ok); }
+.pcell.is-bad .pc-speed { color: var(--err); }
+.pcell.is-skip .pc-speed { color: var(--faint); }
+.pc-lat { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap; }
+.pcell.is-best .pc-lat { color: var(--ok); }
+.pcell.is-bad .pc-lat { color: var(--err); }
+
+.src-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 7px 14px 8px;
+}
+.src-sum { flex: 1 1 auto; font-size: 11.5px; color: var(--text-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.src-sum b { font-weight: 600; }
+.src-tools { display: flex; align-items: center; gap: 6px; flex: none; }
+.edit-btn::after { content: "▾"; margin-left: 2px; font-size: 9px; color: var(--muted); }
+.edit-btn.is-open { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); }
+.edit-btn.is-open::after { content: "▴"; }
+.detail-btn::after { content: "▾"; margin-left: 2px; font-size: 9px; color: var(--muted); }
+.detail-btn.is-open { color: var(--accent); }
+.detail-btn.is-open::after { content: "▴"; }
+
+/* 详情（次级交互：完整读数） */
+.detail-panel { border-top: 1px solid var(--border-soft); background: var(--panel-2); padding: 9px 14px 10px; display: flex; flex-direction: column; gap: 8px; }
+.detail-panel[hidden] { display: none; }
+.drow {
+  display: grid; grid-template-columns: 46px 58px 62px 68px minmax(0, 1fr);
+  align-items: center; gap: 8px; font-size: 11px; color: var(--muted);
+}
+.drow b { font-size: 11.5px; color: var(--text-2); }
+.drow .mono { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.drow .d-reason code { margin-right: 5px; color: var(--err); background: var(--err-soft); padding: 0 4px; border-radius: 4px; }
+.d-sum { margin: 0; font-size: 11.5px; color: var(--text-2); line-height: 1.6; }
+.d-sum b { font-weight: 600; }
+
+/* 编辑面板 */
+.edit-panel { border-top: 1px solid var(--accent-line); background: var(--accent-soft); padding: 11px 14px 12px; display: flex; flex-direction: column; gap: 10px; }
+.edit-panel[hidden] { display: none; }
+.edit-panel .edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.edit-panel .ui-field label { color: var(--text-2); font-weight: 600; }
+.edit-panel .edit-foot { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.edit-panel .edit-foot .tiny { color: var(--muted); }
+
+.src-card.is-testing .src-verdict { opacity: .4; }
+.src-card.is-testing .src-strip { opacity: .45; }
+
+/* 当前值读数：该卡可编辑项的现值（与编辑面板里的字段一一对应） */
+.src-vals { display: flex; align-items: center; gap: 3px 12px; flex: none; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.src-vals .sv b { color: var(--text-2); font-weight: 600; }
+
+/* 复选行（沿用产品侧 web/src/styles.css 的 .check-row） */
+.check-row { display: flex; align-items: flex-start; gap: 10px; padding: 3px 0; }
+.check-row > div { flex: 1; min-width: 0; }
+.check-row strong { font-weight: 600; font-size: 12px; color: var(--text-2); }
+.check-row .muted { font-size: 11px; line-height: 1.5; opacity: .9; }
+.check-row input[type="checkbox"] { margin-top: 2px; }
+
+/* ── 下载策略卡 ── */
+#strategy-select { width: auto; min-width: 132px; height: 25px; font-size: 12px; }
+.strategy-now {
+  display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel-2);
+}
+.strategy-now b { font-size: 14px; font-weight: 600; }
+.strategy-card.is-unlocked { border-color: var(--warn); }
+.strategy-card.is-unlocked .strategy-now { border-color: color-mix(in oklab, var(--warn) 35%, var(--border)); background: var(--warn-soft); }
+.radio-row.locked { opacity: .58; cursor: not-allowed; background: var(--panel-2); }
+.radio-row.locked:hover { background: var(--panel-2); }
+
+/* ── 设计说明区 ── */
+.notes { margin-top: 40px; padding-top: 26px; border-top: 2px dashed var(--border-strong); }
+.notes-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
+.notes-head h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.02em; }
+.notes-head span { font-size: 11.5px; color: var(--muted); }
+.flow-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 14px 0 0; }
+.flow-step { padding: 11px 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel); }
+.flow-step b { display: block; font-size: 12px; margin-bottom: 3px; }
+.flow-step span { font-size: 11px; color: var(--muted); line-height: 1.55; display: block; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark">Si</span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">司梦工作台 · VIS 草稿</small></span>
+    </div>
+    <nav class="nav" aria-label="本页目录">
+      <a href="#preview" class="on">设置页原型</a>
+      <a href="#speed">测速口径</a>
+      <a href="#flow">状态数据流</a>
+      <a href="#rules">策略自动选择</a>
+      <a href="#diff">与上一版的差异</a>
+      <a href="#open">待拍板与落地清单</a>
+    </nav>
+    <div class="side-foot">
+      <button class="btn-sm" id="theme-btn" type="button">切换主题</button>
+      <small>VIS 草稿 · 未登记生成管线 · 未落地产品代码</small>
+    </div>
+  </aside>
+  <main class="main"><div class="wrap">
+
+<!-- ══════════════ 设置页原型本体 ══════════════ -->
+<section id="preview" style="margin-bottom:34px">
+  <header class="page-head">
+    <p class="kicker">Settings</p>
+    <h1>设置</h1>
+    <p class="lead">
+      左边宽栏是<b>全部站点</b>（6 个）：每个站点一张紧凑卡，卡里带探针结论、<b>三条通路的实测速度</b>与它的凭据、镜像。
+      右边窄栏是<b>全局</b>：本地代理配置与下载策略（按实测速度自动选最快的那条通路；代理要快 20% 以上才选）。
+    </p>
+  </header>
+
+  <div class="settings-cols">
+
+    <!-- ─────────── 左栏：所有站点 ─────────── -->
+    <div class="col col-sites">
+
+      <!-- 全局动作：一次重测全部站点（可达性 + 测速） -->
+      <div class="probe-bar">
+        <button class="btn-sm primary" id="retest-btn" type="button">重新测试连通性</button>
+        <span class="tiny muted">同时实测速度</span>
+        <span class="ui-badge gray" id="probe-summary">6 站：3 可用 · 1 降级 · 1 不可用 · 1 未探测</span>
+        <span class="bar-note mono" id="probe-time">上次探测 · 3 分钟前</span>
+      </div>
+
+      <!-- 一句话说明（缓存口径等细节在页面下方「状态数据流」区与规格文档里） -->
+      <p class="one-liner">下载、列表都会通过<b>探针的结果缓存</b>走最快的那条。</p>
+
+      <!-- ① Hugging Face -->
+      <article class="src-card st-ok" data-src="huggingface">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">Hugging Face</h3>
+            <span class="src-key mono">huggingface</span>
+            <span class="src-sub">模型搜索 API · 权重下载</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed ok">直连 8.4 MB/s</span>
+            <span class="src-time mono">3 分钟前</span>
+            <span class="ui-badge green src-verdict">可用</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-best" title="直连：可用 · 延迟 412 ms · 吞吐 8.4 MB/s · 最快的一条通路">
+            <span class="pc-top"><b>直连</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">8.4 MB/s</b><span class="pc-lat">412 ms · 最快</span></span>
+          </div>
+          <div class="pcell" title="镜像：可用 · 延迟 890 ms · 吞吐 1.2 MB/s · hf-mirror 地址已填未启用">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">1.2 MB/s</b><span class="pc-lat">890 ms</span></span>
+          </div>
+          <div class="pcell" title="代理：可用 · 延迟 1.3 s · 吞吐 0.6 MB/s · 127.0.0.1:7890">
+            <span class="pc-top"><b>代理</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">0.6 MB/s</b><span class="pc-lat">1.3 s</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">直连最快 <b>8.4 MB/s</b>（412 ms）</span>
+          <div class="src-vals">
+            <span class="sv">Token <b>未设置</b></span>
+            <span class="sv">镜像 <b>已填未启用</b></span>
+          </div>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="huggingface" aria-expanded="false">详情</button>
+            <button class="btn-xs edit-btn" type="button" data-src="huggingface" aria-expanded="false">编辑</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="huggingface" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge green">可用</span><span class="mono">412 ms</span><span class="mono">8.4 MB/s</span><span class="d-reason">最快的一条通路</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge green">可用</span><span class="mono">890 ms</span><span class="mono">1.2 MB/s</span><span class="d-reason">hf-mirror · 地址已填，未启用</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge green">可用</span><span class="mono">1.3 s</span><span class="mono">0.6 MB/s</span><span class="d-reason">127.0.0.1:7890</span></div>
+          <p class="d-sum">直连 <b>8.4 MB/s</b>（412 ms）最快 → <b>走直连</b>；镜像 1.2 MB/s、代理 0.6 MB/s 都慢一截。</p>
+        </div>
+        <div class="edit-panel" data-panel="huggingface" hidden>
+          <div class="edit-grid">
+            <div class="ui-field">
+              <label>Token</label>
+              <input type="password" placeholder="私有仓库 / Gated 仓库需要" value="">
+              <span class="tiny">只对 Hugging Face 生效。</span>
+            </div>
+            <div class="ui-field">
+              <label>镜像站点</label>
+              <input class="mono" value="https://hf-mirror.com" placeholder="https://hf-mirror.com">
+              <span class="tiny">境内镜像（hf-mirror 类）。留空＝只用官方地址。</span>
+            </div>
+          </div>
+          <div class="edit-foot">
+            <button class="btn-xs primary" type="button">保存</button>
+            <button class="btn-xs" type="button" data-close>取消</button>
+            <span class="tiny">只改这两个字段，不动别的站。</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ② ModelScope -->
+      <article class="src-card st-ok" data-src="modelscope">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">ModelScope</h3>
+            <span class="src-key mono">modelscope</span>
+            <span class="src-sub">魔搭模型库</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed ok">直连 12.6 MB/s</span>
+            <span class="src-time mono">3 分钟前</span>
+            <span class="ui-badge green src-verdict">可用</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-best" title="直连：可用 · 延迟 96 ms · 吞吐 12.6 MB/s · 最快的一条通路">
+            <span class="pc-top"><b>直连</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">12.6 MB/s</b><span class="pc-lat">96 ms · 最快</span></span>
+          </div>
+          <div class="pcell is-skip" title="镜像：未配置 · 该站没有镜像入口，不测这一条">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge gray">未配置</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+          <div class="pcell is-skip" title="代理：未启用 · 该站未允许经代理，不测这一条">
+            <span class="pc-top"><b>代理</b><span class="ui-badge gray">未启用</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">直连 <b>12.6 MB/s</b>（96 ms）· 全场最快</span>
+          <div class="src-vals">
+            <span class="sv">Token <b>未设置</b></span>
+          </div>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="modelscope" aria-expanded="false">详情</button>
+            <button class="btn-xs edit-btn" type="button" data-src="modelscope" aria-expanded="false">编辑</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="modelscope" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge green">可用</span><span class="mono">96 ms</span><span class="mono">12.6 MB/s</span><span class="d-reason">最快的一条通路</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge gray">未配置</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站没有镜像入口，不测这一条</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge gray">未启用</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站未允许经代理，不测这一条</span></div>
+          <p class="d-sum">境内源，直连 <b>12.6 MB/s</b>（96 ms）—— 全场最快，<b>走直连</b>。</p>
+        </div>
+        <div class="edit-panel" data-panel="modelscope" hidden>
+          <div class="edit-grid">
+            <div class="ui-field">
+              <label>Token</label>
+              <input type="password" placeholder="私有模型 / 提高配额" value="">
+              <span class="tiny">只对 ModelScope 生效。</span>
+            </div>
+          </div>
+          <div class="edit-foot">
+            <button class="btn-xs primary" type="button">保存</button>
+            <button class="btn-xs" type="button" data-close>取消</button>
+            <span class="tiny">只改这一个字段。</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ③ Civitai -->
+      <article class="src-card st-degraded" data-src="civitai">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">Civitai</h3>
+            <span class="src-key mono">civitai</span>
+            <span class="src-sub">社区模型 · 版本与元数据</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed degraded">代理 0.9 MB/s</span>
+            <span class="src-time mono">3 分钟前</span>
+            <span class="ui-badge orange src-verdict">已降级 · 走代理</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-bad" title="直连：不通 · timeout · 直连超时（5 秒无响应）">
+            <span class="pc-top"><b>直连</b><span class="ui-badge red">不通</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">5.0 s 超时</span></span>
+          </div>
+          <div class="pcell is-skip" title="镜像：未配置 · 该站没有镜像入口，不测这一条">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge gray">未配置</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+          <div class="pcell is-best" title="代理：可用 · 延迟 780 ms · 吞吐 0.9 MB/s · 唯一能通的一条">
+            <span class="pc-top"><b>代理</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">0.9 MB/s</b><span class="pc-lat">780 ms · 唯一能通</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">直连被挡，<b>代理 0.9 MB/s</b> → 已降级走代理 · 不门控</span>
+          <div class="src-vals">
+            <span class="sv">Token <b>未设置</b></span>
+            <span class="sv">完整目录 <b id="civitai-catalog-state">关</b></span>
+          </div>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="civitai" aria-expanded="false">详情</button>
+            <button class="btn-xs edit-btn" type="button" data-src="civitai" aria-expanded="false">编辑</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="civitai" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge red">不通</span><span class="mono">5000 ms</span><span class="mono">—</span><span class="d-reason"><code>timeout</code>直连超时（5 秒无响应）</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge gray">未配置</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站没有镜像入口，不测这一条</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge green">可用</span><span class="mono">780 ms</span><span class="mono">0.9 MB/s</span><span class="d-reason">唯一能通的一条</span></div>
+          <p class="d-sum">直连被挡、只有代理能通（<b>0.9 MB/s</b>）→ <b>已降级，走代理</b>。源仍可用，不门控。</p>
+        </div>
+        <div class="edit-panel" data-panel="civitai" hidden>
+          <div class="edit-grid">
+            <div class="ui-field">
+              <label>Token</label>
+              <input type="password" placeholder="提高配额 / 访问受限内容" value="">
+              <span class="tiny">只对 Civitai 生效。</span>
+            </div>
+            <div class="ui-field">
+              <label>完整目录（CivitAI Red）</label>
+              <div class="check-row">
+                <input type="checkbox" id="civitai-full-catalog">
+                <div>
+                  <strong>含成熟内容（18+，部分地区依法受限）</strong>
+                  <div class="muted">打开后搜索走 civitai.red 的完整目录（后端按 nsfw=true 取参数）。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="edit-foot">
+            <button class="btn-xs primary" type="button">保存</button>
+            <button class="btn-xs" type="button" data-close>取消</button>
+            <span class="tiny">只改这两个字段，不动别的站。</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ④ GitHub -->
+      <article class="src-card st-down" data-src="github">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">GitHub</h3>
+            <span class="src-key mono">github</span>
+            <span class="src-sub">节点清单 · 模板 · 工作流与节点包</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed down">三条都不通</span>
+            <span class="src-time mono">3 分钟前</span>
+            <span class="ui-badge red src-verdict">不可用</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-bad" title="直连：不通 · timeout · 直连超时（5 秒无响应）">
+            <span class="pc-top"><b>直连</b><span class="ui-badge red">不通</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">5.0 s 超时</span></span>
+          </div>
+          <div class="pcell is-skip" title="镜像：未配置 · 加速前缀为空，不测这一条">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge gray">未配置</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+          <div class="pcell is-bad" title="代理：不通 · refused · 连接被拒绝：目标端口未开放">
+            <span class="pc-top"><b>代理</b><span class="ui-badge red">不通</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">拒连 · 端口未开放</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">三条都不通 → <b>该源被门控</b>，下载链路不向它发请求</span>
+          <div class="src-vals">
+            <span class="sv">Token <b>未设置</b></span>
+            <span class="sv">镜像 <b>未填</b></span>
+          </div>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="github" aria-expanded="false">详情</button>
+            <button class="btn-xs edit-btn" type="button" data-src="github" aria-expanded="false">编辑</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="github" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge red">不通</span><span class="mono">5000 ms</span><span class="mono">—</span><span class="d-reason"><code>timeout</code>直连超时（5 秒无响应）</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge gray">未配置</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">加速前缀为空，不测这一条</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge red">不通</span><span class="mono">0 ms</span><span class="mono">—</span><span class="d-reason"><code>refused</code>连接被拒绝：目标端口未开放</span></div>
+          <p class="d-sum">三条通路都不通 → <b>该源在发现页与下载页被门控</b>，下载链路不会向它发请求。</p>
+        </div>
+        <div class="edit-panel" data-panel="github" hidden>
+          <div class="edit-grid">
+            <div class="ui-field">
+              <label>Token</label>
+              <input type="password" placeholder="私有仓库 / 提高 API 限额" value="">
+              <span class="tiny">只对 GitHub 生效。</span>
+            </div>
+            <div class="ui-field">
+              <label>镜像站点</label>
+              <input class="mono" value="" placeholder="https://gh-proxy.com/">
+              <span class="tiny">写法是「前缀 + 完整 URL」，如 <span class="mono">https://gh-proxy.com/</span>。留空＝直连。</span>
+            </div>
+          </div>
+          <div class="edit-foot">
+            <button class="btn-xs primary" type="button">保存</button>
+            <button class="btn-xs" type="button" data-close>取消</button>
+            <span class="tiny">只改这两个字段，不动别的站。</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ⑤ templates -->
+      <article class="src-card st-unknown" data-src="templates">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">ComfyUI 官方模板</h3>
+            <span class="src-key mono">templates</span>
+            <span class="src-sub">官方工作流模板 · 免鉴权固定源</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed unknown">还没探过</span>
+            <span class="src-time mono">—</span>
+            <span class="ui-badge gray src-verdict">未探测</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-skip" title="直连：未探测 · 本轮还没探">
+            <span class="pc-top"><b>直连</b><span class="ui-badge gray">未探测</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">还没探</span></span>
+          </div>
+          <div class="pcell is-skip" title="镜像：未配置 · 该站没有镜像入口，不测这一条">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge gray">未配置</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+          <div class="pcell is-skip" title="代理：未启用 · 该站未允许经代理，不测这一条">
+            <span class="pc-top"><b>代理</b><span class="ui-badge gray">未启用</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">还没探过 → <b>未探测不门控</b>，照常可见</span>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="templates" aria-expanded="false">详情</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="templates" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge gray">未探测</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">本轮还没探</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge gray">未配置</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站没有镜像入口，不测这一条</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge gray">未启用</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站未允许经代理，不测这一条</span></div>
+          <p class="d-sum">还没探过 —— <b>未探测不门控</b>，发现页与下载页照常可见。</p>
+        </div>
+      </article>
+
+      <!-- ⑥ comfyhub -->
+      <article class="src-card st-ok" data-src="comfyhub">
+        <div class="rail"></div>
+        <div class="src-head">
+          <div class="src-id">
+            <h3 class="src-title">ComfyHub</h3>
+            <span class="src-key mono">comfyhub</span>
+            <span class="src-sub">官方工作流商城 · 免鉴权固定源</span>
+          </div>
+          <div class="src-head-right">
+            <span class="src-speed ok">直连 3.8 MB/s</span>
+            <span class="src-time mono">3 分钟前</span>
+            <span class="ui-badge green src-verdict">可用</span>
+          </div>
+        </div>
+        <div class="src-strip">
+          <div class="pcell is-best" title="直连：可用 · 延迟 240 ms · 吞吐 3.8 MB/s · 最快的一条通路">
+            <span class="pc-top"><b>直连</b><span class="ui-badge green">可用</span></span>
+            <span class="pc-line"><b class="pc-speed">3.8 MB/s</b><span class="pc-lat">240 ms · 最快</span></span>
+          </div>
+          <div class="pcell is-skip" title="镜像：未配置 · 该站没有镜像入口，不测这一条">
+            <span class="pc-top"><b>镜像</b><span class="ui-badge gray">未配置</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+          <div class="pcell is-skip" title="代理：未启用 · 该站未允许经代理，不测这一条">
+            <span class="pc-top"><b>代理</b><span class="ui-badge gray">未启用</span></span>
+            <span class="pc-line"><b class="pc-speed">—</b><span class="pc-lat">不测</span></span>
+          </div>
+        </div>
+        <div class="src-foot">
+          <span class="src-sum">直连 <b>3.8 MB/s</b>（240 ms）· 走直连</span>
+          <div class="src-tools">
+            <button class="btn-xs ghost detail-btn" type="button" data-src="comfyhub" aria-expanded="false">详情</button>
+          </div>
+        </div>
+        <div class="detail-panel" data-detail="comfyhub" hidden>
+          <div class="drow"><b>直连</b><span class="ui-badge green">可用</span><span class="mono">240 ms</span><span class="mono">3.8 MB/s</span><span class="d-reason">最快的一条通路</span></div>
+          <div class="drow"><b>镜像</b><span class="ui-badge gray">未配置</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站没有镜像入口，不测这一条</span></div>
+          <div class="drow"><b>代理</b><span class="ui-badge gray">未启用</span><span class="mono">—</span><span class="mono">—</span><span class="d-reason">该站未允许经代理，不测这一条</span></div>
+          <p class="d-sum">直连 <b>3.8 MB/s</b>（240 ms）可用，<b>走直连</b>。</p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- ─────────── 右栏：全局 ─────────── -->
+    <div class="col col-side">
+
+      <!-- 本地代理配置 -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Proxy</p>
+            <h3 class="card-title">本地代理配置</h3>
+            <p class="card-hint">全局一份。探针判定直连不通时，下载链路自动改走这里。</p>
+          </div>
+        </div>
+        <div class="card-body flat">
+          <div class="form-grid">
+            <div class="ui-field">
+              <label>IP 或 网址</label>
+              <input class="mono" id="proxy-host" value="127.0.0.1" placeholder="127.0.0.1">
+            </div>
+            <div class="ui-field">
+              <label>端口</label>
+              <input class="mono" id="proxy-port" type="number" value="7890" placeholder="7890">
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn-sm" id="proxy-test" type="button">测试代理</button>
+            <span class="mono muted" id="proxy-url">http://127.0.0.1:7890</span>
+          </div>
+          <div class="notice err is-inline" id="proxy-result" role="alert">失败</div>
+        </div>
+      </section>
+
+      <!-- 下载策略 -->
+      <section class="card strategy-card" id="strategy-card">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Download</p>
+            <h3 class="card-title">下载策略</h3>
+          </div>
+        </div>
+        <div class="card-body flat">
+          <div class="strategy-now">
+            <span class="ui-badge blue" id="strategy-badge">自动</span>
+            <b id="strategy-current">默认走直连</b>
+          </div>
+          <div class="toolbar">
+            <button class="btn-xs" id="strategy-unlock" type="button">解锁</button>
+            <select id="strategy-select" hidden>
+              <option value="direct">直连（direct）</option>
+              <option value="mirror">镜像（mirror）</option>
+              <option value="proxy">代理（proxy）</option>
+            </select>
+            <button class="btn-xs" id="strategy-auto" hidden type="button">恢复自动</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <button class="primary" type="button">保存设置</button>
+    <span class="muted save-hint">改动不会自动保存，确认后再点一次。</span>
+    <span class="ui-badge gray" style="margin-left:auto">本轮只出原型与规格，产品代码未动</span>
+  </div>
+</section>
+
+<!-- ══════════════ 设计说明（不属于设置页本身） ══════════════ -->
+<div class="notes">
+
+<section id="speed">
+  <div class="notes-head"><h2>测速口径</h2><span>探针从「能不能连」升级成「能不能连 + 有多快」</span></div>
+  <p class="lead">每个站测三条通路；每条通路给两个读数：延迟（建连到首字节）与吞吐（固定字节数计时）。</p>
+  <div class="card"><div class="card-body flat">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>通路</th><th>什么时候测</th><th>测什么</th></tr></thead>
+        <tbody>
+          <tr><td><b>直连</b></td><td>总是测</td><td class="muted">官方地址直连</td></tr>
+          <tr><td><b>镜像</b></td><td>该站配置了镜像才测</td><td class="muted">HF 的 hf-mirror、GH 的加速前缀；没配镜像就不测这一条（卡片里标「未配置」）</td></tr>
+          <tr><td><b>代理</b></td><td>全局代理已配置、且该站允许经代理时才测</td><td class="muted">该站未允许经代理就不测（卡片里标「未启用」）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap" style="margin-top:12px">
+      <table>
+        <thead><tr><th>项</th><th>口径</th></tr></thead>
+        <tbody>
+          <tr><td>延迟</td><td class="muted">建连到<b>首字节</b>（TTFB），毫秒</td></tr>
+          <tr><td>吞吐</td><td class="muted">用 <span class="mono">Range</span> 取<b>固定字节数</b>（≤ 256 KiB）计时，MB/s</td></tr>
+          <tr><td>轻量</td><td class="muted">只打小文件 / 固定字节数的 Range 请求，<b>绝不拿模型权重测速</b></td></tr>
+          <tr><td>取样</td><td class="muted">每条通路取样 1 次，失败最多重试 1 次；单条通路预算 ≤ 8 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="notice warn is-inline" style="margin-top:12px">
+      <b>如实说明：本轮所有速度数值都是示意值 —— 没有对任何站点发过真实测速请求，也没有发过真实可达性探测请求。</b>
+      页面上的 MB/s 与延迟是写死的样例数据，用来展示「结论 + 速度」长什么样、怎么比较。
+      真落地时要用真实测速结果校准，阈值也要按实测分布重新定。
+    </p>
+    <p class="tiny muted" style="margin:8px 0 0">
+      <b>demo 不在设置页出现。</b>它是本地假数据、不出网，做成一张站点卡没有意义；也不参与探测、测速与门控判断
+      （全网源都不通时由后台兜底切到它）。探测与门控的完整口径见规格文档。
+    </p>
+  </div></div>
+</section>
+
+<section id="flow">
+  <div class="notes-head"><h2>状态数据流</h2><span>探针 + 测速 → 缓存 → 后台链路</span></div>
+  <p class="lead">左栏那句「下载、列表都会通过探针的结果缓存走最快的那条」就是这条链路的全部要点；口径细节在这里与规格文档里。</p>
+  <div class="flow-steps">
+    <div class="flow-step"><b>① 探测 + 测速</b><span>一轮探全部站，每站测直连 / 镜像 / 代理（该测的才测），每条给延迟与吞吐。</span></div>
+    <div class="flow-step"><b>② 写缓存</b><span>结论与速度写在<b>同一份</b>进程内缓存（不落 settings.json）。</span></div>
+    <div class="flow-step"><b>③ 后台消费</b><span>下载与列表读这份缓存：每站走它实测最快的可用通路；三条都不通的源被门控。</span></div>
+  </div>
+  <div class="card" style="margin-top:12px"><div class="card-body flat">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>缓存口径</th><th>取值</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>可达结论</td><td class="mono">15 分钟</td><td class="muted">慢消息才需要更快翻案</td></tr>
+          <tr><td>降级 / 受限</td><td class="mono">10 分钟</td><td class="muted">对端活着，只是被限流或要令牌</td></tr>
+          <tr><td>不可达结论</td><td class="mono">3 分钟</td><td class="muted">坏消息要更快翻案</td></tr>
+          <tr><td>立即作废</td><td>改代理地址 · 改某站通路 · 改镜像地址 · 点「重新测试连通性」</td><td class="muted">不必等 TTL</td></tr>
+          <tr><td>未探测</td><td><b>不门控</b></td><td class="muted">只有「不可用」才门控，否则第一次打开应用所有源都不出现</td></tr>
+          <tr><td>落盘</td><td>不落盘</td><td class="muted">状态放内存，settings.json 是配置不是状态</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+  <p class="hint">
+    <b>设置页不套用「灰置 + hover 提示」那套规则。</b>那套是给发现页 / 下载页的筛选区用的（入口藏起来、鼠标悬停才说原因）；
+    设置页要把状态和速度<b>直接写出来</b> —— 用户来这一页就是要看这个，不该再点一次才知道。
+  </p>
+</section>
+
+<section id="rules">
+  <div class="notes-head"><h2>策略自动选择口径</h2><span>按探针实测速度选最快的可用通路</span></div>
+  <p class="lead">参与判断的就是左栏这 6 个站。</p>
+  <div class="card"><div class="card-body flat">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>层级</th><th>规则</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><b>每站</b></td><td>在该站测通的三条通路里选<b>吞吐最高</b>的一条；<b>代理要快 20% 以上才选</b> —— <span class="mono">proxy_speed &gt; 1.2 × max(direct_speed, mirror_speed)</span> 才走代理，否则走直连 / 镜像里更快的那个</td><td class="muted">按<b>实测吞吐</b>比，不是按延迟比；直连与镜像都没测通时（base = 0）只要代理测通就走代理</td></tr>
+          <tr><td><b>发现 ＋ 下载</b></td><td>同一站<b>发现（列表）与下载两条通道走同一条</b>：都吃探针实测选出的那条通路</td><td class="muted">读同一份探针缓存结论，不分家；页面那句「下载、列表都会通过探针的结果缓存走最快的那条」就是这个意思</td></tr>
+          <tr><td><b>全局</b></td><td>把各站实测吞吐按通路汇总（该通路可测的站求和），<b>同样过 20% 门槛</b>后选整体最快的一条作为默认策略</td><td class="muted">策略卡上的「默认走 X」就是这条结论；每张站点卡显示的是该站自己那条 —— 直连被挡的站按自己的最快通路走，卡片上写明原因</td></tr>
+          <tr><td><b>兜底</b></td><td>三条通路一条都测不通 → 策略显示<b>「不可用」</b>，并说明该源会被门控</td><td class="muted">门控口径不变：只有「不可用」才门控，「未探测」不门控</td></tr>
+          <tr><td><b>手动</b></td><td>点「解锁」后可强制指定 直连 / 镜像 / 代理，<b>不受 20% 门槛限制</b></td><td class="muted">门槛只管自动判定；手动指定后仍展示自动建议，指定通路对该站不可用时回退到该站最快的可用通路，并在卡片上标出回退</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:12px">
+      <b>当前自动选择的算式：</b><span id="auto-basis-note">（这段不在页面里写死，由同一份探针实测数据按同一套算式实时算出来 —— 脚本加载后填入）</span>
+    </p>
+    <p class="hint">
+      <b>设置页不提供 sdk 入口</b>：sdk 只在 huggingface 与 modelscope 真正实现，而且它不走普通下载器（没有分片、没有断点续传）。
+      后端的 sdk 分支保留不动，将来要用再说 —— 完整口径见规格 §3.6.1。
+    </p>
+  </div></div>
+</section>
+
+<section id="diff">
+  <div class="notes-head"><h2>与上一版的差异</h2><span>这一版推翻了上一版哪些设计点</span></div>
+  <div class="card"><div class="card-body flat">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>上一版</th><th>这一版</th><th>依据</th></tr></thead>
+        <tbody>
+          <tr><td>左栏 7 张站点卡（含 demo）</td><td><b>6 张，demo 删掉</b></td><td class="muted">demo 是本地假数据、不出网，做成站点卡没有意义</td></tr>
+          <tr><td>大卡：head 84 px ＋ 三条通路各一行 36 px（每卡 282–291 px）</td><td><b>紧凑卡：head 一行 ＋ 三段式读数条（每卡约 130 px）</b></td><td class="muted">按 VIS §3.7.3 卡片几何收紧，6 张卡一屏看全</td></tr>
+          <tr><td>蓝色说明块讲了一整套（缓存口径 ＋ 消费方清单 ＋ 分点）</td><td><b>只留一句话</b>：「下载、列表都会通过探针的结果缓存走最快的那条。」</td><td class="muted">缓存口径挪到下方说明区与规格文档，不占左栏主视觉</td></tr>
+          <tr><td>代理卡的测试结果写「代理 不可用（连接被拒绝…，0 ms）｜直连 可用（142 ms）」</td><td><b>只显示「成功」或「失败」</b></td><td class="muted">失败原因已经在左栏各站卡的探针读数里，不必在这重复</td></tr>
+          <tr><td>下载策略卡塞了速度列表、依据长句、各站选中通路、radio 解释、sdk 区块</td><td><b>砍到三样</b>：当前策略 ＋ 解锁按钮 ＋ 解锁后的下拉</td><td class="muted">用户原话：「不要那么多乱七八糟的解释」；依据与 sdk 口径挪到下方说明区与规格</td></tr>
+          <tr><td>探针只判「能不能连」</td><td><b>同时实测速度</b>：三条通路 × 延迟 + 吞吐</td><td class="muted">用户追加要求</td></tr>
+          <tr><td>策略按固定规则选（直连可用→direct …）</td><td><b>按实测速度选最快的可用通路</b></td><td class="muted">用户追加要求</td></tr>
+          <tr><td>策略四项：mirror / direct / proxy / sdk</td><td><b>只有三项：直连 / 镜像 / 代理</b>（对齐三条被测通路）；<b>sdk 不提供入口</b></td><td class="muted">用户已拍板（选 A）：设置页完全不出现 sdk，默认全走普通下载通路；后端 sdk 分支保留不动</td></tr>
+          <tr><td>推荐单一纵向流（方案 A）</td><td><b>左右双栏，左 7 : 右 3</b></td><td class="muted">用户明确要求左宽右窄</td></tr>
+          <tr><td>逐站「经全局代理」勾选</td><td><b>从站点卡片移除</b>，改由下载策略决定</td><td class="muted">用户明确</td></tr>
+          <tr><td>CivitAI 的编辑面板只有 Token</td><td><b>补上「完整目录（CivitAI Red）」开关</b>（Token ＋ 这一项，不多不少），卡片上同步给出「完整目录 开／关」读数</td><td class="muted">用户 2026-11-22 定：补回。标题与说明沿用产品侧文案</td></tr>
+          <tr><td>策略卡锁定态：当前策略 ＋ 依据长句 ＋ 速度列表</td><td><b>只显示「自动」＋ 一句结论</b>（默认走 X）</td><td class="muted">用户 2026-11-22 定：默认态只留「自动」；依据与速度挪到下方说明区</td></tr>
+          <tr><td>选路只看吞吐最高的一条</td><td><b>代理要快 20% 以上才选</b>（proxy / max(direct, mirror) &gt; 1.2，按吞吐比不按延迟比）；发现与下载走同一条通路</td><td class="muted">用户 2026-11-22 定</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</section>
+
+<section id="open">
+  <div class="notes-head"><h2>待拍板与落地清单</h2><span>还需要用户决定的事，以及产品侧落地时要动的地方</span></div>
+  <div class="cols2">
+    <div class="card"><div class="card-body flat">
+      <p class="card-title" style="font-size:13px">待拍板（本轮先拿掉）</p>
+      <ul class="tiny muted" style="margin:8px 0 0;padding-left:18px;line-height:1.7">
+        <li>Hugging Face 的「优先使用镜像」开关 —— 本轮编辑面板里没有它，要不要补回来？</li>
+        <li>逐站「手动启用（忽略探针）」逃生口 —— 新结构里没有它的位置，先留后端字段？</li>
+        <li>「镜像」这条通路的取舍口径变了：原来 mirror 是「换站重试的兜底策略」，现在对齐成「走镜像这条通路」。旧口径要不要保留？</li>
+        <li>demo 彻底不出现在设置页，那它在设置页之外（发现页 / 下载页 / 兜底提示）怎么露脸，要不要一起定？</li>
+      </ul>
+    </div></div>
+    <div class="card"><div class="card-body flat">
+      <p class="card-title" style="font-size:13px">产品侧落地时要删的两块</p>
+      <ul class="tiny muted" style="margin:8px 0 0;padding-left:18px;line-height:1.7">
+        <li><span class="mono">settings.component.ts</span> 的第 ① 个 panel —— 整块删掉（删哪两块见规格 §5.7）。</li>
+        <li><span class="mono">settings.component.ts</span> 的第 ② 个 panel —— 整块删掉（删哪两块见规格 §5.7）。</li>
+        <li>逐源「经全局代理」勾选 —— 随新结构一起移除。</li>
+        <li>站点卡片的紧凑几何（head 一行 ＋ 三段式读数条 ＋ 详情展开）要落到组件里。</li>
+      </ul>
+      <p class="tiny faint" style="margin:8px 0 0">本轮 web/ 与 backend/ 一行未改；测速、策略选路这些产品侧字段本轮不实现。</p>
+    </div></div>
+  </div>
+</section>
+
+</div>
+
+<p class="foot">
+  <b>本页位置：</b><code>artifacts/vis/drafts/settings-default-config.html</code> · 草稿，<b>未</b>登记进 VIS 原型生成管线。
+  <b>配套：</b>探针与门控的原型在 <code>drafts/source-probe-and-defaults.html</code>，规格在 <code>drafts/source-probe-and-defaults-spec.md</code>。
+  <br><b>视觉口径：</b>token 取自 <code>artifacts/vis/assets/vis.css</code>，组件样式取自 <code>web/src/styles.css</code>
+  （卡片几何按 <code>.ui-panel</code> 与 <code>asset-card.css</code> 的 <code>.acard-body</code> 收紧）。
+  <br><b>数据口径：</b>页面上的延迟与 MB/s 全是<b>示意值</b>，未对任何站点发过真实测速请求。
+</p>
+
+  </div></main>
+</div>
+<script>
+  (function () {
+    var root = document.documentElement;
+
+    /* ── 主题切换 ── */
+    var themeBtn = document.getElementById('theme-btn');
+    var THEME_KEY = 'simuseor-vis-draft-theme';
+    try { var saved = localStorage.getItem(THEME_KEY); if (saved) root.dataset.theme = saved; } catch (e) {}
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function () {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem(THEME_KEY, root.dataset.theme); } catch (e) {}
+      });
+    }
+
+    /* ── 探针 + 测速数据（示意值；真实实现见规格 §2） ── */
+    var PATH_LABEL = { direct: '直连', mirror: '镜像', proxy: '代理' };
+    var SITES = {
+      huggingface: { label: 'Hugging Face', verdict: 'ok',
+        paths: {
+          direct: { state: 'ok', ms: 412, mbps: 8.4, note: '最快的一条通路' },
+          mirror: { state: 'ok', ms: 890, mbps: 1.2, note: 'hf-mirror · 地址已填，未启用' },
+          proxy: { state: 'ok', ms: 1300, mbps: 0.6, note: '127.0.0.1:7890' }
+        } },
+      modelscope: { label: 'ModelScope', verdict: 'ok',
+        paths: {
+          direct: { state: 'ok', ms: 96, mbps: 12.6, note: '最快的一条通路' },
+          mirror: { state: 'skip', ms: null, mbps: null, note: '该站没有镜像入口，不测这一条' },
+          proxy: { state: 'skip', ms: null, mbps: null, note: '该站未允许经代理，不测这一条' }
+        } },
+      civitai: { label: 'Civitai', verdict: 'degraded',
+        paths: {
+          direct: { state: 'bad', ms: 5000, mbps: null, cls: 'timeout', note: '直连超时（5 秒无响应）' },
+          mirror: { state: 'skip', ms: null, mbps: null, note: '该站没有镜像入口，不测这一条' },
+          proxy: { state: 'ok', ms: 780, mbps: 0.9, note: '唯一能通的一条' }
+        } },
+      github: { label: 'GitHub', verdict: 'down',
+        paths: {
+          direct: { state: 'bad', ms: 5000, mbps: null, cls: 'timeout', note: '直连超时（5 秒无响应）' },
+          mirror: { state: 'skip', ms: null, mbps: null, note: '加速前缀为空，不测这一条' },
+          proxy: { state: 'bad', ms: 0, mbps: null, cls: 'refused', note: '连接被拒绝：目标端口未开放' }
+        } },
+      templates: { label: 'ComfyUI 官方模板', verdict: 'unknown',
+        paths: {
+          direct: { state: 'unknown', ms: null, mbps: null, note: '本轮还没探' },
+          mirror: { state: 'skip', ms: null, mbps: null, note: '该站没有镜像入口，不测这一条' },
+          proxy: { state: 'skip', ms: null, mbps: null, note: '该站未允许经代理，不测这一条' }
+        } },
+      comfyhub: { label: 'ComfyHub', verdict: 'ok',
+        paths: {
+          direct: { state: 'ok', ms: 240, mbps: 3.8, note: '最快的一条通路' },
+          mirror: { state: 'skip', ms: null, mbps: null, note: '该站没有镜像入口，不测这一条' },
+          proxy: { state: 'skip', ms: null, mbps: null, note: '该站未允许经代理，不测这一条' }
+        } }
+    };
+    var ORDER = ['huggingface', 'modelscope', 'civitai', 'github', 'templates', 'comfyhub'];
+    var VERDICT_TEXT = { ok: '可用', degraded: '已降级 · 走代理', down: '不可用', unknown: '未探测' };
+    var VERDICT_CLASS = { ok: 'green', degraded: 'orange', down: 'red', unknown: 'gray' };
+    var STATE_TEXT = { ok: '可用', bad: '不通', skip: '未配置', unknown: '未探测' };
+
+    function fmtMs(ms) {
+      if (ms === null || ms === undefined) return '—';
+      return ms >= 1000 ? (ms / 1000).toFixed(1) + ' s' : ms + ' ms';
+    }
+    function fmtSpeed(mbps) {
+      return (mbps === null || mbps === undefined) ? '—' : mbps.toFixed(1) + ' MB/s';
+    }
+    /* 代理门槛：代理要比直连 / 镜像快 20% 以上才默认走代理（按实测吞吐比，不按延迟比） */
+    var PROXY_EDGE = 1.2;
+    function speedOf(s, p) {
+      var v = s.paths[p];
+      return (v && v.state === 'ok') ? v.mbps : 0;
+    }
+    function fastestOf(key) {
+      var s = SITES[key];
+      var d = speedOf(s, 'direct'), m = speedOf(s, 'mirror'), p = speedOf(s, 'proxy');
+      /* 直连与镜像都没测通时 base = 0，只要代理测通就走代理 */
+      if (p > PROXY_EDGE * Math.max(d, m)) return { path: 'proxy', mbps: p, ms: s.paths.proxy.ms };
+      var best = null;
+      if (d > 0) best = { path: 'direct', mbps: d, ms: s.paths.direct.ms };
+      if (m > 0 && (!best || m > best.mbps + 0.1 || (Math.abs(m - best.mbps) <= 0.1 && s.paths.mirror.ms < best.ms))) {
+        best = { path: 'mirror', mbps: m, ms: s.paths.mirror.ms };
+      }
+      return best;
+    }
+    function aggregate() {
+      var agg = { direct: 0, mirror: 0, proxy: 0 }, parts = { direct: [], mirror: [], proxy: [] };
+      ORDER.forEach(function (k) {
+        ['direct', 'mirror', 'proxy'].forEach(function (p) {
+          var v = SITES[k].paths[p];
+          if (v && v.state === 'ok') { agg[p] += v.mbps; parts[p].push({ k: k, mbps: v.mbps }); }
+        });
+      });
+      return { agg: agg, parts: parts };
+    }
+    function computeAuto() {
+      var a = aggregate(), best = null;
+      var base = Math.max(a.agg.direct, a.agg.mirror);
+      if (a.agg.proxy > 0 && a.agg.proxy > PROXY_EDGE * base) best = 'proxy';
+      else if (a.agg.direct > 0) best = 'direct';
+      else if (a.agg.mirror > 0) best = 'mirror';
+      if (!best) {
+        return { value: 'unavailable', basis: '三条通路（直连 / 镜像 / 代理）一条都测不通 → 策略「不可用」，相关源在发现页与下载页被门控，下载链路不会向它们发请求。' };
+      }
+      var names = a.parts[best].map(function (x) { return SITES[x.k].label + ' ' + x.mbps.toFixed(1); }).join(' ＋ ');
+      var proxyNote = '';
+      if (a.agg.proxy > 0 && best !== 'proxy') {
+        proxyNote = '；代理合计 ' + a.agg.proxy.toFixed(1) + ' MB/s，没到 ' + a.agg[best].toFixed(1) + ' 的 1.2 倍（' + (a.agg[best] * PROXY_EDGE).toFixed(1) + '），不选代理';
+      }
+      return {
+        value: best, agg: a.agg, parts: a.parts,
+        basis: PATH_LABEL[best] + ' ' + a.agg[best].toFixed(1) + ' MB/s（各站实测之和：' + names + '）最快 → 默认走' + PATH_LABEL[best] + proxyNote + '。'
+      };
+    }
+
+    /* ── 把一份站点数据画到卡上（紧凑卡的三段式读数条 + 详情行） ── */
+    function paintCard(key) {
+      var s = SITES[key];
+      var card = document.querySelector('.src-card[data-src="' + key + '"]');
+      if (!card) return;
+      var state = s.verdict === 'ok' ? 'ok' : s.verdict === 'degraded' ? 'degraded' : s.verdict === 'down' ? 'down' : 'unknown';
+      card.className = 'src-card st-' + state;
+
+      var best = fastestOf(key);
+      var chip = card.querySelector('.src-speed');
+      if (best) {
+        chip.textContent = PATH_LABEL[best.path] + ' ' + best.mbps.toFixed(1) + ' MB/s';
+        chip.className = 'src-speed ' + (state === 'degraded' ? 'degraded' : 'ok');
+      } else {
+        chip.textContent = state === 'unknown' ? '还没探过' : '三条都不通';
+        chip.className = 'src-speed ' + state;
+      }
+      var badge = card.querySelector('.src-verdict');
+      badge.textContent = VERDICT_TEXT[s.verdict];
+      badge.className = 'ui-badge ' + VERDICT_CLASS[s.verdict] + ' src-verdict';
+
+      var cells = card.querySelectorAll('.pcell');
+      ['direct', 'mirror', 'proxy'].forEach(function (p, i) {
+        var v = s.paths[p], cell = cells[i];
+        if (!v || !cell) return;
+        cell.className = 'pcell' + (best && best.path === p ? ' is-best' : '') + (v.state === 'bad' ? ' is-bad' : '') + (v.state !== 'ok' ? ' is-skip' : '');
+        var badgeEl = cell.querySelector('.ui-badge');
+        badgeEl.textContent = STATE_TEXT[v.state];
+        badgeEl.className = 'ui-badge ' + (v.state === 'ok' ? 'green' : v.state === 'bad' ? 'red' : 'gray');
+        cell.querySelector('.pc-speed').textContent = fmtSpeed(v.mbps);
+        var lat = cell.querySelector('.pc-lat');
+        lat.textContent = v.state === 'ok'
+          ? fmtMs(v.ms) + (best && best.path === p ? ' · 最快' : '')
+          : (v.state === 'bad' ? (v.cls === 'timeout' ? '5.0 s 超时' : '拒连 · 端口未开放') : (v.state === 'unknown' ? '还没探' : '不测'));
+        cell.setAttribute('title', PATH_LABEL[p] + '：' + STATE_TEXT[v.state] + ' · ' + fmtMs(v.ms) + ' · ' + fmtSpeed(v.mbps) + ' · ' + v.note);
+      });
+    }
+
+    function summaryOf(key) {
+      var s = SITES[key];
+      var best = fastestOf(key);
+      if (s.verdict === 'unknown') return '还没探过 → <b>未探测不门控</b>，照常可见';
+      if (!best) return '三条都不通 → <b>该源被门控</b>，下载链路不向它发请求';
+      if (s.verdict === 'degraded') return '直连被挡，<b>' + PATH_LABEL[best.path] + ' ' + best.mbps.toFixed(1) + ' MB/s</b> → 已降级走' + PATH_LABEL[best.path] + ' · 不门控';
+      return PATH_LABEL[best.path] + '最快 <b>' + best.mbps.toFixed(1) + ' MB/s</b>（' + fmtMs(best.ms) + '）';
+    }
+
+    /* ── 详情展开（次级交互：完整读数） ── */
+    var detailBtns = Array.prototype.slice.call(document.querySelectorAll('.detail-btn'));
+    detailBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var key = btn.getAttribute('data-src');
+        var panel = document.querySelector('.detail-panel[data-detail="' + key + '"]');
+        var open = panel.hasAttribute('hidden');
+        panel.toggleAttribute('hidden', !open);
+        btn.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', String(open));
+      });
+    });
+
+    /* ── 编辑面板：同时只开一张 ── */
+    var editBtns = Array.prototype.slice.call(document.querySelectorAll('.edit-btn'));
+    function closeAllPanels() {
+      Array.prototype.slice.call(document.querySelectorAll('.edit-panel')).forEach(function (p) { p.setAttribute('hidden', ''); });
+      editBtns.forEach(function (b) { b.classList.remove('is-open'); b.setAttribute('aria-expanded', 'false'); });
+    }
+    editBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var key = btn.getAttribute('data-src');
+        var panel = document.querySelector('.edit-panel[data-panel="' + key + '"]');
+        var wasOpen = panel && !panel.hasAttribute('hidden');
+        closeAllPanels();
+        if (!wasOpen && panel) {
+          panel.removeAttribute('hidden');
+          btn.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+    Array.prototype.slice.call(document.querySelectorAll('.edit-panel [data-close]')).forEach(function (btn) {
+      btn.addEventListener('click', closeAllPanels);
+    });
+
+    /* CivitAI 完整目录开关：勾上后卡片上的「完整目录」读数跟着变（开 / 关） */
+    var catalogBox = document.getElementById('civitai-full-catalog');
+    var catalogState = document.getElementById('civitai-catalog-state');
+    if (catalogBox && catalogState) {
+      catalogBox.addEventListener('change', function () {
+        catalogState.textContent = catalogBox.checked ? '开' : '关';
+      });
+    }
+
+    /* ── 下载策略 ── */
+    var auto = computeAuto();
+    var unlocked = false;
+    var manual = auto.value;
+    var currentEl = document.getElementById('strategy-current');
+    var badgeEl = document.getElementById('strategy-badge');
+    var unlockBtn = document.getElementById('strategy-unlock');
+    var selectEl = document.getElementById('strategy-select');
+    var autoBtn = document.getElementById('strategy-auto');
+    var card = document.getElementById('strategy-card');
+    var basisNote = document.getElementById('auto-basis-note');
+
+    function renderStrategy() {
+      var value = unlocked ? manual : auto.value;
+      var isAuto = !unlocked || manual === auto.value;
+      currentEl.textContent = value === 'unavailable' ? '不可用' : (isAuto ? '默认走' + PATH_LABEL[value] : '已指定' + PATH_LABEL[value]);
+      badgeEl.textContent = isAuto ? '自动' : '手动';
+      badgeEl.className = 'ui-badge ' + (isAuto ? 'blue' : 'orange');
+      unlockBtn.textContent = unlocked ? '锁定' : '解锁';
+      selectEl.hidden = !unlocked;
+      autoBtn.hidden = !unlocked;
+      selectEl.value = value === 'unavailable' ? '' : value;
+      card.classList.toggle('is-unlocked', unlocked);
+      /* 说明区这段与策略卡的结论同源：都用 aggregate() 的同一份汇总（规格 §3.6.2 层级二），页面里不写死数字 */
+      if (basisNote) basisNote.textContent = auto.basis;
+    }
+
+    unlockBtn.addEventListener('click', function () {
+      unlocked = !unlocked;
+      if (!unlocked) manual = auto.value;
+      renderStrategy();
+    });
+    selectEl.addEventListener('change', function () {
+      manual = selectEl.value;
+      renderStrategy();
+    });
+    autoBtn.addEventListener('click', function () {
+      manual = auto.value;
+      renderStrategy();
+    });
+    renderStrategy();
+
+    /* ── 代理配置 ── */
+    var hostEl = document.getElementById('proxy-host');
+    var portEl = document.getElementById('proxy-port');
+    var urlEl = document.getElementById('proxy-url');
+    var proxyTest = document.getElementById('proxy-test');
+    var proxyResult = document.getElementById('proxy-result');
+    function syncProxyUrl() {
+      var host = (hostEl.value || '').trim();
+      var port = (portEl.value || '').trim();
+      var url = '';
+      if (host) { url = host.indexOf('://') >= 0 ? host : 'http://' + host; if (port) url += ':' + port; }
+      urlEl.textContent = url || '（未填）';
+    }
+    hostEl.addEventListener('input', syncProxyUrl);
+    portEl.addEventListener('input', syncProxyUrl);
+    syncProxyUrl();
+    /* 样例口径：当前样例地址（127.0.0.1:7890）的代理端口是关的 → 判失败；
+       把地址改成别的（= 用户刚配好的代理）→ 判成功，方便两种状态都能看到。 */
+    function sampleAddress() {
+      return (hostEl.value || '').trim() === '127.0.0.1' && (portEl.value || '').trim() === '7890';
+    }
+    proxyTest.addEventListener('click', function () {
+      proxyTest.disabled = true;
+      proxyTest.textContent = '测试中…';
+      proxyResult.className = 'notice info is-inline';
+      proxyResult.textContent = '测试中…';
+      setTimeout(function () {
+        proxyTest.disabled = false;
+        proxyTest.textContent = '测试代理';
+        var ok = !sampleAddress();
+        proxyResult.className = 'notice ' + (ok ? 'ok' : 'err') + ' is-inline';
+        proxyResult.textContent = ok ? '成功' : '失败';
+      }, 900);
+    });
+
+    /* ── 重新测试连通性：一轮重测全部站点（可达性 + 测速） ── */
+    var retestBtn = document.getElementById('retest-btn');
+    var summaryEl = document.getElementById('probe-summary');
+    var timeEl = document.getElementById('probe-time');
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.src-card'));
+    retestBtn.addEventListener('click', function () {
+      if (retestBtn.disabled) return;
+      retestBtn.disabled = true;
+      retestBtn.textContent = '测试中…';
+      summaryEl.textContent = '正在探测 6 个站（直连 + 镜像 + 代理，含测速）…';
+      cards.forEach(function (c) { c.classList.add('is-testing'); });
+      setTimeout(function () {
+        /* 这一轮把 templates 从「未探测」探成「可用」并测出速度；其余结论不变 */
+        SITES.templates.verdict = 'ok';
+        SITES.templates.paths.direct = { state: 'ok', ms: 205, mbps: 1.9, note: '最快的一条通路' };
+        cards.forEach(function (c) {
+          c.classList.remove('is-testing');
+          var key = c.getAttribute('data-src');
+          paintCard(key);
+          c.querySelector('.src-sum').innerHTML = summaryOf(key);
+          var t = c.querySelector('.src-time');
+          if (t) t.textContent = '刚刚';
+        });
+        summaryEl.textContent = '6 站：4 可用 · 1 降级 · 1 不可用 · 0 未探测';
+        summaryEl.className = 'ui-badge blue';
+        timeEl.textContent = '上次探测 · 刚刚 · 用时 4.2 s';
+        auto = computeAuto();
+        renderStrategy();
+        retestBtn.disabled = false;
+        retestBtn.textContent = '重新测试连通性';
+      }, 1400);
+    });
+  })();
+</script>
+</body>
+</html>

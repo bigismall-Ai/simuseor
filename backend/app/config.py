@@ -71,7 +71,10 @@ DEFAULT_SETTINGS: dict = {
         "max_concurrent": 3,
     },
     "default_strategy": "mirror",
-    "download": {"save_dir": "workspace/models", "strategy": "mirror"},
+    # path_override：下载策略的手动指定（"" = 自动）。
+    # 自动值由探针按实测吞吐实时算出来（代理要快 20% 以上才走代理），
+    # 只写在这里的是用户手动指定的通路 —— 手动指定不受门槛限制。
+    "download": {"save_dir": "workspace/models", "strategy": "mirror", "path_override": ""},
     # ComfyUI 依赖轮子缓存上限（GB）。同一包只留最新版本，总量超出按最久未用淘汰；
     # 0 或负数表示不限制。缓存跟着共享环境 comfy/.environment/cache 走。
     "comfy": {"cache_limit_gb": 4},
@@ -83,6 +86,7 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": True,
             "mirror": "https://hf-mirror.com",
             "use_mirror": False,
+            "always_enabled": False,
         },
         "modelscope": {
             "label": "ModelScope",
@@ -90,14 +94,19 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": False,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
+        # civitai 的 proxy_enabled 默认改 False：逐源代理勾选已从设置页拿掉，
+        # 走不走代理改由探针 + 下载策略按实测吞吐决定（规格 §4.1）。
+        # 老配置里已保存的值不被改写（文件里的值优先于默认值）。
         "civitai": {
             "label": "Civitai",
             "token": "",
-            "proxy_enabled": True,
+            "proxy_enabled": False,
             "full_catalog": False,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
         "github": {
             "label": "GitHub",
@@ -105,6 +114,7 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": True,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
         "templates": {
             "label": "ComfyUI 官方模板",
@@ -112,6 +122,7 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": False,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
         # ComfyHub 免鉴权，这里只为让 create_task 能拿到源配置（设置页不展示）
         "comfyhub": {
@@ -120,6 +131,7 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": False,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
         "demo": {
             "label": "Demo (离线演示)",
@@ -127,6 +139,7 @@ DEFAULT_SETTINGS: dict = {
             "proxy_enabled": False,
             "mirror": "",
             "use_mirror": False,
+            "always_enabled": False,
         },
     },
 }
@@ -202,9 +215,16 @@ def source_proxy(cfg: dict | None) -> str | None:
     注意：调用方负责在「走镜像」时不要套代理（镜像是国内直连，绕代理会回到
     「镜像看到海外 IP → 308 跳回官方」的老问题）。
     """
-    if not (cfg or {}).get("proxy_enabled"):
+    cfg = cfg or {}
+    route = cfg.get("_route")
+    if route == "proxy":
+        return build_proxy_url(load_settings().get("proxy") or "") or None
+    if route in ("direct", "mirror"):
+        # 探针已经选定了通路：直连与镜像都不套代理
         return None
-    return build_proxy_url(load_settings().get("proxy") or {}) or None
+    if not cfg.get("proxy_enabled"):
+        return None
+    return build_proxy_url(load_settings().get("proxy") or "") or None
 
 
 def gh_proxy_prefix() -> str:
@@ -226,16 +246,33 @@ def gh_proxy_prefix() -> str:
     return raw if raw.endswith("/") else raw + "/"
 
 
-def gh_url(url: str) -> str:
-    """给 GitHub 地址套加速前缀。非 http(s) 地址原样返回（如 demo://）。"""
+def gh_url(url: str, cfg: dict | None = None) -> str:
+    """给 GitHub 地址套加速前缀。非 http(s) 地址原样返回（如 demo://）。
+
+    带 _route 时按探针选定的通路走：直连与代理都用官方地址（代理只多一跳），
+    只有选「镜像」才套前缀。没带 _route 的调用方（工作流 / 节点清单）维持旧口径：
+    填了前缀就生效。
+    """
     if not url.startswith("http"):
+        return url
+    route = (cfg or {}).get("_route")
+    if route in ("direct", "proxy"):
         return url
     prefix = gh_proxy_prefix()
     return f"{prefix}{url}" if prefix else url
 
 
 def gh_proxy(cfg: dict | None) -> str | None:
-    """GitHub 请求该走代理吗：填了前缀就不再经代理（前缀本身就是替代通路）。"""
+    """GitHub 请求该走代理吗：填了前缀就不再经代理（前缀本身就是替代通路）。
+
+    带 _route 时以探针选定的通路为准 —— 选了代理就走代理，哪怕也填了前缀。
+    """
+    cfg = cfg or {}
+    route = cfg.get("_route")
+    if route == "proxy":
+        return build_proxy_url(load_settings().get("proxy") or "") or None
+    if route in ("direct", "mirror"):
+        return None
     if gh_proxy_prefix():
         return None
     return source_proxy(cfg)

@@ -29,6 +29,27 @@ export function focusFirst(root: HTMLElement | null | undefined): void {
   target.focus?.({ preventScroll: true });
 }
 
+/* ---------------------------------------------------------------------------
+ * 焦点归还 —— VIS §7.2「弹层三件套」里的第三件：关闭后把焦点还给触发者。
+ *
+ * 为什么单独放这里：弹层打开前记住、关闭后还回，是**成对**的动作，
+ * 每页各写一遍必然出现「开了忘了还」的半拉子实现。放一处，两边都调同一个。
+ * -------------------------------------------------------------------------- */
+let lastFocus: HTMLElement | null = null;
+
+/** 打开弹层前调用：记住此刻的焦点（触发按钮）。 */
+export function rememberFocus(): void {
+  const active = document.activeElement as HTMLElement | null;
+  lastFocus = active && active !== document.body ? active : null;
+}
+
+/** 关闭弹层后调用：把焦点还给触发按钮；触发者已不在页面里就不还。 */
+export function restoreFocus(): void {
+  const el = lastFocus;
+  lastFocus = null;
+  if (el && document.contains(el)) el.focus({ preventScroll: true });
+}
+
 /**
  * 把 Tab 关在容器里。绑到容器的 `(keydown.tab)` 上即可，不要绑到 document ——
  * 那样会拦掉页面上其它地方的正常 Tab。

@@ -232,9 +232,16 @@ function psSearch(placeholder) {
 
 function psChips(group) {
   const chips = group.chips.map((c) => {
-    const cls = ['ps-chip', c.on ? 'on' : '', c.tone ? `is-${c.tone}` : '']
+    const cls = ['ps-chip', c.on ? 'on' : '', c.tone ? `is-${c.tone}` : '', c.off ? 'is-off' : '']
       .filter(Boolean).join(' ');
     const count = c.count != null ? `<b>${c.count}</b>` : '';
+    /* 不可用的站：灰置、不可点 —— 渲染成 span（不是 button，天生不可点）。
+       原因不印在页面上：放 data-tip（hover 气泡）与 aria-label（读屏可读）。 */
+    if (c.off) {
+      const aria = c.aria ? ` aria-label="${c.aria}"` : '';
+      const tip = c.tip ? ` data-tip="${c.tip}"` : '';
+      return `<span class="${cls}" aria-disabled="true"${aria}${tip}>${c.text}${count}</span>`;
+    }
     return `<button type="button" class="${cls}">${c.text}${count}</button>`;
   }).join('');
   const label = group.label ? ` role="group" aria-label="${group.label}"` : '';
@@ -326,12 +333,249 @@ function psMatrix(rows, indent = '          ') {
 }
 
 /* --------------------------------------------------------------------------
+ * 形状 6 · page-header —— 统一页头（已定稿）
+ * --------------------------------------------------------------------------
+ * 一套排布（分层页头）：三组页面 × 本地库 / 发现 = 6 个页头实例。
+ * 六页共用同一批文案与按钮，实例之间只换内容，不换排布 ——
+ * 所以横向看的时候，差别只可能来自内容本身。
+ * -------------------------------------------------------------------------- */
+
+/** 视图切换控件：segmented（产品既有 .segmented）—— 全站只有这一种切视图的控件 */
+function phSwitch(seg) {
+  const items = seg.items.map((it) =>
+    `<button type="button"${it.on ? ' class="active"' : ''} aria-pressed="${it.on ? 'true' : 'false'}">${it.text}</button>`
+  ).join('');
+  return `<div class="segmented" role="group" aria-label="${seg.label}">${items}</div>`;
+}
+
+/** 主操作区：至多一个主按钮 + 一个次要按钮；无动作则整区留空（不留占位） */
+function phActions(actions) {
+  if (!actions || !actions.length) return '';
+  const btns = actions.map((a) => {
+    const badge = a.badge ? `<b class="ph-badge is-warn">${a.badge}</b>` : '';
+    const cls = a.primary ? ' class="primary"' : '';
+    return `<button type="button"${cls}>${a.text}${badge}</button>`;
+  }).join('');
+  return `<div class="ui-page-actions">${btns}</div>`;
+}
+
+/** 视图切换的两项：本地库 / 发现（当前页在哪个，哪个就选中） */
+function phSegOf(c) {
+  const onLocal = c.view === '本地库';
+  return {
+    label: '视图切换',
+    items: [
+      { text: '本地库', on: onLocal },
+      { text: '发现', on: !onLocal },
+    ],
+  };
+}
+
+/** 一个页头实例（分层页头 —— 定稿）：kicker 只标区，视图切换贴在标题右边 */
+function phHeader(c) {
+  const sw = phSwitch(phSegOf(c));
+  const heading = `<p class="ui-page-kicker">${c.area}</p>
+        <div class="ph-title-row"><h1>${c.title}</h1>${sw}</div>`;
+  return `<header class="ui-page-header">
+        <div class="ui-page-heading">
+          ${heading}
+          ${c.hint ? `<p class="ui-page-hint">${c.hint}</p>` : ''}
+        </div>
+        ${phActions(c.actions)}
+      </header>`;
+}
+
+/** 6 个页头实例：工作流 / 模型库 / 节点管理 × 本地库 / 发现 */
+function phCases(cases, indent = '          ') {
+  const L = [`${indent}<div class="ph-grid">`];
+  for (const c of cases) {
+    L.push(`${indent}  <div class="ph-case">`);
+    L.push(`${indent}    <div class="ph-case-head"><b>${c.group} · ${c.view}</b><span>${c.area} · ${c.title}</span></div>`);
+    L.push(`${indent}    <div class="ph-frame">`);
+    L.push(phHeader(c).replace(/^/gm, indent + '      '));
+    L.push(`${indent}    </div>`);
+    L.push(`${indent}  </div>`);
+  }
+  L.push(`${indent}</div>`);
+  return L.join('\n');
+}
+
+/** 通用表格（表头 + 行） */
+function phTable(head, rows, indent = '          ') {
+  const h = '<div class="tbl-wrap"><table class="t"><thead><tr>'
+    + head.map((c) => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  const b = rows.map((r) => '<tr>' + r.map((c) => `<td>${c}</td>`).join('') + '</tr>').join('');
+  return `${indent}${h}${b}</tbody></table></div>`;
+}
+
+/* --------------------------------------------------------------------------
+ * 形状 7 · search-filter —— 搜索 + 筛选统一视觉方案（定稿形态）
+ * ------------------------------------------------------------------------
+ * 最终形态 = **一行筛选条**（沿用 page-status 的 .ps-filters 单行结构）：
+ *   搜索框 → 站点筛选 → 「筛选」按钮（带徽标）→ 排序 → 视图 → 读数 + 清除全部筛选
+ * 其余类别筛选收进「筛选」按钮点开的浮层（div 浮层，不是第二行、不是侧栏）。
+ * 控件一律复用既有语汇：.ps-search / .ps-chips / .ps-chip / .ps-select /
+ * .ps-badge / .ps-view / .ps-count —— 不新造样式体系。
+ * -------------------------------------------------------------------------- */
+
+/** 搜索框：清空按钮只在有内容时出现（input 用 type=search，与 page-status 同） */
+function sfSearch(s = {}) {
+  const ph = s.placeholder || '搜索名称、路径或标签';
+  const clear = s.clear
+    ? '<button class="ps-clear" type="button" aria-label="清空搜索">✕</button>'
+    : '';
+  return `<label class="ps-search${s.wide ? ' is-wide' : ''}">${PS_ICON.search}` +
+    `<input type="search" placeholder="${ph}" aria-label="${ph}">${clear}</label>`;
+}
+
+/** 「筛选」按钮 ＋ 点开的浮层（其余类别维度都在里面） */
+function sfPopup(p) {
+  const badge = `<b class="ps-badge"${p.count ? '' : ' hidden'}>${p.count || 0}</b>`;
+  const facets = (p.facets || []).map((f) => {
+    const chips = f.items.map((i) => {
+      const n = i.count != null ? `<b>${i.count}</b>` : '';
+      return `<button type="button" class="ps-chip${i.on ? ' on' : ''}" data-facet="${f.key}">${i.text}${n}</button>`;
+    }).join('');
+    return `<div class="sf-facet">
+          <div class="sf-facet-head"><span>${f.label}</span><b>${f.items.length}</b></div>
+          <div class="sf-facet-list">${chips}</div>
+        </div>`;
+  }).join('');
+  return `<div class="sf-pop-wrap">
+        <button class="ps-select sf-pop-trigger" type="button" aria-haspopup="dialog" aria-expanded="false">${PS_ICON.funnel}<span>${p.label}</span>${badge}</button>
+        <div class="sf-pop" role="dialog" aria-label="${p.label}" hidden>
+          <div class="sf-pop-head">
+            <b>${p.label}</b>
+            <span class="sf-pop-sel">0 项已选</span>
+            <button class="sf-pop-x" type="button" aria-label="关闭">✕</button>
+          </div>
+          <div class="sf-pop-body">${facets}</div>
+          <div class="sf-pop-foot">
+            <button class="sf-pop-clear" type="button">清除全部</button>
+            <button class="primary btn-xs" type="button" data-pop-ok>完成</button>
+          </div>
+        </div>
+      </div>`;
+}
+
+/** 一行筛选条：搜索 → 站点 → 筛选按钮 → 排序 → 视图 → 读数 + 清除全部 */
+function sfBar(b) {
+  const search = sfSearch(b.search || {});
+  const sites = b.sites ? psChips(b.sites) : '';
+  const pop = sfPopup(b.pop || {});
+  const sort = `<button class="ps-select" type="button">${PS_ICON.sort}<span>${b.sort}</span>${PS_ICON.caret}</button>`;
+  const view = '<div class="ps-view" role="group" aria-label="视图切换">' +
+    `<button type="button"${b.view === 'list' ? '' : ' class="on"'} title="网格视图">▦</button>` +
+    `<button type="button"${b.view === 'list' ? ' class="on"' : ''} title="列表视图">☰</button></div>`;
+  const c = b.count || {};
+  const tail = `<div class="sf-tail">
+        <p class="ps-count"><b>${c.visible}</b><span class="ps-total">/ ${c.total}</span><span class="ps-unit">${c.unit}</span></p>
+        <button class="btn-xs sf-clear" type="button">${b.clearAll}</button>
+      </div>`;
+  return `<div class="sf-bar">
+      <div class="ps-filters sf-row">${search}${sites}${pop}${sort}${view}${tail}</div>
+    </div>`;
+}
+
+/** 空结果三态 */
+function sfEmpty(states) {
+  const items = states.map((s) => {
+    const kw = (s.keywords || []).map((k) => `<button class="filter-chip" type="button">${k}</button>`).join('');
+    const cta = s.cta
+      ? `<button class="${s.cta.primary ? 'primary ' : ''}btn-xs" type="button">${s.cta.text}</button>`
+      : '';
+    return `<div class="sf-empty-case">
+          <div class="sf-empty-head"><b>${s.kind}</b><span>${s.cond}</span></div>
+          <div class="sf-empty-frame">
+            <div class="ui-empty">
+              ${s.icon ? `<div class="ui-empty-icon" aria-hidden="true">${s.icon}</div>` : ''}
+              <p class="ui-empty-title">${s.title}</p>
+              ${s.hint ? `<p class="ui-empty-hint">${s.hint}</p>` : ''}
+              ${kw ? `<div class="chip-row">${kw}</div>` : ''}
+              ${cta}
+            </div>
+          </div>
+        </div>`;
+  }).join('');
+  return `<div class="sf-empty-grid">${items}</div>`;
+}
+
+/** 原型页内交互脚本（浮层开合 + 灰置项 hover 提示）—— 自包含，无外链 */
+const SF_SCRIPT = [
+  '(function () {',
+  '  var pop = document.querySelector(".sf-pop");',
+  '  var trig = document.querySelector(".sf-pop-trigger");',
+  '  if (!pop || !trig) return;',
+  '  var badge = trig.querySelector(".ps-badge");',
+  '  var sel = pop.querySelector(".sf-pop-sel");',
+  '  function sync() {',
+  '    var n = pop.querySelectorAll(".ps-chip.on").length;',
+  '    if (badge) { badge.textContent = String(n); badge.hidden = (n === 0); }',
+  '    if (sel) sel.textContent = n + " 项已选";',
+  '  }',
+  '  function open() { pop.hidden = false; trig.setAttribute("aria-expanded", "true"); sync(); }',
+  '  function close() { pop.hidden = true; trig.setAttribute("aria-expanded", "false"); }',
+  '  trig.addEventListener("click", function (e) {',
+  '    e.stopPropagation();',
+  '    if (pop.hidden) open(); else close();',
+  '  });',
+  '  pop.addEventListener("click", function (e) {',
+  '    e.stopPropagation();',
+  '    var chip = e.target.closest ? e.target.closest(".ps-chip") : null;',
+  '    if (chip) { chip.classList.toggle("on"); sync(); return; }',
+  '    if (e.target.closest && e.target.closest(".sf-pop-clear")) {',
+  '      var on = pop.querySelectorAll(".ps-chip.on");',
+  '      for (var i = 0; i < on.length; i++) on[i].classList.remove("on");',
+  '      sync(); return;',
+  '    }',
+  '    if (e.target.closest && (e.target.closest("[data-pop-ok]") || e.target.closest(".sf-pop-x"))) close();',
+  '  });',
+  '  document.addEventListener("click", function (e) {',
+  '    if (!pop.hidden && !pop.contains(e.target) && !trig.contains(e.target)) close();',
+  '  });',
+  '  document.addEventListener("keydown", function (e) {',
+  '    if (e.key === "Escape" && !pop.hidden) close();',
+  '  });',
+  '  sync();',
+  '})();',
+  '',
+  '(function () {',
+  '  var tip = document.createElement("div");',
+  '  tip.className = "sf-tipbox";',
+  '  tip.setAttribute("role", "tooltip");',
+  '  tip.hidden = true;',
+  '  document.body.appendChild(tip);',
+  '  function show(t) {',
+  '    tip.textContent = t.getAttribute("data-tip");',
+  '    tip.hidden = false;',
+  '    var r = t.getBoundingClientRect();',
+  '    var b = tip.getBoundingClientRect();',
+  '    var left = r.left + r.width / 2 - b.width / 2;',
+  '    if (left < 8) left = 8;',
+  '    if (left > window.innerWidth - b.width - 8) left = window.innerWidth - b.width - 8;',
+  '    tip.style.left = left + "px";',
+  '    tip.style.top = (r.top - b.height - 8) + "px";',
+  '  }',
+  '  document.addEventListener("mouseover", function (e) {',
+  '    var t = e.target.closest ? e.target.closest("[data-tip]") : null;',
+  '    if (t) show(t);',
+  '  });',
+  '  document.addEventListener("mouseout", function (e) {',
+  '    var t = e.target.closest ? e.target.closest("[data-tip]") : null;',
+  '    if (t) tip.hidden = true;',
+  '  });',
+  '})();',
+].join('\n');
+
+/* --------------------------------------------------------------------------
  * 形状 0 · shell —— 页面壳（所有原型页共用）
  * -------------------------------------------------------------------------- */
 function shell(def, body, ctx) {
   const d = def.data;
   const v = (ctx && ctx.version) || def.version || '(未知版本)';   // 版本真值来自 VIS.md，不手写
   const css = (def.stylesheets || ['../assets/vis.css', '_proto.css']);
+  /* 页内脚本（原型自带交互用）：没有就一个字节都不多写，保证其它原型页零漂移 */
+  const scripts = (def.scripts || []).map((s) => `\n<script>\n${s}\n</script>`).join('');
   return `<!doctype html>
 <html lang="zh-CN" data-theme="light">
 <head>
@@ -372,7 +616,7 @@ ${body}
     </div>
   </main>
 </div>
-<script src="../assets/shell.js"></script>
+<script src="../assets/shell.js"></script>${scripts}
 </body>
 </html>
 `;
@@ -421,6 +665,101 @@ export const TYPES = {
       return shell(def, L.join('\n'), ctx);
     },
   },
+
+  /* 统一页头（定稿）+ 搜索筛选定稿形态样张页 */
+  'page-header': {
+    render(def, ctx) {
+      const d = def.data;
+      const L = [];
+      L.push(specList(d.spec));
+      /* 现状对照 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="ph-now">');
+      L.push('            <div class="proto-anchor-head"><b>现在六页的页头</b><span>同一个组件 · 六种写法 · 问题在信息层级，不在组件</span></div>');
+      L.push(phTable(d.now.head, d.now.rows));
+      L.push(`            <p class="proto-caption">${d.now.foot}</p>`);
+      L.push('          </div>');
+      /* 定稿的页头 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="ph-a">');
+      L.push('            <div class="proto-anchor-head"><b>定稿 · 分层页头</b><span>kicker 只标区 · segmented 贴标题 · 单句 hint · 右置主操作</span></div>');
+      L.push(specList(d.scheme.spec, '            '));
+      L.push(phCases(d.pages, '            '));
+      L.push(`            <p class="proto-caption">${d.scheme.caption}</p>`);
+      L.push('          </div>');
+      /* 三处代价 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="ph-cost">');
+      L.push('            <div class="proto-anchor-head"><b>三处代价</b><span>这套排布的附带后果 —— 本轮一并落地，不是可选项</span></div>');
+      L.push('            <div class="ph-rec">');
+      L.push(`              <b>${d.cost.title}</b>`);
+      for (const r of d.cost.why) L.push(`              <p>${r}</p>`);
+      L.push('            </div>');
+      L.push('          </div>');
+
+      /* ---------- 搜索 + 筛选 ---------- */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-now">');
+      L.push('            <div class="proto-anchor-head"><b>搜索 + 筛选 · 现状盘点</b><span>壳已经统一了，不统一的是壳里面那几样</span></div>');
+      L.push(phTable(d.sf.now.head, d.sf.now.rows));
+      L.push(`            <p class="proto-caption">${d.sf.now.foot}</p>`);
+      L.push('          </div>');
+
+      /* 定稿形态：主视觉（一行筛选条 ＋「筛选」浮层） */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-final">');
+      L.push(`            <div class="proto-anchor-head"><b>定稿 · 一行筛选条 ＋「筛选」浮层</b><span>${d.sf.final.sub}</span></div>`);
+      L.push(specList(d.sf.final.spec, '            '));
+      L.push('            <div class="sf-frame">');
+      L.push(sfBar(d.sf.final.bar).replace(/^/gm, '              '));
+      L.push('            </div>');
+      L.push(`            <p class="proto-caption">${d.sf.final.caption}</p>`);
+      L.push(`            <p class="sf-hint">${d.sf.final.hint}</p>`);
+      L.push('          </div>');
+
+      /* 分层：站点筛选 vs 类别筛选 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-layers">');
+      L.push(`            <div class="proto-anchor-head"><b>${d.sf.layers.title}</b><span>站点在行内 · 类别在浮层</span></div>`);
+      L.push(`            <p class="proto-lead">${d.sf.layers.lead}</p>`);
+      L.push(phTable(d.sf.layers.rows.head, d.sf.layers.rows.rows));
+      L.push(`            <p class="proto-caption">${d.sf.layers.foot}</p>`);
+      L.push('          </div>');
+
+      /* 探针状态 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-probe">');
+      L.push('            <div class="proto-anchor-head"><b>站点候选项按探针状态定</b><span>不可达 / 未探测的站不作为可选项提供</span></div>');
+      L.push(phTable(d.sf.layers.probe.head, d.sf.layers.probe.rows));
+      L.push('          </div>');
+
+      /* 改了什么 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-change">');
+      L.push('            <div class="proto-anchor-head"><b>改了什么</b><span>相对上一轮提法，以及两套未采用的候选</span></div>');
+      L.push('            <div class="sf-rec">');
+      L.push(`              <b>${d.sf.change.title}</b>`);
+      for (const r of d.sf.change.why) L.push(`              <p>${r}</p>`);
+      L.push('            </div>');
+      L.push(`            <p class="proto-caption">${d.sf.change.foot}</p>`);
+      L.push('          </div>');
+
+      /* 空结果三态 */
+      L.push('');
+      L.push('          <div class="proto-anchor" id="sf-empty">');
+      L.push('            <div class="proto-anchor-head"><b>空结果三态</b><span>空集合 / 搜索无匹配 / 筛选后为空</span></div>');
+      L.push(sfEmpty(d.sf.empty));
+      L.push(`            <p class="proto-caption">${d.sf.emptyFoot}</p>`);
+      L.push('          </div>');
+
+      return shell({ ...def, scripts: [SF_SCRIPT] }, L.join('\n'), ctx);
+    },
+  },
+
 };
 
-export { assetCard, cardGrid, specList, diffColumns, anchorBlock, shell, psBar, psSection, psMatrix };
+export {
+  assetCard, cardGrid, specList, diffColumns, anchorBlock, shell, psBar, psSection, psMatrix,
+  phSwitch, phActions, phSegOf, phHeader, phCases, phTable,
+  sfSearch, sfPopup, sfBar, sfEmpty, SF_SCRIPT,
+};

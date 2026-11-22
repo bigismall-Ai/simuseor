@@ -804,3 +804,326 @@ body { background: var(--bg); }
 .ref .ac-diff dl { margin: 0; display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 3px 8px; font-size: 10.5px; }
 .ref .ac-diff dt { color: var(--muted); }
 .ref .ac-diff dd { margin: 0; color: var(--text-2); }
+
+/* ══════════════════════════════════════════════════════════════
+   统一页头（已定稿 · 原型）
+   工作流 / 模型库 / 节点管理 × 本地库 / 发现 = 6 个页头实例。
+
+   页头本体仍吃产品那套 .ui-page-header（几何一个字节没动），
+   这里只补三样东西：
+     · 实例外框（.ph-grid / .ph-case / .ph-frame）—— 把页头摆进一个「页」里看；
+     · 标题行（.ph-title-row —— 标题与 segmented 同一行）；
+     · 徽标与推荐块（.ph-badge / .ph-rec）。
+   视图切换控件直接复用产品既有的 .segmented（vis.css 已登记）——
+   全站只有这一种切视图的控件，别的排布已经撤掉了。
+   ══════════════════════════════════════════════════════════════ */
+.ref .ph-grid {
+  display: grid;
+  /* 两列：帧要够宽，右侧主操作才不会被挤到换行（页头窄屏换行是现状行为，
+     但这一页要比较的是「同排右对齐」的读法，不是窄屏折行） */
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+  gap: 10px;
+}
+.ref .ph-case {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 11px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.ref .ph-case-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ref .ph-case-head b { font-size: 11px; font-weight: 600; }
+.ref .ph-case-head span {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+.ref .ph-frame {
+  padding: 14px 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.ref .ph-frame .ui-page-header { margin-bottom: 0; }
+
+/* ---- 方案 A：标题与视图切换同一行 ---- */
+.ref .ph-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---- 徽标（动作上的只读计数） ---- */
+.ref .ph-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  margin-left: 5px;
+  padding: 0 4px;
+  border-radius: var(--radius-xs);
+  background: var(--panel-3);
+  color: var(--text-2);
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ref .ph-badge.is-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+/* ---- 推荐块 ---- */
+.ref .ph-rec {
+  padding: 12px 14px 13px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}
+.ref .ph-rec b { display: block; margin-bottom: 5px; font-size: 12.5px; font-weight: 600; }
+.ref .ph-rec p { margin: 0 0 4px; font-size: 11px; line-height: 1.5; color: var(--text-2); }
+.ref .ph-rec p:last-child { margin-bottom: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   搜索 + 筛选统一方案（定稿形态 · 原型）
+   一行筛选条：搜索 → 站点 → 筛选按钮 → 排序 → 视图 → 读数 + 清除全部。
+   其余类别筛选在「筛选」按钮点开的浮层里（div 浮层，锚在按钮下方）。
+
+   控件全部复用既有语汇（.ps-search / .ps-chips / .ps-chip / .ps-select /
+   .ps-badge / .ps-view / .ps-count），这里只补四样新东西：
+     · 浮层外壳（.sf-pop*）与灰置站点项（.ps-chip.is-off）；
+     · 提示气泡（.sf-tipbox —— 灰置项 hover 才出原因，原因不印在页面上）；
+     · 行尾读数组（.sf-tail）；
+     · 本段的小标题与交互提示（.proto-lead / .sf-hint）。
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---- 搜索框里的清空按钮（有内容才出现） ---- */
+.ref .ps-clear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: var(--panel-3);
+  color: var(--muted);
+  font: inherit;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ref .ps-clear:hover { background: var(--border-strong); color: var(--text); }
+
+/* ---- 筛选条外框（把筛选条摆进一个「页」里看） ---- */
+.ref .sf-frame {
+  padding: 14px 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+/* ---- 筛选条外壳（与 .ps-bar 同形，但不留 overflow:hidden —— 浮层要能溢出） ---- */
+.ref .sf-bar {
+  position: relative;
+  z-index: 20;
+  margin: 0 0 14px;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+/* 一行放得下就一行；窄屏按 page-status 的 .ps-filters 一样折行，不横向溢出 */
+.ref .sf-row { gap: 5px; }
+/* 搜索框不抢宽（flex-grow: 0）—— 抢了会把行尾的读数挤到第二行 */
+.ref .sf-row .ps-search { flex: 0 1 236px; }
+
+/* ---- 行尾：结果读数 + 清除全部筛选 ---- */
+.ref .sf-tail {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ref .sf-clear {
+  flex: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+.ref .sf-clear:hover { color: var(--accent); background: var(--hover); }
+
+/* ---- 灰置的站点项：不可点（渲染成 span），原因不印在页面上 ---- */
+.ref .ps-chip.is-off {
+  color: var(--faint);
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1px var(--border-soft);
+  cursor: not-allowed;
+}
+.ref .ps-chip.is-off:hover { color: var(--faint); }
+
+/* ---- 提示气泡：hover 才出（页面保持干净，原因不常驻） ----
+   注意：这个元素是脚本挂在 body 上的浮层，不在 .ref 里 —— 所以不套 .ref 前缀。 */
+.sf-tipbox {
+  position: fixed;
+  z-index: 200;
+  max-width: 280px;
+  padding: 6px 9px;
+  border-radius: var(--radius-xs);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+  pointer-events: none;
+}
+
+/* ---- 「筛选」按钮点开的浮层（其余类别维度都在里面） ---- */
+.ref .sf-pop-wrap { position: relative; flex: none; }
+.ref .sf-pop-trigger { cursor: pointer; }
+.ref .sf-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: 340px;
+  padding: 10px 11px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+.ref .sf-pop[hidden] { display: none; }
+.ref .sf-pop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 9px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.ref .sf-pop-head b { font-size: 12px; font-weight: 600; }
+.ref .sf-pop-sel { font-size: 10.5px; color: var(--muted); }
+.ref .sf-pop-x {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+.ref .sf-pop-x:hover { background: var(--hover); color: var(--text); }
+.ref .sf-pop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.ref .sf-pop-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border-soft);
+}
+.ref .sf-pop-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.ref .sf-pop-clear:hover { text-decoration: underline; }
+.ref .sf-pop-foot .primary { margin-left: auto; }
+.ref .ps-badge[hidden] { display: none; }
+
+/* ---- 浮层里的分组（选项沿用既有 chip 语汇，只加一层分组头） ---- */
+.ref .sf-facet + .sf-facet {
+  padding-top: 9px;
+  border-top: 1px solid var(--border-soft);
+}
+.ref .sf-facet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ref .sf-facet-head b { color: var(--faint); font-weight: 500; }
+.ref .sf-facet-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.ref .sf-facet-list .ps-chip { height: 22px; padding: 0 7px; font-size: 11px; }
+
+/* ---- 空结果三态 ---- */
+.ref .sf-empty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+.ref .sf-empty-case {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 11px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+.ref .sf-empty-head { display: flex; align-items: baseline; gap: 8px; }
+.ref .sf-empty-head b { font-size: 11px; font-weight: 600; }
+.ref .sf-empty-head span { font-size: 9.5px; color: var(--muted); }
+.ref .sf-empty-frame {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.ref .sf-empty-frame .ui-empty { padding: 20px 14px; }
+.ref .sf-empty-frame .ui-empty-icon { font-size: 20px; }
+.ref .sf-empty-frame .ui-empty button { margin-top: 12px; }
+.ref .sf-empty-frame .chip-row { justify-content: center; margin-top: 10px; }
+
+/* ---- 推荐块（搜索筛选段） ---- */
+.ref .sf-rec {
+  padding: 12px 14px 13px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}
+.ref .sf-rec b { display: block; margin-bottom: 5px; font-size: 12.5px; font-weight: 600; }
+.ref .sf-rec p { margin: 0 0 4px; font-size: 11px; line-height: 1.5; color: var(--text-2); }
+.ref .sf-rec p:last-child { margin-bottom: 0; }
+
+/* ---- 本段的小标题与交互提示 ---- */
+.ref .proto-lead {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-2);
+  max-width: 96ch;
+}
+.ref .sf-hint {
+  margin: 9px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}

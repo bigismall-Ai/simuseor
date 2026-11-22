@@ -72,7 +72,10 @@ export interface NodeCardItem {
       <div class="acard-head">
         <span class="acard-mark" [title]="displayName">{{ mark }}</span>
         <span class="acard-ident">
-          <b [title]="displayName">{{ displayName }}</b>
+          <!-- ② 身份行：短名 + 作者。全名留给下面的卡片标题 ——
+               两处都写全名，同一张卡上同一个名字出现两次（原型口径：
+               身份行 b=短厂名 / span=作者，标题才是全名）。 -->
+          <b [title]="displayName">{{ coverName }}</b>
           <span [title]="subLine">{{ subLine }}</span>
         </span>
         @if (item.repo) {
@@ -448,7 +451,7 @@ export class NodeCardComponent {
    * 它的依赖会随安装一起进来（安装通道已经把 requirements.txt 走了一遍）。
    */
   get statusText(): string {
-    if (this.mode === 'library') return this.item?.disabled ? '已禁用' : '启用中';
+    if (this.mode === 'library') return this.item?.disabled ? '已禁用' : '已启用';
     if (this.item?.installed && this.needs.length) return '缺 ' + this.needs.join('、');
     if (this.item?.installed) return '已安装';
     return '未安装';
@@ -472,15 +475,18 @@ export class NodeCardComponent {
     const nodes = this.item?.nodes || [];
     const count = this.nodeCount;
     if (!count) return { text: '管理面板', more: 0, mono: false };
-    if (!nodes.length) return { text: `${count.toLocaleString('en-US')} 个节点类`, more: 0, mono: true };
-    return { text: nodes[0], more: count - 1, mono: true };
+    // 有类名：报代表类名 +「+N」（原型口径）
+    if (nodes.length) return { text: nodes[0], more: count - 1, mono: true };
+    // 没有类名：这一格只答「是什么」，不答「有多少」——
+    // 数量是 ④ 状态槽右侧的活，在 ⑤ 再报一遍就是同一个数字在卡上报两次。
+    return { text: '节点类', more: 0, mono: false };
   }
 
   get nodeTagTitle(): string {
     const nodes = this.item?.nodes || [];
     const count = this.nodeCount;
     if (!count) return '不提供节点类，只提供管理面板';
-    if (!nodes.length) return `提供 ${count} 个节点类`;
+    if (!nodes.length) return `提供 ${count} 个节点类（清单未展开类名）`;
     return `${nodes[0]} 等 ${count} 个节点类`;
   }
 

@@ -4,6 +4,7 @@ import { LibraryModel, fmtBytes } from '../core/types';
 import { coverMeta } from '../core/cover';
 import { modelTone, type Tone } from '../core/model-tone';
 import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/source-links';
+import { folderFileTypeLabel } from '../core/task-labels';
 
 /**
  * 模型库卡片：资产卡统一骨架的本地库版。
@@ -519,10 +520,14 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
    *
    * 存放类型是物理事实（落在 ComfyUI 的哪个目录），比任务类型更接近「这是什么文件」，
    * 原型里这一格也只放这一层；任务类型挪到上面的类别行，两者不重复。
+   *
+   * 词走**产品词表**（core/task-labels.ts）：存放目录先映射成文件类型，
+   * 再由词表出中文 —— 与发现页同一套词（VIS §3.7.3）。
+   * 否则同一个文件在发现页写「嵌入」、在本地库写「Embedding」。
    */
   get fileTypeLabel(): string {
     if (this.model.isDemo) return 'DEMO';
-    return this.model.folderLabel || '模型';
+    return folderFileTypeLabel(this.model.folder, this.model.folderLabel || '模型');
   }
 
   get fileTypeTip(): string {
@@ -579,11 +584,16 @@ export class LibraryCardComponent implements OnChanges, OnDestroy {
     return '未登记发布者';
   }
 
-  /** ④ 状态槽左侧：这条资产在库里是什么状态 */
+  /**
+   * ④ 状态槽左侧：这条资产在库里是什么状态。
+   *
+   * 坏件的说法直接取封面区那一行（`brokenTitle`）—— 同一个状态在一张卡上
+   * 出现两种说法（「权重损坏」与「文件格式错误」）会让「在库 / 权重缺失 / 权重损坏」
+   * 三个口径定不下来。这里复用同一个来源，改一处即两处一起改。
+   */
   get statusText(): string {
     const lvl = this.model.vram?.level;
-    if (lvl === 'broken') return '文件格式错误';
-    if (lvl === 'missing') return '权重缺失';
+    if (lvl === 'broken' || lvl === 'missing') return this.brokenTitle;
     return '在库';
   }
 

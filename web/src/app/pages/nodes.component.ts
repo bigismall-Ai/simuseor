@@ -1,11 +1,17 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { errMsg, fmtNum, NodeItem, NodeStats } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
 import { BadgeComponent } from '../ui/badge.component';
-import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
+import {
+  CollectionFact,
+  FilterBarComponent,
+  FilterFacetChange,
+  FilterFacetGroup,
+} from '../ui/filter-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
@@ -20,88 +26,66 @@ const SORTS = [
   { key: 'name', label: '按名称' },
 ];
 
+/** 视图切换（segmented）：本地库 / 发现 */
+const VIEW_OPTIONS = [
+  { key: 'mine', label: '本地库' },
+  { key: 'discover', label: '发现' },
+];
+
 @Component({
   selector: 'app-nodes',
   standalone: true,
   imports: [
     FormsModule,
     BadgeComponent,
-    CollectionBarComponent,
+    FilterBarComponent,
     EmptyComponent,
     NodeCardComponent,
     PageHeaderComponent,
     PanelComponent,
   ],
   template: `
+    <!-- 分层页头（VIS §3.7.7 定稿）：kicker 只标区，视图切换用 segmented -->
     <ui-page-header
-      kicker="Nodes · Discover"
+      kicker="Nodes"
       title="发现节点"
+      hint="搜节点扩展，装上就能用。"
+      [viewOptions]="viewOptions"
+      view="discover"
+      (viewChange)="onViewChange($event)"
     />
 
     @if (items.length || loading) {
-      <ui-collection-bar
+      <!-- 一行筛选条（VIS §3.7.8 定稿）：搜索框 → 「筛选」浮层（类型）
+           → 排序 → 结果读数与清除全部。清单只来自 ComfyUI-Manager 一个源，
+           行内不放站点 chip。 -->
+      <ui-filter-bar
+        [search]="q"
+        searchPlaceholder="搜扩展名或节点名，如 impact / sam / controlnet"
+        [searchDebounceMs]="300"
+        searchTestId="node-search"
+        (searchChange)="onSearch($event)"
+        [facets]="facetGroups"
+        [facetSelected]="facetSelected"
+        (facetChange)="onFacetChange($event)"
+        [sortOptions]="sorts"
+        [sort]="sort"
+        (sortChange)="setSort($event)"
         [count]="loading && !items.length ? null : fmtInt(total)"
+        [total]="null"
         unit="个扩展"
+        [hasFilter]="hasFilter"
+        (clearAll)="clearAll()"
         [facts]="facts"
         [loading]="loading && !items.length"
         [progress]="refreshing ? '刷新清单中…' : loading && items.length ? '加载中…' : ''"
         refreshLabel="重新拉取 ComfyUI-Manager 清单"
         (refresh)="refreshCatalog()"
-      >
-        <div class="cb-field">
-          <label class="cb-search">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.4" />
-              <path d="M10.3 10.3 13.6 13.6" />
-            </svg>
-            <input
-              [(ngModel)]="q"
-              (keyup.enter)="search()"
-              placeholder="搜扩展名或节点名，如 impact"
-              data-testid="node-search"
-            />
-          </label>
-          <button class="primary cb-go" (click)="search()" [disabled]="loading">搜索</button>
-        </div>
-
-        <div class="cb-chips" role="group" aria-label="类型">
-          <button class="cb-chip" [class.on]="!category" (click)="setCategory('')">全部</button>
-          @for (c of topCategories; track c.id) {
-            <button class="cb-chip" [class.on]="category === c.id" (click)="setCategory(c.id)">
-              {{ c.label }}<b>{{ fmtInt(c.count) }}</b>
-            </button>
-          }
-          @if (moreCategories.length) {
-            <button class="cb-chip" (click)="showAllCategories = !showAllCategories">
-              更多 {{ moreCategories.length }}
-            </button>
-          }
-          @if (showAllCategories) {
-            @for (c of moreCategories; track c.id) {
-              <button class="cb-chip" [class.on]="category === c.id" (click)="setCategory(c.id)">
-                {{ c.label }}<b>{{ fmtInt(c.count) }}</b>
-              </button>
-            }
-          }
-        </div>
-
-        <div class="cb-tools">
-          <label class="cb-select" title="排序">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-            </svg>
-            <select [(ngModel)]="sort" (ngModelChange)="setSort($event)" aria-label="排序">
-              @for (s of sorts; track s.key) {
-                <option [value]="s.key">{{ s.label }}</option>
-              }
-            </select>
-          </label>
-        </div>
-      </ui-collection-bar>
+      />
     }
 
     @if (errorText) {
-      <div class="notice err">{{ errorText }}</div>
+      <div class="notice err" role="alert">{{ errorText }}</div>
     }
     @if (notice) {
       <div class="notice ok">{{ notice }}</div>
@@ -128,7 +112,7 @@ const SORTS = [
             </div>
           }
           @if (install.job.error) {
-            <div class="notice err">{{ install.job.error }}</div>
+            <div class="notice err" role="alert">{{ install.job.error }}</div>
           }
           @if (install.job.status === 'done') {
             <div class="notice ok">
@@ -163,7 +147,6 @@ const SORTS = [
       </div>
     }
   `,
-  styleUrls: ['../ui/collection-bar.css'],
   styles: `
     .nd-filters {
       display: flex;
@@ -249,13 +232,14 @@ const SORTS = [
 export class NodesComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   install = inject(NodeInstallService);
+  private router = inject(Router);
   private sub?: Subscription;
 
   readonly sorts = SORTS;
   q = '';
   category = '';
   categories: { id: string; label: string; count: number }[] = [];
-  showAllCategories = false;
+  readonly viewOptions = VIEW_OPTIONS;
   sort = 'nodes';
   items: NodeItem[] = [];
   loading = false;
@@ -307,13 +291,58 @@ export class NodesComponent implements OnInit, OnDestroy {
     this.load(1);
   }
 
-  /** 分类按数量降序：先给最常见的 8 个，其余折进「更多」 */
-  get topCategories(): { id: string; label: string; count: number }[] {
-    return [...this.categories].sort((a, b) => b.count - a.count).slice(0, 8);
+  /** 分类按数量降序：浮层里整组列出，多的往下排 */
+  get sortedCategories(): { id: string; label: string; count: number }[] {
+    return [...this.categories].sort((a, b) => b.count - a.count);
   }
 
-  get moreCategories(): { id: string; label: string; count: number }[] {
-    return [...this.categories].sort((a, b) => b.count - a.count).slice(8);
+  /** 「筛选」浮层里的分组：扩展类型 */
+  get facetGroups(): FilterFacetGroup[] {
+    if (!this.categories.length) return [];
+    return [
+      {
+        key: 'category',
+        label: '类型',
+        options: this.sortedCategories.map((c) => ({
+          key: c.id,
+          label: c.label,
+          count: c.count,
+        })),
+      },
+    ];
+  }
+
+  get facetSelected(): Record<string, string[]> {
+    return { category: this.category ? [this.category] : [] };
+  }
+
+  onFacetChange(e: FilterFacetChange): void {
+    if (e.group !== 'category') return;
+    this.setCategory(e.on ? e.key : '');
+  }
+
+  /** 搜索框回填：停 300ms 自动检索一次 */
+  onSearch(v: string): void {
+    if (v === this.q) return;
+    this.q = v;
+    this.search();
+  }
+
+  get hasFilter(): boolean {
+    return !!this.q.trim() || !!this.category;
+  }
+
+  /** 清除全部筛选 */
+  clearAll(): void {
+    this.q = '';
+    this.category = '';
+    this.load(1);
+  }
+
+  /** 视图切换：本地库 ↔ 发现 */
+  onViewChange(key: string): void {
+    if (key === 'mine') this.router.navigate(['/nodes']);
+    else this.router.navigate(['/nodes/discover']);
   }
 
   setCategory(category: string): void {

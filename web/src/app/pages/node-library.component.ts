@@ -1,78 +1,81 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../core/api.service';
 import { errMsg, fmtNum, InstalledNode, MissingProvider, NodeMissingReport, NodeStats } from '../core/types';
 import { NodeInstallService } from '../core/node-install.service';
-import { CollectionBarComponent, CollectionFact } from '../ui/collection-bar.component';
+import {
+  CollectionFact,
+  FilterBarComponent,
+  FilterFacetChange,
+  FilterFacetGroup,
+} from '../ui/filter-bar.component';
 import { EmptyComponent } from '../ui/empty.component';
 import { NodeCardComponent } from '../ui/node-card.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
 
+/** 排序：原生 select，选项「按 X」句式 */
+const SORT_OPTIONS = [
+  { key: 'name', label: '按名称' },
+  { key: 'nodes', label: '按节点数' },
+  { key: 'size', label: '按大小' },
+];
+
+/** 视图切换（segmented）：本地库 / 发现 */
+const VIEW_OPTIONS = [
+  { key: 'mine', label: '本地库' },
+  { key: 'discover', label: '发现' },
+];
+
 @Component({
   selector: 'app-node-library',
   standalone: true,
-  imports: [FormsModule, RouterLink, CollectionBarComponent, EmptyComponent, NodeCardComponent, PageHeaderComponent, PanelComponent],
+  imports: [FormsModule, FilterBarComponent, EmptyComponent, NodeCardComponent, PageHeaderComponent, PanelComponent],
   template: `
+    <!-- 分层页头（VIS §3.7.7 定稿）：kicker 只标区，视图切换用 segmented，
+         本地页只留一个主操作，「去发现」由视图切换承担。 -->
     <ui-page-header
       kicker="Nodes"
       title="节点管理"
+      hint="已装的节点包：提供了什么、缺哪些文件。"
+      [viewOptions]="viewOptions"
+      view="mine"
+      (viewChange)="onViewChange($event)"
     >
-      <button type="button" (click)="check()" [disabled]="checking || loading">
+      <button type="button" class="primary" (click)="check()" [disabled]="checking || loading">
         {{ checking ? '检测中…' : '检测缺失' }}
         @if (report?.missing_files) {
-          <b class="cb-badge is-warn">{{ report?.missing_files }}</b>
+          <b class="ps-badge is-warn">{{ report?.missing_files }}</b>
         }
       </button>
-      <button class="primary" routerLink="/nodes/discover">发现节点</button>
     </ui-page-header>
 
     @if (installed.length || loading) {
-      <ui-collection-bar
+      <!-- 一行筛选条（VIS §3.7.8 定稿）：搜索框 → 「筛选」浮层（启用状态）
+           → 排序 → 结果读数与清除全部。已装节点没有来源站维度，行内不放站点 chip。 -->
+      <ui-filter-bar
+        [search]="q"
+        searchPlaceholder="搜索已装扩展或目录"
+        (searchChange)="q = $event"
+        [facets]="facetGroups"
+        [facetSelected]="facetSelected"
+        (facetChange)="onFacetChange($event)"
+        [sortOptions]="sortOptions"
+        [sort]="sort"
+        (sortChange)="setSort($event)"
         [count]="loading && !installed.length ? null : visibleInstalled.length"
         [total]="hasFilter ? installed.length : null"
         unit="个已安装"
+        [hasFilter]="hasFilter"
+        (clearAll)="clearAll()"
         [facts]="listFacts"
         [loading]="loading"
         [progress]="loading && installed.length ? '读取中…' : ''"
         refreshLabel="重新读取已装节点"
         (refresh)="load()"
-      >
-        <label class="cb-search">
-          <svg viewBox="0 0 16 16" aria-hidden="true">
-            <circle cx="7" cy="7" r="4.4" />
-            <path d="M10.3 10.3 13.6 13.6" />
-          </svg>
-          <input [(ngModel)]="q" placeholder="搜索已装扩展或目录" />
-        </label>
-
-        <div class="cb-chips" role="group" aria-label="按状态筛选">
-          <button class="cb-chip" [class.on]="statusFilter === 'all'" (click)="statusFilter = 'all'">
-            全部<b>{{ installed.length }}</b>
-          </button>
-          <button class="cb-chip" [class.on]="statusFilter === 'on'" (click)="statusFilter = 'on'">
-            已启用<b>{{ installed.length - disabledCount }}</b>
-          </button>
-          <button class="cb-chip" [class.on]="statusFilter === 'off'" (click)="statusFilter = 'off'">
-            已禁用<b>{{ disabledCount }}</b>
-          </button>
-        </div>
-
-        <div class="cb-tools">
-          <label class="cb-select" title="排序">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M3 4.2h10M3 8h7M3 11.8h4" />
-            </svg>
-            <select [(ngModel)]="sort" aria-label="排序">
-              <option value="name">按名称</option>
-              <option value="nodes">按节点数</option>
-              <option value="size">按大小</option>
-            </select>
-          </label>
-        </div>
-      </ui-collection-bar>
+      />
     }
 
     @if (checking || report || errorText || notice) {
@@ -84,7 +87,7 @@ import { PanelComponent } from '../ui/panel.component';
         <div class="notice info">正在扫描工作流并比对节点…</div>
       }
       @if (errorText) {
-        <div class="notice err">{{ errorText }}</div>
+        <div class="notice err" role="alert">{{ errorText }}</div>
       }
       @if (notice) {
         <div class="notice ok">{{ notice }}</div>
@@ -92,7 +95,7 @@ import { PanelComponent } from '../ui/panel.component';
 
       @if (!report && !checking) {
         <p class="nl-hint">
-          还没检测。点「开始检测」会对 {{ stats?.installed ? '全部' : '' }}工作流跑一遍依赖比对，
+          还没检测。点「检测缺失」会对 {{ stats?.installed ? '全部' : '' }}工作流跑一遍依赖比对，
           告诉你缺哪些扩展、能一键装哪个。
         </p>
       }
@@ -189,7 +192,6 @@ import { PanelComponent } from '../ui/panel.component';
       </ui-panel>
     }
   `,
-  styleUrls: ['../ui/collection-bar.css'],
   styles: `
     .nl-providers {
       display: flex;
@@ -314,9 +316,51 @@ export class NodeLibraryComponent implements OnInit, OnDestroy {
   q = '';
   statusFilter: 'all' | 'on' | 'off' = 'all';
   sort: 'name' | 'nodes' | 'size' = 'name';
+  readonly sortOptions = SORT_OPTIONS;
+  readonly viewOptions = VIEW_OPTIONS;
+  private router = inject(Router);
 
   get disabledCount(): number {
     return this.installed.filter((i) => i.disabled).length;
+  }
+
+  /** 「筛选」浮层里的分组：启用状态 */
+  get facetGroups(): FilterFacetGroup[] {
+    return [
+      {
+        key: 'status',
+        label: '启用状态',
+        options: [
+          { key: 'on', label: '已启用', count: this.installed.length - this.disabledCount },
+          { key: 'off', label: '已禁用', count: this.disabledCount },
+        ],
+      },
+    ];
+  }
+
+  get facetSelected(): Record<string, string[]> {
+    return { status: this.statusFilter === 'all' ? [] : [this.statusFilter] };
+  }
+
+  onFacetChange(e: FilterFacetChange): void {
+    if (e.group !== 'status') return;
+    this.statusFilter = e.on ? (e.key as 'on' | 'off') : 'all';
+  }
+
+  setSort(key: string): void {
+    this.sort = key as 'name' | 'nodes' | 'size';
+  }
+
+  /** 清除全部筛选 */
+  clearAll(): void {
+    this.q = '';
+    this.statusFilter = 'all';
+  }
+
+  /** 视图切换：本地库 ↔ 发现 */
+  onViewChange(key: string): void {
+    if (key === 'discover') this.router.navigate(['/nodes/discover']);
+    else this.router.navigate(['/nodes']);
   }
 
   /** 已装扩展提供的节点数（禁用的不算，它们不会被加载） */

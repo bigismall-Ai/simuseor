@@ -10,6 +10,14 @@ import { EmptyComponent } from '../ui/empty.component';
 import { FieldComponent } from '../ui/field.component';
 import { PageHeaderComponent } from '../ui/page-header.component';
 import { PanelComponent } from '../ui/panel.component';
+import {
+  CollectionFact,
+  FilterBarComponent,
+  FilterFacetChange,
+  FilterFacetGroup,
+  FilterSite,
+} from '../ui/filter-bar.component';
+import { ProbeService } from '../core/probe.service';
 
 @Component({
   selector: 'app-downloads',
@@ -20,6 +28,7 @@ import { PanelComponent } from '../ui/panel.component';
     BadgeComponent,
     EmptyComponent,
     FieldComponent,
+    FilterBarComponent,
     PageHeaderComponent,
     PanelComponent,
   ],
@@ -27,7 +36,7 @@ import { PanelComponent } from '../ui/panel.component';
     <ui-page-header
       kicker="Downloads"
       title="下载任务"
-      hint="解析仓库 → 自动挑权重 → aria2 下载。进度每秒刷新，断点续传由 .aria2 文件维护。"
+      hint="解析仓库 → 自动挑权重 → aria2 下载，断点续传由 .aria2 文件维护。"
     />
 
     <ui-panel kicker="New task" title="新建下载" hint="填模型 ID 即可解析；默认只列真实权重并自动归类，其他权重可展开。">
@@ -68,7 +77,8 @@ import { PanelComponent } from '../ui/panel.component';
       </div>
 
       @if (error) {
-        <div class="notice err">{{ error }}</div>
+        <!-- 错误态要能被读屏播报：role="alert" 是 VIS §7.2 的 E 态要求 -->
+        <div class="notice err" role="alert">{{ error }}</div>
       }
 
       @if (repo) {
@@ -113,11 +123,11 @@ import { PanelComponent } from '../ui/panel.component';
                 <table>
                   <thead>
                     <tr>
-                      <th class="col-check"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
-                      <th>文件</th>
-                      <th class="col-folder">目录</th>
-                      <th class="col-size">大小</th>
-                      <th class="col-progress">候选站点</th>
+                      <th class="col-check" scope="col"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll($event)"></th>
+                      <th scope="col">文件</th>
+                      <th class="col-folder" scope="col">目录</th>
+                      <th class="col-size" scope="col">大小</th>
+                      <th class="col-progress" scope="col">候选站点</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -147,15 +157,40 @@ import { PanelComponent } from '../ui/panel.component';
       }
     </ui-panel>
 
-    <ui-panel title="下载任务" hint="模型与工作流都在这里排队（断点续传由 aria2 维护）；节点包是 git 仓库，安装进度在节点管理页看。">
-      <div panel-actions class="segmented">
-        @for (t of taskTabs; track t.key) {
-          <button [class.active]="taskFilter === t.key" (click)="taskFilter = t.key">{{ t.label }}</button>
-        }
-      </div>
+    <!-- 一行筛选条（VIS §3.7.8 定稿）：搜索框 → 站点筛选（来源站）
+         → 「筛选」浮层（任务状态）→ 排序 → 结果读数与清除全部。 -->
+    <ui-filter-bar
+      [search]="taskQ"
+      searchPlaceholder="搜索任务，如模型 ID 或仓库名"
+      (searchChange)="taskQ = $event"
+      [sites]="taskSites"
+      [site]="taskSite"
+      (siteChange)="taskSite = $event"
+      [facets]="taskFacets"
+      [facetSelected]="taskFacetSelected"
+      (facetChange)="onTaskFacetChange($event)"
+      [sortOptions]="taskSortOptions"
+      [sort]="taskSort"
+      (sortChange)="setTaskSort($event)"
+      [count]="filteredTasks.length"
+      [total]="hasTaskFilter ? tasks.length : null"
+      unit="个任务"
+      [hasFilter]="hasTaskFilter"
+      (clearAll)="clearTaskFilters()"
+      [facts]="taskFacts"
+      refreshLabel="刷新任务列表"
+      (refresh)="refreshTasks()"
+    />
 
+    <ui-panel title="下载任务" hint="模型与工作流都在这里排队（断点续传由 aria2 维护）；节点包是 git 仓库，安装进度在节点管理页看。">
       @if (filteredTasks.length === 0) {
-        <ui-empty [title]="'暂无' + activeTabLabel + '任务'" hint="上方解析并开始下载后，任务会出现在这里。" />
+        @if (tasks.length === 0) {
+          <ui-empty title="还没有下载任务" hint="上方解析并开始下载后，任务会出现在这里。" />
+        } @else if (taskQ.trim()) {
+          <ui-empty [title]="'没有找到匹配「' + taskQ.trim() + '」的任务'" hint="换个关键词，或清掉搜索词看全部。" />
+        } @else {
+          <ui-empty title="这些筛选条件下没有任务" hint="放宽其中一个条件试试，或者一次全清。" />
+        }
       }
 
       @for (task of filteredTasks; track task.id) {
@@ -164,7 +199,8 @@ import { PanelComponent } from '../ui/panel.component';
             <span class="title">{{ task.repo_id }}</span>
             <ui-badge [tone]="statusTone(task.status)">{{ statusLabel(task.status) }}</ui-badge>
             @if (task.kind === 'workflow') {
-              <ui-badge tone="blue">工作流</ui-badge>
+              <!-- 「工作流」是任务**分类**不是状态：按 VIS §3.7.2 用中性胶囊，不占语义色 -->
+              <span class="pill">工作流</span>
             }
             <span class="mono muted">{{ task.strategy }}</span>
             <span class="meta">{{ fmtSize(task.done_bytes) }} / {{ fmtSize(task.total_bytes) }}</span>
@@ -197,11 +233,11 @@ import { PanelComponent } from '../ui/panel.component';
               <table>
                 <thead>
                   <tr>
-                    <th>文件</th>
-                    <th class="col-folder">目录</th>
-                    <th class="col-progress">进度</th>
-                    <th class="col-status">状态</th>
-                    <th class="col-url">来源 URL</th>
+                    <th scope="col">文件</th>
+                    <th class="col-folder" scope="col">目录</th>
+                    <th class="col-progress" scope="col">进度</th>
+                    <th class="col-status" scope="col">状态</th>
+                    <th class="col-url" scope="col">来源 URL</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -307,6 +343,16 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   selected = new Set<string>();
   tasks: Task[] = [];
   taskFilter = 'all';
+  /** 任务列表的搜索词（按模型 ID / 落盘目录找） */
+  taskQ = '';
+  /** 站点筛选（来源站）：'' = 全部站点 */
+  taskSite = '';
+  /** 任务排序 */
+  taskSort = 'created';
+  readonly taskSortOptions = [
+    { key: 'created', label: '按创建时间' },
+    { key: 'size', label: '按总大小' },
+  ];
   resolving = false;
   starting = false;
   error = '';
@@ -315,15 +361,11 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   private autoSource = '';
   private autoRepo = '';
 
-  taskTabs = [
-    { key: 'all', label: '全部' },
-    { key: 'active', label: '进行中' },
-    { key: 'completed', label: '已完成' },
-  ];
-
-  constructor(private api: ApiService, private route: ActivatedRoute) {}
+  constructor(private api: ApiService, private route: ActivatedRoute, private probe: ProbeService) {}
 
   ngOnInit(): void {
+    // 探针结论决定哪些来源站可选（不可达 / 未探测的灰置不可点）
+    this.probe.ensure();
     this.route.queryParams.subscribe((p) => {
       this.showDemo = p['demo'] === '1';
       if (p['source'] && p['repo_id']) {
@@ -367,17 +409,113 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     return this.showDemo ? [...this.sourceKeys, 'demo'] : this.sourceKeys;
   }
 
-  get filteredTasks(): Task[] {
-    if (this.taskFilter === 'all') return this.tasks;
-    if (this.taskFilter === 'active') {
-      return this.tasks.filter((t) => !['completed', 'failed', 'canceled'].includes(t.status));
+  /** 叠了搜索与来源、但没叠状态的任务（状态 chip 上的数字按这个口径算） */
+  private taskBase(): Task[] {
+    const q = this.taskQ.trim().toLowerCase();
+    let list = this.tasks;
+    if (q) {
+      list = list.filter((t) =>
+        `${t.repo_id} ${t.target_dir || ''} ${t.source}`.toLowerCase().includes(q),
+      );
     }
-    return this.tasks.filter((t) => t.status === this.taskFilter);
+    if (this.taskSite) list = list.filter((t) => t.source === this.taskSite);
+    return list;
   }
 
-  get activeTabLabel(): string {
-    const tab = this.taskTabs.find((t) => t.key === this.taskFilter);
-    return tab && tab.key !== 'all' ? tab.label : '';
+  get filteredTasks(): Task[] {
+    let list = this.taskBase();
+    if (this.taskFilter === 'active') {
+      list = list.filter((t) => !['completed', 'failed', 'canceled'].includes(t.status));
+    } else if (this.taskFilter !== 'all') {
+      list = list.filter((t) => t.status === this.taskFilter);
+    }
+    return this.sortTasks(list);
+  }
+
+  private sortTasks(list: Task[]): Task[] {
+    const arr = list.slice();
+    if (this.taskSort === 'size') {
+      arr.sort((a, b) => (b.total_bytes || 0) - (a.total_bytes || 0));
+    } else {
+      arr.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+    }
+    return arr;
+  }
+
+  setTaskSort(key: string): void {
+    this.taskSort = key;
+  }
+
+  /** 站点筛选（行内 chip 行）：可下载的来源站 ＋ 探针门控 */
+  get taskSites(): FilterSite[] {
+    const list: FilterSite[] = [{ key: '', label: '全部站点' }];
+    for (const k of this.visibleSourceKeys) {
+      list.push({
+        key: k,
+        label: this.settings?.sources?.[k]?.label || k,
+        disabled: this.probe.isGated(k),
+        tip: this.probe.tip(k),
+      });
+    }
+    return list;
+  }
+
+  /** 「筛选」浮层里的分组：任务状态 */
+  get taskFacets(): FilterFacetGroup[] {
+    const base = this.taskBase();
+    const count = (key: string) => {
+      if (key === 'active') {
+        return base.filter((t) => !['completed', 'failed', 'canceled'].includes(t.status)).length;
+      }
+      return base.filter((t) => t.status === key).length;
+    };
+    return [
+      {
+        key: 'status',
+        label: '任务状态',
+        options: [
+          { key: 'active', label: '进行中', count: count('active') },
+          { key: 'completed', label: '已完成', count: count('completed') },
+          { key: 'failed', label: '失败', count: count('failed') },
+          { key: 'canceled', label: '已取消', count: count('canceled') },
+        ],
+      },
+    ];
+  }
+
+  get taskFacetSelected(): Record<string, string[]> {
+    return { status: this.taskFilter === 'all' ? [] : [this.taskFilter] };
+  }
+
+  onTaskFacetChange(e: FilterFacetChange): void {
+    if (e.group !== 'status') return;
+    this.taskFilter = e.on ? e.key : 'all';
+  }
+
+  get hasTaskFilter(): boolean {
+    return !!this.taskQ.trim() || !!this.taskSite || this.taskFilter !== 'all';
+  }
+
+  /** 清除全部筛选 */
+  clearTaskFilters(): void {
+    this.taskQ = '';
+    this.taskSite = '';
+    this.taskFilter = 'all';
+  }
+
+  /** 事实槽：任务分布（只读聚合） */
+  get taskFacts(): CollectionFact[] {
+    const base = this.taskBase();
+    const active = base.filter((t) => !['completed', 'failed', 'canceled'].includes(t.status)).length;
+    const done = base.filter((t) => t.status === 'completed').length;
+    const failed = base.filter((t) => t.status === 'failed').length;
+    return [
+      { label: '进行中', value: String(active), title: '正在下载或排队中的任务' },
+      { label: '已完成', value: String(done), title: '已经下完的任务' },
+      failed
+        ? { label: '失败', value: String(failed), tone: 'err' as const, title: '下载失败的任务' }
+        : { label: '失败', value: '0', title: '当前没有失败的任务' },
+    ];
   }
 
   private tryAutoResolve(): void {

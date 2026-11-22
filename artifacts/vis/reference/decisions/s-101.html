@@ -13,18 +13,18 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.16</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.18</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.16 · 2026</small>
+      <small>VIS v2.18 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.16</p>
+  <p class="kicker">SiMuseor · VIS v2.18</p>
   <h1 id="s-101">主理人裁决记录（v1.0 收口）</h1>
   <p class="doc-sub">10 裁决与附录 · 本章共 4 节</p>
 </div>
@@ -40,11 +40,14 @@
       <tr><td>3</td><td>组件 scoped 30 处审计盲区</td><td><strong>按全量口径写入手册补遗，Phase 1 / 2 双文档冻结不动</strong>：字重 <strong>26 处</strong>、<code>--faint</code> 文本 <strong>39 处</strong>并入 M1 补充批次；<code>cover-plate</code> 的 3 处圆角定性为<strong>「适用域外」</strong>（封面铭牌是独立图形子系统），<strong>不收敛、不登记为第三类例外</strong>；其余 1 处并入 M1</td></tr>
       <tr><td>4</td><td>品牌层六枚 <code>--brand-*</code> 深色映射</td><td><strong>认可不改</strong>：固定 HEX + 语义别名做深色反白映射，符合「反白靠双份 SVG 资产，不是 CSS 取色」；零覆盖校验已 PASS</td></tr>
       <tr><td>5</td><td>深色主按钮 hover <code>--primary-hover</code> 4.47:1 不达 AA</td><td><strong>采纳方案 A</strong>：<code>button.primary:hover</code> 保持 <code>background:var(--primary)</code> + <code>--on-primary</code> 白字，仅以 <code>border-color:var(--accent)</code> 作 1px 装饰描边（3.15:1 ≥ 3:1）。<strong>不改任何 token 值、不新增第 16 项冲突</strong>；并入 M1-d 与脚本 1.11，双主题维持 6.29:1</td></tr>
+      <tr><td>6</td><td>页头的「区」与「视图」要不要分层</td><td><strong>分层〔已定稿〕</strong>：kicker 只标<strong>区</strong>（Models / Workflows / Nodes），<strong>视图</strong>（本地库 / 发现）改用 <code>.segmented</code> 表达，不再拼进 kicker 字符串。四区结构 = kicker（区）/ title + 视图切换 / hint（≤1 句）/ 右侧动作区（≤1 主 + ≤1 次，无则留空），取值与范围见 <strong>§3.7.7</strong>，视觉参考见原型页 <a href="../../prototypes/page-header.html">页头与搜索筛选</a>（6 个页头实例）。<strong>另两套排布一并撤掉</strong>，原型页不留比选区块。三处代价按定稿一并落地。</td></tr>
+      <tr><td>7</td><td>搜索 + 筛选要不要统一视觉</td><td><strong>〔提案 · 等主理人定稿〕</strong>：产品侧壳已统一（<code>ui-collection-bar</code> = 状态行 + 筛选行，六页共用），不统一的是壳里面的写法 —— 搜索 3 套、筛选 3 套控件、排序 2 套、空结果三态只分两档、「清除全部筛选」0 处。统一口径与<strong>空结果三态</strong>见 <strong>§3.7.8</strong>；三套候选排布 A 工具条式 / B 双行分层 / C 侧栏分面（<strong>推荐 A</strong>）见原型页「搜索 + 筛选」区块。</td></tr>
     </tbody>
   </table>
   <p class="hint">
-    <strong>仍需主理人拍板的两件事</strong>：① <strong>LOGO 冻结</strong>（先裁「负形 D / 正形 L1」路线，再定字形、叶数、横竖版）—— M3 唯一门禁；
-    ② 将来是否把正文统一到 Inter（须单独排期 + 截图回归）。<code>cover-plate</code> 3 处圆角已按裁决 3 定性为「适用域外」，<strong>不再是待拍板项</strong>。<strong>M0–M2 不需要等这两件事。</strong>
+    <strong>仍需主理人定稿的三件事</strong>：① <strong>LOGO 冻结</strong>（先裁「负形 D / 正形 L1」路线，再定字形、叶数、横竖版）—— M3 唯一门禁；
+    ② 将来是否把正文统一到 Inter（须单独排期 + 截图回归）；③ <strong>搜索 + 筛选统一方案选哪套排布</strong>（§3.7.8 / 裁决 7）—— 原型已出，<strong>推荐方案 A（工具条式）</strong>。
+    <code>cover-plate</code> 3 处圆角已按裁决 3 定性为「适用域外」，<strong>不再是待定项</strong>。统一页头（裁决 6）已定稿，<strong>不再在这三件事里</strong>。<strong>M0–M2 不需要等这三件事。</strong>
   </p>
 </section>
     </div>

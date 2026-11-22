@@ -1,5 +1,6 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { focusFirst, rememberFocus, restoreFocus } from './core/a11y';
 import { ThemeService, type ThemePref } from './core/theme.service';
 
 /** 「发现」这一支下的页面。精确匹配——`/nodes/installed` 属于资产，不能被 `/nodes` 捡走 */
@@ -37,7 +38,7 @@ const OPEN_KEY = 'md-nav-discover';
 
         <nav class="nav">
           <p class="nav-group">资产与发现</p>
-          <a class="nav-item" routerLink="/workflows" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-item" routerLink="/workflows" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <rect x="1.5" y="2.5" width="4" height="3" rx="0.6" />
               <rect x="10.5" y="10.5" width="4" height="3" rx="0.6" />
@@ -46,13 +47,13 @@ const OPEN_KEY = 'md-nav-discover';
             </svg>
             <span>工作流</span>
           </a>
-          <a class="nav-item" routerLink="/models" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-item" routerLink="/models" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M3 3h10v10H3zM5 6h6M5 9h6" />
             </svg>
             <span>模型库</span>
           </a>
-          <a class="nav-item" routerLink="/nodes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-item" routerLink="/nodes" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M2 2h5v5H2zM9 9h5v5H9zM2 9h5v5H2zM9 2h5v5H9z" />
             </svg>
@@ -81,15 +82,15 @@ const OPEN_KEY = 'md-nav-discover';
 
           @if (discoverOpen()) {
             <div class="nav-sub" id="nav-discover" role="group" aria-label="发现">
-              <a class="nav-sub-item" routerLink="/workflows/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">工作流</a>
-              <a class="nav-sub-item" routerLink="/models/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">模型</a>
-              <a class="nav-sub-item" routerLink="/nodes/discover" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">节点</a>
-              <a class="nav-sub-item" routerLink="/downloads" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">下载任务</a>
+              <a class="nav-sub-item" routerLink="/workflows/discover" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">工作流</a>
+              <a class="nav-sub-item" routerLink="/models/discover" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">模型</a>
+              <a class="nav-sub-item" routerLink="/nodes/discover" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">节点</a>
+              <a class="nav-sub-item" routerLink="/downloads" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">下载任务</a>
             </div>
           }
 
           <p class="nav-group">基础设置</p>
-          <a class="nav-item" routerLink="/environments" routerLinkActive="active">
+          <a class="nav-item" routerLink="/environments" routerLinkActive="active" ariaCurrentWhenActive="page">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <circle cx="3.5" cy="8" r="1.6" />
               <circle cx="12.5" cy="4" r="1.6" />
@@ -98,7 +99,7 @@ const OPEN_KEY = 'md-nav-discover';
             </svg>
             <span>环境管理</span>
           </a>
-          <a class="nav-item" routerLink="/settings" routerLinkActive="active">
+          <a class="nav-item" routerLink="/settings" routerLinkActive="active" ariaCurrentWhenActive="page">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M2 5h12M2 11h12" />
               <circle cx="6" cy="5" r="1.8" />
@@ -113,7 +114,7 @@ const OPEN_KEY = 'md-nav-discover';
             <button
               type="button"
               class="theme-toggle"
-              (click)="themeMenu.set(!themeMenu())"
+              (click)="toggleTheme()"
               [attr.aria-expanded]="themeMenu()"
               aria-haspopup="dialog"
             >
@@ -126,8 +127,9 @@ const OPEN_KEY = 'md-nav-discover';
             </button>
 
             @if (themeMenu()) {
-              <div class="theme-pop" role="dialog" aria-label="外观">
-                <p class="tp-title">外观</p>
+              <!-- 非模态弹层：命名交给可见标题，焦点进出由 toggleTheme 管（VIS §7.2） -->
+              <div #themePop class="theme-pop" role="dialog" aria-labelledby="theme-pop-title">
+                <p class="tp-title" id="theme-pop-title">外观</p>
                 @for (opt of themeOptions; track opt.value) {
                   <button
                     type="button"
@@ -165,6 +167,7 @@ export class AppComponent {
   /** 默认展开；收起后记住，下次进来保持原样 */
   readonly discoverOpen = signal(localStorage.getItem(OPEN_KEY) !== '0');
   readonly themeMenu = signal(false);
+  @ViewChild('themePop') themePop?: ElementRef<HTMLElement>;
   /** 当前地址，用来判断「发现」这一支是否处于激活态 */
   private readonly url = signal('');
 
@@ -222,7 +225,25 @@ export class AppComponent {
 
   @HostListener('window:keydown.escape')
   onEscape(): void {
+    if (!this.themeMenu()) return;
     this.themeMenu.set(false);
+    // 焦点还在被销毁的弹层里，必须还回触发按钮，否则键盘用户会掉到 body 上
+    restoreFocus();
+  }
+
+  /**
+   * 外观弹层开关：打开时焦点进去，关闭时（Esc）还回来。
+   *
+   * 走外面点的关闭不还焦点 —— 焦点已经跟着用户的点击走到别处了，抢回来是添乱。
+   */
+  toggleTheme(): void {
+    if (this.themeMenu()) {
+      this.themeMenu.set(false);
+      return;
+    }
+    rememberFocus();
+    this.themeMenu.set(true);
+    setTimeout(() => focusFirst(this.themePop?.nativeElement));
   }
 
   /**

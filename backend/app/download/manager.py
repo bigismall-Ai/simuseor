@@ -14,6 +14,7 @@ from ..config import (
     load_settings,
     resolve_save_dir,
 )
+from .. import source_gate
 from ..db import execute, new_id, now_iso, query
 from ..source_urls import source_page_url
 from ..sources import get_adapter
@@ -115,16 +116,26 @@ class DownloadManager:
         src_cfg = settings["sources"].get(source)
         if not src_cfg:
             raise SourceError(f"未配置的下载源: {source}")
+        # 探针判 down 的源被门控：下载链路不向它发请求（规格 §3.1）。
+        # 只有 down 才拦；没探过（unknown）照常放行 —— 否则第一次打开应用就下不了任何东西。
+        if source_gate.is_gated(source, settings):
+            label = str(src_cfg.get("label") or source)
+            raise SourceError(f"{label} 当前不可用（探针判定三条通路都不通），已阻止发请求")
         adapter = get_adapter(source)
+        # 发现与下载走同一条通路：按探针缓存选路，两条链路读同一份结论（规格 §3.6.2 层级三）。
+        path = source_gate.effective_path(source, settings)
+        src_cfg = source_gate.route_cfg(src_cfg, source, path)
         repo = adapter.resolve(repo_id, revision or "", src_cfg)
         selected = {p for p in file_paths if p}
         files = [f for f in repo.files if not selected or f.path in selected]
         if not files:
             raise SourceError("没有选中任何文件")
 
-        strategy = (
+        requested = (
             strategy or settings["download"].get("strategy") or settings.get("default_strategy") or "mirror"
         ).lower()
+        # 探针有结论时以选中的通路为准；显式点名 sdk 的仍走 SDK 分支（该分支保留不动）。
+        strategy = requested if requested == "sdk" else (path or requested)
         base_dir = Path(resolve_save_dir(save_dir)) if save_dir else Path(settings["download"]["save_dir"])
         # 统一落到 ComfyUI 目录结构（checkpoints/loras/...），不再按来源分目录。
         # 分体仓库（Flux / SD3）的 transformer、text_encoder、vae 属于不同目录，
@@ -158,9 +169,9 @@ class DownloadManager:
         ts = now_iso()
         total = sum(f.size for f in files)
         execute(
-            "INSERT INTO tasks (id, source, repo_id, revision, strategy, save_dir, target_dir, status, total_bytes, done_bytes, created_at, updated_at)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            (task_id, source, repo.repo_id, repo.revision, strategy, str(base_dir), str(target), "pending", total, 0, ts, ts),
+            "INSERT INTO tasks (id, source, repo_id, revision, strategy, path, save_dir, target_dir, status, total_bytes, done_bytes, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (task_id, source, repo.repo_id, repo.revision, strategy, path, str(base_dir), str(target), "pending", total, 0, ts, ts),
         )
         for f in files:
             execute(
@@ -195,6 +206,8 @@ class DownloadManager:
             return
         execute("UPDATE tasks SET status='downloading', updated_at=? WHERE id=?", (now_iso(), task_id))
         src_cfg = load_settings()["sources"].get(task["source"], {})
+        # 通路写进源配置：下载线程据此决定走官方地址、镜像还是代理
+        src_cfg = source_gate.route_cfg(src_cfg, task["source"], str(task.get("path") or ""))
         adapter = get_adapter(task["source"])
         target = Path(task["target_dir"])
         rows = query("SELECT * FROM task_files WHERE task_id=? AND status IN ('queued','active')", (task_id,))
@@ -210,8 +223,9 @@ class DownloadManager:
             threading.Thread(target=self._sdk_download, args=(task_id, repo_id, revision, rows, target, src_cfg), daemon=True).start()
             return
 
+        path = str(task.get("path") or "")
         for index, row in enumerate(rows):
-            threading.Thread(target=self._aria2_file, args=(task_id, row, target, task["strategy"], src_cfg, index), daemon=True).start()
+            threading.Thread(target=self._aria2_file, args=(task_id, row, target, task["strategy"], src_cfg, index, path), daemon=True).start()
 
     # ---------------- 策略实现 ----------------
     @staticmethod
@@ -233,11 +247,44 @@ class DownloadManager:
         proxy 策略是「这一次强制走代理」，覆盖每源的 proxy_enabled；
         其余策略仍只看每源开关 —— 不然用户点一次「代理优先」还得回去改所有源。
         """
+        route = (src_cfg or {}).get("_route")
+        if route == "proxy":
+            return True
+        if route in ("direct", "mirror"):
+            # 探针已经选定了通路：直连与镜像都不套代理
+            return False
         return strategy == "proxy" or bool((src_cfg or {}).get("proxy_enabled"))
 
-    def _pick_url(self, candidates: list[str], strategy: str, index: int, src_cfg: dict | None = None) -> str:
+    @staticmethod
+    def _pick_path_url(candidates: list[str], src_cfg: dict | None, path: str) -> str:
+        """按探针选定的通路挑地址。
+
+        新口径（规格 §3.6.1）：mirror 的意思是「就走镜像这条通路」，
+        不是旧口径的「镜像优先 ＋ 失败换站重试」。镜像地址由 src_cfg['mirror'] 认
+        （HF 的 hf-mirror、GH 的加速前缀）：选「镜像」取镜像地址，
+        选「直连 / 代理」取官方地址。
+        """
         if not candidates:
             return ""
+        mirror = DownloadManager._mirror_host(src_cfg)
+
+        def host_of(url: str) -> str:
+            return url.split("/")[2] if "://" in url else ""
+
+        if path == "mirror" and mirror:
+            for url in candidates:
+                if host_of(url) == mirror:
+                    return url
+        for url in candidates:
+            if not mirror or host_of(url) != mirror:
+                return url
+        return candidates[0]
+
+    def _pick_url(self, candidates: list[str], strategy: str, index: int, src_cfg: dict | None = None, path: str = "") -> str:
+        if not candidates:
+            return ""
+        if path:
+            return self._pick_path_url(candidates, src_cfg, path)
         if strategy == "direct" or strategy == "proxy":
             skip = self._mirror_host(src_cfg)
             for url in candidates:
@@ -256,11 +303,11 @@ class DownloadManager:
             return hosts[picked][0] if picked else candidates[0]
         return candidates[0]
 
-    def _aria2_file(self, task_id: str, row: dict, target: Path, strategy: str, src_cfg: dict, index: int) -> None:
+    def _aria2_file(self, task_id: str, row: dict, target: Path, strategy: str, src_cfg: dict, index: int, path: str = "") -> None:
         if task_id in self._canceled:
             return
         candidates = json.loads(row.get("candidates") or "[]")
-        url = self._pick_url(candidates, strategy, index, src_cfg)
+        url = self._pick_url(candidates, strategy, index, src_cfg, path)
         if not url:
             execute("UPDATE task_files SET status='failed', error='无可用下载地址' WHERE id=?", (row["id"],))
             return
@@ -289,9 +336,9 @@ class DownloadManager:
                 (gid, url, row["id"]),
             )
         except (Aria2Error, Exception) as exc:  # noqa: BLE001
-            self._fallback_or_fail(task_id, row, candidates, target, strategy, src_cfg, index, str(exc))
+            self._fallback_or_fail(task_id, row, candidates, target, strategy, src_cfg, index, str(exc), path)
 
-    def _fallback_or_fail(self, task_id, row, candidates, target, strategy, src_cfg, index, error):
+    def _fallback_or_fail(self, task_id, row, candidates, target, strategy, src_cfg, index, error, path: str = ""):
         """当前 URL 失败时尝试候选里的下一个站点（多站点回退）。"""
         current = row.get("url") or ""
         rest = [u for u in candidates if u != current]
@@ -303,7 +350,7 @@ class DownloadManager:
             new_row = dict(row)
             new_row["candidates"] = json.dumps(rest)
             execute("UPDATE task_files SET candidates=?, error=? WHERE id=?", (json.dumps(rest), error, row["id"]))
-            self._aria2_file(task_id, new_row, target, strategy, src_cfg, index)
+            self._aria2_file(task_id, new_row, target, strategy, src_cfg, index, path)
         else:
             execute("UPDATE task_files SET status='failed', error=? WHERE id=?", (error[:500], row["id"]))
 
@@ -414,9 +461,14 @@ class DownloadManager:
                 task = self._task_row(row["task_id"])
                 candidates = json.loads(row.get("candidates") or "[]")
                 if len([u for u in candidates if u != (row.get("url") or "")]) > 0:
+                    src_cfg = source_gate.route_cfg(
+                        load_settings()["sources"].get(task["source"], {}),
+                        task["source"],
+                        str(task.get("path") or ""),
+                    )
                     self._fallback_or_fail(
                         row["task_id"], row, candidates, Path(task["target_dir"]), task["strategy"],
-                        load_settings()["sources"].get(task["source"], {}), 0, f"aria2 error {status.get('errorCode')}",
+                        src_cfg, 0, f"aria2 error {status.get('errorCode')}", str(task.get("path") or ""),
                     )
                 else:
                     execute("UPDATE task_files SET status='failed', error=? WHERE id=?", (f"aria2 error {status.get('errorCode')}", row["id"]))

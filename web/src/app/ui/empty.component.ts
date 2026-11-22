@@ -6,7 +6,8 @@ import { Component, Input } from '@angular/core';
   template: `
     <div class="ui-empty">
       @if (icon) {
-        <div class="ui-empty-icon">{{ icon }}</div>
+        <!-- 装饰性图形不进可访问名：空状态该被读到的是标题与提示（VIS §7.1 / §7.3） -->
+        <div class="ui-empty-icon" aria-hidden="true">{{ icon }}</div>
       }
       <p class="ui-empty-title">{{ title }}</p>
       @if (hint) {

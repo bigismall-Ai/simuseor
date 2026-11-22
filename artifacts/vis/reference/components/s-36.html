@@ -13,42 +13,64 @@
   <aside class="app-side">
     <div class="app-brand">
       <span class="brand-mark"><img src="../../assets/cicada/svg/cicada-mid.svg" alt="" /></span>
-      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.16</small></span>
+      <span class="brand-wordmark">SiMuseor<small class="brand-sub">视觉规范 VIS v2.18</small></span>
     </div>
     <nav class="app-nav" id="app-nav" aria-label="主导航"></nav>
     <div class="app-side-foot">
       <button class="btn-toggle" id="theme-btn" type="button" aria-label="切换明暗主题">切换主题</button>
-      <small>VIS v2.16 · 2026</small>
+      <small>VIS v2.18 · 2026</small>
     </div>
   </aside>
   <main class="app-main">
     <div class="wrap">
 <div class="doc-head">
-  <p class="kicker">SiMuseor · VIS v2.16</p>
+  <p class="kicker">SiMuseor · VIS v2.18</p>
   <h1 id="s-36">页头</h1>
   <p class="doc-sub">COMPONENTS 组件 · 本章共 12 节</p>
 </div>
 
 <section id="sec-components-s-36" class="ref">
+  <p class="lead">
+    页头统一结构（§3.7.7）：<strong>kicker 只标「区」</strong>、<strong>视图切换是控件</strong>、<strong>hint 至多一句</strong>、<strong>右侧至多一主一次</strong>。
+    视觉参考见原型页 <a href="../../prototypes/page-header.html">页头与搜索筛选</a>（6 个页头实例 · 现状对照表 · 三处代价）—— <strong>已定稿</strong>。
+  </p>
+  <h4>目 · 分层页头（已定稿）</h4>
   <div class="ui-page-header">
     <div class="ui-page-heading">
       <p class="ui-page-kicker">
-        Library
+        Models
       </p>
-      <h1>
-        模型库
-      </h1>
+      <div style="display:flex;align-items:center;gap:10px">
+        <h1>
+          模型库
+        </h1>
+        <div class="segmented" role="group" aria-label="视图切换">
+          <button type="button" class="active" aria-pressed="true">本地库</button>
+          <button type="button" aria-pressed="false">发现</button>
+        </div>
+      </div>
       <p class="ui-page-hint">
-        已落盘的模型。点击卡片查看详情。
+        你的模型资产：装了什么、占多大、能不能跑。
       </p>
     </div>
     <div class="ui-page-actions">
-      <button class="primary" type="button">刷新</button>
+      <button class="primary" type="button">扫描入库</button>
     </div>
   </div>
   <p class="hint">
     kicker 10px/600/<code>.11em</code>/uppercase · h1 22px/600/<code>-.022em</code> · hint 12.5px/var(--muted) ·
     页头 <code>margin-bottom:20px</code>。中文 kicker 禁 uppercase、<code>letter-spacing:0</code>（§7.5）。
+  </p>
+  <p class="hint">
+    <strong>四区取值（§3.7.7）</strong>：① kicker = 区名（Models / Workflows / Nodes，<strong>不再拼视图名</strong>）·
+    ② title + 视图切换（<code>.segmented</code>，§3.7.3 已登记的视图切换控件）· ③ hint 至多 1 句 / ≤40 字 ·
+    ④ 右侧动作区至多 1 个主按钮 + 1 个次要按钮，同排右对齐不换行，<strong>无动作则整区留空</strong>。
+    范围内 6 页（工作流 / 模型库 / 节点管理 × 本地库 / 发现）；下载任务 / 设置 / 环境管理为单页区，不做视图切换。
+  </p>
+  <p class="hint">
+    <strong>定稿落地与三处代价（§3.7.7 / 裁决 6）</strong>：本地页撤掉「去发现」主按钮、由 segmented 承担，本地页剩下的那个动作升为主按钮；
+    发现页动作区整区留空（刷新已在状态条右端）；工作流 / 节点四条 hint 按「每页至多一句」新拟。
+    <strong>搜索 + 筛选的统一视觉方案见 <a href="../../prototypes/page-header.html">原型页</a>的「搜索 + 筛选」区块</strong>（§3.7.8 / 裁决 7）。
   </p>
 </section>
     </div>

@@ -1,6 +1,7 @@
 """REST API：设置 / 解析 / 任务 / 本地模型库 / 代理测试 / 目录选择。"""
 from __future__ import annotations
 
+import copy
 import os
 import shutil
 import subprocess
@@ -15,6 +16,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .. import cache, covers as cover_service
+from .. import probe, source_gate
 from .. import hot_board
 from .. import image_proxy
 from ..comfy.model_dirs import infer_folder, plan_folders
@@ -186,9 +188,29 @@ def get_settings() -> dict:
     return s
 
 
+def _probe_inputs_changed(before: dict, after: dict) -> bool:
+    """这次的保存有没有动到「线路本身」。
+
+    动到的：全局代理地址、某站的镜像地址 / 逐源代理开关 / 优先镜像开关。
+    没动到的：下载策略、token、完整目录开关、下载目录 —— 这些换了不该让探针重测。
+    """
+    if (before.get("proxy") or {}) != (after.get("proxy") or {}):
+        return True
+    srcs_before = before.get("sources") or {}
+    srcs_after = after.get("sources") or {}
+    for key in set(srcs_before) | set(srcs_after):
+        a = srcs_before.get(key) or {}
+        b = srcs_after.get(key) or {}
+        for field in ("mirror", "proxy_enabled", "use_mirror"):
+            if bool(a.get(field)) != bool(b.get(field)):
+                return True
+    return False
+
+
 @router.put("/settings")
 def put_settings(body: dict) -> dict:
     current = load_settings()
+    before = copy.deepcopy(current)
     for key, value in body.items():
         if isinstance(value, dict) and isinstance(current.get(key), dict):
             current[key].update(value)
@@ -197,7 +219,28 @@ def put_settings(body: dict) -> dict:
     saved = save_settings(current)
     # token / 完整目录 / 代理都会改变搜索结果，不能留着旧缓存
     cache.clear_search()
+    # 探针结论只在「线路真变了」时作废（规格 §2.4）：改代理地址、改某站镜像或
+    # 逐源代理开关。改下载策略、填 token 都不动缓存 —— 那些不影响通路本身。
+    if _probe_inputs_changed(before, current):
+        probe.invalidate()
     return saved
+
+
+# ---------------- 源探针（可达性 + 测速） ----------------
+@router.get("/probe")
+def probe_status() -> dict:
+    """全部源的最新探针结论 + 下载策略汇总。
+
+    结论与速度写在**同一份**进程内缓存里（可达 15 / 降级 10 / 不可达 3 分钟），
+    下载与发现两条链路读的就是这份结论。没探过的源标 unknown（不门控），后台补探一轮。
+    """
+    return probe.status()
+
+
+@router.post("/probe/refresh")
+def probe_refresh() -> dict:
+    """强制重探一轮 —— 设置页的「重新测试连通性」。"""
+    return probe.refresh()
 
 
 # ---------------- 解析 ----------------
@@ -867,7 +910,13 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
         names = ["huggingface", "modelscope", "civitai"]
 
     def run(name: str) -> tuple[str, dict | None, str]:
-        cfg = settings["sources"].get(name) or {}
+        # 探针判 down 的源被门控：不向它发请求（规格 §3.1）。
+        # unknown（没探过）不门控 —— 第一次打开应用时所有源都还在。
+        if source_gate.is_gated(name, settings):
+            gated.append(name)
+            return name, None, ""
+        # 发现与下载走同一条通路：读同一份探针缓存结论（规格 §3.6.2 层级三）
+        cfg = source_gate.routed_source_cfg(name, settings)
         try:
             return name, get_adapter(name).search(q, limit, page, sort, cfg, task), ""
         except SourceError as exc:
@@ -876,6 +925,7 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
     items: list[dict] = []
     total = 0
     errors: dict[str, str] = {}
+    gated: list[str] = []
     if len(names) == 1:
         results = [run(names[0])]
     else:
@@ -885,6 +935,9 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
         if err:
             errors[name] = err
             continue
+        if result is None:
+            # 被门控的源：不发请求，也没有结果
+            continue
         items.extend(result["items"])
         total += result["total"]
 
@@ -892,9 +945,10 @@ def search_models(q: str = "", source: str = "", sort: str = "downloads", limit:
         items.sort(key=lambda x: x.get("downloads") or 0, reverse=True)
     elif sort == "likes":
         items.sort(key=lambda x: x.get("likes") or 0, reverse=True)
-    payload = {"items": items, "total": total, "errors": errors}
-    # 有源失败时不写缓存：一次网络抖动不该把空列表钉住 20 分钟
-    if not errors:
+    payload = {"items": items, "total": total, "errors": errors, "gated": gated}
+    # 有源失败时不写缓存：一次网络抖动不该把空列表钉住 20 分钟。
+    # 被门控的源同样不写 —— 源恢复后要能立刻搜到。
+    if not errors and not gated:
         cache.put_search(key, payload)
     return payload
 
