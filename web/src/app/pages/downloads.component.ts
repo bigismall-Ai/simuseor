@@ -106,6 +106,21 @@ import { ProbeService } from '../core/probe.service';
             </button>
           </div>
 
+          @if (restoreNote === 'exact') {
+            <div class="notice ok mt">
+              已按上次下载恢复 {{ restoreCount }} 个文件并勾选；确认无误后点「开始下载」。
+            </div>
+          } @else if (restoreNote === 'partial') {
+            <div class="notice mt">
+              原仓库当前只找到 {{ restoreCount }} / {{ restoreWanted }} 个原文件，已勾选找到的部分；
+              缺失项可能已被仓库移除或改过 revision。
+            </div>
+          } @else if (restoreNote === 'fallback') {
+            <div class="notice info mt">
+              原文件已不在当前仓库版本里，已按默认匹配权重重新勾选；请确认后再下载。
+            </div>
+          }
+
           @if (allWeights.length === 0) {
             <div class="notice mt">
               这个仓库里没有可下载的权重文件。config / tokenizer / README 等非权重文件已隐藏。
@@ -359,7 +374,15 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   showDemo = false;
   private timer: ReturnType<typeof setInterval> | null = null;
   private autoSource = '';
+  // autoRepo / autoRevision / autoFiles 只在 URL 自动解析时使用；手工操作不会碰它们
   private autoRepo = '';
+  private autoRevision = '';
+  /** 「重新下载」带过来的原文件路径：解析完成后精确勾回 */
+  private autoFiles: string[] = [];
+  /** exact = 原文件全部勾回；partial = 只找回一部分；fallback = 原文件不在当前仓库 */
+  restoreNote: '' | 'exact' | 'partial' | 'fallback' = '';
+  restoreCount = 0;
+  restoreWanted = 0;
 
   constructor(private api: ApiService, private route: ActivatedRoute, private probe: ProbeService) {}
 
@@ -368,6 +391,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     this.probe.ensure();
     this.route.queryParams.subscribe((p) => {
       this.showDemo = p['demo'] === '1';
+      this.autoFiles = this.readFilesParam(p['files']);
+      this.autoRevision = typeof p['revision'] === 'string' ? p['revision'] : '';
+      this.restoreNote = '';
+      this.restoreCount = 0;
       if (p['source'] && p['repo_id']) {
         this.autoSource = p['source'];
         this.autoRepo = p['repo_id'];
@@ -518,6 +545,17 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     ];
   }
 
+  /** `files` 可能是重复参数（string[]）或逗号分隔（string），两种都收 */
+  private readFilesParam(v: unknown): string[] {
+    if (Array.isArray(v)) {
+      return v.filter((x): x is string => typeof x === 'string' && !!x.trim()).map((x) => x.trim());
+    }
+    if (typeof v === 'string') {
+      return v.split(',').map((x) => x.trim()).filter(Boolean);
+    }
+    return [];
+  }
+
   private tryAutoResolve(): void {
     if (!this.autoSource || !this.autoRepo || !this.settings) return;
     if (!this.settings.sources?.[this.autoSource]) {
@@ -527,8 +565,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     this.source = this.autoSource;
     this.strategy = this.settings.download?.strategy || this.settings.default_strategy || 'direct';
     this.repoId = this.autoRepo;
-    this.revision = '';
+    // 重新下载要回到当初的版本（HF commit / 分支，Civitai modelVersionId）
+    this.revision = this.autoRevision;
     this.autoSource = '';
+    this.autoRevision = '';
     this.resolveRepo();
   }
 
@@ -544,6 +584,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     this.showAllWeights = false;
     this.selected.clear();
     this.error = '';
+    this.restoreNote = '';
+    this.restoreCount = 0;
+    this.restoreWanted = 0;
   }
 
   currentSaveDir(): string {
@@ -572,6 +615,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   resolveRepo(): void {
     this.resolving = true;
     this.error = '';
+    this.restoreNote = '';
+    this.restoreCount = 0;
     this.api.resolve(this.source, this.repoId, this.revision).subscribe({
       next: (repo) => {
         this.repo = repo;
@@ -580,6 +625,26 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.showAllWeights = false;
         // 默认只下匹配权重；config / tokenizer / README 等非权重文件不进入勾选集
         this.selected = new Set(this.matchedWeights.map((f) => f.path));
+
+        // 「重新下载」：按库里记的仓库路径精确勾回当初那一批文件
+        if (this.autoFiles.length) {
+          const wanted = this.autoFiles.length;
+          const available = new Set(this.allWeights.map((f) => f.path));
+          const exact = this.autoFiles.filter((p) => available.has(p));
+          this.restoreWanted = wanted;
+          if (exact.length) {
+            this.selected = new Set(exact);
+            // 原文件如果不属于默认「匹配权重」，自动展开全部权重，保证勾选可见
+            const visible = new Set(this.matchedWeights.map((f) => f.path));
+            this.showAllWeights = exact.some((p) => !visible.has(p));
+            this.restoreNote = exact.length === wanted ? 'exact' : 'partial';
+            this.restoreCount = exact.length;
+          } else {
+            // 仓库已变 / 原文件改名：不假装匹配上，退回默认匹配权重并明说
+            this.restoreNote = 'fallback';
+          }
+          this.autoFiles = [];
+        }
         this.resolving = false;
       },
       error: (err) => {

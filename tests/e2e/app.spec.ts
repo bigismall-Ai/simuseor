@@ -474,6 +474,62 @@ test.describe('Model Downloader Web UI', () => {
     await page.screenshot({ path: ART + '/61-library-card.png', fullPage: false });
   });
 
+  test('模型库：重新下载回到原仓库、原版本与原文件', async ({ page }) => {
+    const model = {
+      id: 'm-flux', name: 'FLUX.1-dev', repo_id: 'black-forest-labs/FLUX.1-dev',
+      source: 'huggingface', local_path: 'E:/mock/models/diffusion_models/FLUX.1-dev',
+      size_bytes: 23.8 * 1024 ** 3, file_count: 1, tags: [], created_at: '2026-11-14T10:00:00',
+      files: [{ id: 'f1', path: 'flux1-dev.safetensors', size: 23.8 * 1024 ** 3 }],
+      precision: 'BF16', params: '12.00 B', hasWeights: false, isDemo: false,
+      folder: 'diffusion_models', folderLabel: '扩散模型', task: 'text_to_image', taskLabel: '文生图',
+      revision: 'abc123', needGb: 22.8,
+      vram: { level: 'missing', text: '缺少权重', hint: '目录里没有权重文件' },
+    };
+    await page.route((url) => url.pathname === '/api/library', (route) => route.fulfill({ json: [model] }));
+    await page.route((url) => url.pathname === '/api/library/facets', (route) => route.fulfill({
+      json: { folder: [], task: [], source: [], publisher: [], allFolders: [], allTasks: [] },
+    }));
+    await page.route((url) => url.pathname === '/api/library/gpu', (route) => route.fulfill({
+      json: { name: 'RTX 4090', vramMb: 16384, vramGb: 16, vramText: '16 GB' },
+    }));
+    await page.route((url) => url.pathname === '/api/covers', (route) => route.fulfill({ json: { covers: {} } }));
+    await page.route((url) => url.pathname === '/api/settings', (route) => route.fulfill({
+      json: { sources: { huggingface: { label: 'Hugging Face' } }, download: { strategy: 'direct' }, default_strategy: 'direct' },
+    }));
+    await page.route((url) => url.pathname === '/api/tasks', (route) => route.fulfill({ json: [] }));
+    let resolveBody: any = null;
+    await page.route((url) => url.pathname === '/api/resolve', (route) => {
+      resolveBody = route.request().postDataJSON();
+      return route.fulfill({ json: {
+        repo_id: 'black-forest-labs/FLUX.1-dev', display_name: 'FLUX.1-dev', revision: 'abc123',
+        source: 'huggingface', target_folder: 'diffusion_models',
+        files: [
+          { path: 'flux1-dev.safetensors', size: 23.8 * 1024 ** 3, candidates: ['https://hf.co/a'], folder: 'diffusion_models' },
+          { path: 'flux1-dev-fp8.safetensors', size: 12 * 1024 ** 3, candidates: ['https://hf.co/b'], folder: 'diffusion_models' },
+        ],
+      } });
+    });
+
+    await page.goto('/models');
+    await page.getByRole('button', { name: '重新下载模型' }).click();
+
+    // 不是去发现页按名字重搜，而是带着仓库 / 版本 / 原文件直接回下载页
+    await expect(page).toHaveURL(/\/downloads\?/);
+    await expect(page).toHaveURL(/source=huggingface/);
+    await expect(page).toHaveURL(/repo_id=black-forest-labs%2FFLUX.1-dev/);
+    await expect(page).toHaveURL(/revision=abc123/);
+    await expect(page).toHaveURL(/files=flux1-dev.safetensors/);
+    expect(resolveBody).toMatchObject({
+      source: 'huggingface',
+      repo_id: 'black-forest-labs/FLUX.1-dev',
+      revision: 'abc123',
+    });
+    await expect(page.getByText(/已按上次下载恢复 1 个文件/)).toBeVisible();
+    const row = page.locator('.file-table tbody tr').filter({ hasText: 'flux1-dev.safetensors' });
+    await expect(row.locator('input[type="checkbox"]')).toBeChecked();
+    await page.screenshot({ path: ART + '/62-library-redownload.png', fullPage: true });
+  });
+
   test('环境管理：显示本机设备与安装方案', async ({ page }) => {
     await page.goto('/environments');
     await expect(page.getByRole('heading', { name: '环境管理' })).toBeVisible();

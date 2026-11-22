@@ -479,9 +479,29 @@ export class LibraryComponent implements OnInit {
     this.router.navigate(['/workflows/discover'], { queryParams: { q: m.name } });
   }
 
-  /** 残缺条目的下一步是补救：去发现页按名字重新找 */
+  /**
+   * 残缺条目的下一步是补救：优先回到**同一个仓库 / 同一个版本 / 同一批文件**，
+   * 而不是回发现页按名字重搜 —— 同名模型可能有多个版本，搜出来未必是当初下载的那一个。
+   *
+   * 下载页已有 `source + repo_id` 的自动解析；再带上 `revision` 与 `files`
+   * （library_files 里存的就是仓库内相对路径），下载页会把原文件精确勾回来。
+   * 本地导入 / Demo 没有远端仓库，才退回按名字发现。
+   */
   redownload(m: LibraryModel): void {
-    this.router.navigate(['/models/discover'], { queryParams: { q: m.name } });
+    const remote = ['huggingface', 'modelscope', 'civitai'].includes(m.source) && !!m.repo_id;
+    if (!remote) {
+      this.router.navigate(['/models/discover'], { queryParams: { q: m.name } });
+      return;
+    }
+    const params: Record<string, string | string[]> = {
+      source: m.source,
+      repo_id: m.repo_id,
+      redownload: '1',
+    };
+    if (m.revision) params['revision'] = m.revision;
+    const files = (m.files || []).map((f) => f.path).filter(Boolean);
+    if (files.length) params['files'] = files;
+    this.router.navigate(['/downloads'], { queryParams: params });
   }
 
   fmtBytes = fmtBytes;
