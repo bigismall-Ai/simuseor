@@ -63,7 +63,7 @@ test.describe('Model Downloader Web UI', () => {
   test('设置页：保存配置并测试代理', async ({ page }) => {
     await page.goto('/settings');
     await page.getByRole('button', { name: '测试代理' }).first().click();
-    await expect(page.getByText(/代理 .*可用/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('.notice.is-inline.ok')).toHaveText('成功', { timeout: 15_000 });
     await page.getByRole('button', { name: '保存设置' }).click();
     await expect(page.getByText('设置已保存')).toBeVisible();
     await page.screenshot({ path: ART + '/07-settings-proxy.png', fullPage: true });
@@ -149,8 +149,8 @@ test.describe('Model Downloader Web UI', () => {
     });
 
     await page.goto('/workflows/discover');
-    await expect(page.getByRole('button', { name: 'ComfyHub' })).toBeVisible();
-    await page.getByRole('button', { name: 'ComfyHub' }).click();
+    await expect(page.locator('.ps-chips').getByTitle('ComfyHub')).toBeVisible();
+    await page.locator('.ps-chips').getByTitle('ComfyHub').click();
     await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
     // 发现页默认网格视图 = 统一骨架卡；依赖清单收在 ⋯ 菜单里（⑤ 标签位只放一枚分组标签）
     await expect(page.locator('md-hub-card')).toHaveCount(1);
@@ -180,7 +180,7 @@ test.describe('Model Downloader Web UI', () => {
     });
 
     await page.goto('/workflows/discover');
-    await page.getByRole('button', { name: 'ComfyHub' }).click();
+    await page.locator('.ps-chips').getByTitle('ComfyHub').click();
     await page.waitForTimeout(2000);
     await expect(page.locator('md-hub-card')).toHaveCount(1);
     await expect(page.locator('.wf-title')).toHaveText('FLUX 3 Video: Text to Video');
@@ -455,6 +455,7 @@ test.describe('Model Downloader Web UI', () => {
     await expect(page.getByText('gpt2').first()).toBeVisible();
     await filterPop.getByRole('button', { name: '清除全部' }).click();
     await expect(page.locator('md-library-card')).toHaveCount(3);
+    await filterPop.getByRole('button', { name: '完成' }).click();
     // 三种形态都在；显存压力条按统一骨架撤掉了，不该再有
     await expect(page.locator('md-library-card .gauge')).toHaveCount(0);
     // 残缺条目的主操作是补救，不是「查找适配工作流」
@@ -1645,32 +1646,34 @@ test.describe('Model Downloader Web UI', () => {
       route.fulfill({ json: { covers: {} } }));
     await page.goto('/workflows');
 
-    const bar = page.locator('[data-testid="lw-groups"]');
-    await expect(bar).toBeVisible();
+    // 分组与健康度都收进「筛选」浮层（VIS §3.7.8）
+    await page.getByRole('button', { name: /^筛选/ }).click();
+    const pop = page.locator('.sf-pop');
+    await expect(pop).toBeVisible();
+    const groupFacet = pop.locator('.sf-facet').filter({ hasText: '分组' });
     // 分组 chip 的数字是「这个组有几条」，未分组单独一个入口。
-    // 顺序按拼音排（电商在 人像 前），不是按写入元数据的先后。
-    await expect(bar.locator('.cb-chip')).toHaveText([
-      /\s*全部\s*4$/,
+    await expect(groupFacet.locator('.ps-chip')).toHaveText([
       /\s*电商\s*1$/,
       /\s*人像\s*2$/,
       /\s*未分组\s*1$/,
     ]);
 
-    await bar.getByRole('button', { name: /^人像/ }).click();
+    await groupFacet.getByRole('button', { name: /^人像/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(2);
-    await expect(page.locator('.cb-count')).toContainText('2');
-    await expect(page.locator('.cb-count')).toContainText('4');
+    await expect(page.locator('.ps-count')).toContainText('2');
+    await expect(page.locator('.ps-count')).toContainText('4');
 
-    await bar.getByRole('button', { name: /^未分组/ }).click();
+    await groupFacet.getByRole('button', { name: /^未分组/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(1);
     await expect(page.locator('app-workflow-card h3')).toHaveText('还没归类的一条');
 
     // 分组与状态是交集，chip 数字按「其他条件已生效」重算
-    await bar.getByRole('button', { name: /^全部/ }).click();
-    await page.locator('[data-testid="lw-status"]').getByRole('button', { name: /^缺依赖/ }).click();
+    await pop.locator('.sf-pop-clear').click();
+    await expect(page.locator('app-workflow-card')).toHaveCount(4);
+    const statusFacet = pop.locator('.sf-facet').filter({ hasText: '健康度' });
+    await statusFacet.getByRole('button', { name: /^缺依赖/ }).click();
     await expect(page.locator('app-workflow-card')).toHaveCount(1);
-    await expect(bar.locator('.cb-chip')).toHaveText([
-      /\s*全部\s*1$/,
+    await expect(groupFacet.locator('.ps-chip')).toHaveText([
       /\s*电商\s*0$/,
       /\s*人像\s*1$/,
       /\s*未分组\s*0$/,
@@ -2010,23 +2013,24 @@ test.describe('Model Downloader Web UI', () => {
     await mockLocalWorkflows(page);
     await page.goto('/workflows');
 
-    const filters = page.locator('.cb-filters');
+    const filters = page.locator('.ps-filters');
     // 统一骨架固定顺序：搜索在最前，排序 / 视图收在右端
-    await expect(filters.locator('> :first-child')).toHaveClass(/cb-search/);
-    await expect(filters.locator('.cb-tools .cb-view')).toBeVisible();
+    await expect(filters.locator('> :first-child')).toHaveClass(/ps-search/);
+    await expect(filters.locator('.ps-view')).toBeVisible();
 
     // 分组数量是小标签，不是跟在名字后的裸数字
-    const badge = page.getByTestId('lw-groups').locator('.cb-chip b').first();
+    await page.getByRole('button', { name: /^筛选/ }).click();
+    const pop = page.locator('.sf-pop');
+    const badge = pop.locator('.sf-facet').filter({ hasText: '分组' }).locator('.ps-chip b').first();
     expect(await badge.evaluate((el) => getComputedStyle(el).borderRadius)).not.toBe('0px');
-
-    // 点排序弹选择，选完收起、按钮显示当前项
-    await page.getByTestId('lw-sort').click();
-    const sortMenu = page.getByTestId('lw-sort-menu');
-    await expect(sortMenu.getByRole('menuitem')).toHaveCount(3);
     await page.screenshot({ path: ART + '/49-workflow-sort-menu.png', fullPage: true });
-    await sortMenu.getByRole('menuitem', { name: '按名称' }).click();
-    await expect(sortMenu).toHaveCount(0);
-    await expect(page.getByTestId('lw-sort')).toContainText('按名称');
+    await pop.getByRole('button', { name: '完成' }).click();
+
+    // 排序是原生 select：三项，选完即生效
+    const sortSelect = page.locator('.ps-select select');
+    await expect(sortSelect.locator('option')).toHaveCount(3);
+    await sortSelect.selectOption('name');
+    await expect(sortSelect).toHaveValue('name');
 
     // 卡片正文不再写「节点/依赖」，空出来的位置是分组标签；规格与分组的数字标签一致
     const tag = page.locator('app-workflow-card .wc-tag').first();
@@ -2050,7 +2054,11 @@ test.describe('Model Downloader Web UI', () => {
     });
     expect(tagStyle.h).toBe('16px');
     expect(tagStyle.r).toMatch(/999px|^50%$/);
-    expect(await chipSpec(page.getByTestId('lw-groups').locator('.cb-chip b').first())).not.toBe(
+    expect(
+      await chipSpec(
+        page.locator('.sf-pop').locator('.sf-facet').filter({ hasText: '分组' }).locator('.ps-chip b').first(),
+      ),
+    ).not.toBe(
       await chipSpec(tag),
     );
     await page.screenshot({ path: ART + '/48-workflow-toolbar.png', fullPage: true });

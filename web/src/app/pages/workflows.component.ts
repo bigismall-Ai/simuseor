@@ -60,6 +60,23 @@ const SOURCE_LABELS: Record<string, string> = {
   github: 'GitHub',
 };
 
+/**
+ * 工作流发现页的站点 chip 短名。
+ *
+ * 六个来源全用全名会把筛选行撑到两行（尤其是 900–1200 宽的窗口），
+ * 所以 chip 只放缩写；全名留在 title / 发现页列表徽标里，不丢信息。
+ * 缩写与 hub-card 左上角来源徽章同一套：模板 / CH / HF / MS / CI / GH。
+ */
+const HUB_SITE_LABELS: Record<string, { short: string; full: string }> = {
+  all: { short: '全部', full: '全部站点' },
+  templates: { short: '模板', full: 'ComfyUI 官方模板' },
+  comfyhub: { short: 'CH', full: 'ComfyHub' },
+  huggingface: { short: 'HF', full: 'Hugging Face' },
+  modelscope: { short: 'MS', full: 'ModelScope' },
+  civitai: { short: 'CI', full: 'Civitai' },
+  github: { short: 'GH', full: 'GitHub' },
+};
+
 const SOURCE_TONES: Record<string, 'blue' | 'green' | 'orange' | 'gray'> = {
   templates: 'green',
   comfyhub: 'blue',
@@ -2003,14 +2020,18 @@ export class WorkflowsComponent implements OnInit, OnDestroy {
     this.savePrefs();
   }
 
-  /** 发现页的站点筛选（行内 chip 行）：来源站 ＋ 探针门控 */
+  /** 发现页的站点筛选（行内 chip 行）：来源站 ＋ 探针门控。chip 用缩写，title 给全名 */
   get hubSites(): FilterSite[] {
-    return this.sources.map((s) => ({
-      key: s.key,
-      label: s.key === 'all' ? '全部站点' : s.label,
-      disabled: s.key === 'all' ? false : this.probe.isGated(s.key),
-      tip: s.key === 'all' ? '' : this.probe.tip(s.key),
-    }));
+    return this.sources.map((s) => {
+      const meta = HUB_SITE_LABELS[s.key] || { short: s.label, full: s.label };
+      return {
+        key: s.key,
+        label: meta.short,
+        title: meta.full,
+        disabled: s.key === 'all' ? false : this.probe.isGated(s.key),
+        tip: s.key === 'all' ? '' : this.probe.tip(s.key),
+      };
+    });
   }
 
   /** 发现页的搜索框回填：停 300ms 自动检索一次 */

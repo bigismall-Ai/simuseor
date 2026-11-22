@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../core/api.service';
+import { ProbeService } from '../core/probe.service';
 import {
   AppSettings,
   ProbePath,
@@ -352,11 +353,11 @@ const VERDICT_CLASS: Record<string, string> = {
     }
     .src-id { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex-wrap: wrap; }
     .src-title { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
-    .src-key { font-size: 10.5px; color: var(--faint); }
+    .src-key { font-size: 10.5px; color: var(--muted); }
     .src-sub { font-size: 12px; color: var(--muted); }
     .src-head-right { display: flex; align-items: center; gap: 8px; flex: none; }
     .src-speed { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .src-time { font-size: 10.5px; color: var(--faint); }
+    .src-time { font-size: 10.5px; color: var(--muted); }
     .src-speed.ok { color: var(--ok); }
     .src-speed.degraded { color: var(--warn); }
     .src-speed.down { color: var(--err); }
@@ -391,7 +392,7 @@ const VERDICT_CLASS: Record<string, string> = {
     .pc-speed { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.25; }
     .pcell.is-best .pc-speed { color: var(--ok); }
     .pcell.is-bad .pc-speed { color: var(--err); }
-    .pcell.is-skip .pc-speed { color: var(--faint); }
+    .pcell.is-skip .pc-speed { color: var(--muted); }
     .pc-lat { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap; }
     .pcell.is-best .pc-lat { color: var(--ok); }
     .pcell.is-bad .pc-lat { color: var(--err); }
@@ -534,7 +535,7 @@ export class SettingsComponent implements OnInit {
 
   private pollCount = 0;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private probeSvc: ProbeService) {}
 
   readonly proxyUrl = proxyUrl;
 
@@ -560,6 +561,8 @@ export class SettingsComponent implements OnInit {
       next: (st) => {
         this.probe = st;
         this.probed = this.probe.sources.some((s) => s.checked_at > 0);
+        // 写回共享探针：发现 / 下载 / 库 / 工作流下一页进入时读到的就是这份结论
+        this.probeSvc.apply(st);
         this.rebuild();
         // 首次进来还没探过时，后端会在后台补探一轮；这里跟着取一次结果
         if (this.probe.summary.unknown > 0 && this.pollCount < 3) {
@@ -584,6 +587,7 @@ export class SettingsComponent implements OnInit {
         this.probeElapsed = (Date.now() - started) / 1000;
         this.probe = st;
         this.probed = true;
+        this.probeSvc.apply(st);
         this.rebuild();
       },
       error: (err) => {
@@ -886,7 +890,9 @@ export class SettingsComponent implements OnInit {
         this.saving = false;
         this.message = '设置已保存';
         this.messageOk = true;
-        // 改了代理地址 / 镜像 → 探针结论立即作废，重新取一轮
+        // 改了代理地址 / 镜像 → 探针结论立即作废；共享状态也一起作废，
+        // 其他页面下一次 ensure 会重新拉，不会继续用旧结论灰置/亮着。
+        this.probeSvc.invalidate();
         this.loadProbe();
       },
       error: (err) => {

@@ -760,7 +760,7 @@ const ROLES: Record<string, string> = {
     }
     .pal-head { display: flex; align-items: center; gap: 6px; padding: 8px; border-bottom: 1px solid var(--border-soft); }
     .pal-search { flex: 1; min-width: 0; height: 30px; padding: 0 9px; border: 1px solid var(--border); border-radius: 7px; background: var(--panel-2); color: var(--text); font: inherit; font-size: 12px; }
-    .pal-search:focus { outline: none; border-color: var(--accent-line); }
+    .pal-search:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
     .pal-close { width: 26px; height: 26px; border: 0; border-radius: 6px; background: none; color: var(--muted); font-size: 17px; line-height: 1; cursor: pointer; }
     .pal-close:hover { background: var(--panel-3); color: var(--text); }
     .pal-list { flex: 1; min-height: 0; overflow-y: auto; padding: 5px; }

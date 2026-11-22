@@ -454,24 +454,26 @@ export const PROTO_DEFS = [
               { label: '文件', value: '214 个' },
             ],
             filters: {
-              search: '搜索工作流，如 flux / wan / minimax',
+              search: '搜索工作流，如 flux / wan',
               groups: [{
                 label: '来源',
                 chips: [
                   { text: '全部', count: 128, on: true },
-                  { text: '官方模板', count: 32 },
-                  { text: 'ComfyHub', count: 41 },
-                  { text: 'Hugging Face', count: 12 },
-                  { text: 'ModelScope', count: 8 },
-                  { text: 'Civitai', count: 21 },
-                  { text: 'GitHub', count: 14 },
+                  { text: '模板', count: 32 },
+                  { text: 'CH', count: 41 },
+                  { text: 'HF', count: 12 },
+                  { text: 'MS', count: 8 },
+                  { text: 'CI', count: 21 },
+                  { text: 'GH', count: 14 },
                 ],
               }],
               tools: { sort: '热门', view: 'grid' },
             },
           },
           caption: '这一页原来连数量都没有，六个来源写成页头的一句 hint —— 用户看完既不知道有多少结果，也不能只挑一个源。' +
-            '现在数量进状态条、来源进 chips；hint 删除。发现页与本地工作流终于共享同一条顶部，只换读数与筛选项。',
+            '现在数量进状态条、来源进 chips；hint 删除。六个站点全用缩写（模板 / CH / HF / MS / CI / GH），' +
+            '全名留在 title 气泡里 —— 900–1200 宽时缩写能让筛选行保持一行。' +
+            '发现页与本地工作流终于共享同一条顶部，只换读数与筛选项。',
         },
         {
           id: 'ps-node-mine',

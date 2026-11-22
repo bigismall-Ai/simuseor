@@ -30,6 +30,8 @@ export interface FilterSite {
   disabled?: boolean;
   /** 灰置原因（hover 气泡）。原因不印在页面上。 */
   tip?: string;
+  /** 完整站点名：chip 上只放缩写时，悬停仍能读全称 */
+  title?: string;
 }
 
 /** 类别筛选项：收在「筛选」浮层里的一档。 */
@@ -159,6 +161,7 @@ export interface FilterFacetChange {
                   type="button"
                   class="ps-chip"
                   [class.on]="site === s.key"
+                  [title]="s.title || s.label"
                   (click)="siteChange.emit(s.key)"
                 >
                   {{ s.label }}

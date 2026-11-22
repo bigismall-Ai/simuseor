@@ -158,7 +158,12 @@
 /* ================= 2. 基础 ================= */
 * { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  /* 始终给滚动条留位：本地库条目少时没有滚动条、发现页有，
+     不留位会让同一张筛选卡在不同页面上差 10px —— 顶部卡片宽度必须一致。 */
+  scrollbar-gutter: stable;
+}
 
 body {
   margin: 0;
@@ -686,7 +691,7 @@ body {
 .ps-fact-label {
   font-size: 10.5px;
   font-weight: 500;
-  color: var(--faint);
+  color: var(--muted);
 }
 .ps-fact-value {
   font-size: 11.5px;
@@ -861,12 +866,12 @@ body {
 
 /* 灰置的站点项：不可点（渲染成 span），原因不印在页面上 */
 .ps-chip.is-off {
-  color: var(--faint);
+  color: var(--muted);
   background: var(--panel-2);
   box-shadow: inset 0 0 0 1px var(--border-soft);
   cursor: not-allowed;
 }
-.ps-chip.is-off:hover { color: var(--faint); }
+.ps-chip.is-off:hover { color: var(--muted); }
 
 /* ---- 排序 / 视图 ---- */
 .ps-select {
@@ -992,7 +997,7 @@ body {
 .ps-total {
   font-size: 12px;
   font-weight: 500;
-  color: var(--faint);
+  color: var(--muted);
 }
 .ps-unit {
   font-size: 11.5px;
@@ -1089,7 +1094,7 @@ body {
   font-weight: 600;
   color: var(--muted);
 }
-.sf-facet-head b { color: var(--faint); font-weight: 500; }
+.sf-facet-head b { color: var(--muted); font-weight: 500; }
 .sf-facet-list { display: flex; flex-wrap: wrap; gap: 4px; }
 .sf-facet-list .ps-chip { height: 22px; padding: 0 7px; font-size: 11px; }
 
@@ -1237,6 +1242,34 @@ input:hover, select:hover, textarea:hover { border-color: var(--border-strong); 
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   box-shadow: var(--ring);
+}
+
+/* ---- 复合输入壳：焦点画在整只壳上 ----
+   搜索框 / 排序选择器是「图标 + 无边框 input/select + 清除/箭头」的组合。
+   焦点指示只画在内部那条 input 上时，图标和清除按钮会被留在圈外 —— 视觉上
+   像两个控件。这里把 border / ring / focus-visible outline 统一提到壳上，
+   内部控件不再各画一圈。 */
+.ps-search:focus-within,
+.ps-select:has(select):focus-within,
+.side-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--ring);
+}
+.ps-search:has(input:focus-visible),
+.ps-select:has(select:focus-visible),
+.side-search:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.ps-search input:focus,
+.ps-search input:focus-visible,
+.ps-select select:focus,
+.ps-select select:focus-visible,
+.side-search input:focus,
+.side-search input:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
 }
 input::placeholder, textarea::placeholder { color: var(--muted); }
 input[readonly] { background: var(--panel-2); color: var(--muted); }
