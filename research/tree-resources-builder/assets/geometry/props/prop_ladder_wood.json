@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_ladder_wood",
+  "name": "prop_ladder_wood",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_ladder_wood.glb",
+      "bytes": 4928,
+      "sha256": "19e9f375f78706a180b6275b94c79e71182dde1798c1adfae0637307bf347f27"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/prototype-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/prototype-kit",
+    "is_ai": 0,
+    "source_pack": "prototype-kit",
+    "source_model": "ladder",
+    "source_file": "var/public-assets/kenney/prototype-kit/Models/GLB format/ladder.glb",
+    "source_sha256": "a8a968d1c82e3f5bab837ad7538d181ec393b635babd2edebd5485ae08cfce03",
+    "source_faces": 224,
+    "scale_factor": 2.0,
+    "target_max_dim_m": 2.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 224
+  },
+  "geometry": {
+    "faces": 224,
+    "vertices": 128,
+    "bbox_min": [
+      -0.15,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.15,
+      2.0,
+      1.1
+    ],
+    "size_m": [
+      0.3,
+      2.0,
+      1.1
+    ],
+    "max_dim_m": 2.0,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_ladder_wood",
+    "params": {
+      "scale_factor": 2.0,
+      "target_max_dim_m": 2.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

@@ -1,0 +1,4746 @@
+{
+  "kind": "r4_instance_table",
+  "schema": "r4-recipe/1",
+  "recipe_id": "scene_mix_instances",
+  "note": "三个街区的全量实例表（楼/树/冠/公共件/车/人/服装壳）。",
+  "instances": [
+    {
+      "instance": "building_block_downtown_01",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_downtown_01",
+      "group": "building_block_downtown_01@-20.0,-15.0",
+      "transform": [
+        -20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 264,
+      "height_m": 29.05,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_downtown_02",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_downtown_02",
+      "group": "building_block_downtown_02@0.0,-15.0",
+      "transform": [
+        0.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 276,
+      "height_m": 32.25,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_downtown_03",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_downtown_03",
+      "group": "building_block_downtown_03@20.0,-15.0",
+      "transform": [
+        20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 38.65,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_downtown_04",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_downtown_04",
+      "group": "building_block_downtown_04@-20.0,15.0",
+      "transform": [
+        -20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 264,
+      "height_m": 29.05,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_downtown_05",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_downtown_05",
+      "group": "building_block_downtown_05@0.0,15.0",
+      "transform": [
+        0.0,
+        15.0,
+        0.0
+      ],
+      "faces": 276,
+      "height_m": 32.25,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_downtown_06",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_downtown_06",
+      "group": "building_block_downtown_06@20.0,15.0",
+      "transform": [
+        20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 38.65,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_oak_broad_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_oak_broad_hero@-24.0,5.1",
+      "asset": "tree_oak_broad_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_hero",
+      "kind": "foliage",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_oak_broad_hero@-24.0,5.1",
+      "asset": "tree_oak_broad_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 2240,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_maple_wide_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_maple_wide_mid@-8.0,5.1",
+      "asset": "tree_maple_wide_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 504,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_maple_wide_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_maple_wide_mid@-8.0,5.1",
+      "asset": "tree_maple_wide_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_oak_broad_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_maple_wide_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_maple_wide_low@24.0,5.1",
+      "asset": "tree_maple_wide_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 100,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_maple_wide_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_maple_wide_low@24.0,5.1",
+      "asset": "tree_maple_wide_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "prop_pole_utility",
+      "kind": "prop",
+      "chunk": "near",
+      "lod": "low",
+      "asset": "prop_pole_utility",
+      "group": "prop_pole_utility@-20.0,-5.6",
+      "transform": [
+        -20.0,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 472,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "prop_dumpster_street",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_dumpster_street",
+      "group": "prop_dumpster_street@-6.5,-5.6",
+      "transform": [
+        -6.5,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 252,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "prop_sign_empty",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_sign_empty",
+      "group": "prop_sign_empty@6.5,-5.6",
+      "transform": [
+        6.5,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 44,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "prop_ladder_wood",
+      "kind": "prop",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "prop_ladder_wood",
+      "group": "prop_ladder_wood@20.0,-5.6",
+      "transform": [
+        20.0,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 224,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_body",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 576,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_cabin",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 200,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_windshield",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_window_rear",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_window_side_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_window_side_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_door_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_door_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_door_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_door_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_wheel_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_wheel_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_wheel_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_wheel_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_mirror_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_mirror_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_headlight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_headlight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_taillight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_taillight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_seat_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_seat_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_dashboard",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_steering_wheel",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 72,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_sedan_chassis",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_sedan",
+      "group": "vehicle_car_sedan@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_body",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 576,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_cabin",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 200,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_windshield",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_window_rear",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_window_side_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_window_side_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_door_front_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_door_front_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_door_rear_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_door_rear_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 68,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_wheel_front_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_wheel_front_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_wheel_rear_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_wheel_rear_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 136,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_mirror_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_mirror_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_headlight_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_headlight_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_taillight_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_taillight_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_seat_left",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_seat_right",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_dashboard",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_steering_wheel",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 72,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "vehicle_car_suv_chassis",
+      "kind": "vehicle",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "vehicle_car_suv",
+      "group": "vehicle_car_suv@6.5,1.6",
+      "transform": [
+        6.5,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 180.0,
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_worker_broad_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "hero_worker_broad",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_worker_broad_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "jacket_hero_worker_broad_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_worker_broad_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "jacket_hero_worker_broad_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_worker_broad_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "jacket_hero_worker_broad_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_worker_broad_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_worker_broad@-26.0,-4.0",
+      "asset": "jacket_hero_worker_broad_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "hero_office_slim_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "hero_office_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_office_slim_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "jacket_hero_office_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_office_slim_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "jacket_hero_office_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_office_slim_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "jacket_hero_office_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "jacket_hero_office_slim_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "hero_office_slim@-13.0,-4.0",
+      "asset": "jacket_hero_office_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "building_block_residential_01",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_residential_01",
+      "group": "building_block_residential_01@-20.0,-15.0",
+      "transform": [
+        -20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 204,
+      "height_m": 13.05,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_residential_02",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_residential_02",
+      "group": "building_block_residential_02@0.0,-15.0",
+      "transform": [
+        0.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 216,
+      "height_m": 16.25,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_residential_03",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_residential_03",
+      "group": "building_block_residential_03@20.0,-15.0",
+      "transform": [
+        20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 19.45,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_residential_04",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_residential_04",
+      "group": "building_block_residential_04@-20.0,15.0",
+      "transform": [
+        -20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 204,
+      "height_m": 13.05,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_residential_05",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_residential_05",
+      "group": "building_block_residential_05@0.0,15.0",
+      "transform": [
+        0.0,
+        15.0,
+        0.0
+      ],
+      "faces": 216,
+      "height_m": 16.25,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_residential_06",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_residential_06",
+      "group": "building_block_residential_06@20.0,15.0",
+      "transform": [
+        20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 19.45,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_birch_slim_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_birch_slim_hero@-24.0,5.1",
+      "asset": "tree_birch_slim_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_birch_slim_hero",
+      "kind": "foliage",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_birch_slim_hero@-24.0,5.1",
+      "asset": "tree_birch_slim_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 2240,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_oak_broad_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@-8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@-8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_birch_slim_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_birch_slim_mid@8.0,5.1",
+      "asset": "tree_birch_slim_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_birch_slim_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_birch_slim_mid@8.0,5.1",
+      "asset": "tree_birch_slim_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_oak_broad_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_oak_broad_low@24.0,5.1",
+      "asset": "tree_oak_broad_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_oak_broad_low@24.0,5.1",
+      "asset": "tree_oak_broad_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "prop_fence_wood",
+      "kind": "prop",
+      "chunk": "near",
+      "lod": "low",
+      "asset": "prop_fence_wood",
+      "group": "prop_fence_wood@-20.0,5.6",
+      "transform": [
+        -20.0,
+        5.6000000000000005,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "prop_barrel_wood",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_barrel_wood",
+      "group": "prop_barrel_wood@-6.5,-5.6",
+      "transform": [
+        -6.5,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 412,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "prop_cone_traffic",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_cone_traffic",
+      "group": "prop_cone_traffic@6.5,-5.6",
+      "transform": [
+        6.5,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 72,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "prop_tool_hammer",
+      "kind": "prop",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "prop_tool_hammer",
+      "group": "prop_tool_hammer@20.0,5.6",
+      "transform": [
+        20.0,
+        5.6000000000000005,
+        0.0
+      ],
+      "faces": 52,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_body",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 576,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_cabin",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 200,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_windshield",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_window_rear",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_window_side_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_window_side_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_door_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_door_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_door_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_door_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_wheel_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_wheel_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_wheel_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_wheel_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_mirror_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_mirror_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_headlight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_headlight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_taillight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_taillight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_seat_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_seat_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_dashboard",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_steering_wheel",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 72,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "vehicle_car_hatch_chassis",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_hatch",
+      "group": "vehicle_car_hatch@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_student_short_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "hero_student_short",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_student_short_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "jacket_hero_student_short_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_student_short_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "jacket_hero_student_short_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_student_short_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "jacket_hero_student_short_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_student_short_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_student_short@-26.0,-4.0",
+      "asset": "jacket_hero_student_short_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "hero_elder_stout_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "hero_elder_stout",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_elder_stout_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "jacket_hero_elder_stout_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_elder_stout_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "jacket_hero_elder_stout_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_elder_stout_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "jacket_hero_elder_stout_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "jacket_hero_elder_stout_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_elder_stout@-13.0,-4.0",
+      "asset": "jacket_hero_elder_stout_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "building_block_industrial_01",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_industrial_01",
+      "group": "building_block_industrial_01@-20.0,-15.0",
+      "transform": [
+        -20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 192,
+      "height_m": 9.85,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "building_block_industrial_02",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_industrial_02",
+      "group": "building_block_industrial_02@0.0,-15.0",
+      "transform": [
+        0.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 192,
+      "height_m": 9.85,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "building_block_industrial_03",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_industrial_03",
+      "group": "building_block_industrial_03@20.0,-15.0",
+      "transform": [
+        20.0,
+        -15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 13.05,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "building_block_industrial_04",
+      "kind": "building",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "building_block_industrial_04",
+      "group": "building_block_industrial_04@-20.0,15.0",
+      "transform": [
+        -20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 192,
+      "height_m": 9.85,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "building_block_industrial_05",
+      "kind": "building",
+      "chunk": "mid",
+      "lod": "hero",
+      "asset": "building_block_industrial_05",
+      "group": "building_block_industrial_05@0.0,15.0",
+      "transform": [
+        0.0,
+        15.0,
+        0.0
+      ],
+      "faces": 192,
+      "height_m": 9.85,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "building_block_industrial_06",
+      "kind": "building",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "building_block_industrial_06",
+      "group": "building_block_industrial_06@20.0,15.0",
+      "transform": [
+        20.0,
+        15.0,
+        0.0
+      ],
+      "faces": 24,
+      "height_m": 13.05,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_dead_bare_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_dead_bare_hero@-24.0,5.1",
+      "asset": "tree_dead_bare_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_pine_conical_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_pine_conical_mid@-8.0,5.1",
+      "asset": "tree_pine_conical_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_canopy_pine_conical_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_pine_conical_mid@-8.0,5.1",
+      "asset": "tree_pine_conical_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_dead_bare_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_dead_bare_mid@8.0,5.1",
+      "asset": "tree_dead_bare_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_pine_conical_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_pine_conical_low@24.0,5.1",
+      "asset": "tree_pine_conical_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_canopy_pine_conical_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_pine_conical_low@24.0,5.1",
+      "asset": "tree_pine_conical_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "prop_dumpster_street",
+      "kind": "prop",
+      "chunk": "near",
+      "lod": "low",
+      "asset": "prop_dumpster_street",
+      "group": "prop_dumpster_street@-20.0,5.6",
+      "transform": [
+        -20.0,
+        5.6000000000000005,
+        0.0
+      ],
+      "faces": 252,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "prop_barrier_construction",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_barrier_construction",
+      "group": "prop_barrier_construction@-6.5,-5.6",
+      "transform": [
+        -6.5,
+        -5.6000000000000005,
+        0.0
+      ],
+      "faces": 60,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "prop_pipe_metal",
+      "kind": "prop",
+      "chunk": "mid",
+      "lod": "low",
+      "asset": "prop_pipe_metal",
+      "group": "prop_pipe_metal@6.5,5.6",
+      "transform": [
+        6.5,
+        5.6000000000000005,
+        0.0
+      ],
+      "faces": 20,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "prop_tool_axe",
+      "kind": "prop",
+      "chunk": "far",
+      "lod": "low",
+      "asset": "prop_tool_axe",
+      "group": "prop_tool_axe@20.0,5.6",
+      "transform": [
+        20.0,
+        5.6000000000000005,
+        0.0
+      ],
+      "faces": 84,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_body",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 576,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_cabin",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 200,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_windshield",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_window_rear",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_window_side_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_window_side_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_door_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_door_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_door_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_door_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 68,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_wheel_front_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_wheel_front_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_wheel_rear_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_wheel_rear_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 136,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_mirror_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_mirror_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_headlight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_headlight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_taillight_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_taillight_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_seat_left",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_seat_right",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_dashboard",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_steering_wheel",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 72,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "vehicle_car_pickup_chassis",
+      "kind": "vehicle",
+      "chunk": "near",
+      "lod": "hero",
+      "asset": "vehicle_car_pickup",
+      "group": "vehicle_car_pickup@-20.0,1.6",
+      "transform": [
+        -20.0,
+        1.55,
+        0.0
+      ],
+      "yaw_deg": 0.0,
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_vendor_lean_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "hero_vendor_lean",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_vendor_lean_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "jacket_hero_vendor_lean_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_vendor_lean_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "jacket_hero_vendor_lean_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_vendor_lean_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "jacket_hero_vendor_lean_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_vendor_lean_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_vendor_lean@-26.0,-4.0",
+      "asset": "jacket_hero_vendor_lean_body",
+      "transform": [
+        -26.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_torso",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 120,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_pelvis",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_neck",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_head",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_shoulder_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_upperarm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_elbow_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_forearm_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_hand_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_thigh_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_knee_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_shin_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_foot_L",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_shoulder_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_upperarm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_elbow_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_forearm_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_hand_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_thigh_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_knee_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_shin_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "hero_courier_slim_foot_R",
+      "kind": "character",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "hero_courier_slim",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 12,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_courier_slim_body",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "jacket_hero_courier_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_courier_slim_sleeve_l",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "jacket_hero_courier_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_courier_slim_sleeve_r",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "jacket_hero_courier_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "jacket_hero_courier_slim_collar",
+      "kind": "clothing",
+      "chunk": "near",
+      "lod": "mid",
+      "group": "hero_courier_slim@-13.0,-4.0",
+      "asset": "jacket_hero_courier_slim_body",
+      "transform": [
+        -13.0,
+        -4.0,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    }
+  ]
+}

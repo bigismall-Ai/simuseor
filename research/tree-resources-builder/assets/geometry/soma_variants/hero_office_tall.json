@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_office_tall",
+  "name": "hero_office_tall",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_office_tall.glb",
+      "bytes": 35372,
+      "sha256": "76816ce9281a4913fa055994bc81d29b6aa2d2f3355e73170adf63e2f8819628"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_office_tall_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.2063,
+          -0.1155,
+          0.9991
+        ],
+        "bbox_max": [
+          0.2063,
+          0.1155,
+          1.5362
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1493,
+          -0.1143,
+          0.907
+        ],
+        "bbox_max": [
+          0.1493,
+          0.1143,
+          1.1127
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0537,
+          -0.0537,
+          1.504
+        ],
+        "bbox_max": [
+          0.0537,
+          0.0537,
+          1.6329
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.1017,
+          -0.1052,
+          1.6241
+        ],
+        "bbox_max": [
+          0.1017,
+          0.1159,
+          1.8673
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.1252,
+          -0.079,
+          1.4573
+        ],
+        "bbox_max": [
+          0.2831,
+          0.079,
+          1.6152
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.1576,
+          -0.061,
+          1.2134
+        ],
+        "bbox_max": [
+          0.4897,
+          0.0613,
+          1.5758
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.4017,
+          -0.0387,
+          1.1967
+        ],
+        "bbox_max": [
+          0.5007,
+          0.0602,
+          1.2957
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.4097,
+          -0.0384,
+          0.9565
+        ],
+        "bbox_max": [
+          0.6557,
+          0.0817,
+          1.273
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.5935,
+          0.0027,
+          0.8729
+        ],
+        "bbox_max": [
+          0.6526,
+          0.0833,
+          0.9749
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0126,
+          -0.0894,
+          0.5351
+        ],
+        "bbox_max": [
+          0.1915,
+          0.0894,
+          1.0019
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0496,
+          -0.0524,
+          0.474
+        ],
+        "bbox_max": [
+          0.176,
+          0.0739,
+          0.6003
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0518,
+          -0.0503,
+          0.0849
+        ],
+        "bbox_max": [
+          0.1738,
+          0.0718,
+          0.5386
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0634,
+          -0.0349,
+          0.0005
+        ],
+        "bbox_max": [
+          0.1622,
+          0.2175,
+          0.0811
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.2831,
+          -0.079,
+          1.4573
+        ],
+        "bbox_max": [
+          -0.1252,
+          0.079,
+          1.6152
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4897,
+          -0.061,
+          1.2134
+        ],
+        "bbox_max": [
+          -0.1576,
+          0.0613,
+          1.5758
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.5007,
+          -0.0387,
+          1.1967
+        ],
+        "bbox_max": [
+          -0.4017,
+          0.0602,
+          1.2957
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.6557,
+          -0.0384,
+          0.9565
+        ],
+        "bbox_max": [
+          -0.4097,
+          0.0817,
+          1.273
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.6526,
+          0.0027,
+          0.8729
+        ],
+        "bbox_max": [
+          -0.5935,
+          0.0833,
+          0.9749
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1915,
+          -0.0894,
+          0.5351
+        ],
+        "bbox_max": [
+          -0.0126,
+          0.0894,
+          1.0019
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.176,
+          -0.0524,
+          0.474
+        ],
+        "bbox_max": [
+          -0.0496,
+          0.0739,
+          0.6003
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1738,
+          -0.0503,
+          0.0849
+        ],
+        "bbox_max": [
+          -0.0518,
+          0.0718,
+          0.5386
+        ]
+      },
+      {
+        "node": "hero_hero_office_tall_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1622,
+          -0.0349,
+          0.0005
+        ],
+        "bbox_max": [
+          -0.0634,
+          0.2175,
+          0.0811
+        ]
+      },
+      {
+        "node": "jacket_hero_office_tall_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.2785,
+          -0.1856,
+          1.0528
+        ],
+        "bbox_max": [
+          0.2785,
+          0.1856,
+          1.5577
+        ]
+      },
+      {
+        "node": "jacket_hero_office_tall_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.1026,
+          -0.1315,
+          0.9233
+        ],
+        "bbox_max": [
+          0.7069,
+          0.1423,
+          1.6299
+        ]
+      },
+      {
+        "node": "jacket_hero_office_tall_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.7069,
+          -0.1315,
+          0.9233
+        ],
+        "bbox_max": [
+          -0.1026,
+          0.1423,
+          1.6299
+        ]
+      },
+      {
+        "node": "jacket_hero_office_tall_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1182,
+          -0.1182,
+          1.504
+        ],
+        "bbox_max": [
+          0.1182,
+          0.1182,
+          1.5577
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.7069,
+      -0.1856,
+      0.0005
+    ],
+    "bbox_max": [
+      0.7069,
+      0.2175,
+      1.8673
+    ],
+    "ground_offset_m": 0.0005
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "office",
+    "params": {
+      "name": "office",
+      "variant": "tall",
+      "height": 1.88,
+      "torso": 0.96,
+      "shoulder": 1.0,
+      "hip": 0.95,
+      "limb": 0.98,
+      "head": 0.98,
+      "note": "办公高个，近景"
+    },
+    "level": "hero"
+  },
+  "nodes": [
+    "hero_hero_office_tall_torso",
+    "hero_hero_office_tall_pelvis",
+    "hero_hero_office_tall_neck",
+    "hero_hero_office_tall_head",
+    "hero_hero_office_tall_shoulder_L",
+    "hero_hero_office_tall_upperarm_L",
+    "hero_hero_office_tall_elbow_L",
+    "hero_hero_office_tall_forearm_L",
+    "hero_hero_office_tall_hand_L",
+    "hero_hero_office_tall_thigh_L",
+    "hero_hero_office_tall_knee_L",
+    "hero_hero_office_tall_shin_L",
+    "hero_hero_office_tall_foot_L",
+    "hero_hero_office_tall_shoulder_R",
+    "hero_hero_office_tall_upperarm_R",
+    "hero_hero_office_tall_elbow_R",
+    "hero_hero_office_tall_forearm_R",
+    "hero_hero_office_tall_hand_R",
+    "hero_hero_office_tall_thigh_R",
+    "hero_hero_office_tall_knee_R",
+    "hero_hero_office_tall_shin_R",
+    "hero_hero_office_tall_foot_R",
+    "jacket_hero_office_tall_body",
+    "jacket_hero_office_tall_sleeve_l",
+    "jacket_hero_office_tall_sleeve_r",
+    "jacket_hero_office_tall_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_office_tall_body",
+  "clothing_parts": [
+    "jacket_hero_office_tall_body",
+    "jacket_hero_office_tall_sleeve_l",
+    "jacket_hero_office_tall_sleeve_r",
+    "jacket_hero_office_tall_collar"
+  ],
+  "note": "办公高个，近景"
+}

@@ -1,0 +1,1699 @@
+{
+  "kind": "shot_library",
+  "version": "1.0.0",
+  "generated_at": "2026-11-22T01:23:00+0800",
+  "generator": "harness/verify_camera_library.py",
+  "up_axis": "Z",
+  "convention": {
+    "up_axis": "Z",
+    "handedness": "right",
+    "units": "meter",
+    "world_to_camera": "x = d·right, y = d·upv, z = d·fwd（z 向前为正）；px = W/2 + (x/z)·f_px，py = H/2 - (y/z)·f_px",
+    "f_px": "f_px = H / (2·tan(fov_y/2))，fov_y = 2·atan(sensor_mm/2 / focal_mm)；f_px 是权威内参",
+    "usd_camera": "看 −Z、+Y 向上；xformOp:rotateXYZ = Rz(rz)·Ry(ry)·Rx(rx)",
+    "usd_aperture": "horizontalAperture = sensor_mm·W/H，verticalAperture = sensor_mm （方形像素，两轴 f_px 一致）",
+    "gltf_camera": "Y-up 世界系（p_yup = (x, z, −y)，契约里唯一那一处换算）；局部 +X 右 / +Y 上 / −Z 前",
+    "authority": "assets/validation/camera_intrinsics.json 是逐帧内外参唯一权威源"
+  },
+  "resolution": [
+    720,
+    404
+  ],
+  "fps": 24,
+  "duration_s": 5.0,
+  "move_types": [
+    "dolly_in",
+    "dolly_out",
+    "pan",
+    "tilt",
+    "truck",
+    "follow",
+    "orbit",
+    "pedestal",
+    "handheld"
+  ],
+  "summary": {
+    "n_types": 9,
+    "n_types_all_checks_pass": 9,
+    "min_checks_passed": 10,
+    "total_checks": 97,
+    "total_passed": 97,
+    "acceptance_min_checks_per_type": 5,
+    "all_types_ge_5_checks": true,
+    "packages_agree": true,
+    "handheld_fft_dominant_hz": 1.6,
+    "handheld_fft_band_hz": [
+      0.5,
+      3.0
+    ]
+  },
+  "all_green": true,
+  "entries": [
+    {
+      "type": "dolly_in",
+      "label_zh": "推镜",
+      "shot_id": "shot_dolly_in",
+      "title_zh": "推镜 · 主体迎面走来，机位沿视线恒速推近",
+      "shot_dir": "shots/shot_dolly_in",
+      "parameterization": {
+        "frame": "subject",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 42.0,
+          "end": 45.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            3.26,
+            4.07,
+            2.04
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            2.27,
+            2.84,
+            1.42
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "note": "沿 start.eye 方向恒速推近：首距 5.60 m → 末距 3.90 m"
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 10,
+      "n_pass": 10,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.065601,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.549831,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.605042,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "dolly_distance_monotonic",
+          "name_zh": "机位到主体距离单调下降",
+          "value": -1.665568,
+          "limit": {
+            "min_trend": 0.6,
+            "max_violation_frac": 0.05
+          },
+          "op": "trend",
+          "pass": true,
+          "detail": "distance 首=5.338 末=3.672 | trend=-1.6656 非单调帧占比=0.000"
+        },
+        {
+          "id": "dolly_height_ratio_up",
+          "name_zh": "主体高度占比单调上升",
+          "value": 0.267868,
+          "limit": {
+            "min_trend": 0.12,
+            "max_violation_frac": 0.05
+          },
+          "op": "trend",
+          "pass": true,
+          "detail": "height_ratio 首=0.437 末=0.705 | trend=0.2679 非单调帧占比=0.000"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.06560062775751212,
+        "centering_offset_mean": 0.04600153528129141,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.549830584908189,
+        "subject_height_ratio_min": 0.4369553149581173,
+        "subject_height_ratio_max": 0.7048230533747106,
+        "speed_mean_mps": 0.34210733188479814,
+        "speed_mean_world_mps": 0.8130001010659997,
+        "speed_peak_accel_mps2": 7.673861546209082e-13,
+        "focal_rate_mm_per_s": 0.6050420168068058,
+        "distance_to_subject_start_m": 5.337799171943433,
+        "distance_to_subject_end_m": 3.6722310804407265,
+        "distance_to_subject_mean_m": 4.503107523474506,
+        "distance_to_subject_span_m": 1.6655680915027067
+      },
+      "package_report": "shots/shot_dolly_in/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "dolly_out",
+      "label_zh": "拉镜",
+      "shot_id": "shot_dolly_out",
+      "title_zh": "拉镜 · 主体迎面走来，机位恒速后退拉远",
+      "shot_dir": "shots/shot_dolly_out",
+      "parameterization": {
+        "frame": "subject",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 35.0,
+          "end": 38.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            2.27,
+            2.84,
+            1.42
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            3.52,
+            4.66,
+            2.33
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "note": "沿 start.eye 方向恒速拉远：首距 3.90 m → 末距 6.40 m"
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 10,
+      "n_pass": 10,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.052351,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.42985,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.605042,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "dolly_distance_monotonic",
+          "name_zh": "机位到主体距离单调上升",
+          "value": 2.346198,
+          "limit": {
+            "min_trend": 0.6,
+            "max_violation_frac": 0.05
+          },
+          "op": "trend",
+          "pass": true,
+          "detail": "distance 首=3.673 末=6.019 | trend=2.3462 非单调帧占比=0.000"
+        },
+        {
+          "id": "dolly_height_ratio_down",
+          "name_zh": "主体高度占比单调下降",
+          "value": -0.201631,
+          "limit": {
+            "min_trend": 0.12,
+            "max_violation_frac": 0.05
+          },
+          "op": "trend",
+          "pass": true,
+          "detail": "height_ratio 首=0.552 末=0.350 | trend=-0.2016 非单调帧占比=0.000"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.052351112703830735,
+        "centering_offset_mean": 0.035026317394364924,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.42984991832615854,
+        "subject_height_ratio_min": 0.34844751537121543,
+        "subject_height_ratio_max": 0.5520326313588612,
+        "speed_mean_mps": 0.48090502681967773,
+        "speed_mean_world_mps": 0.6733510693299856,
+        "speed_peak_accel_mps2": 1.2531363429984936e-12,
+        "focal_rate_mm_per_s": 0.6050420168068058,
+        "distance_to_subject_start_m": 3.6727237848768315,
+        "distance_to_subject_end_m": 6.018921933132028,
+        "distance_to_subject_mean_m": 4.842695687110887,
+        "distance_to_subject_span_m": 2.346198148255197
+      },
+      "package_report": "shots/shot_dolly_out/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "pan",
+      "label_zh": "摇镜",
+      "shot_id": "shot_pan",
+      "title_zh": "摇镜 · 机身固定，匀速横摇扫过街道",
+      "shot_dir": "shots/shot_pan",
+      "parameterization": {
+        "frame": "world",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 42.0,
+          "end": 42.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            2.6,
+            1.6,
+            1.55
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            2.6,
+            1.6,
+            1.55
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "bearing_offset_start_deg": -20.0,
+          "bearing_offset_end_deg": 20.0,
+          "pitch_mode": "subject_chest",
+          "yaw_start_deg": -149.0938588862295,
+          "yaw_end_deg": -95.86700121952012,
+          "pitch_deg": -8.958841720318532
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": "yaw 由主体方位角解出：起始 -149.094° → 结束 -95.867°，pitch -8.959°"
+      },
+      "limits": {
+        "centering_offset_max": 0.62,
+        "offscreen_ratio_mean": 0.22,
+        "subject_corner_inside_mean": 0.8
+      },
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.8,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.496342,
+          "limit": 0.62,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.22,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.477603,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "pan_yaw_rate",
+          "name_zh": "摇镜角速度（度/s）",
+          "value": 0.187358,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "pan_no_angle_wrap",
+          "name_zh": "摇镜逐帧角度跳变（度）",
+          "value": 0.447285,
+          "limit": 20.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "pan_yaw_monotonic",
+          "name_zh": "摇镜偏航角单调",
+          "value": 1.0,
+          "limit": 1.0,
+          "op": ">=",
+          "pass": true,
+          "detail": "yaw -149.1° → -95.9°"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.4963420926405778,
+        "centering_offset_mean": 0.24546708574994552,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.47760275268445773,
+        "subject_height_ratio_min": 0.39029385161361685,
+        "subject_height_ratio_max": 0.6207644591041563,
+        "speed_mean_mps": 0.0,
+        "speed_mean_world_mps": 0.0,
+        "speed_peak_accel_mps2": 0.0,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 4.17402683268807,
+        "distance_to_subject_end_m": 5.9947692630746525,
+        "distance_to_subject_mean_m": 5.019032756385345,
+        "distance_to_subject_span_m": 1.8207424303865825
+      },
+      "package_report": "shots/shot_pan/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "tilt",
+      "label_zh": "俯仰镜",
+      "shot_id": "shot_tilt",
+      "title_zh": "俯仰镜 · 机身固定，匀速俯仰由地面扫到主体",
+      "shot_dir": "shots/shot_tilt",
+      "parameterization": {
+        "frame": "world",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 40.0,
+          "end": 40.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            2.9,
+            1.0,
+            1.15
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            2.9,
+            1.0,
+            1.15
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "yaw_mode": "subject_chest",
+          "pitch_start_deg": -5.0,
+          "pitch_end_deg": 7.0,
+          "yaw_deg": -138.12213046211573
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": "yaw 由主体方位角解出：-138.122°"
+      },
+      "limits": {
+        "centering_offset_max": 0.5,
+        "offscreen_ratio_mean": 0.2,
+        "subject_corner_inside_mean": 0.72
+      },
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.72,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.398884,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.2,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.507351,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "tilt_pitch_rate",
+          "name_zh": "俯仰角速度（度/s）",
+          "value": 0.04224,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "tilt_no_angle_wrap",
+          "name_zh": "俯仰逐帧角度跳变（度）",
+          "value": 0.10084,
+          "limit": 20.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "tilt_pitch_monotonic",
+          "name_zh": "俯仰角单调",
+          "value": 1.0,
+          "limit": 1.0,
+          "op": ">=",
+          "pass": true,
+          "detail": "pitch -5.0° → 7.0°"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.39888373760980095,
+        "centering_offset_mean": 0.2162991918788729,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.5073511503006739,
+        "subject_height_ratio_min": 0.43167846986442165,
+        "subject_height_ratio_max": 0.6014043150965237,
+        "speed_mean_mps": 0.0,
+        "speed_mean_world_mps": 0.0,
+        "speed_peak_accel_mps2": 0.0,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 3.9028835493773064,
+        "distance_to_subject_end_m": 5.581437349090595,
+        "distance_to_subject_mean_m": 4.6699381007105085,
+        "distance_to_subject_span_m": 1.6785537997132884
+      },
+      "package_report": "shots/shot_tilt/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "truck",
+      "label_zh": "移镜",
+      "shot_id": "shot_truck",
+      "title_zh": "移镜 · 机身匀速横移，云台跟住主体",
+      "shot_dir": "shots/shot_truck",
+      "parameterization": {
+        "frame": "world",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 40.0,
+          "end": 40.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            3.4,
+            -0.6,
+            1.55
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            1.9,
+            -0.6,
+            1.55
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "velocity_mps": [
+            -0.3,
+            0.0,
+            0.0
+          ]
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.078295,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.669723,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "truck_world_speed_constant",
+          "name_zh": "机身线速度恒定（速度变异系数）",
+          "value": 0.0,
+          "limit": 0.05,
+          "op": "<=",
+          "pass": true,
+          "detail": "speed mean=0.300 m/s"
+        },
+        {
+          "id": "truck_horizontal_only",
+          "name_zh": "机身垂直漂移（m）",
+          "value": 0.0,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "truck_lateral_offset",
+          "name_zh": "机身相对主体的横向位移（m）",
+          "value": 1.4875,
+          "limit": 0.3,
+          "op": ">=",
+          "pass": true,
+          "detail": "横向偏移 3.400 → 1.913 m"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.07829451927863622,
+        "centering_offset_mean": 0.056686486476703234,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.6697233577835718,
+        "subject_height_ratio_min": 0.5993602231182724,
+        "subject_height_ratio_max": 0.7087952193451533,
+        "speed_mean_mps": 0.30000000000000004,
+        "speed_mean_world_mps": 0.30000000000000004,
+        "speed_peak_accel_mps2": 5.115907697472721e-13,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 3.603123644839294,
+        "distance_to_subject_end_m": 3.752411327400962,
+        "distance_to_subject_mean_m": 3.490096198391966,
+        "distance_to_subject_span_m": 0.436184588598989
+      },
+      "package_report": "shots/shot_truck/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "follow",
+      "label_zh": "跟镜",
+      "shot_id": "shot_follow",
+      "title_zh": "跟镜 · 云台挂在主体刚体上，机身与主体同速",
+      "shot_dir": "shots/shot_follow",
+      "parameterization": {
+        "frame": "subject",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 35.0,
+          "end": 35.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            1.5,
+            2.6,
+            1.75
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            1.5,
+            2.6,
+            1.75
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "note": "机位挂在主体刚体的局部偏移上"
+        },
+        "mount": {
+          "asset": "hero",
+          "eye_local": [
+            1.5,
+            2.6,
+            1.75
+          ],
+          "target_local": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "up": "Z"
+        },
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.151731,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.637585,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.0,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "follow_distance_constant",
+          "name_zh": "与被摄体距离恒定（带宽 m）",
+          "value": 0.0,
+          "limit": 0.05,
+          "op": "<=",
+          "pass": true,
+          "detail": "distance 3.120 → 3.120"
+        },
+        {
+          "id": "follow_offset_constant",
+          "name_zh": "主体局部系下机位偏移恒定（带宽 m）",
+          "value": 0.0,
+          "limit": 0.02,
+          "op": "<=",
+          "pass": true,
+          "detail": "offset [1.5, 2.6, 1.75]"
+        },
+        {
+          "id": "follow_camera_locked_to_subject",
+          "name_zh": "相机朝向锁定主体（目标距离带宽 m）",
+          "value": 0.0,
+          "limit": 0.05,
+          "op": "<=",
+          "pass": true,
+          "detail": "target 距离 1.000 m"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.15173135574203972,
+        "centering_offset_mean": 0.12624321634279934,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.6375853923608266,
+        "subject_height_ratio_min": 0.6212713640237525,
+        "subject_height_ratio_max": 0.6508992849678172,
+        "speed_mean_mps": 0.0,
+        "speed_mean_world_mps": 0.6349787992589614,
+        "speed_peak_accel_mps2": 0.0,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 3.1196954979612994,
+        "distance_to_subject_end_m": 3.1196954979612994,
+        "distance_to_subject_mean_m": 3.1196954979613003,
+        "distance_to_subject_span_m": 0.0
+      },
+      "package_report": "shots/shot_follow/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "orbit",
+      "label_zh": "环绕镜",
+      "shot_id": "shot_orbit",
+      "title_zh": "环绕镜 · 匀角速度绕主体转圈，半径恒定",
+      "shot_dir": "shots/shot_orbit",
+      "parameterization": {
+        "frame": "subject",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 40.0,
+          "end": 40.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            4.2,
+            0.0,
+            1.5
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            4.2,
+            0.0,
+            1.5
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "radius_m": 4.2,
+          "height_m": 1.5,
+          "angle_start_deg": 120.0,
+          "angle_end_deg": 190.0
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.053424,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.535305,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.254991,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "orbit_radius_constant",
+          "name_zh": "环绕半径恒定（带宽 m）",
+          "value": 0.0,
+          "limit": 0.02,
+          "op": "<=",
+          "pass": true,
+          "detail": "radius 4.200–4.200"
+        },
+        {
+          "id": "orbit_angular_rate_constant",
+          "name_zh": "环绕角速度恒定（度/s 变异）",
+          "value": 0.0,
+          "limit": 1.0,
+          "op": "<=",
+          "pass": true,
+          "detail": "rate 14.12 deg/s"
+        },
+        {
+          "id": "orbit_subject_height_constant",
+          "name_zh": "主体高度占比恒定（带宽）",
+          "value": 0.021322,
+          "limit": 0.03,
+          "op": "<=",
+          "pass": true,
+          "detail": "height_ratio 0.523–0.544"
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.05342363883346085,
+        "centering_offset_mean": 0.039139384420132976,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.5353046004649841,
+        "subject_height_ratio_min": 0.5229598966699808,
+        "subject_height_ratio_max": 0.5442816615718045,
+        "speed_mean_mps": 1.0348730350042783,
+        "speed_mean_world_mps": 1.4498971551559692,
+        "speed_peak_accel_mps2": 0.2549909996624536,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 4.242640687119285,
+        "distance_to_subject_end_m": 4.242640687119285,
+        "distance_to_subject_mean_m": 4.242640687119285,
+        "distance_to_subject_span_m": 8.881784197001252e-16
+      },
+      "package_report": "shots/shot_orbit/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "pedestal",
+      "label_zh": "升降镜",
+      "shot_id": "shot_pedestal",
+      "title_zh": "升降镜 · 机身水平位置不动，沿世界 Z 轴缓升",
+      "shot_dir": "shots/shot_pedestal",
+      "parameterization": {
+        "frame": "world",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "smoothstep",
+        "focal_mm": {
+          "start": 38.0,
+          "end": 38.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            3.0,
+            -0.2,
+            1.05
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            3.0,
+            -0.2,
+            2.55
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "z_start_m": 1.05,
+          "z_end_m": 2.55
+        },
+        "mount": null,
+        "handheld": null,
+        "resolution_note": ""
+      },
+      "limits": {},
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.075169,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.563362,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 0.359923,
+          "limit": 0.5,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "pedestal_z_monotonic",
+          "name_zh": "机位高度单调变化",
+          "value": 1.0,
+          "limit": 1.0,
+          "op": ">=",
+          "pass": true,
+          "detail": "z 1.05 → 2.55 m"
+        },
+        {
+          "id": "pedestal_vertical_speed",
+          "name_zh": "垂直速度起止收敛（首末速度上限 m/s）",
+          "value": 0.007584,
+          "limit": 0.25,
+          "op": "<=",
+          "pass": true,
+          "detail": "v 首=0.008 末=0.008 m/s"
+        },
+        {
+          "id": "pedestal_subject_not_cropped",
+          "name_zh": "主体未被裁切（高度占比最小值）",
+          "value": 0.436665,
+          "limit": 0.12,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.07516894907187145,
+        "centering_offset_mean": 0.03907395574795231,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.5633622946676354,
+        "subject_height_ratio_min": 0.43666504199585077,
+        "subject_height_ratio_max": 0.7019617723915867,
+        "speed_mean_mps": 0.3025210084033613,
+        "speed_mean_world_mps": 0.3025210084033613,
+        "speed_peak_accel_mps2": 0.35992330694034536,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 3.3139855159611065,
+        "distance_to_subject_end_m": 4.94093226127025,
+        "distance_to_subject_mean_m": 4.018100743191158,
+        "distance_to_subject_span_m": 1.6269467453091435
+      },
+      "package_report": "shots/shot_pedestal/validation_report.json",
+      "package_report_agrees": true
+    },
+    {
+      "type": "handheld",
+      "label_zh": "手持镜",
+      "shot_id": "shot_handheld",
+      "title_zh": "手持镜 · 基础缓推 + 受限频带（0.8/1.6/2.4 Hz）抖动",
+      "shot_dir": "shots/shot_handheld",
+      "parameterization": {
+        "frame": "subject",
+        "duration_s": 5.0,
+        "fps": 24.0,
+        "easing": "linear",
+        "focal_mm": {
+          "start": 42.0,
+          "end": 42.0
+        },
+        "sensor_width_mm": 36.0,
+        "start": {
+          "eye": [
+            2.6,
+            3.4,
+            1.5
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "end": {
+          "eye": [
+            2.06,
+            2.7,
+            1.19
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "params": {
+          "note": "基础轨道：沿 start.eye 方向线性缓推"
+        },
+        "mount": null,
+        "handheld": {
+          "freqs_hz": [
+            0.8,
+            1.6,
+            2.4
+          ],
+          "amps_m": [
+            0.01,
+            0.016,
+            0.008
+          ],
+          "phases_rad": [
+            0.0,
+            1.7,
+            3.4
+          ],
+          "rot_amp_deg": 0.35
+        },
+        "resolution_note": ""
+      },
+      "limits": {
+        "speed_curve_peak_accel_mps2": 4.0
+      },
+      "n_checks": 11,
+      "n_pass": 11,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "subject_in_frame_ratio",
+          "name_zh": "主体在画幅内的帧占比",
+          "value": 1.0,
+          "limit": 0.95,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_corner_inside_mean",
+          "name_zh": "主体包围盒角点在画幅内比例（均值）",
+          "value": 1.0,
+          "limit": 0.7,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "centering_offset",
+          "name_zh": "构图居中偏移（归一化最大）",
+          "value": 0.066396,
+          "limit": 0.35,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "offscreen_ratio",
+          "name_zh": "离屏比例（均值）",
+          "value": 0.0,
+          "limit": 0.15,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "frustum_subject_ratio",
+          "name_zh": "视锥内主体比例",
+          "value": 1.0,
+          "limit": 0.9,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "subject_height_ratio_band",
+          "name_zh": "主体高度占比（均值）",
+          "value": 0.630774,
+          "limit": [
+            0.1,
+            0.85
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "speed_curve_peak_accel",
+          "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+          "value": 3.596129,
+          "limit": 4.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "focal_rate",
+          "name_zh": "焦距变化率（mm/s）",
+          "value": 0.0,
+          "limit": 30.0,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "handheld_noise_band",
+          "name_zh": "手持噪声主频落在 0.5–3 Hz",
+          "value": 1.6,
+          "limit": [
+            0.5,
+            3.0
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": "FFT 主频 1.60 Hz（频率栅格 0.20 Hz）"
+        },
+        {
+          "id": "handheld_amplitude",
+          "name_zh": "手持位移幅度（m）",
+          "value": 0.026846,
+          "limit": 0.045,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "handheld_residual_rms",
+          "name_zh": "手持残差 RMS（m）",
+          "value": 0.014491,
+          "limit": 0.03,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        }
+      ],
+      "metrics": {
+        "subject_in_frame_ratio": 1.0,
+        "subject_corner_inside_mean": 1.0,
+        "centering_offset_max": 0.06639598063863739,
+        "centering_offset_mean": 0.035531192509066827,
+        "offscreen_ratio_mean": 0.0,
+        "frustum_subject_ratio_mean": 1.0,
+        "subject_height_ratio_mean": 0.6307736251220531,
+        "subject_height_ratio_min": 0.548053568151413,
+        "subject_height_ratio_max": 0.7215353024450437,
+        "speed_mean_mps": 0.23247714523521987,
+        "speed_mean_world_mps": 0.7291947160863257,
+        "speed_peak_accel_mps2": 3.596128704218476,
+        "focal_rate_mm_per_s": 0.0,
+        "distance_to_subject_start_m": 4.322058659505054,
+        "distance_to_subject_end_m": 3.40847172980928,
+        "distance_to_subject_mean_m": 3.864340395091716,
+        "distance_to_subject_span_m": 0.9135869296957742
+      },
+      "package_report": "shots/shot_handheld/validation_report.json",
+      "package_report_agrees": true
+    }
+  ]
+}

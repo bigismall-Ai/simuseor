@@ -1,8 +1,408 @@
 {
   "kind": "shot_spec",
+  "schema_version": 2,
   "shot_id": "S03",
+  "status": "validated",
   "fps": 24,
   "duration_s": 8.0,
+  "resolution": [
+    512,
+    512
+  ],
+  "up_axis": "Z",
+  "assets": [
+    {
+      "asset_id": "geometry/soma_anny_adult",
+      "role": "character",
+      "instance": "hero",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        -1.6,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/building_office",
+      "role": "building",
+      "instance": "building_a",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -9.5,
+        0.0,
+        1.0,
+        0.0,
+        13.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/building_office",
+      "role": "building",
+      "instance": "building_b",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        6.0,
+        0.0,
+        1.0,
+        0.0,
+        15.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/vehicle_car",
+      "role": "vehicle",
+      "instance": "car_a",
+      "transform": [
+        0.0,
+        -1.0,
+        0.0,
+        -5.6,
+        1.0,
+        0.0,
+        0.0,
+        -1.4,
+        0.0,
+        0.0,
+        1.0,
+        0.04,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/vehicle_car",
+      "role": "vehicle",
+      "instance": "car_b",
+      "transform": [
+        0.0,
+        1.0,
+        0.0,
+        9.0,
+        -1.0,
+        0.0,
+        0.0,
+        1.3,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/vegetation_tree",
+      "role": "vegetation",
+      "instance": "tree_a",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -8.5,
+        0.0,
+        1.0,
+        0.0,
+        6.3,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/vegetation_tree",
+      "role": "vegetation",
+      "instance": "tree_b",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        13.0,
+        0.0,
+        1.0,
+        0.0,
+        6.3,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_00",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -5.0,
+        0.0,
+        1.0,
+        0.0,
+        4.4,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_01",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -3.75,
+        0.0,
+        1.0,
+        0.0,
+        4.4,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_02",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -2.5,
+        0.0,
+        1.0,
+        0.0,
+        4.4,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_03",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -1.25,
+        0.0,
+        1.0,
+        0.0,
+        4.4,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_04",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        4.4,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_05",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -5.0,
+        0.0,
+        1.0,
+        0.0,
+        5.55,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_06",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -3.75,
+        0.0,
+        1.0,
+        0.0,
+        5.55,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_07",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -2.5,
+        0.0,
+        1.0,
+        0.0,
+        5.55,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_08",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        -1.25,
+        0.0,
+        1.0,
+        0.0,
+        5.55,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "role": "crowd",
+      "instance": "crowd_09",
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        5.55,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
   "sensor_width_mm": 36.0,
   "camera": {
     "mode": "mounted",
@@ -24,7 +424,20 @@
         1.0
       ]
     },
-    "focal_mm": 35.0
+    "move": {
+      "type": "follow",
+      "easing": "smoothstep"
+    },
+    "focal_mm": 35.0,
+    "sensor_width_mm": 36.0,
+    "f_px": 512.0,
+    "near": 0.05,
+    "far": 14.863043,
+    "depth_range_source": {
+      "method": "scene_layout 实例包围盒沿相机前向轴的包络（逐帧求 min/max）",
+      "clamp_near_m": 0.05,
+      "note": "相机在 car_a 包围盒内部，最近几何由 clamp 下限给出；渲染时以 sidecar 的 near/far 为准"
+    }
   },
   "actors": [
     {
@@ -1770,10 +2183,171 @@
       ]
     }
   ],
-  "conditions": [
-    "depth",
-    "normal",
-    "seg"
+  "conditions": {
+    "channels": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "depth": {
+      "near": 0.05,
+      "far": 14.863043,
+      "encoding": "near_1_far_0"
+    },
+    "mask_semantics": {
+      "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+      "source": "conditions.render_conditions -> mask",
+      "foreground_value": 255,
+      "background_value": 0,
+      "anti_aliasing": "none",
+      "post_process": "none",
+      "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+    },
+    "palette_version": "tree_resources_builder_fixed_v1"
+  },
+  "timeline": {
+    "events": [
+      {
+        "t": 0.0,
+        "type": "fx_volume.start",
+        "target": "nongeometry/fx_proxy"
+      },
+      {
+        "t": 1.8,
+        "type": "fx_volume.end",
+        "target": "nongeometry/fx_proxy"
+      },
+      {
+        "t": 3.0,
+        "type": "vehicle.turn_begin",
+        "target": "car_a"
+      },
+      {
+        "t": 5.0,
+        "type": "brake_light.on",
+        "target": "car_a"
+      },
+      {
+        "t": 7.5,
+        "type": "vehicle.stop",
+        "target": "car_a"
+      }
+    ]
+  },
+  "validation": {
+    "report_path": "assets/validation/shot_spec_report.json",
+    "pass": true,
+    "checks": [
+      {
+        "code": "SHOT_KIND",
+        "ok": true,
+        "message": "kind='shot_spec'",
+        "hint": "固定为 shot_spec"
+      },
+      {
+        "code": "SHOT_RESOLUTION",
+        "ok": true,
+        "message": "resolution=[512, 512]",
+        "hint": "[w, h]：条件图 sidecar 要引用同一分辨率"
+      },
+      {
+        "code": "SHOT_UP_AXIS",
+        "ok": true,
+        "message": "up_axis='Z'",
+        "hint": "本项目固定 Z-up"
+      },
+      {
+        "code": "SHOT_ASSETS",
+        "ok": true,
+        "message": "assets[] 引用 17 个 asset_id",
+        "hint": "asset_id 必须在 assets/manifest.json 里存在"
+      },
+      {
+        "code": "SHOT_CAMERA_MOVE",
+        "ok": true,
+        "message": "camera.move={'type': 'follow', 'easing': 'smoothstep'}",
+        "hint": "{type, easing, handheld?}；type 取 CAMERA_MOVE_TYPES"
+      },
+      {
+        "code": "SHOT_CAMERA_CLIP",
+        "ok": true,
+        "message": "camera.near=0.05 camera.far=14.863043",
+        "hint": "近远裁剪面（米），与 conditions.depth 同值"
+      },
+      {
+        "code": "SHOT_CONDITIONS",
+        "ok": true,
+        "message": "conditions 形态=object",
+        "hint": "v2 用对象形态 {channels[], depth{...}, mask_semantics, palette_version}"
+      },
+      {
+        "code": "SHOT_TIMELINE",
+        "ok": true,
+        "message": "timeline.events[] 5 条",
+        "hint": "FX 才有时间轴归属"
+      },
+      {
+        "code": "SHOT_VALIDATION",
+        "ok": true,
+        "message": "validation.report_path='assets/validation/shot_spec_report.json'",
+        "hint": "shot 必须回链验证报告"
+      },
+      {
+        "code": "SHOT_LICENSE",
+        "ok": true,
+        "message": "license[] 带出 5 个资产的许可",
+        "hint": "shot 必须带出资产许可，否则交付不可用"
+      },
+      {
+        "code": "SHOT_STATUS",
+        "ok": true,
+        "message": "status='validated'",
+        "hint": "draft|validated|approved"
+      },
+      {
+        "code": "SHOT_VALIDATE_SPEC",
+        "ok": true,
+        "message": "validate_spec 报出 0 个问题",
+        "hint": "问题清单见 problems 字段"
+      }
+    ],
+    "problems": [],
+    "frames": 192
+  },
+  "license": [
+    {
+      "asset_id": "geometry/soma_anny_adult",
+      "license": "LicenseRef-Proprietary",
+      "source_url": null,
+      "attribution": "程序化生成（harness/generate_assets.py，纯 CPU，无生成式模型）"
+    },
+    {
+      "asset_id": "geometry/building_office",
+      "license": "LicenseRef-Proprietary",
+      "source_url": null,
+      "attribution": "程序化生成（harness/generate_assets.py，纯 CPU，无生成式模型）"
+    },
+    {
+      "asset_id": "geometry/vehicle_car",
+      "license": "LicenseRef-Proprietary",
+      "source_url": null,
+      "attribution": "程序化生成（harness/generate_assets.py，纯 CPU，无生成式模型）"
+    },
+    {
+      "asset_id": "geometry/vegetation_tree",
+      "license": "LicenseRef-Proprietary",
+      "source_url": null,
+      "attribution": "程序化生成（harness/generate_assets.py，纯 CPU，无生成式模型）"
+    },
+    {
+      "asset_id": "geometry/crowd_block",
+      "license": "LicenseRef-Proprietary",
+      "source_url": null,
+      "attribution": "程序化生成（harness/generate_assets.py，纯 CPU，无生成式模型）"
+    }
   ],
   "notes": "车载镜头：相机位姿由 car_a 的刚体变换 M(t) 推出；轨迹覆盖 [0, 8.0] s，含直线、右转 90 度、减速停车、静止保持四段",
   "camera_samples": [
@@ -8498,10 +9072,5 @@
       }
     }
   ],
-  "validation": {
-    "problems": [],
-    "pass": true,
-    "frames": 192
-  },
   "downstream_hint": "resolve_camera(spec, t, actor_transforms_at(spec, t)) 直接得到世界坐标镜头；camera_samples 是预烘焙的逐帧结果"
 }

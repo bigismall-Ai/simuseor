@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_barrier_construction",
+  "name": "prop_barrier_construction",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_barrier_construction.glb",
+      "bytes": 1800,
+      "sha256": "a77b175b813931b6ed990ad32969685300671b0919a34af10e1fc2f72fb77342"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "is_ai": 0,
+    "source_pack": "city-kit-roads",
+    "source_model": "construction-barrier",
+    "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/construction-barrier.glb",
+    "source_sha256": "906f73a6d62d8de58a4c5a19e76ff95b460c42b37e5fa37478b8612f06793f26",
+    "source_faces": 60,
+    "scale_factor": 8.88889,
+    "target_max_dim_m": 2.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 60
+  },
+  "geometry": {
+    "faces": 60,
+    "vertices": 32,
+    "bbox_min": [
+      -0.6022,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.6022,
+      1.1556,
+      2.0
+    ],
+    "size_m": [
+      1.2044,
+      1.1556,
+      2.0
+    ],
+    "max_dim_m": 2.0,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_barrier_construction",
+    "params": {
+      "scale_factor": 8.88889,
+      "target_max_dim_m": 2.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

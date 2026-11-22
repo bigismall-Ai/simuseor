@@ -1,0 +1,134 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "harness/shot_package.py (R2 · 运镜体系化)"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "shot_pan",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "shot_pan_camera",
+      "camera": 0,
+      "translation": [
+        2.5999999046325684,
+        1.5499999523162842,
+        -1.600000023841858
+      ],
+      "rotation": [
+        0.32040107250213623,
+        0.6613137722015381,
+        -0.5652262568473816,
+        0.3748687207698822
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "name": "shot_pan_camera",
+      "type": "perspective",
+      "aspectRatio": 1.7821782178217822,
+      "yfov": 0.8097835725701669,
+      "znear": 0.1,
+      "zfar": 200.0
+    }
+  ],
+  "animations": [
+    {
+      "name": "camera_track",
+      "samplers": [
+        {
+          "input": 0,
+          "output": 1,
+          "interpolation": "LINEAR"
+        },
+        {
+          "input": 0,
+          "output": 2,
+          "interpolation": "LINEAR"
+        }
+      ],
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 0,
+            "path": "translation"
+          }
+        },
+        {
+          "sampler": 1,
+          "target": {
+            "node": 0,
+            "path": "rotation"
+          }
+        }
+      ]
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 3840,
+      "uri": "data:application/octet-stream;base64,AAAAAASrKj1+qqo9AAAAPsGqKj4/VVU+AACAPmFVlT6fqqo+AADAPmFV1T6fquo+AAAAP7CqCj9QVRU/AAAgP7CqKj9QVTU/AABAP7CqSj9QVVU/AABgP7Cqaj9QVXU/AACAP1hVhT+oqoo/AACQP1hVlT+oqpo/AACgP1hVpT+oqqo/AACwP1hVtT+oqro/AADAP1hVxT+oqso/AADQP1hV1T+oqto/AADgP1hV5T+oquo/AADwP1hV9T+oqvo/AAAAQKyqAkBUVQVAAAAIQKyqCkBUVQ1AAAAQQKyqEkBUVRVAAAAYQKyqGkBUVR1AAAAgQKyqIkBUVSVAAAAoQKyqKkBUVS1AAAAwQKyqMkBUVTVAAAA4QKyqOkBUVT1AAABAQKyqQkBUVUVAAABIQKyqSkBUVU1AAABQQKyqUkBUVVVAAABYQKyqWkBUVV1AAABgQKyqYkBUVWVAAABoQKyqakBUVW1AAABwQKyqckBUVXVAAAB4QKyqekBUVX1AAACAQFZVgUCqqoJAAACEQFZVhUCqqoZAAACIQFZViUCqqopAAACMQFZVjUCqqo5AAACQQFZVkUCqqpJAAACUQFZVlUCqqpZAAACYQFZVmUCqqppAAACcQFZVnUCqqp5AZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/ZmYmQGZmxj/NzMy/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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 480,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 480,
+      "byteLength": 1440,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1920,
+      "byteLength": 1920,
+      "target": 34962
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 120,
+      "type": "SCALAR",
+      "min": [
+        0.0
+      ],
+      "max": [
+        4.9583330154418945
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 120,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 120,
+      "type": "VEC4"
+    }
+  ],
+  "extras": {
+    "r2_note": "glTF 核心规范没有相机动画，逐帧位姿走节点 TRS 动画；camera.yfov/znear/zfar 对应第 0 帧内参。",
+    "authority": "assets/validation/camera_intrinsics.json（逐帧内外参唯一权威源）",
+    "up_axis_source": "Z-up 世界系 → glTF Y-up 世界系，p_yup = (x, z, −y)",
+    "frames": 120,
+    "fps": 24
+  }
+}

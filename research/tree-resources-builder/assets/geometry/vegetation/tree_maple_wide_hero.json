@@ -1,0 +1,113 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/vegetation/tree_maple_wide_hero",
+  "name": "tree_maple_wide_hero",
+  "category": "tree",
+  "semantic_category": "tree",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/vegetation/tree_maple_wide_hero.glb",
+      "bytes": 92872,
+      "sha256": "b33bb66409e161f2b1186fb1e509930b4fb25ba53e36668896c0908827b39393"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_assets.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "由本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_assets.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 4960
+  },
+  "geometry": {
+    "faces": 4960,
+    "vertices": 2664,
+    "parts": [
+      {
+        "node": "tree_maple_wide_hero_trunk",
+        "faces": 2720,
+        "vertices": 1530,
+        "bbox_min": [
+          -1.1529,
+          -0.8138,
+          0.0
+        ],
+        "bbox_max": [
+          1.0782,
+          1.0122,
+          3.7591
+        ]
+      },
+      {
+        "node": "tree_canopy_maple_wide_hero",
+        "faces": 2240,
+        "vertices": 1134,
+        "bbox_min": [
+          -3.4924,
+          -2.603,
+          1.4955
+        ],
+        "bbox_max": [
+          2.6797,
+          3.2676,
+          5.5849
+        ]
+      }
+    ],
+    "bbox_min": [
+      -3.4924,
+      -2.603,
+      0.0
+    ],
+    "bbox_max": [
+      2.6797,
+      3.2676,
+      5.5849
+    ],
+    "ground_offset_m": 0.0
+  },
+  "recipe": {
+    "recipe_id": "vegetation_species",
+    "variant": "hero",
+    "params": {
+      "name": "maple_wide",
+      "height": 5.4,
+      "trunk_r": 0.26,
+      "canopy_r": 3.6,
+      "canopy_h": 2.2,
+      "shape": "wide",
+      "branches": 4,
+      "levels": 3,
+      "seed": 53,
+      "note": "宽冠枫，广场遮荫"
+    },
+    "lod": {
+      "segments": 8,
+      "levels": 3,
+      "canopy_blobs": 7,
+      "canopy_subdiv": 2,
+      "branch_ratio": 0.45
+    }
+  },
+  "nodes": [
+    "tree_maple_wide_hero_trunk",
+    "tree_canopy_maple_wide_hero"
+  ],
+  "semantic_categories": {
+    "tree_maple_wide_hero_trunk": "tree",
+    "tree_canopy_maple_wide_hero": "foliage"
+  }
+}

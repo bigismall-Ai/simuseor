@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_fence_wood",
+  "name": "prop_fence_wood",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_fence_wood.glb",
+      "bytes": 1668,
+      "sha256": "205ca90f37ded6d5a71c43e87ec3022354a9c1a6a5afa779a0d5ec5a5d535987"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "is_ai": 0,
+    "source_pack": "survival-kit",
+    "source_model": "fence",
+    "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/fence.glb",
+    "source_sha256": "5d8050e39c8b83b5835ea38b9b17429b4a03e289b566a1db771b7e1d9c6e4050",
+    "source_faces": 48,
+    "scale_factor": 3.86473,
+    "target_max_dim_m": 2.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 48
+  },
+  "geometry": {
+    "faces": 48,
+    "vertices": 32,
+    "bbox_min": [
+      -0.9662,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.9662,
+      1.9999,
+      0.1653
+    ],
+    "size_m": [
+      1.9324,
+      1.9999,
+      0.1653
+    ],
+    "max_dim_m": 1.9999,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_fence_wood",
+    "params": {
+      "scale_factor": 3.86473,
+      "target_max_dim_m": 2.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

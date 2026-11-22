@@ -28,6 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
+import condition_contract as K  # noqa: E402
 import conditions as C  # noqa: E402
 
 RESULTS = {}
@@ -370,9 +371,10 @@ def test_near_plane_clipping():
 
 @_report
 def test_depth_monotonic_with_distance():
-    """同一帧里：近的物体 depth 更小（约定 0=最近，1=最远）。
+    """同一帧里：近的物体 depth **更大**（R0 极性裁定后约定 1=最近，0=最远）。
 
     注意 depth 是**按帧**归一化的，所以只能在同一帧内比较远近，不能跨帧比较。
+    R0 之前约定是 0=最近、1=最远，与 resources3D 相反，已在 R0 改掉。
     """
     scene = [
         {"mesh": _box((1.2, 1.2, 1.2), (-2.2, -1.0, 0.6)), "label": "near"},
@@ -388,11 +390,79 @@ def test_depth_monotonic_with_distance():
     assert m_near.any() and m_far.any(), "两个物体都要在画面里"
     d_near = float(np.median(d[m_near]))
     d_far = float(np.median(d[m_far]))
-    assert d_near < d_far, f"近处 depth 应更小: {d_near} vs {d_far}"
+    assert d_near > d_far, f"近处 depth 应更大（近=1 远=0）: {d_near} vs {d_far}"
     # 深度对距离单调（用 z-buffer 直接核对）
     z = res["zbuf"]
     assert float(z[m_near].mean()) < float(z[m_far].mean())
     return {"near": round(d_near, 4), "far": round(d_far, 4)}
+
+
+@_report
+def test_zbuffer_keeps_nearest_surface():
+    """重叠几何时 z-buffer 必须保留**最近**的表面（回归测试）。
+
+    背景：R0 的交叉渲染比对暴露出 conditions._raster_chunk 的一个真 bug——
+    片元按深度排序后，旧代码用「相邻像素索引不同 = 新的一段」来判定每个像素的
+    首次出现；但按深度排序后同一像素的多次出现并不相邻，于是**更远**的深度会
+    覆盖掉更近的深度（实测偏差可达 8 m）。resources3D 的 wmcore.rasterize
+    是逐三角形严格 min-depth，是对的。
+
+    判据：近处的小盒子 + 远处的大盒子叠在一起时，小盒子覆盖的像素在
+    「只渲近盒」与「同时渲远近盒」两次渲染里必须是同一个深度。
+    """
+    # 场景要点：沿视线方向叠一排薄板（每片 0.2 m 厚、间距 0.6 m）。
+    # 同一个像素会被多片的前后面命中；按深度排序后，同一像素的多次出现被别的
+    # 像素**插在中间**——这正是旧 bug 触发的前提（用两块盒子测不出来：
+    # 实测旧代码在两盒场景下误差为 0，闸太弱；换成薄板阵列后旧代码误差 0.6 m）。
+    slabs = [{"mesh": _box((6.0, 0.2, 6.0), (0.0, 6.0 + i * 0.6, 3.0)),
+              "label": f"slab_{i:02d}"} for i in range(24)]
+    cam = C.Camera((0.0, 0.0, 3.0), (0.0, 20.0, 3.0), (0, 0, 1), 50.0, 256, 256, 36.0, 36.0)
+
+    both = C.render_conditions(slabs, cam, width=256, height=256)
+    only = C.render_conditions(slabs[:1], cam, width=256, height=256)
+
+    m = only["mask"]
+    assert m.any(), "最近的一片薄板应有可见像素"
+    z_both = both["zbuf"][m]
+    z_only = only["zbuf"][m]
+    err = float(np.abs(z_both - z_only).max())
+    assert err < 1e-3, f"更远的表面覆盖了更近的表面：深度偏差 {err:.4f} m"
+    # 前景也不能被远处几何吃掉
+    assert int(both["mask"].sum()) >= int(only["mask"].sum()), "最近薄板的前景被远处几何吃掉"
+    return {"max_depth_err_m": err, "near_px": int(m.sum()), "slabs": len(slabs)}
+
+
+@_report
+def test_contract_channels_and_sidecar_fields():
+    """R0 契约：六通道闭集 + sidecar 七字段齐全。"""
+    assert tuple(C.CONTRACT_CHANNELS) == ("depth", "normal", "seg", "mask", "lineart", "pose")
+    assert C.DEPTH_POLARITY == "near_1_far_0"
+    assert C.DEPTH_BACKGROUND == 0.0, "背景（无穷远）必须是 0，与近=1远=0 自洽"
+    assert C.UP_AXIS == "Z"
+    required = ("resolution", "f_px", "near", "far", "encoding", "up_axis", "mask_semantics")
+    assert tuple(K.SIDECAR_REQUIRED_FIELDS) == required, "契约必含字段清单被改动过"
+
+    scene = _mini_scene()
+    cam = _cam(w=128, h=128)
+    joints = {n: (0.0, -1.6, 1.0 + 0.02 * i) for i, n in enumerate(C.POSE_JOINT_NAMES)}
+    res = C.render_conditions(scene, cam, width=128, height=128,
+                               channels=C.CONTRACT_CHANNELS, pose_joints=joints)
+    for ch in C.CONTRACT_CHANNELS:
+        arr = res["mask_img"] if ch == "mask" else res[ch]
+        assert arr is not None, f"通道 {ch} 没产出"
+        assert arr.shape[:2] == (128, 128), f"通道 {ch} 形状不对: {arr.shape}"
+
+    tmp = tempfile.mkdtemp(prefix="cond_pack_")
+    try:
+        paths = C.save_condition_pack(res, tmp, prefix="t")
+        assert set(paths["sidecars"]) == set(C.CONTRACT_CHANNELS)
+        scan = C._scan_sidecar_dir(tmp)
+        assert scan["all_ok"], f"sidecar 七字段不齐: {scan}"
+        for ch in C.CONTRACT_CHANNELS:
+            assert os.path.isfile(paths["files"][ch]), f"通道 {ch} 没落盘"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return {"channels": list(C.CONTRACT_CHANNELS), "sidecar_fields": list(required)}
 
 
 # ------------------------------------------------------------------ runner

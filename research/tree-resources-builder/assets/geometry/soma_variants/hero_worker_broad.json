@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_worker_broad",
+  "name": "hero_worker_broad",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_worker_broad.glb",
+      "bytes": 35292,
+      "sha256": "cf89c7d8801689a4c11adff74ea53027e709831c11ff330db6d6c1f117656ed5"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_worker_broad_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.233,
+          -0.1305,
+          0.9672
+        ],
+        "bbox_max": [
+          0.233,
+          0.1305,
+          1.4872
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.18,
+          -0.1235,
+          0.8665
+        ],
+        "bbox_max": [
+          0.18,
+          0.1235,
+          1.0887
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.052,
+          -0.052,
+          1.456
+        ],
+        "bbox_max": [
+          0.052,
+          0.052,
+          1.5808
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.1025,
+          -0.1062,
+          1.5675
+        ],
+        "bbox_max": [
+          0.1025,
+          0.1166,
+          1.8125
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.13,
+          -0.0874,
+          1.3998
+        ],
+        "bbox_max": [
+          0.3047,
+          0.0874,
+          1.5746
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.166,
+          -0.0675,
+          1.1701
+        ],
+        "bbox_max": [
+          0.4991,
+          0.0675,
+          1.531
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.4018,
+          -0.0443,
+          1.1517
+        ],
+        "bbox_max": [
+          0.5113,
+          0.0651,
+          1.2611
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.4107,
+          -0.044,
+          0.923
+        ],
+        "bbox_max": [
+          0.6591,
+          0.0844,
+          1.2361
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.5944,
+          0.0026,
+          0.845
+        ],
+        "bbox_max": [
+          0.6516,
+          0.0806,
+          0.9438
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0113,
+          -0.099,
+          0.5177
+        ],
+        "bbox_max": [
+          0.2092,
+          0.099,
+          0.9704
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0508,
+          -0.0595,
+          0.4501
+        ],
+        "bbox_max": [
+          0.1905,
+          0.0803,
+          0.5899
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0531,
+          -0.0571,
+          0.0821
+        ],
+        "bbox_max": [
+          0.1882,
+          0.0779,
+          0.5216
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0728,
+          -0.0338,
+          0.0005
+        ],
+        "bbox_max": [
+          0.1685,
+          0.2106,
+          0.0785
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.3047,
+          -0.0874,
+          1.3998
+        ],
+        "bbox_max": [
+          -0.13,
+          0.0874,
+          1.5746
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4991,
+          -0.0675,
+          1.1701
+        ],
+        "bbox_max": [
+          -0.166,
+          0.0675,
+          1.531
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.5113,
+          -0.0443,
+          1.1517
+        ],
+        "bbox_max": [
+          -0.4018,
+          0.0651,
+          1.2611
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.6591,
+          -0.044,
+          0.923
+        ],
+        "bbox_max": [
+          -0.4107,
+          0.0844,
+          1.2361
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.6516,
+          0.0026,
+          0.845
+        ],
+        "bbox_max": [
+          -0.5944,
+          0.0806,
+          0.9438
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.2092,
+          -0.099,
+          0.5177
+        ],
+        "bbox_max": [
+          -0.0113,
+          0.099,
+          0.9704
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1905,
+          -0.0595,
+          0.4501
+        ],
+        "bbox_max": [
+          -0.0508,
+          0.0803,
+          0.5899
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1882,
+          -0.0571,
+          0.0821
+        ],
+        "bbox_max": [
+          -0.0531,
+          0.0779,
+          0.5216
+        ]
+      },
+      {
+        "node": "hero_hero_worker_broad_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1685,
+          -0.0338,
+          0.0005
+        ],
+        "bbox_max": [
+          -0.0728,
+          0.2106,
+          0.0785
+        ]
+      },
+      {
+        "node": "jacket_hero_worker_broad_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.3145,
+          -0.2097,
+          1.0192
+        ],
+        "bbox_max": [
+          0.3145,
+          0.2097,
+          1.508
+        ]
+      },
+      {
+        "node": "jacket_hero_worker_broad_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.105,
+          -0.1455,
+          0.8863
+        ],
+        "bbox_max": [
+          0.7157,
+          0.1515,
+          1.5897
+        ]
+      },
+      {
+        "node": "jacket_hero_worker_broad_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.7157,
+          -0.1455,
+          0.8863
+        ],
+        "bbox_max": [
+          -0.105,
+          0.1515,
+          1.5897
+        ]
+      },
+      {
+        "node": "jacket_hero_worker_broad_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1144,
+          -0.1144,
+          1.456
+        ],
+        "bbox_max": [
+          0.1144,
+          0.1144,
+          1.508
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.7157,
+      -0.2097,
+      0.0005
+    ],
+    "bbox_max": [
+      0.7157,
+      0.2106,
+      1.8125
+    ],
+    "ground_offset_m": 0.0005
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "worker",
+    "params": {
+      "name": "worker",
+      "variant": "broad",
+      "height": 1.82,
+      "torso": 1.12,
+      "shoulder": 1.1,
+      "hip": 1.06,
+      "limb": 1.12,
+      "head": 1.02,
+      "note": "工装主线，近景"
+    },
+    "level": "hero"
+  },
+  "nodes": [
+    "hero_hero_worker_broad_torso",
+    "hero_hero_worker_broad_pelvis",
+    "hero_hero_worker_broad_neck",
+    "hero_hero_worker_broad_head",
+    "hero_hero_worker_broad_shoulder_L",
+    "hero_hero_worker_broad_upperarm_L",
+    "hero_hero_worker_broad_elbow_L",
+    "hero_hero_worker_broad_forearm_L",
+    "hero_hero_worker_broad_hand_L",
+    "hero_hero_worker_broad_thigh_L",
+    "hero_hero_worker_broad_knee_L",
+    "hero_hero_worker_broad_shin_L",
+    "hero_hero_worker_broad_foot_L",
+    "hero_hero_worker_broad_shoulder_R",
+    "hero_hero_worker_broad_upperarm_R",
+    "hero_hero_worker_broad_elbow_R",
+    "hero_hero_worker_broad_forearm_R",
+    "hero_hero_worker_broad_hand_R",
+    "hero_hero_worker_broad_thigh_R",
+    "hero_hero_worker_broad_knee_R",
+    "hero_hero_worker_broad_shin_R",
+    "hero_hero_worker_broad_foot_R",
+    "jacket_hero_worker_broad_body",
+    "jacket_hero_worker_broad_sleeve_l",
+    "jacket_hero_worker_broad_sleeve_r",
+    "jacket_hero_worker_broad_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_worker_broad_body",
+  "clothing_parts": [
+    "jacket_hero_worker_broad_body",
+    "jacket_hero_worker_broad_sleeve_l",
+    "jacket_hero_worker_broad_sleeve_r",
+    "jacket_hero_worker_broad_collar"
+  ],
+  "note": "工装主线，近景"
+}

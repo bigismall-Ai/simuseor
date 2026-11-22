@@ -1,0 +1,192 @@
+{
+  "kind": "r4_scene_mix",
+  "cpu_only": true,
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "failed_assets": []
+  },
+  "scenes": [
+    {
+      "asset": "scene_block_downtown",
+      "id": "geometry/scene_block_downtown",
+      "nodes": 124,
+      "faces": 14828,
+      "instances": 120,
+      "kinds": [
+        "building",
+        "character",
+        "clothing",
+        "foliage",
+        "prop",
+        "tree",
+        "vehicle"
+      ],
+      "chunks": [
+        "far",
+        "mid",
+        "near"
+      ],
+      "max_ground_offset_m": 0.0005,
+      "pass": true,
+      "checks": [
+        {
+          "code": "SCENE_RELOAD",
+          "ok": true,
+          "message": "场景回读：124 个节点",
+          "hint": "场景件必须能被独立解析回读"
+        },
+        {
+          "code": "SCENE_GROUND_ZERO",
+          "ok": true,
+          "message": "实例最大离地 0.0005 m（阈值 0.001）",
+          "hint": "地面/道路/路缘顶面在 z=0，其余实例底面也必须在 z=0"
+        },
+        {
+          "code": "SCENE_NO_INTERPENETRATION",
+          "ok": true,
+          "message": "分组互不穿插：18 组检查",
+          "hint": "同组（同一资产的多部件）不互判，组间必须不穿插"
+        },
+        {
+          "code": "SCENE_PUBLIC_MIX",
+          "ok": true,
+          "message": "混排类别：building, character, clothing, foliage, prop, tree, vehicle",
+          "hint": "街区必须同时含公共件/人物/载具/植被"
+        },
+        {
+          "code": "SCENE_CHUNK_LOD",
+          "ok": true,
+          "message": "分块 LOD 覆盖：far, mid, near",
+          "hint": "近/中/远三块都要有实例"
+        }
+      ],
+      "metrics": {
+        "faces": 14828,
+        "nodes": 124,
+        "instances": 120
+      }
+    },
+    {
+      "asset": "scene_block_industrial",
+      "id": "geometry/scene_block_industrial",
+      "nodes": 97,
+      "faces": 9000,
+      "instances": 93,
+      "kinds": [
+        "building",
+        "character",
+        "clothing",
+        "foliage",
+        "prop",
+        "tree",
+        "vehicle"
+      ],
+      "chunks": [
+        "far",
+        "mid",
+        "near"
+      ],
+      "max_ground_offset_m": 0.0005,
+      "pass": true,
+      "checks": [
+        {
+          "code": "SCENE_RELOAD",
+          "ok": true,
+          "message": "场景回读：97 个节点",
+          "hint": "场景件必须能被独立解析回读"
+        },
+        {
+          "code": "SCENE_GROUND_ZERO",
+          "ok": true,
+          "message": "实例最大离地 0.0005 m（阈值 0.001）",
+          "hint": "地面/道路/路缘顶面在 z=0，其余实例底面也必须在 z=0"
+        },
+        {
+          "code": "SCENE_NO_INTERPENETRATION",
+          "ok": true,
+          "message": "分组互不穿插：17 组检查",
+          "hint": "同组（同一资产的多部件）不互判，组间必须不穿插"
+        },
+        {
+          "code": "SCENE_PUBLIC_MIX",
+          "ok": true,
+          "message": "混排类别：building, character, clothing, foliage, prop, tree, vehicle",
+          "hint": "街区必须同时含公共件/人物/载具/植被"
+        },
+        {
+          "code": "SCENE_CHUNK_LOD",
+          "ok": true,
+          "message": "分块 LOD 覆盖：far, mid, near",
+          "hint": "近/中/远三块都要有实例"
+        }
+      ],
+      "metrics": {
+        "faces": 9000,
+        "nodes": 97,
+        "instances": 93
+      }
+    },
+    {
+      "asset": "scene_block_residential",
+      "id": "geometry/scene_block_residential",
+      "nodes": 99,
+      "faces": 12136,
+      "instances": 95,
+      "kinds": [
+        "building",
+        "character",
+        "clothing",
+        "foliage",
+        "prop",
+        "tree",
+        "vehicle"
+      ],
+      "chunks": [
+        "far",
+        "mid",
+        "near"
+      ],
+      "max_ground_offset_m": 0.0005,
+      "pass": true,
+      "checks": [
+        {
+          "code": "SCENE_RELOAD",
+          "ok": true,
+          "message": "场景回读：99 个节点",
+          "hint": "场景件必须能被独立解析回读"
+        },
+        {
+          "code": "SCENE_GROUND_ZERO",
+          "ok": true,
+          "message": "实例最大离地 0.0005 m（阈值 0.001）",
+          "hint": "地面/道路/路缘顶面在 z=0，其余实例底面也必须在 z=0"
+        },
+        {
+          "code": "SCENE_NO_INTERPENETRATION",
+          "ok": true,
+          "message": "分组互不穿插：17 组检查",
+          "hint": "同组（同一资产的多部件）不互判，组间必须不穿插"
+        },
+        {
+          "code": "SCENE_PUBLIC_MIX",
+          "ok": true,
+          "message": "混排类别：building, character, clothing, foliage, prop, tree, vehicle",
+          "hint": "街区必须同时含公共件/人物/载具/植被"
+        },
+        {
+          "code": "SCENE_CHUNK_LOD",
+          "ok": true,
+          "message": "分块 LOD 覆盖：far, mid, near",
+          "hint": "近/中/远三块都要有实例"
+        }
+      ],
+      "metrics": {
+        "faces": 12136,
+        "nodes": 99,
+        "instances": 95
+      }
+    }
+  ]
+}

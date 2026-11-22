@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_child_small",
+  "name": "hero_child_small",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_child_small.glb",
+      "bytes": 35440,
+      "sha256": "1f8e50c3cf986bc9a7995c1e408644b8041bfd8a92a69ad35a0a5c182850853a"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_child_small_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.1247,
+          -0.0698,
+          0.659
+        ],
+        "bbox_max": [
+          0.1247,
+          0.0698,
+          1.0133
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.0884,
+          -0.0714,
+          0.6018
+        ],
+        "bbox_max": [
+          0.0884,
+          0.0714,
+          0.7303
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0354,
+          -0.0354,
+          0.992
+        ],
+        "bbox_max": [
+          0.0354,
+          0.0354,
+          1.077
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.0835,
+          -0.0872,
+          1.0516
+        ],
+        "bbox_max": [
+          0.0835,
+          0.0943,
+          1.2513
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0733,
+          -0.0425,
+          0.9707
+        ],
+        "bbox_max": [
+          0.1583,
+          0.0425,
+          1.0558
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0908,
+          -0.0329,
+          0.8043
+        ],
+        "bbox_max": [
+          0.2995,
+          0.0343,
+          1.0346
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.2521,
+          -0.0196,
+          0.7953
+        ],
+        "bbox_max": [
+          0.3054,
+          0.0337,
+          0.8486
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.2564,
+          -0.0194,
+          0.6334
+        ],
+        "bbox_max": [
+          0.4097,
+          0.0492,
+          0.8364
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.3726,
+          0.0018,
+          0.5757
+        ],
+        "bbox_max": [
+          0.4116,
+          0.0549,
+          0.643
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0156,
+          -0.0482,
+          0.3532
+        ],
+        "bbox_max": [
+          0.1119,
+          0.0482,
+          0.6605
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0368,
+          -0.0269,
+          0.3203
+        ],
+        "bbox_max": [
+          0.1049,
+          0.0411,
+          0.3883
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.038,
+          -0.0258,
+          0.0561
+        ],
+        "bbox_max": [
+          0.1037,
+          0.0399,
+          0.3551
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0383,
+          -0.023,
+          0.0004
+        ],
+        "bbox_max": [
+          0.1035,
+          0.1435,
+          0.0535
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1583,
+          -0.0425,
+          0.9707
+        ],
+        "bbox_max": [
+          -0.0733,
+          0.0425,
+          1.0558
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.2995,
+          -0.0329,
+          0.8043
+        ],
+        "bbox_max": [
+          -0.0908,
+          0.0343,
+          1.0346
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.3054,
+          -0.0196,
+          0.7953
+        ],
+        "bbox_max": [
+          -0.2521,
+          0.0337,
+          0.8486
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4097,
+          -0.0194,
+          0.6334
+        ],
+        "bbox_max": [
+          -0.2564,
+          0.0492,
+          0.8364
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.4116,
+          0.0018,
+          0.5757
+        ],
+        "bbox_max": [
+          -0.3726,
+          0.0549,
+          0.643
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1119,
+          -0.0482,
+          0.3532
+        ],
+        "bbox_max": [
+          -0.0156,
+          0.0482,
+          0.6605
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1049,
+          -0.0269,
+          0.3203
+        ],
+        "bbox_max": [
+          -0.0368,
+          0.0411,
+          0.3883
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1037,
+          -0.0258,
+          0.0561
+        ],
+        "bbox_max": [
+          -0.038,
+          0.0399,
+          0.3551
+        ]
+      },
+      {
+        "node": "hero_hero_child_small_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1035,
+          -0.023,
+          0.0004
+        ],
+        "bbox_max": [
+          -0.0383,
+          0.1435,
+          0.0535
+        ]
+      },
+      {
+        "node": "jacket_hero_child_small_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.1684,
+          -0.1122,
+          0.6944
+        ],
+        "bbox_max": [
+          0.1684,
+          0.1122,
+          1.0274
+        ]
+      },
+      {
+        "node": "jacket_hero_child_small_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.0607,
+          -0.0708,
+          0.6156
+        ],
+        "bbox_max": [
+          0.4373,
+          0.0818,
+          1.0679
+        ]
+      },
+      {
+        "node": "jacket_hero_child_small_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.4373,
+          -0.0708,
+          0.6156
+        ],
+        "bbox_max": [
+          -0.0607,
+          0.0818,
+          1.0679
+        ]
+      },
+      {
+        "node": "jacket_hero_child_small_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0779,
+          -0.0779,
+          0.992
+        ],
+        "bbox_max": [
+          0.0779,
+          0.0779,
+          1.0274
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.4373,
+      -0.1122,
+      0.0004
+    ],
+    "bbox_max": [
+      0.4373,
+      0.1435,
+      1.2513
+    ],
+    "ground_offset_m": 0.0004
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "child",
+    "params": {
+      "name": "child",
+      "variant": "small",
+      "height": 1.24,
+      "torso": 0.88,
+      "shoulder": 0.86,
+      "hip": 0.9,
+      "limb": 0.8,
+      "head": 1.22,
+      "note": "儿童，中景"
+    },
+    "level": "mid"
+  },
+  "nodes": [
+    "hero_hero_child_small_torso",
+    "hero_hero_child_small_pelvis",
+    "hero_hero_child_small_neck",
+    "hero_hero_child_small_head",
+    "hero_hero_child_small_shoulder_L",
+    "hero_hero_child_small_upperarm_L",
+    "hero_hero_child_small_elbow_L",
+    "hero_hero_child_small_forearm_L",
+    "hero_hero_child_small_hand_L",
+    "hero_hero_child_small_thigh_L",
+    "hero_hero_child_small_knee_L",
+    "hero_hero_child_small_shin_L",
+    "hero_hero_child_small_foot_L",
+    "hero_hero_child_small_shoulder_R",
+    "hero_hero_child_small_upperarm_R",
+    "hero_hero_child_small_elbow_R",
+    "hero_hero_child_small_forearm_R",
+    "hero_hero_child_small_hand_R",
+    "hero_hero_child_small_thigh_R",
+    "hero_hero_child_small_knee_R",
+    "hero_hero_child_small_shin_R",
+    "hero_hero_child_small_foot_R",
+    "jacket_hero_child_small_body",
+    "jacket_hero_child_small_sleeve_l",
+    "jacket_hero_child_small_sleeve_r",
+    "jacket_hero_child_small_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_child_small_body",
+  "clothing_parts": [
+    "jacket_hero_child_small_body",
+    "jacket_hero_child_small_sleeve_l",
+    "jacket_hero_child_small_sleeve_r",
+    "jacket_hero_child_small_collar"
+  ],
+  "note": "儿童，中景"
+}

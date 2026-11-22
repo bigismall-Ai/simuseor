@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_fence_fortified",
+  "name": "prop_fence_fortified",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_fence_fortified.glb",
+      "bytes": 3112,
+      "sha256": "59931fca186f24d256aba8ae8dd8ce5ec051bbff7b61bafed44bacf8420e20d6"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "is_ai": 0,
+    "source_pack": "survival-kit",
+    "source_model": "fence-fortified",
+    "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/fence-fortified.glb",
+    "source_sha256": "c50f420e9ebf0f1383a9f95766d47f377b19852651760b8223219cc2be850ece",
+    "source_faces": 120,
+    "scale_factor": 3.86473,
+    "target_max_dim_m": 2.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 120
+  },
+  "geometry": {
+    "faces": 120,
+    "vertices": 80,
+    "bbox_min": [
+      -0.9662,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.9662,
+      1.9999,
+      0.2049
+    ],
+    "size_m": [
+      1.9324,
+      1.9999,
+      0.2049
+    ],
+    "max_dim_m": 1.9999,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_fence_fortified",
+    "params": {
+      "scale_factor": 3.86473,
+      "target_max_dim_m": 2.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

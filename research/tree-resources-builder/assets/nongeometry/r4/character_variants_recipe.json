@@ -1,0 +1,230 @@
+{
+  "kind": "r4_recipe",
+  "schema": "r4-recipe/1",
+  "recipe_id": "character_identities",
+  "category": "character",
+  "semantic_category": "character",
+  "note": "10 个身份变体：部件级拆分（躯干/四肢分段）＋ 贴合服装壳。名里的 hero 是语义类别词（conditions 表 hero*->character），与用途分级 hero/mid/low 无关。",
+  "variants": [
+    {
+      "variant": "worker",
+      "name": "hero_worker_broad",
+      "identity": "worker",
+      "build": "broad",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "params": {
+        "name": "worker",
+        "variant": "broad",
+        "height": 1.82,
+        "torso": 1.12,
+        "shoulder": 1.1,
+        "hip": 1.06,
+        "limb": 1.12,
+        "head": 1.02,
+        "note": "工装主线，近景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_worker_broad.glb"
+      ]
+    },
+    {
+      "variant": "worker",
+      "name": "hero_worker_lean",
+      "identity": "worker",
+      "build": "lean",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "params": {
+        "name": "worker",
+        "variant": "lean",
+        "height": 1.76,
+        "torso": 0.94,
+        "shoulder": 0.96,
+        "hip": 0.94,
+        "limb": 0.96,
+        "head": 1.0,
+        "note": "工装副线，近景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_worker_lean.glb"
+      ]
+    },
+    {
+      "variant": "office",
+      "name": "hero_office_slim",
+      "identity": "office",
+      "build": "slim",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "params": {
+        "name": "office",
+        "variant": "slim",
+        "height": 1.73,
+        "torso": 0.92,
+        "shoulder": 0.94,
+        "hip": 0.93,
+        "limb": 0.92,
+        "head": 1.0,
+        "note": "办公主线，近景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_office_slim.glb"
+      ]
+    },
+    {
+      "variant": "office",
+      "name": "hero_office_tall",
+      "identity": "office",
+      "build": "tall",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "params": {
+        "name": "office",
+        "variant": "tall",
+        "height": 1.88,
+        "torso": 0.96,
+        "shoulder": 1.0,
+        "hip": 0.95,
+        "limb": 0.98,
+        "head": 0.98,
+        "note": "办公高个，近景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_office_tall.glb"
+      ]
+    },
+    {
+      "variant": "student",
+      "name": "hero_student_short",
+      "identity": "student",
+      "build": "short",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "student",
+        "variant": "short",
+        "height": 1.62,
+        "torso": 0.96,
+        "shoulder": 0.92,
+        "hip": 0.98,
+        "limb": 0.9,
+        "head": 1.08,
+        "note": "学生，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_student_short.glb"
+      ]
+    },
+    {
+      "variant": "student",
+      "name": "hero_student_round",
+      "identity": "student",
+      "build": "round",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "student",
+        "variant": "round",
+        "height": 1.65,
+        "torso": 1.1,
+        "shoulder": 0.96,
+        "hip": 1.06,
+        "limb": 0.98,
+        "head": 1.1,
+        "note": "学生圆脸，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_student_round.glb"
+      ]
+    },
+    {
+      "variant": "vendor",
+      "name": "hero_vendor_lean",
+      "identity": "vendor",
+      "build": "lean",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "vendor",
+        "variant": "lean",
+        "height": 1.7,
+        "torso": 0.98,
+        "shoulder": 0.98,
+        "hip": 0.96,
+        "limb": 0.96,
+        "head": 1.0,
+        "note": "摊贩，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_vendor_lean.glb"
+      ]
+    },
+    {
+      "variant": "courier",
+      "name": "hero_courier_slim",
+      "identity": "courier",
+      "build": "slim",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "courier",
+        "variant": "slim",
+        "height": 1.79,
+        "torso": 0.9,
+        "shoulder": 0.92,
+        "hip": 0.9,
+        "limb": 0.9,
+        "head": 0.98,
+        "note": "快递员，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_courier_slim.glb"
+      ]
+    },
+    {
+      "variant": "elder",
+      "name": "hero_elder_stout",
+      "identity": "elder",
+      "build": "stout",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "elder",
+        "variant": "stout",
+        "height": 1.66,
+        "torso": 1.14,
+        "shoulder": 1.02,
+        "hip": 1.08,
+        "limb": 1.06,
+        "head": 1.04,
+        "note": "长者，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_elder_stout.glb"
+      ]
+    },
+    {
+      "variant": "child",
+      "name": "hero_child_small",
+      "identity": "child",
+      "build": "small",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "params": {
+        "name": "child",
+        "variant": "small",
+        "height": 1.24,
+        "torso": 0.88,
+        "shoulder": 0.86,
+        "hip": 0.9,
+        "limb": 0.8,
+        "head": 1.22,
+        "note": "儿童，中景"
+      },
+      "outputs": [
+        "assets/geometry/soma_variants/hero_child_small.glb"
+      ]
+    }
+  ]
+}

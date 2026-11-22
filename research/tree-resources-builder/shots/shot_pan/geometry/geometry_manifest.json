@@ -1,0 +1,25 @@
+{
+  "kind": "shot_geometry_manifest",
+  "shot_id": "shot_pan",
+  "instances": [
+    {
+      "file": "scene_street.glb",
+      "sha256": "8a9b602dc92bfb92f8ddae66cc9bbc0712901d125e72b6a455ed1a6b52de95f5",
+      "bytes": 462292,
+      "source": "assets/geometry/scene_street.glb"
+    },
+    {
+      "file": "character_hero.glb",
+      "sha256": "e9024a4d78263b65214d0a0ed61ee70a1f34a12c909fba9bd31cd2823d609609",
+      "bytes": 61556,
+      "source": "assets/geometry/character_hero.glb"
+    }
+  ],
+  "sequence": {
+    "asset_id": "shot001_hero_sequence",
+    "path": "assets/nongeometry/shot001_hero.npz",
+    "sha256": "67d98693f73ed14fa742602752932b286388ccc266097f2010c0ca37e29be09f",
+    "role": "subject_animation（SOMA 帧序列，含 77 公共关节与 root_y）"
+  },
+  "note": "场景静态几何 + 主角动画序列；几何层 / 非几何参考层按 PLAN.md C4 分开"
+}

@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_pole_utility",
+  "name": "prop_pole_utility",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_pole_utility.glb",
+      "bytes": 9564,
+      "sha256": "f9bf0a5d2ecf4242dd755fc25bb826252062585cc831a1efc01c77736918611e"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "is_ai": 0,
+    "source_pack": "city-kit-roads",
+    "source_model": "electricity-pole",
+    "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/electricity-pole.glb",
+    "source_sha256": "08c9b924e297eaa46bbd79ac09795c045848a4e38a72b2ce4f973517f840c2d3",
+    "source_faces": 416,
+    "scale_factor": 10.3609,
+    "target_max_dim_m": 6.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 12,
+      "rounds": 2
+    }
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 472
+  },
+  "geometry": {
+    "faces": 472,
+    "vertices": 264,
+    "bbox_min": [
+      -3.0809,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      2.9189,
+      5.4395,
+      2.2196
+    ],
+    "size_m": [
+      5.9998,
+      5.4395,
+      2.2196
+    ],
+    "max_dim_m": 5.9998,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_pole_utility",
+    "params": {
+      "scale_factor": 10.3609,
+      "target_max_dim_m": 6.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 12,
+        "rounds": 2
+      }
+    }
+  },
+  "origin": "Kenney"
+}

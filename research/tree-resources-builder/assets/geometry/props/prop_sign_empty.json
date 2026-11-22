@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_sign_empty",
+  "name": "prop_sign_empty",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_sign_empty.glb",
+      "bytes": 1516,
+      "sha256": "213ae7108bdd6876f9856375ae85c2086f2910ff4841f1389614d3b94d0c27e6"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/city-kit-roads",
+    "is_ai": 0,
+    "source_pack": "city-kit-roads",
+    "source_model": "road-sign-empty",
+    "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/road-sign-empty.glb",
+    "source_sha256": "7681ee84c5363e2c95a37593fc3bdd0afb81b23fa46ae6be1c0939a112a4306a",
+    "source_faces": 42,
+    "scale_factor": 4.21053,
+    "target_max_dim_m": 2.0,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 1,
+      "rounds": 2
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 44
+  },
+  "geometry": {
+    "faces": 44,
+    "vertices": 24,
+    "bbox_min": [
+      -0.1053,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.1053,
+      2.0,
+      0.2105
+    ],
+    "size_m": [
+      0.2105,
+      2.0,
+      0.2105
+    ],
+    "max_dim_m": 2.0,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_sign_empty",
+    "params": {
+      "scale_factor": 4.21053,
+      "target_max_dim_m": 2.0,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      }
+    }
+  },
+  "origin": "Kenney"
+}

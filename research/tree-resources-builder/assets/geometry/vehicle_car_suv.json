@@ -1,0 +1,522 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/vehicle_car_suv",
+  "name": "vehicle_car_suv",
+  "category": "vehicle",
+  "semantic_category": "vehicle",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/vehicle_car_suv.glb",
+      "bytes": 37408,
+      "sha256": "be1021fa8565c8035da44ae0aa5ba8349a804b1e2634dbdc7444f0415c13e116"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_assets.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_assets.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 1832
+  },
+  "geometry": {
+    "faces": 1832,
+    "vertices": 974,
+    "parts": [
+      {
+        "node": "body",
+        "faces": 576,
+        "vertices": 290,
+        "bbox_min": [
+          -2.35,
+          -0.9384,
+          0.24
+        ],
+        "bbox_max": [
+          2.35,
+          0.9384,
+          1.74
+        ]
+      },
+      {
+        "node": "cabin",
+        "faces": 200,
+        "vertices": 102,
+        "bbox_min": [
+          -1.0682,
+          -0.8633,
+          0.9864
+        ],
+        "bbox_max": [
+          1.0682,
+          0.8633,
+          1.74
+        ]
+      },
+      {
+        "node": "windshield",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          1.38,
+          -0.6815,
+          0.7664
+        ],
+        "bbox_max": [
+          1.44,
+          0.6815,
+          1.2304
+        ]
+      },
+      {
+        "node": "window_rear",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -1.628,
+          -0.611,
+          0.778
+        ],
+        "bbox_max": [
+          -1.568,
+          0.611,
+          1.1956
+        ]
+      },
+      {
+        "node": "window_side_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -1.061,
+          0.821,
+          0.7838
+        ],
+        "bbox_max": [
+          1.101,
+          0.871,
+          1.1666
+        ]
+      },
+      {
+        "node": "window_side_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -1.061,
+          -0.871,
+          0.7838
+        ],
+        "bbox_max": [
+          1.101,
+          -0.821,
+          1.1666
+        ]
+      },
+      {
+        "node": "door_front_left",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -1.0718,
+          0.6367,
+          0.5539
+        ],
+        "bbox_max": [
+          -0.2137,
+          0.9484,
+          1.6967
+        ]
+      },
+      {
+        "node": "door_front_right",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -1.0718,
+          -0.9484,
+          0.5539
+        ],
+        "bbox_max": [
+          -0.2137,
+          -0.6367,
+          1.6967
+        ]
+      },
+      {
+        "node": "door_rear_left",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -0.2136,
+          0.6553,
+          0.6031
+        ],
+        "bbox_max": [
+          0.6414,
+          0.9484,
+          1.6968
+        ]
+      },
+      {
+        "node": "door_rear_right",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -0.2136,
+          -0.9484,
+          0.6031
+        ],
+        "bbox_max": [
+          0.6414,
+          -0.6553,
+          1.6968
+        ]
+      },
+      {
+        "node": "wheel_front_left",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          1.11,
+          0.7,
+          0.0
+        ],
+        "bbox_max": [
+          1.85,
+          0.94,
+          0.74
+        ]
+      },
+      {
+        "node": "wheel_front_right",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          1.11,
+          -0.94,
+          0.0
+        ],
+        "bbox_max": [
+          1.85,
+          -0.7,
+          0.74
+        ]
+      },
+      {
+        "node": "wheel_rear_left",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -1.85,
+          0.7,
+          0.0
+        ],
+        "bbox_max": [
+          -1.11,
+          0.94,
+          0.74
+        ]
+      },
+      {
+        "node": "wheel_rear_right",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -1.85,
+          -0.94,
+          0.0
+        ],
+        "bbox_max": [
+          -1.11,
+          -0.7,
+          0.74
+        ]
+      },
+      {
+        "node": "mirror_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.801,
+          0.5842,
+          0.8226
+        ],
+        "bbox_max": [
+          0.891,
+          0.6942,
+          0.8726
+        ]
+      },
+      {
+        "node": "mirror_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.801,
+          -0.6942,
+          0.8226
+        ],
+        "bbox_max": [
+          0.891,
+          -0.5842,
+          0.8726
+        ]
+      },
+      {
+        "node": "headlight_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          2.2545,
+          0.36,
+          0.41
+        ],
+        "bbox_max": [
+          2.3045,
+          0.58,
+          0.51
+        ]
+      },
+      {
+        "node": "headlight_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          2.2545,
+          -0.58,
+          0.41
+        ],
+        "bbox_max": [
+          2.3045,
+          -0.36,
+          0.51
+        ]
+      },
+      {
+        "node": "taillight_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -2.3045,
+          0.2584,
+          0.43
+        ],
+        "bbox_max": [
+          -2.2545,
+          0.4184,
+          0.53
+        ]
+      },
+      {
+        "node": "taillight_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -2.3045,
+          -0.4184,
+          0.43
+        ],
+        "bbox_max": [
+          -2.2545,
+          -0.2584,
+          0.53
+        ]
+      },
+      {
+        "node": "seat_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.408,
+          0.1284,
+          0.31
+        ],
+        "bbox_max": [
+          0.032,
+          0.5484,
+          0.77
+        ]
+      },
+      {
+        "node": "seat_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.408,
+          -0.5484,
+          0.31
+        ],
+        "bbox_max": [
+          0.032,
+          -0.1284,
+          0.77
+        ]
+      },
+      {
+        "node": "dashboard",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.548,
+          -0.6768,
+          0.48
+        ],
+        "bbox_max": [
+          0.768,
+          0.6768,
+          0.64
+        ]
+      },
+      {
+        "node": "steering_wheel",
+        "faces": 72,
+        "vertices": 38,
+        "bbox_min": [
+          0.32,
+          -0.3534,
+          0.5323
+        ],
+        "bbox_max": [
+          0.62,
+          -0.3234,
+          0.8277
+        ]
+      },
+      {
+        "node": "chassis",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -2.021,
+          -0.658,
+          0.21
+        ],
+        "bbox_max": [
+          2.021,
+          0.658,
+          0.31
+        ]
+      }
+    ],
+    "bbox_min": [
+      -2.35,
+      -0.9484,
+      0.0
+    ],
+    "bbox_max": [
+      2.35,
+      0.9484,
+      1.74
+    ],
+    "ground_offset_m": 0.0
+  },
+  "recipe": {
+    "recipe_id": "vehicle_car_family",
+    "variant": "suv",
+    "params": {
+      "name": "suv",
+      "length": 4.7,
+      "width": 1.88,
+      "clearance": 0.24,
+      "roof": [
+        0.72,
+        0.96,
+        1.24,
+        1.52,
+        1.7,
+        1.74,
+        1.74,
+        1.72,
+        1.68,
+        1.6,
+        1.48,
+        1.34
+      ],
+      "cabin": [
+        2.6,
+        8.4
+      ],
+      "cabin_h": 0.58,
+      "wheel_r": 0.37,
+      "wheelbase": [
+        1.48,
+        -1.48
+      ],
+      "track": 0.82
+    },
+    "topology": {
+      "scope": "body",
+      "hash": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+      "stations": 12,
+      "sections": 24
+    }
+  },
+  "nodes": [
+    "body",
+    "cabin",
+    "windshield",
+    "window_rear",
+    "window_side_left",
+    "window_side_right",
+    "door_front_left",
+    "door_front_right",
+    "door_rear_left",
+    "door_rear_right",
+    "wheel_front_left",
+    "wheel_front_right",
+    "wheel_rear_left",
+    "wheel_rear_right",
+    "mirror_left",
+    "mirror_right",
+    "headlight_left",
+    "headlight_right",
+    "taillight_left",
+    "taillight_right",
+    "seat_left",
+    "seat_right",
+    "dashboard",
+    "steering_wheel",
+    "chassis"
+  ],
+  "part_semantics": {
+    "body": "body",
+    "cabin": "cabin",
+    "windshield": "windshield",
+    "window_rear": "window",
+    "window_side_left": "window",
+    "window_side_right": "window",
+    "door_front_left": "door",
+    "door_front_right": "door",
+    "door_rear_left": "door",
+    "door_rear_right": "door",
+    "wheel_front_left": "wheel",
+    "wheel_front_right": "wheel",
+    "wheel_rear_left": "wheel",
+    "wheel_rear_right": "wheel",
+    "mirror_left": "mirror",
+    "mirror_right": "mirror",
+    "headlight_left": "headlight",
+    "headlight_right": "headlight",
+    "taillight_left": "taillight",
+    "taillight_right": "taillight",
+    "seat_left": "seat",
+    "seat_right": "seat",
+    "dashboard": "dashboard",
+    "steering_wheel": "steering_wheel",
+    "chassis": "chassis"
+  }
+}

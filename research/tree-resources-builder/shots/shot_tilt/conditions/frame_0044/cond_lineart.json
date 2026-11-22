@@ -1,0 +1,115 @@
+{
+  "kind": "condition_sidecar",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "channel": "lineart",
+  "resolution": [
+    720,
+    404
+  ],
+  "f_px": 448.888889,
+  "near": 2.419923,
+  "far": 43.34129,
+  "near_far_unit": "meter",
+  "encoding": {
+    "channel": "lineart",
+    "contract": "conditions_contract",
+    "contract_version": "1.1.0",
+    "bit_depth": 8,
+    "anti_aliasing": "none",
+    "semantics": "轮廓 + 面边界线稿（几何分件线）",
+    "formula": "edges = face_id 的 4-邻域差异 且 非背景，再做 1px 膨胀",
+    "polarity": "n/a",
+    "value_range": [
+      0,
+      255
+    ],
+    "background": 0,
+    "normalization": "none",
+    "metric": "binary edge",
+    "color_space": "linear gray",
+    "algorithm": "face_id_boundary_v1",
+    "line_width_px": 1
+  },
+  "up_axis": "Z",
+  "up_axis_vector": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "handedness": "right",
+  "units": "meter",
+  "mask_semantics": {
+    "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+    "source": "conditions.render_conditions -> mask",
+    "foreground_value": 255,
+    "background_value": 0,
+    "anti_aliasing": "none",
+    "post_process": "none",
+    "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+  },
+  "principal_point": [
+    360.0,
+    202.0
+  ],
+  "generator": "harness/conditions.py::save_condition_pack",
+  "camera": {
+    "eye": [
+      2.9,
+      1.0,
+      1.15
+    ],
+    "target": [
+      -4.545334920338062,
+      -5.675127859613434,
+      1.0517351445978207
+    ],
+    "up": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "fov_y": 48.455491,
+    "focal_mm": 40.0,
+    "sensor_mm": 36.0,
+    "f_px": 448.888889,
+    "near": 0.05
+  },
+  "png": {
+    "primary": "cond_lineart.png",
+    "files": [
+      "cond_lineart.png"
+    ],
+    "bit_depth": 8,
+    "sha256": "ad4d5133607a35366d5f78a68511f5d86857eaf0d890d42a7411c3c91073d124"
+  },
+  "shot": {
+    "id": "shot_tilt",
+    "frame": 44,
+    "t_s": 1.8333,
+    "fps": 24,
+    "move_type": "tilt"
+  },
+  "scene": {
+    "source": "assets/geometry/scene_street.glb + shot001_hero.npz",
+    "objects": 23,
+    "labels": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "hidden_meshes": []
+  },
+  "pose_joints": {
+    "source": "soma77（77 公共关节，不含 Root）",
+    "count": 77,
+    "keypoint_set": "coco18"
+  },
+  "camera_authority": "shots/shot_tilt/camera/intrinsics.json"
+}

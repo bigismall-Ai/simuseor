@@ -1,0 +1,260 @@
+{
+  "kind": "r4_part_library",
+  "schema": "r4-recipe/1",
+  "recipe_id": "vehicle_car_family",
+  "category": "vehicle",
+  "semantic_category": "vehicle",
+  "note": "载具语义零件库：部件名 -> conditions.resolve_category 语义类别。四车身部件集一致（这是同拓扑的前提）。",
+  "parts": {
+    "body": {
+      "semantic_category": "body",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "cabin": {
+      "semantic_category": "cabin",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "windshield": {
+      "semantic_category": "windshield",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "window_rear": {
+      "semantic_category": "window",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "window_side_left": {
+      "semantic_category": "window",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "window_side_right": {
+      "semantic_category": "window",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "door_front_left": {
+      "semantic_category": "door",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "door_front_right": {
+      "semantic_category": "door",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "door_rear_left": {
+      "semantic_category": "door",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "door_rear_right": {
+      "semantic_category": "door",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "wheel_front_left": {
+      "semantic_category": "wheel",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "wheel_front_right": {
+      "semantic_category": "wheel",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "wheel_rear_left": {
+      "semantic_category": "wheel",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "wheel_rear_right": {
+      "semantic_category": "wheel",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "mirror_left": {
+      "semantic_category": "mirror",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "mirror_right": {
+      "semantic_category": "mirror",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "headlight_left": {
+      "semantic_category": "headlight",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "headlight_right": {
+      "semantic_category": "headlight",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "taillight_left": {
+      "semantic_category": "taillight",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "taillight_right": {
+      "semantic_category": "taillight",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "seat_left": {
+      "semantic_category": "seat",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "seat_right": {
+      "semantic_category": "seat",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "dashboard": {
+      "semantic_category": "dashboard",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "steering_wheel": {
+      "semantic_category": "steering_wheel",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    },
+    "chassis": {
+      "semantic_category": "chassis",
+      "count_per_body": 1,
+      "present_in_variants": {
+        "sedan": true,
+        "hatch": true,
+        "suv": true,
+        "pickup": true
+      }
+    }
+  }
+}

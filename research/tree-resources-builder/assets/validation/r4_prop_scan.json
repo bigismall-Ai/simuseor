@@ -1,0 +1,702 @@
+{
+  "kind": "r4_prop_scan",
+  "items": [
+    {
+      "asset": "prop_barrel_wood",
+      "name": "barrel",
+      "variant": "wood",
+      "tier": "low",
+      "pack": "food-kit",
+      "model": "barrel",
+      "target_m": 0.9,
+      "source_file": "var/public-assets/kenney/food-kit/Models/GLB format/barrel.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 308,
+        "vertices": 484,
+        "bbox_min": [
+          -0.38,
+          0.0,
+          -0.3395
+        ],
+        "bbox_max": [
+          0.38,
+          0.6789,
+          0.3395
+        ],
+        "size_m": [
+          0.76,
+          0.6789,
+          0.6789
+        ],
+        "max_dim_m": 0.76,
+        "watertight": false,
+        "degenerate_faces": 2
+      },
+      "scale_to_target": 1.18421,
+      "ok": true
+    },
+    {
+      "asset": "prop_barrel_open",
+      "name": "barrel",
+      "variant": "open",
+      "tier": "low",
+      "pack": "survival-kit",
+      "model": "barrel-open",
+      "target_m": 0.9,
+      "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/barrel-open.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 380,
+        "vertices": 576,
+        "bbox_min": [
+          -0.1182,
+          0.0,
+          -0.1182
+        ],
+        "bbox_max": [
+          0.1182,
+          0.344,
+          0.1182
+        ],
+        "size_m": [
+          0.2365,
+          0.344,
+          0.2365
+        ],
+        "max_dim_m": 0.344,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 2.61628,
+      "ok": true
+    },
+    {
+      "asset": "prop_bucket_metal",
+      "name": "bucket",
+      "variant": "metal",
+      "tier": "low",
+      "pack": "survival-kit",
+      "model": "bucket",
+      "target_m": 0.35,
+      "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/bucket.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 68,
+        "vertices": 120,
+        "bbox_min": [
+          -0.0721,
+          0.0,
+          -0.0721
+        ],
+        "bbox_max": [
+          0.0721,
+          0.1921,
+          0.0721
+        ],
+        "size_m": [
+          0.1441,
+          0.1921,
+          0.1441
+        ],
+        "max_dim_m": 0.1921,
+        "watertight": false,
+        "degenerate_faces": 8
+      },
+      "scale_to_target": 1.82197,
+      "ok": true
+    },
+    {
+      "asset": "prop_box_cargo",
+      "name": "box",
+      "variant": "cargo",
+      "tier": "low",
+      "pack": "survival-kit",
+      "model": "box",
+      "target_m": 0.8,
+      "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/box.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 124,
+        "vertices": 248,
+        "bbox_min": [
+          -0.125,
+          0.0,
+          -0.125
+        ],
+        "bbox_max": [
+          0.125,
+          0.25,
+          0.125
+        ],
+        "size_m": [
+          0.25,
+          0.25,
+          0.25
+        ],
+        "max_dim_m": 0.25,
+        "watertight": false,
+        "degenerate_faces": 8
+      },
+      "scale_to_target": 3.2,
+      "ok": true
+    },
+    {
+      "asset": "prop_cone_traffic",
+      "name": "cone",
+      "variant": "traffic",
+      "tier": "low",
+      "pack": "city-kit-roads",
+      "model": "construction-cone",
+      "target_m": 0.75,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/construction-cone.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 66,
+        "vertices": 104,
+        "bbox_min": [
+          -0.0375,
+          0.0,
+          -0.0375
+        ],
+        "bbox_max": [
+          0.0375,
+          0.0938,
+          0.0375
+        ],
+        "size_m": [
+          0.075,
+          0.0938,
+          0.075
+        ],
+        "max_dim_m": 0.0938,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 7.99574,
+      "ok": true
+    },
+    {
+      "asset": "prop_barrier_construction",
+      "name": "barrier",
+      "variant": "construction",
+      "tier": "low",
+      "pack": "city-kit-roads",
+      "model": "construction-barrier",
+      "target_m": 2.0,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/construction-barrier.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 60,
+        "vertices": 104,
+        "bbox_min": [
+          -0.0677,
+          0.0,
+          -0.1125
+        ],
+        "bbox_max": [
+          0.0677,
+          0.13,
+          0.1125
+        ],
+        "size_m": [
+          0.1355,
+          0.13,
+          0.225
+        ],
+        "max_dim_m": 0.225,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 8.88889,
+      "ok": true
+    },
+    {
+      "asset": "prop_fence_construction",
+      "name": "fence",
+      "variant": "construction",
+      "tier": "low",
+      "pack": "city-kit-roads",
+      "model": "construction-fence",
+      "target_m": 2.0,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/construction-fence.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 136,
+        "vertices": 256,
+        "bbox_min": [
+          -0.0375,
+          0.0,
+          -0.1875
+        ],
+        "bbox_max": [
+          0.0375,
+          0.1787,
+          0.1875
+        ],
+        "size_m": [
+          0.075,
+          0.1787,
+          0.375
+        ],
+        "max_dim_m": 0.375,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 5.33333,
+      "ok": true
+    },
+    {
+      "asset": "prop_light_construction",
+      "name": "light",
+      "variant": "construction",
+      "tier": "low",
+      "pack": "city-kit-roads",
+      "model": "construction-light",
+      "target_m": 1.2,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/construction-light.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 144,
+        "vertices": 264,
+        "bbox_min": [
+          -0.0375,
+          0.0,
+          -0.0375
+        ],
+        "bbox_max": [
+          0.0375,
+          0.2337,
+          0.0375
+        ],
+        "size_m": [
+          0.075,
+          0.2337,
+          0.075
+        ],
+        "max_dim_m": 0.2337,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 5.13479,
+      "ok": true
+    },
+    {
+      "asset": "prop_dumpster_street",
+      "name": "dumpster",
+      "variant": "street",
+      "tier": "mid",
+      "pack": "city-kit-roads",
+      "model": "dumpster",
+      "target_m": 2.4,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/dumpster.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 234,
+        "vertices": 392,
+        "bbox_min": [
+          -0.2319,
+          -0.045,
+          -0.185
+        ],
+        "bbox_max": [
+          0.145,
+          0.2061,
+          0.185
+        ],
+        "size_m": [
+          0.3769,
+          0.2511,
+          0.37
+        ],
+        "max_dim_m": 0.3769,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 6.36774,
+      "ok": true
+    },
+    {
+      "asset": "prop_pole_utility",
+      "name": "pole",
+      "variant": "utility",
+      "tier": "mid",
+      "pack": "city-kit-roads",
+      "model": "electricity-pole",
+      "target_m": 6.0,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/electricity-pole.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 416,
+        "vertices": 820,
+        "bbox_min": [
+          -0.2974,
+          0.0,
+          -0.1071
+        ],
+        "bbox_max": [
+          0.2817,
+          0.525,
+          0.1071
+        ],
+        "size_m": [
+          0.5791,
+          0.525,
+          0.2142
+        ],
+        "max_dim_m": 0.5791,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 10.3609,
+      "ok": true
+    },
+    {
+      "asset": "prop_lamp_curved",
+      "name": "lamp",
+      "variant": "curved",
+      "tier": "mid",
+      "pack": "city-kit-roads",
+      "model": "light-curved",
+      "target_m": 4.5,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/light-curved.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 92,
+        "vertices": 156,
+        "bbox_min": [
+          -0.025,
+          0.0,
+          -0.2
+        ],
+        "bbox_max": [
+          0.025,
+          0.675,
+          0.025
+        ],
+        "size_m": [
+          0.05,
+          0.675,
+          0.225
+        ],
+        "max_dim_m": 0.675,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 6.66667,
+      "ok": true
+    },
+    {
+      "asset": "prop_traffic_light",
+      "name": "traffic_light",
+      "variant": "street",
+      "tier": "mid",
+      "pack": "city-kit-roads",
+      "model": "traffic-light",
+      "target_m": 3.0,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/traffic-light.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 212,
+        "vertices": 360,
+        "bbox_min": [
+          -0.0726,
+          0.0,
+          -0.045
+        ],
+        "bbox_max": [
+          0.045,
+          0.515,
+          0.045
+        ],
+        "size_m": [
+          0.1176,
+          0.515,
+          0.09
+        ],
+        "max_dim_m": 0.515,
+        "watertight": false,
+        "degenerate_faces": 6
+      },
+      "scale_to_target": 5.82524,
+      "ok": true
+    },
+    {
+      "asset": "prop_sign_stop",
+      "name": "sign",
+      "variant": "stop",
+      "tier": "low",
+      "pack": "city-kit-roads",
+      "model": "road-sign-stop",
+      "target_m": 2.0,
+      "source_file": "var/public-assets/kenney/city-kit-roads/Models/GLB format/road-sign-stop.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 104,
+        "vertices": 180,
+        "bbox_min": [
+          -0.0514,
+          0.0,
+          -0.0691
+        ],
+        "bbox_max": [
+          0.0261,
+          0.4941,
+          0.0691
+        ],
+        "size_m": [
+          0.0775,
+          0.4941,
+          0.1382
+        ],
+        "max_dim_m": 0.4941,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 4.04776,
+      "ok": true
+    },
+    {
+      "asset": "prop_bench_park",
+      "name": "bench",
+      "variant": "park",
+      "tier": "mid",
+      "pack": "furniture-kit",
+      "model": "bench",
+      "target_m": 1.7,
+      "source_file": "var/public-assets/kenney/furniture-kit/Models/GLTF format/bench.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 170,
+        "vertices": 230,
+        "bbox_min": [
+          0.0,
+          0.0,
+          -0.2
+        ],
+        "bbox_max": [
+          0.4,
+          0.47,
+          -0.0
+        ],
+        "size_m": [
+          0.4,
+          0.47,
+          0.2
+        ],
+        "max_dim_m": 0.47,
+        "watertight": false,
+        "degenerate_faces": 7
+      },
+      "scale_to_target": 3.61702,
+      "ok": true
+    },
+    {
+      "asset": "prop_trashcan_street",
+      "name": "trashcan",
+      "variant": "street",
+      "tier": "mid",
+      "pack": "furniture-kit",
+      "model": "trashcan",
+      "target_m": 1.0,
+      "source_file": "var/public-assets/kenney/furniture-kit/Models/GLTF format/trashcan.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 68,
+        "vertices": 232,
+        "bbox_min": [
+          -0.2595,
+          -0.0,
+          -0.22
+        ],
+        "bbox_max": [
+          0.2365,
+          0.9064,
+          0.22
+        ],
+        "size_m": [
+          0.496,
+          0.9064,
+          0.44
+        ],
+        "max_dim_m": 0.9064,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 1.10327,
+      "ok": true
+    },
+    {
+      "asset": "prop_rock_boulder",
+      "name": "rock",
+      "variant": "boulder",
+      "tier": "low",
+      "pack": "nature-kit",
+      "model": "rock_largeA",
+      "target_m": 2.0,
+      "source_file": "var/public-assets/kenney/nature-kit/Models/GLTF format/rock_largeA.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 80,
+        "vertices": 292,
+        "bbox_min": [
+          -0.3925,
+          -0.0,
+          -0.5077
+        ],
+        "bbox_max": [
+          0.3925,
+          0.2598,
+          0.5077
+        ],
+        "size_m": [
+          0.7849,
+          0.2598,
+          1.0155
+        ],
+        "max_dim_m": 1.0155,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 1.96947,
+      "ok": true
+    },
+    {
+      "asset": "prop_stump_wood",
+      "name": "stump",
+      "variant": "wood",
+      "tier": "low",
+      "pack": "nature-kit",
+      "model": "stump_round",
+      "target_m": 1.2,
+      "source_file": "var/public-assets/kenney/nature-kit/Models/GLTF format/stump_round.glb",
+      "origin": "Kenney",
+      "raw": {
+        "faces": 56,
+        "vertices": 192,
+        "bbox_min": [
+          -0.1606,
+          0.0,
+          -0.1855
+        ],
+        "bbox_max": [
+          0.1606,
+          0.2065,
+          0.1855
+        ],
+        "size_m": [
+          0.3213,
+          0.2065,
+          0.371
+        ],
+        "max_dim_m": 0.371,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 3.2345,
+      "ok": true
+    },
+    {
+      "asset": "prop_crate_military",
+      "name": "crate",
+      "variant": "military",
+      "tier": "hero",
+      "poly_id": "old_military_crate",
+      "target_m": 1.82,
+      "source_file": "var/public-assets/polyhaven/old_military_crate/old_military_crate_1k.gltf",
+      "origin": "Poly Haven",
+      "raw": {
+        "faces": 10476,
+        "vertices": 8317,
+        "bbox_min": [
+          -0.531,
+          -0.1019,
+          -0.229
+        ],
+        "bbox_max": [
+          0.4023,
+          0.2579,
+          0.4553
+        ],
+        "size_m": [
+          0.9333,
+          0.3598,
+          0.6843
+        ],
+        "max_dim_m": 0.9333,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 1.95007,
+      "ok": true
+    },
+    {
+      "asset": "prop_armchair_lounge",
+      "name": "armchair",
+      "variant": "lounge",
+      "tier": "hero",
+      "poly_id": "ArmChair_01",
+      "target_m": 1.07,
+      "source_file": "var/public-assets/polyhaven/ArmChair_01/ArmChair_01_1k.gltf",
+      "origin": "Poly Haven",
+      "raw": {
+        "faces": 5626,
+        "vertices": 3758,
+        "bbox_min": [
+          -0.4242,
+          -0.0004,
+          -0.4173
+        ],
+        "bbox_max": [
+          0.4242,
+          1.0647,
+          0.3485
+        ],
+        "size_m": [
+          0.8484,
+          1.0651,
+          0.7658
+        ],
+        "max_dim_m": 1.0651,
+        "watertight": false,
+        "degenerate_faces": 1
+      },
+      "scale_to_target": 1.0046,
+      "ok": true
+    },
+    {
+      "asset": "prop_crate_wooden",
+      "name": "crate",
+      "variant": "wooden",
+      "tier": "hero",
+      "poly_id": "wooden_crate_01",
+      "target_m": 1.2,
+      "source_file": "var/public-assets/polyhaven/wooden_crate_01/wooden_crate_01_1k.gltf",
+      "origin": "Poly Haven",
+      "raw": {
+        "faces": 6576,
+        "vertices": 4686,
+        "bbox_min": [
+          -0.4126,
+          -0.0079,
+          -0.1961
+        ],
+        "bbox_max": [
+          0.4126,
+          0.3417,
+          0.2128
+        ],
+        "size_m": [
+          0.8253,
+          0.3496,
+          0.409
+        ],
+        "max_dim_m": 0.8253,
+        "watertight": false,
+        "degenerate_faces": 0
+      },
+      "scale_to_target": 1.45402,
+      "ok": true
+    }
+  ]
+}

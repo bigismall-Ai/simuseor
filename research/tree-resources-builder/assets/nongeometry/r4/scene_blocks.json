@@ -1,0 +1,114 @@
+{
+  "kind": "r4_scene_blocks",
+  "schema": "r4-recipe/1",
+  "recipe_id": "scene_blocks",
+  "note": "三种街区配方：分块（near/mid/far）→ 分块 LOD 档。",
+  "blocks": [
+    {
+      "variant": "downtown",
+      "params": {
+        "floors": [
+          9,
+          12
+        ],
+        "width": [
+          10.0,
+          13.0
+        ],
+        "depth": 9.0,
+        "trees": [
+          "oak_broad",
+          "maple_wide"
+        ],
+        "props": [
+          "prop_pole_utility",
+          "prop_dumpster_street",
+          "prop_sign_empty",
+          "prop_ladder_wood"
+        ],
+        "vehicles": [
+          "sedan",
+          "suv"
+        ],
+        "chars": [
+          "hero_worker_broad",
+          "hero_office_slim"
+        ],
+        "note": "商业主街：高楼 + 密集公共件"
+      },
+      "outputs": [
+        "assets/geometry/scene_block_downtown.glb"
+      ]
+    },
+    {
+      "variant": "residential",
+      "params": {
+        "floors": [
+          4,
+          6
+        ],
+        "width": [
+          8.0,
+          10.0
+        ],
+        "depth": 7.5,
+        "trees": [
+          "birch_slim",
+          "oak_broad"
+        ],
+        "props": [
+          "prop_fence_wood",
+          "prop_barrel_wood",
+          "prop_cone_traffic",
+          "prop_tool_hammer"
+        ],
+        "vehicles": [
+          "hatch"
+        ],
+        "chars": [
+          "hero_student_short",
+          "hero_elder_stout"
+        ],
+        "note": "住宅街：低层 + 绿化"
+      },
+      "outputs": [
+        "assets/geometry/scene_block_residential.glb"
+      ]
+    },
+    {
+      "variant": "industrial",
+      "params": {
+        "floors": [
+          3,
+          4
+        ],
+        "width": [
+          14.0,
+          18.0
+        ],
+        "depth": 11.0,
+        "trees": [
+          "dead_bare",
+          "pine_conical"
+        ],
+        "props": [
+          "prop_dumpster_street",
+          "prop_barrier_construction",
+          "prop_pipe_metal",
+          "prop_tool_axe"
+        ],
+        "vehicles": [
+          "pickup"
+        ],
+        "chars": [
+          "hero_vendor_lean",
+          "hero_courier_slim"
+        ],
+        "note": "工业区：厂房 + 围挡 + 裸树"
+      },
+      "outputs": [
+        "assets/geometry/scene_block_industrial.glb"
+      ]
+    }
+  ]
+}

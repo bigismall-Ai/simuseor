@@ -1,0 +1,450 @@
+{
+  "kind": "r4_recipe",
+  "schema": "r4-recipe/1",
+  "recipe_id": "prop_library_street",
+  "category": "prop",
+  "semantic_category": "prop",
+  "note": "R4 道具零件库：Kenney 为主（17 件）＋ 少量 Poly Haven hero（3 件）。variant 字段即资产名后缀；usage_level 即用途分级。",
+  "variants": [
+    {
+      "variant": "prop_cone_traffic",
+      "name": "cone",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "construction-cone",
+      "params": {
+        "scale_factor": 7.99574,
+        "target_max_dim_m": 0.75,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 1,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_cone_traffic.glb"
+      ]
+    },
+    {
+      "variant": "prop_barrier_construction",
+      "name": "barrier",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "construction-barrier",
+      "params": {
+        "scale_factor": 8.88889,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_barrier_construction.glb"
+      ]
+    },
+    {
+      "variant": "prop_fence_construction",
+      "name": "fence",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "construction-fence",
+      "params": {
+        "scale_factor": 5.33333,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 4,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_fence_construction.glb"
+      ]
+    },
+    {
+      "variant": "prop_sign_empty",
+      "name": "sign",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "road-sign-empty",
+      "params": {
+        "scale_factor": 4.21053,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 1,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_sign_empty.glb"
+      ]
+    },
+    {
+      "variant": "prop_tool_pickaxe",
+      "name": "tool",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "tool-pickaxe",
+      "params": {
+        "scale_factor": 3.95833,
+        "target_max_dim_m": 0.95,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 1,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_tool_pickaxe.glb"
+      ]
+    },
+    {
+      "variant": "prop_pipe_metal",
+      "name": "pipe",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "prototype-kit",
+      "source_model": "pipe",
+      "params": {
+        "scale_factor": 1.5,
+        "target_max_dim_m": 1.5,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_pipe_metal.glb"
+      ]
+    },
+    {
+      "variant": "prop_bridge_pillar",
+      "name": "pillar",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "bridge-pillar",
+      "params": {
+        "scale_factor": 6.0,
+        "target_max_dim_m": 3.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 1,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_bridge_pillar.glb"
+      ]
+    },
+    {
+      "variant": "prop_awning_shop",
+      "name": "awning",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "city-kit-commercial",
+      "source_model": "detail-awning-wide",
+      "params": {
+        "scale_factor": 3.125,
+        "target_max_dim_m": 2.5,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 2,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_awning_shop.glb"
+      ]
+    },
+    {
+      "variant": "prop_fence_wood",
+      "name": "fence",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "fence",
+      "params": {
+        "scale_factor": 3.86473,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_fence_wood.glb"
+      ]
+    },
+    {
+      "variant": "prop_fence_fortified",
+      "name": "fence",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "fence-fortified",
+      "params": {
+        "scale_factor": 3.86473,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_fence_fortified.glb"
+      ]
+    },
+    {
+      "variant": "prop_signpost_wood",
+      "name": "signpost",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "signpost",
+      "params": {
+        "scale_factor": 4.34688,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_signpost_wood.glb"
+      ]
+    },
+    {
+      "variant": "prop_tool_axe",
+      "name": "tool",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "tool-axe",
+      "params": {
+        "scale_factor": 3.51562,
+        "target_max_dim_m": 0.9,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_tool_axe.glb"
+      ]
+    },
+    {
+      "variant": "prop_tool_hammer",
+      "name": "tool",
+      "tier": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "tool-hammer",
+      "params": {
+        "scale_factor": 4.56026,
+        "target_max_dim_m": 0.7,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_tool_hammer.glb"
+      ]
+    },
+    {
+      "variant": "prop_barrel_wood",
+      "name": "barrel",
+      "tier": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "origin": "Kenney",
+      "source": "survival-kit",
+      "source_model": "barrel",
+      "params": {
+        "scale_factor": 2.61628,
+        "target_max_dim_m": 0.9,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_barrel_wood.glb"
+      ]
+    },
+    {
+      "variant": "prop_dumpster_street",
+      "name": "dumpster",
+      "tier": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "dumpster",
+      "params": {
+        "scale_factor": 6.36774,
+        "target_max_dim_m": 2.4,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 3,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_dumpster_street.glb"
+      ]
+    },
+    {
+      "variant": "prop_pole_utility",
+      "name": "pole",
+      "tier": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "origin": "Kenney",
+      "source": "city-kit-roads",
+      "source_model": "electricity-pole",
+      "params": {
+        "scale_factor": 10.3609,
+        "target_max_dim_m": 6.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 12,
+          "rounds": 2
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_pole_utility.glb"
+      ]
+    },
+    {
+      "variant": "prop_ladder_wood",
+      "name": "ladder",
+      "tier": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "origin": "Kenney",
+      "source": "prototype-kit",
+      "source_model": "ladder",
+      "params": {
+        "scale_factor": 2.0,
+        "target_max_dim_m": 2.0,
+        "process": {
+          "mode": "watertight_repair",
+          "capped_loops": 0,
+          "rounds": 1
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_ladder_wood.glb"
+      ]
+    },
+    {
+      "variant": "prop_crate_military",
+      "name": "crate",
+      "tier": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "origin": "Poly Haven",
+      "source": "old_military_crate",
+      "source_model": "old_military_crate",
+      "params": {
+        "scale_factor": 0.04233,
+        "target_max_dim_m": 1.82,
+        "process": {
+          "mode": "voxel_remesh",
+          "voxel_m": 0.022,
+          "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_crate_military.glb"
+      ]
+    },
+    {
+      "variant": "prop_armchair_lounge",
+      "name": "armchair",
+      "tier": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "origin": "Poly Haven",
+      "source": "ArmChair_01",
+      "source_model": "ArmChair_01",
+      "params": {
+        "scale_factor": 0.01981,
+        "target_max_dim_m": 1.07,
+        "process": {
+          "mode": "voxel_remesh",
+          "voxel_m": 0.02,
+          "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_armchair_lounge.glb"
+      ]
+    },
+    {
+      "variant": "prop_crate_wooden",
+      "name": "crate",
+      "tier": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "origin": "Poly Haven",
+      "source": "wooden_crate_01",
+      "source_model": "wooden_crate_01",
+      "params": {
+        "scale_factor": 0.02791,
+        "target_max_dim_m": 1.2,
+        "process": {
+          "mode": "voxel_remesh",
+          "voxel_m": 0.02,
+          "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+        }
+      },
+      "outputs": [
+        "assets/geometry/props/prop_crate_wooden.glb"
+      ]
+    }
+  ]
+}

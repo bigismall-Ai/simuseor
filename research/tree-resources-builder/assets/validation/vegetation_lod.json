@@ -1,0 +1,2281 @@
+{
+  "kind": "r4_vegetation_lod",
+  "cpu_only": true,
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "failed_assets": [],
+    "all_within_budget": true
+  },
+  "items": [
+    {
+      "asset": "tree_birch_slim_hero",
+      "id": "geometry/vegetation/tree_birch_slim_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 3520,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_birch_slim_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_birch_slim_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 3520，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "7/7 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 15.4979 m^3，包围盒占比 65.9190%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_birch_slim_hero 部件数 7（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "40/40 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.281 m^3，包围盒占比 0.8846%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_birch_slim_hero_trunk 部件数 40（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 3520,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_birch_slim_low",
+      "id": "geometry/vegetation/tree_birch_slim_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 240,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_birch_slim_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_birch_slim_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 240，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 2.9414 m^3，包围盒占比 49.4235%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_birch_slim_low 部件数 2（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.1702 m^3，包围盒占比 6.0933%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_birch_slim_low_trunk 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 240,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_birch_slim_mid",
+      "id": "geometry/vegetation/tree_birch_slim_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 632,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_birch_slim_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_birch_slim_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 632，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 7.4819 m^3，包围盒占比 44.7216%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_birch_slim_mid 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "13/13 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2218 m^3，包围盒占比 2.1543%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_birch_slim_mid_trunk 部件数 13（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 632,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_dead_bare_hero",
+      "id": "geometry/vegetation/tree_dead_bare_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 1280,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_dead_bare_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_dead_bare_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 1280，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "40/40 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.5497 m^3，包围盒占比 7.2935%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_dead_bare_hero_trunk 部件数 40（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 1280,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_dead_bare_low",
+      "id": "geometry/vegetation/tree_dead_bare_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 80,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_dead_bare_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_dead_bare_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 80，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.3331 m^3，包围盒占比 22.3966%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_dead_bare_low_trunk 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 80,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_dead_bare_mid",
+      "id": "geometry/vegetation/tree_dead_bare_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 312,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_dead_bare_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_dead_bare_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 312，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "13/13 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.434 m^3，包围盒占比 11.8270%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_dead_bare_mid_trunk 部件数 13（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 312,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_maple_wide_hero",
+      "id": "geometry/vegetation/tree_maple_wide_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 4960,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_maple_wide_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_maple_wide_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 4960，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "7/7 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 197.294 m^3，包围盒占比 133.1458%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_maple_wide_hero 部件数 7（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "85/85 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.7088 m^3，包围盒占比 4.6285%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_maple_wide_hero_trunk 部件数 85（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 4960,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_maple_wide_low",
+      "id": "geometry/vegetation/tree_maple_wide_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 260,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_maple_wide_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_maple_wide_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 260，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 37.4454 m^3，包围盒占比 61.6132%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_maple_wide_low 部件数 2（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "5/5 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.3646 m^3，包围盒占比 16.1111%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_maple_wide_low_trunk 部件数 5（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 260,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_maple_wide_mid",
+      "id": "geometry/vegetation/tree_maple_wide_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 824,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_maple_wide_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_maple_wide_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 824，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 95.2477 m^3，包围盒占比 83.7089%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_maple_wide_mid 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "21/21 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.5138 m^3，包围盒占比 5.8730%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_maple_wide_mid_trunk 部件数 21（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 824,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_oak_broad_hero",
+      "id": "geometry/vegetation/tree_oak_broad_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 3520,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_oak_broad_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_oak_broad_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 3520，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "7/7 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 125.977 m^3，包围盒占比 111.5037%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_oak_broad_hero 部件数 7（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "40/40 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.8506 m^3，包围盒占比 3.4923%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_oak_broad_hero_trunk 部件数 40（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 3520,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_oak_broad_low",
+      "id": "geometry/vegetation/tree_oak_broad_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 240,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_oak_broad_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_oak_broad_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 240，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 23.9098 m^3，包围盒占比 57.2657%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_oak_broad_low 部件数 2（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.5154 m^3，包围盒占比 13.8132%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_oak_broad_low_trunk 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 240,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_oak_broad_mid",
+      "id": "geometry/vegetation/tree_oak_broad_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 632,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_oak_broad_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_oak_broad_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 632，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 60.818 m^3，包围盒占比 70.5136%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_oak_broad_mid 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "13/13 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.6715 m^3，包围盒占比 8.2913%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_oak_broad_mid_trunk 部件数 13（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 632,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_palm_tall_hero",
+      "id": "geometry/vegetation/tree_palm_tall_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 384,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_palm_tall_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_palm_tall_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 384，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "8/8 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2045 m^3，包围盒占比 34.0749%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_palm_tall_hero 部件数 8（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "9/9 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.7008 m^3，包围盒占比 3.8915%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_palm_tall_hero_trunk 部件数 9（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 384,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_palm_tall_low",
+      "id": "geometry/vegetation/tree_palm_tall_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 276,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_palm_tall_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_palm_tall_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 276，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "8/8 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2045 m^3，包围盒占比 34.0749%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_palm_tall_low 部件数 8（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "9/9 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.4783 m^3，包围盒占比 6.5259%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_palm_tall_low_trunk 部件数 9（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 276,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_palm_tall_mid",
+      "id": "geometry/vegetation/tree_palm_tall_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 312,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_palm_tall_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_palm_tall_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 312，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "8/8 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2045 m^3，包围盒占比 34.0749%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_palm_tall_mid 部件数 8（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "9/9 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.5872 m^3，包围盒占比 4.8737%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_palm_tall_mid_trunk 部件数 9（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 312,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_pine_conical_hero",
+      "id": "geometry/vegetation/tree_pine_conical_hero",
+      "lod": "hero",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 584,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_pine_conical_hero' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_pine_conical_hero') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 584，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 28.9025 m^3，包围盒占比 22.3053%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_pine_conical_hero 部件数 3（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "13/13 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.7079 m^3，包围盒占比 2.2377%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_pine_conical_hero_trunk 部件数 13（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'hero'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 584,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_pine_conical_low",
+      "id": "geometry/vegetation/tree_pine_conical_low",
+      "lod": "low",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 128,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_pine_conical_low' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_pine_conical_low') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 128，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 26.2411 m^3，包围盒占比 20.2514%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_pine_conical_low 部件数 3（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.4575 m^3，包围盒占比 9.7149%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_pine_conical_low_trunk 部件数 4（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'low'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 128,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "tree_pine_conical_mid",
+      "id": "geometry/vegetation/tree_pine_conical_mid",
+      "lod": "mid",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 408,
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'tree_pine_conical_mid' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('tree_pine_conical_mid') = 'tree'（期望 'tree'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 408，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 LicenseRef-Proprietary；来源 程序化生成",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 28.4032 m^3，包围盒占比 21.9199%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_canopy_pine_conical_mid 部件数 3（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "13/13 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.5961 m^3，包围盒占比 3.7709%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "tree_pine_conical_mid_trunk 部件数 13（上限 120）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        },
+        {
+          "code": "LOD_VARIANT",
+          "ok": true,
+          "message": "变体（LOD 档）'mid'",
+          "hint": "植被变体名即 LOD 档"
+        }
+      ],
+      "metrics": {
+        "faces": 408,
+        "nodes": 2,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    }
+  ]
+}

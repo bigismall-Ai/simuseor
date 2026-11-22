@@ -1,0 +1,562 @@
+{
+  "kind": "r4_recipe",
+  "schema": "r4-recipe/1",
+  "recipe_id": "vegetation_species",
+  "category": "tree",
+  "semantic_category": "tree",
+  "note": "6 个树种配方 × 三档 LOD（hero/mid/low）。变体名即 LOD 档；面数预算按用途分级统一。",
+  "species": [
+    {
+      "species": "oak_broad",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "阔叶球冠，行道树主力",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "oak_broad",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "oak_broad",
+            "height": 6.2,
+            "trunk_r": 0.3,
+            "canopy_r": 3.1,
+            "canopy_h": 2.6,
+            "shape": "round",
+            "branches": 3,
+            "levels": 3,
+            "seed": 11,
+            "note": "阔叶球冠，行道树主力"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_oak_broad_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "oak_broad",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "oak_broad",
+            "height": 6.2,
+            "trunk_r": 0.3,
+            "canopy_r": 3.1,
+            "canopy_h": 2.6,
+            "shape": "round",
+            "branches": 3,
+            "levels": 3,
+            "seed": 11,
+            "note": "阔叶球冠，行道树主力"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_oak_broad_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "oak_broad",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "oak_broad",
+            "height": 6.2,
+            "trunk_r": 0.3,
+            "canopy_r": 3.1,
+            "canopy_h": 2.6,
+            "shape": "round",
+            "branches": 3,
+            "levels": 3,
+            "seed": 11,
+            "note": "阔叶球冠，行道树主力"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_oak_broad_low.glb"
+          ]
+        }
+      ]
+    },
+    {
+      "species": "pine_conical",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "针叶锥冠，街角点缀",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "pine_conical",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "pine_conical",
+            "height": 8.6,
+            "trunk_r": 0.24,
+            "canopy_r": 2.4,
+            "canopy_h": 5.2,
+            "shape": "conical",
+            "branches": 3,
+            "levels": 2,
+            "seed": 23,
+            "note": "针叶锥冠，街角点缀"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_pine_conical_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "pine_conical",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "pine_conical",
+            "height": 8.6,
+            "trunk_r": 0.24,
+            "canopy_r": 2.4,
+            "canopy_h": 5.2,
+            "shape": "conical",
+            "branches": 3,
+            "levels": 2,
+            "seed": 23,
+            "note": "针叶锥冠，街角点缀"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_pine_conical_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "pine_conical",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "pine_conical",
+            "height": 8.6,
+            "trunk_r": 0.24,
+            "canopy_r": 2.4,
+            "canopy_h": 5.2,
+            "shape": "conical",
+            "branches": 3,
+            "levels": 2,
+            "seed": 23,
+            "note": "针叶锥冠，街角点缀"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_pine_conical_low.glb"
+          ]
+        }
+      ]
+    },
+    {
+      "species": "birch_slim",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "细高白桦，窄巷背景",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "birch_slim",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "birch_slim",
+            "height": 7.2,
+            "trunk_r": 0.16,
+            "canopy_r": 1.55,
+            "canopy_h": 3.4,
+            "shape": "column",
+            "branches": 3,
+            "levels": 3,
+            "seed": 37,
+            "note": "细高白桦，窄巷背景"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_birch_slim_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "birch_slim",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "birch_slim",
+            "height": 7.2,
+            "trunk_r": 0.16,
+            "canopy_r": 1.55,
+            "canopy_h": 3.4,
+            "shape": "column",
+            "branches": 3,
+            "levels": 3,
+            "seed": 37,
+            "note": "细高白桦，窄巷背景"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_birch_slim_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "birch_slim",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "birch_slim",
+            "height": 7.2,
+            "trunk_r": 0.16,
+            "canopy_r": 1.55,
+            "canopy_h": 3.4,
+            "shape": "column",
+            "branches": 3,
+            "levels": 3,
+            "seed": 37,
+            "note": "细高白桦，窄巷背景"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_birch_slim_low.glb"
+          ]
+        }
+      ]
+    },
+    {
+      "species": "maple_wide",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "宽冠枫，广场遮荫",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "maple_wide",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "maple_wide",
+            "height": 5.4,
+            "trunk_r": 0.26,
+            "canopy_r": 3.6,
+            "canopy_h": 2.2,
+            "shape": "wide",
+            "branches": 4,
+            "levels": 3,
+            "seed": 53,
+            "note": "宽冠枫，广场遮荫"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_maple_wide_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "maple_wide",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "maple_wide",
+            "height": 5.4,
+            "trunk_r": 0.26,
+            "canopy_r": 3.6,
+            "canopy_h": 2.2,
+            "shape": "wide",
+            "branches": 4,
+            "levels": 3,
+            "seed": 53,
+            "note": "宽冠枫，广场遮荫"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_maple_wide_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "maple_wide",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "maple_wide",
+            "height": 5.4,
+            "trunk_r": 0.26,
+            "canopy_r": 3.6,
+            "canopy_h": 2.2,
+            "shape": "wide",
+            "branches": 4,
+            "levels": 3,
+            "seed": 53,
+            "note": "宽冠枫，广场遮荫"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_maple_wide_low.glb"
+          ]
+        }
+      ]
+    },
+    {
+      "species": "palm_tall",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "棕榈，无球冠（叶面辐射）",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "palm_tall",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "palm_tall",
+            "height": 7.6,
+            "trunk_r": 0.22,
+            "canopy_r": 2.3,
+            "canopy_h": 1.3,
+            "shape": "palm",
+            "branches": 8,
+            "levels": 1,
+            "seed": 67,
+            "note": "棕榈，无球冠（叶面辐射）"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_palm_tall_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "palm_tall",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "palm_tall",
+            "height": 7.6,
+            "trunk_r": 0.22,
+            "canopy_r": 2.3,
+            "canopy_h": 1.3,
+            "shape": "palm",
+            "branches": 8,
+            "levels": 1,
+            "seed": 67,
+            "note": "棕榈，无球冠（叶面辐射）"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_palm_tall_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "palm_tall",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "palm_tall",
+            "height": 7.6,
+            "trunk_r": 0.22,
+            "canopy_r": 2.3,
+            "canopy_h": 1.3,
+            "shape": "palm",
+            "branches": 8,
+            "levels": 1,
+            "seed": 67,
+            "note": "棕榈，无球冠（叶面辐射）"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_palm_tall_low.glb"
+          ]
+        }
+      ]
+    },
+    {
+      "species": "dead_bare",
+      "category": "tree",
+      "semantic_category": "tree",
+      "note": "枯枝，无冠层（构图用负形）",
+      "variants": [
+        {
+          "variant": "hero",
+          "name": "dead_bare",
+          "usage_level": "hero",
+          "budget_faces": 50000,
+          "params": {
+            "name": "dead_bare",
+            "height": 4.6,
+            "trunk_r": 0.28,
+            "canopy_r": 0.0,
+            "canopy_h": 0.0,
+            "shape": "bare",
+            "branches": 3,
+            "levels": 3,
+            "seed": 79,
+            "note": "枯枝，无冠层（构图用负形）"
+          },
+          "lod": {
+            "segments": 8,
+            "levels": 3,
+            "canopy_blobs": 7,
+            "canopy_subdiv": 2,
+            "branch_ratio": 0.45
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_dead_bare_hero.glb"
+          ]
+        },
+        {
+          "variant": "mid",
+          "name": "dead_bare",
+          "usage_level": "mid",
+          "budget_faces": 5000,
+          "params": {
+            "name": "dead_bare",
+            "height": 4.6,
+            "trunk_r": 0.28,
+            "canopy_r": 0.0,
+            "canopy_h": 0.0,
+            "shape": "bare",
+            "branches": 3,
+            "levels": 3,
+            "seed": 79,
+            "note": "枯枝，无冠层（构图用负形）"
+          },
+          "lod": {
+            "segments": 6,
+            "levels": 2,
+            "canopy_blobs": 4,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.38
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_dead_bare_mid.glb"
+          ]
+        },
+        {
+          "variant": "low",
+          "name": "dead_bare",
+          "usage_level": "low",
+          "budget_faces": 500,
+          "params": {
+            "name": "dead_bare",
+            "height": 4.6,
+            "trunk_r": 0.28,
+            "canopy_r": 0.0,
+            "canopy_h": 0.0,
+            "shape": "bare",
+            "branches": 3,
+            "levels": 3,
+            "seed": 79,
+            "note": "枯枝，无冠层（构图用负形）"
+          },
+          "lod": {
+            "segments": 5,
+            "levels": 1,
+            "canopy_blobs": 2,
+            "canopy_subdiv": 1,
+            "branch_ratio": 0.3
+          },
+          "outputs": [
+            "assets/geometry/vegetation/tree_dead_bare_low.glb"
+          ]
+        }
+      ]
+    }
+  ]
+}

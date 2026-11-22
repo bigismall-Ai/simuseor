@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_student_short",
+  "name": "hero_student_short",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_student_short.glb",
+      "bytes": 35520,
+      "sha256": "a7b443280116ae69a3f4b736bf39121c525ce33b87b801c67ffbbcbb09a9d902"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_student_short_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.1777,
+          -0.0995,
+          0.8609
+        ],
+        "bbox_max": [
+          0.1777,
+          0.0995,
+          1.3238
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1369,
+          -0.1016,
+          0.7787
+        ],
+        "bbox_max": [
+          0.1369,
+          0.1016,
+          0.9616
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0463,
+          -0.0463,
+          1.296
+        ],
+        "bbox_max": [
+          0.0463,
+          0.0463,
+          1.4071
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.0966,
+          -0.1003,
+          1.3888
+        ],
+        "bbox_max": [
+          0.0966,
+          0.1096,
+          1.6198
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0993,
+          -0.0625,
+          1.2613
+        ],
+        "bbox_max": [
+          0.2243,
+          0.0625,
+          1.3863
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.125,
+          -0.0483,
+          1.0479
+        ],
+        "bbox_max": [
+          0.4052,
+          0.0492,
+          1.3551
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.3356,
+          -0.0299,
+          1.0347
+        ],
+        "bbox_max": [
+          0.4139,
+          0.0484,
+          1.113
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.3419,
+          -0.0296,
+          0.8257
+        ],
+        "bbox_max": [
+          0.5487,
+          0.0677,
+          1.0951
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.4974,
+          0.0023,
+          0.7521
+        ],
+        "bbox_max": [
+          0.5483,
+          0.0717,
+          0.8401
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0199,
+          -0.0708,
+          0.4612
+        ],
+        "bbox_max": [
+          0.1615,
+          0.0708,
+          0.8632
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.05,
+          -0.0407,
+          0.4129
+        ],
+        "bbox_max": [
+          0.15,
+          0.0592,
+          0.5128
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0517,
+          -0.039,
+          0.0732
+        ],
+        "bbox_max": [
+          0.1483,
+          0.0576,
+          0.464
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0574,
+          -0.0301,
+          0.0005
+        ],
+        "bbox_max": [
+          0.1426,
+          0.1875,
+          0.0699
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.2243,
+          -0.0625,
+          1.2613
+        ],
+        "bbox_max": [
+          -0.0993,
+          0.0625,
+          1.3863
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4052,
+          -0.0483,
+          1.0479
+        ],
+        "bbox_max": [
+          -0.125,
+          0.0492,
+          1.3551
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.4139,
+          -0.0299,
+          1.0347
+        ],
+        "bbox_max": [
+          -0.3356,
+          0.0484,
+          1.113
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.5487,
+          -0.0296,
+          0.8257
+        ],
+        "bbox_max": [
+          -0.3419,
+          0.0677,
+          1.0951
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.5483,
+          0.0023,
+          0.7521
+        ],
+        "bbox_max": [
+          -0.4974,
+          0.0717,
+          0.8401
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1615,
+          -0.0708,
+          0.4612
+        ],
+        "bbox_max": [
+          -0.0199,
+          0.0708,
+          0.8632
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.15,
+          -0.0407,
+          0.4129
+        ],
+        "bbox_max": [
+          -0.05,
+          0.0592,
+          0.5128
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1483,
+          -0.039,
+          0.0732
+        ],
+        "bbox_max": [
+          -0.0517,
+          0.0576,
+          0.464
+        ]
+      },
+      {
+        "node": "hero_hero_student_short_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1426,
+          -0.0301,
+          0.0005
+        ],
+        "bbox_max": [
+          -0.0574,
+          0.1875,
+          0.0699
+        ]
+      },
+      {
+        "node": "jacket_hero_student_short_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.2399,
+          -0.16,
+          0.9072
+        ],
+        "bbox_max": [
+          0.2399,
+          0.16,
+          1.3423
+        ]
+      },
+      {
+        "node": "jacket_hero_student_short_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.0813,
+          -0.1041,
+          0.7994
+        ],
+        "bbox_max": [
+          0.5892,
+          0.1157,
+          1.3998
+        ]
+      },
+      {
+        "node": "jacket_hero_student_short_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.5892,
+          -0.1041,
+          0.7994
+        ],
+        "bbox_max": [
+          -0.0813,
+          0.1157,
+          1.3998
+        ]
+      },
+      {
+        "node": "jacket_hero_student_short_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1018,
+          -0.1018,
+          1.296
+        ],
+        "bbox_max": [
+          0.1018,
+          0.1018,
+          1.3423
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.5892,
+      -0.16,
+      0.0005
+    ],
+    "bbox_max": [
+      0.5892,
+      0.1875,
+      1.6198
+    ],
+    "ground_offset_m": 0.0005
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "student",
+    "params": {
+      "name": "student",
+      "variant": "short",
+      "height": 1.62,
+      "torso": 0.96,
+      "shoulder": 0.92,
+      "hip": 0.98,
+      "limb": 0.9,
+      "head": 1.08,
+      "note": "学生，中景"
+    },
+    "level": "mid"
+  },
+  "nodes": [
+    "hero_hero_student_short_torso",
+    "hero_hero_student_short_pelvis",
+    "hero_hero_student_short_neck",
+    "hero_hero_student_short_head",
+    "hero_hero_student_short_shoulder_L",
+    "hero_hero_student_short_upperarm_L",
+    "hero_hero_student_short_elbow_L",
+    "hero_hero_student_short_forearm_L",
+    "hero_hero_student_short_hand_L",
+    "hero_hero_student_short_thigh_L",
+    "hero_hero_student_short_knee_L",
+    "hero_hero_student_short_shin_L",
+    "hero_hero_student_short_foot_L",
+    "hero_hero_student_short_shoulder_R",
+    "hero_hero_student_short_upperarm_R",
+    "hero_hero_student_short_elbow_R",
+    "hero_hero_student_short_forearm_R",
+    "hero_hero_student_short_hand_R",
+    "hero_hero_student_short_thigh_R",
+    "hero_hero_student_short_knee_R",
+    "hero_hero_student_short_shin_R",
+    "hero_hero_student_short_foot_R",
+    "jacket_hero_student_short_body",
+    "jacket_hero_student_short_sleeve_l",
+    "jacket_hero_student_short_sleeve_r",
+    "jacket_hero_student_short_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_student_short_body",
+  "clothing_parts": [
+    "jacket_hero_student_short_body",
+    "jacket_hero_student_short_sleeve_l",
+    "jacket_hero_student_short_sleeve_r",
+    "jacket_hero_student_short_collar"
+  ],
+  "note": "学生，中景"
+}

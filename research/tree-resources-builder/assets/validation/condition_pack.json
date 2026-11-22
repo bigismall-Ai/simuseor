@@ -1,0 +1,185 @@
+{
+  "kind": "condition_pack",
+  "generated_by": "harness/condition_pack.py",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "resolution": [
+    512,
+    512
+  ],
+  "scene_source": "generate_assets.street_scene() (in-memory, no files written)",
+  "pose_joint_source": "generate_assets.HUMAN_JOINTS (rest pose)",
+  "channels": [
+    "depth",
+    "normal",
+    "seg",
+    "mask",
+    "lineart",
+    "pose"
+  ],
+  "up_axis": "Z",
+  "units": "meter",
+  "depth_polarity": "near_1_far_0",
+  "f_px": 512.0,
+  "near_far_m": [
+    2.616464,
+    40.165005
+  ],
+  "sidecar_scan": {
+    "dir": "/Users/moc/workspaces/projects/SiMuseor/research/tree-resources-builder/assets/conditions/r0_pack",
+    "required_fields": [
+      "resolution",
+      "f_px",
+      "near",
+      "far",
+      "encoding",
+      "up_axis",
+      "mask_semantics"
+    ],
+    "n_files": 7,
+    "n_ok": 6,
+    "n_skipped": 1,
+    "all_ok": true,
+    "files": [
+      {
+        "path": "cond_depth.json",
+        "ok": true,
+        "missing": [],
+        "channel": "depth",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      },
+      {
+        "path": "cond_lineart.json",
+        "ok": true,
+        "missing": [],
+        "channel": "lineart",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      },
+      {
+        "path": "cond_mask.json",
+        "ok": true,
+        "missing": [],
+        "channel": "mask",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      },
+      {
+        "path": "cond_normal.json",
+        "ok": true,
+        "missing": [],
+        "channel": "normal",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      },
+      {
+        "path": "cond_pose.json",
+        "ok": true,
+        "missing": [],
+        "channel": "pose",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      },
+      {
+        "path": "cond_pose_keypoints.json",
+        "ok": true,
+        "missing": [],
+        "channel": null,
+        "kind": "pose_keypoints",
+        "skipped": true,
+        "error": null
+      },
+      {
+        "path": "cond_seg.json",
+        "ok": true,
+        "missing": [],
+        "channel": "seg",
+        "kind": "condition_sidecar",
+        "skipped": false,
+        "error": null
+      }
+    ]
+  },
+  "sidecar_required_fields": [
+    "resolution",
+    "f_px",
+    "near",
+    "far",
+    "encoding",
+    "up_axis",
+    "mask_semantics"
+  ],
+  "outputs": {
+    "depth": {
+      "png": "assets/conditions/r0_pack/cond_depth.png",
+      "sidecar": "assets/conditions/r0_pack/cond_depth.json"
+    },
+    "normal": {
+      "png": "assets/conditions/r0_pack/cond_normal.png",
+      "sidecar": "assets/conditions/r0_pack/cond_normal.json"
+    },
+    "seg": {
+      "png": "assets/conditions/r0_pack/cond_seg.png",
+      "sidecar": "assets/conditions/r0_pack/cond_seg.json"
+    },
+    "mask": {
+      "png": "assets/conditions/r0_pack/cond_mask.png",
+      "sidecar": "assets/conditions/r0_pack/cond_mask.json"
+    },
+    "lineart": {
+      "png": "assets/conditions/r0_pack/cond_lineart.png",
+      "sidecar": "assets/conditions/r0_pack/cond_lineart.json"
+    },
+    "pose": {
+      "png": "assets/conditions/r0_pack/cond_pose.png",
+      "sidecar": "assets/conditions/r0_pack/cond_pose.json"
+    }
+  },
+  "extra_pngs": {
+    "normal_r16": "assets/conditions/r0_pack/cond_normal_r16.png",
+    "normal_g16": "assets/conditions/r0_pack/cond_normal_g16.png",
+    "normal_b16": "assets/conditions/r0_pack/cond_normal_b16.png",
+    "pose_openpose25": "assets/conditions/r0_pack/cond_pose_openpose25.png",
+    "pose_keypoints_json": "assets/conditions/r0_pack/cond_pose_keypoints.json"
+  },
+  "channel_stats": {
+    "foreground_px": 235824,
+    "background_px": 26320,
+    "lineart_px": 55518,
+    "pose_px": 729,
+    "seg_labels": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "keypoints_drawn": 18
+  },
+  "depth_readings": {
+    "encoding": "depth = (z_far_fg - z) / (z_far_fg - z_near_fg) ∈ [0,1]（z = 相机空间前向轴距离/米，1=最近，0=最远）；背景像素固定为 background_depth = 0.0",
+    "polarity": "near_1_far_0",
+    "near_value": 1.0,
+    "far_value": 0.0,
+    "background_value": 0.0,
+    "foreground_min": 0.0,
+    "foreground_max": 1.0,
+    "background_unique": true
+  },
+  "timing_ms": {
+    "rasterize": 81.87,
+    "total_render_conditions": 105.34,
+    "pack_total": 264.12
+  },
+  "pass": false
+}

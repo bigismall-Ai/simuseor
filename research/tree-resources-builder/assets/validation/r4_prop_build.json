@@ -1,0 +1,486 @@
+{
+  "kind": "r4_prop_build",
+  "items": [
+    {
+      "asset": "prop_cone_traffic",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 66,
+      "faces": 72,
+      "vertices": 40,
+      "size_m": [
+        0.5997,
+        0.7496,
+        0.5997
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_cone_traffic.glb",
+      "bytes": 2056
+    },
+    {
+      "asset": "prop_barrier_construction",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 60,
+      "faces": 60,
+      "vertices": 32,
+      "size_m": [
+        1.2044,
+        1.1556,
+        2.0
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_barrier_construction.glb",
+      "bytes": 1800
+    },
+    {
+      "asset": "prop_fence_construction",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 136,
+      "faces": 144,
+      "vertices": 80,
+      "size_m": [
+        0.4,
+        0.9533,
+        2.0
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 4,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_fence_construction.glb",
+      "bytes": 3404
+    },
+    {
+      "asset": "prop_sign_empty",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 42,
+      "faces": 44,
+      "vertices": 24,
+      "size_m": [
+        0.2105,
+        2.0,
+        0.2105
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_sign_empty.glb",
+      "bytes": 1516
+    },
+    {
+      "asset": "prop_tool_pickaxe",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 74,
+      "faces": 76,
+      "vertices": 44,
+      "size_m": [
+        0.707,
+        0.95,
+        0.1532
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_tool_pickaxe.glb",
+      "bytes": 2152
+    },
+    {
+      "asset": "prop_pipe_metal",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 20,
+      "faces": 20,
+      "vertices": 12,
+      "size_m": [
+        0.3,
+        1.5,
+        0.2598
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_pipe_metal.glb",
+      "bytes": 1084
+    },
+    {
+      "asset": "prop_bridge_pillar",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 38,
+      "faces": 40,
+      "vertices": 24,
+      "size_m": [
+        0.6,
+        3.0,
+        0.6
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_bridge_pillar.glb",
+      "bytes": 1468
+    },
+    {
+      "asset": "prop_awning_shop",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 40,
+      "faces": 44,
+      "vertices": 28,
+      "size_m": [
+        2.5,
+        1.25,
+        0.4622
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 2,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_awning_shop.glb",
+      "bytes": 1552
+    },
+    {
+      "asset": "prop_fence_wood",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 48,
+      "faces": 48,
+      "vertices": 32,
+      "size_m": [
+        1.9324,
+        1.9999,
+        0.1653
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_fence_wood.glb",
+      "bytes": 1668
+    },
+    {
+      "asset": "prop_fence_fortified",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 120,
+      "faces": 120,
+      "vertices": 80,
+      "size_m": [
+        1.9324,
+        1.9999,
+        0.2049
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_fence_fortified.glb",
+      "bytes": 3112
+    },
+    {
+      "asset": "prop_signpost_wood",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 44,
+      "faces": 44,
+      "vertices": 28,
+      "size_m": [
+        0.9308,
+        1.9999,
+        0.1868
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_signpost_wood.glb",
+      "bytes": 1576
+    },
+    {
+      "asset": "prop_tool_axe",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 84,
+      "faces": 84,
+      "vertices": 46,
+      "size_m": [
+        0.4025,
+        0.9,
+        0.1087
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_tool_axe.glb",
+      "bytes": 2276
+    },
+    {
+      "asset": "prop_tool_hammer",
+      "origin": "Kenney",
+      "tier": "low",
+      "source_faces": 52,
+      "faces": 52,
+      "vertices": 30,
+      "size_m": [
+        0.4104,
+        0.6999,
+        0.1824
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 500,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_tool_hammer.glb",
+      "bytes": 1700
+    },
+    {
+      "asset": "prop_barrel_wood",
+      "origin": "Kenney",
+      "tier": "mid",
+      "source_faces": 412,
+      "faces": 412,
+      "vertices": 208,
+      "size_m": [
+        0.6187,
+        0.9,
+        0.6187
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 5000,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_barrel_wood.glb",
+      "bytes": 8160
+    },
+    {
+      "asset": "prop_dumpster_street",
+      "origin": "Kenney",
+      "tier": "mid",
+      "source_faces": 234,
+      "faces": 252,
+      "vertices": 142,
+      "size_m": [
+        2.4001,
+        1.5989,
+        2.3561
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 5000,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 3,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_dumpster_street.glb",
+      "bytes": 5460
+    },
+    {
+      "asset": "prop_pole_utility",
+      "origin": "Kenney",
+      "tier": "mid",
+      "source_faces": 416,
+      "faces": 472,
+      "vertices": 264,
+      "size_m": [
+        5.9998,
+        5.4395,
+        2.2196
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 5000,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 12,
+        "rounds": 2
+      },
+      "file": "assets/geometry/props/prop_pole_utility.glb",
+      "bytes": 9564
+    },
+    {
+      "asset": "prop_ladder_wood",
+      "origin": "Kenney",
+      "tier": "mid",
+      "source_faces": 224,
+      "faces": 224,
+      "vertices": 128,
+      "size_m": [
+        0.3,
+        2.0,
+        1.1
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 5000,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      },
+      "file": "assets/geometry/props/prop_ladder_wood.glb",
+      "bytes": 4928
+    },
+    {
+      "asset": "prop_crate_military",
+      "origin": "Poly Haven",
+      "tier": "hero",
+      "source_faces": 10476,
+      "faces": 10676,
+      "vertices": 5334,
+      "size_m": [
+        1.82,
+        0.7619,
+        1.3544
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 50000,
+      "process": {
+        "mode": "voxel_remesh",
+        "voxel_m": 0.022,
+        "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+      },
+      "file": "assets/geometry/props/prop_crate_military.glb",
+      "bytes": 192868
+    },
+    {
+      "asset": "prop_armchair_lounge",
+      "origin": "Poly Haven",
+      "tier": "hero",
+      "source_faces": 5626,
+      "faces": 34980,
+      "vertices": 17354,
+      "size_m": [
+        0.852,
+        1.07,
+        0.7728
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 50000,
+      "process": {
+        "mode": "voxel_remesh",
+        "voxel_m": 0.02,
+        "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+      },
+      "file": "assets/geometry/props/prop_armchair_lounge.glb",
+      "bytes": 628756
+    },
+    {
+      "asset": "prop_crate_wooden",
+      "origin": "Poly Haven",
+      "tier": "hero",
+      "source_faces": 6576,
+      "faces": 8292,
+      "vertices": 4132,
+      "size_m": [
+        1.2,
+        0.5023,
+        0.614
+      ],
+      "watertight": true,
+      "winding_consistent": true,
+      "degenerate_faces": 0,
+      "budget_faces": 50000,
+      "process": {
+        "mode": "voxel_remesh",
+        "voxel_m": 0.02,
+        "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+      },
+      "file": "assets/geometry/props/prop_crate_wooden.glb",
+      "bytes": 149836
+    }
+  ],
+  "total": 20
+}

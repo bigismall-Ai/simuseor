@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_crate_wooden",
+  "name": "prop_crate_wooden",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_crate_wooden.glb",
+      "bytes": 149836,
+      "sha256": "28e970817ec6afd16fd8cd638585195ed548e8ca942a8873d4ce7816be6f11e0"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://polyhaven.com/a/wooden_crate_01",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Poly Haven（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Poly Haven 官方包下载，剥材质后按米制标定",
+    "source_url": "https://polyhaven.com/a/wooden_crate_01",
+    "is_ai": 0,
+    "source_pack": "wooden_crate_01",
+    "source_model": "wooden_crate_01",
+    "source_file": "var/public-assets/polyhaven/wooden_crate_01/wooden_crate_01_1k.gltf",
+    "source_sha256": "fd9c6073acfc671e12b64666053f2805ae33aff5d3dbbcfe5c97c08c06644927",
+    "source_faces": 6576,
+    "scale_factor": 0.02791,
+    "target_max_dim_m": 1.2,
+    "process": {
+      "mode": "voxel_remesh",
+      "voxel_m": 0.02,
+      "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+    }
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 8292
+  },
+  "geometry": {
+    "faces": 8292,
+    "vertices": 4132,
+    "bbox_min": [
+      -0.014,
+      -0.014,
+      0.0
+    ],
+    "bbox_max": [
+      1.186,
+      0.4884,
+      0.614
+    ],
+    "size_m": [
+      1.2,
+      0.5023,
+      0.614
+    ],
+    "max_dim_m": 1.2,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_crate_wooden",
+    "params": {
+      "scale_factor": 0.02791,
+      "target_max_dim_m": 1.2,
+      "process": {
+        "mode": "voxel_remesh",
+        "voxel_m": 0.02,
+        "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+      }
+    }
+  },
+  "origin": "Poly Haven"
+}

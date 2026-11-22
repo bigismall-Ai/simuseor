@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_pipe_metal",
+  "name": "prop_pipe_metal",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_pipe_metal.glb",
+      "bytes": 1084,
+      "sha256": "a36a87154084e64cdc0c0a8c5d8d5e78b11cb02a4e26e5de7a14245514e58c7f"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/prototype-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/prototype-kit",
+    "is_ai": 0,
+    "source_pack": "prototype-kit",
+    "source_model": "pipe",
+    "source_file": "var/public-assets/kenney/prototype-kit/Models/GLB format/pipe.glb",
+    "source_sha256": "ebfc145808ac7aba63882fb8061473d6e716650584e7ac1dce4259fa0b61f8da",
+    "source_faces": 20,
+    "scale_factor": 1.5,
+    "target_max_dim_m": 1.5,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 20
+  },
+  "geometry": {
+    "faces": 20,
+    "vertices": 12,
+    "bbox_min": [
+      -0.15,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.15,
+      1.5,
+      0.2598
+    ],
+    "size_m": [
+      0.3,
+      1.5,
+      0.2598
+    ],
+    "max_dim_m": 1.5,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_pipe_metal",
+    "params": {
+      "scale_factor": 1.5,
+      "target_max_dim_m": 1.5,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

@@ -1,0 +1,3580 @@
+{
+  "kind": "r7_selftest",
+  "note": "不调用云端：用 R4 台账中心值当参考配方，验证执行器与判据本身是可满足的；这是 LLM 首过率的基线，不是 LLM 的成绩。",
+  "generated_at": "2026-11-22 02:46:10",
+  "total": 105,
+  "passed": 105,
+  "failed": [],
+  "rows": [
+    {
+      "task_id": "r7-prop-prop_cone_traffic-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 2,
+        "watertight_ratio": 1.0,
+        "faces": 72,
+        "vertices": 40,
+        "volume_m3": 0.0966,
+        "bbox_min": [
+          -0.2998,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.2998,
+          0.7496,
+          0.5997
+        ],
+        "size_m": {
+          "x": 0.5997,
+          "y": 0.7496,
+          "z": 0.5997
+        },
+        "parts": 1,
+        "topology_hash": "a1bb610d3f18304c71f8bfc64e0dbce506948019f481e757d46229c907a95410",
+        "core_components": 2,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_barrier_construction-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 60,
+        "vertices": 32,
+        "volume_m3": 2.0416,
+        "bbox_min": [
+          -0.6022,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.6022,
+          1.1556,
+          2.0
+        ],
+        "size_m": {
+          "x": 1.2044,
+          "y": 1.1556,
+          "z": 2.0
+        },
+        "parts": 1,
+        "topology_hash": "34a0b3d6de21466a9471a85e7aeedd41cbcf7e467e05f896868ed5366ef07019",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_fence_construction-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 4,
+        "watertight_ratio": 1.0,
+        "faces": 144,
+        "vertices": 80,
+        "volume_m3": 0.1218,
+        "bbox_min": [
+          -0.2,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.2,
+          0.9533,
+          2.0
+        ],
+        "size_m": {
+          "x": 0.4,
+          "y": 0.9533,
+          "z": 2.0
+        },
+        "parts": 1,
+        "topology_hash": "3cb0db8bdc2589a08b035c9357c5c5c5cb05e2869c1654bc62580c433ec5194e",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_sign_empty-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 44,
+        "vertices": 24,
+        "volume_m3": 0.0378,
+        "bbox_min": [
+          -0.1053,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.1053,
+          2.0,
+          0.2105
+        ],
+        "size_m": {
+          "x": 0.2105,
+          "y": 2.0,
+          "z": 0.2105
+        },
+        "parts": 1,
+        "topology_hash": "49e81480329871eceafb0834fed7a7aae8fbcba1d9b7c9a4b00c503d47fbacde",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_tool_pickaxe-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 3,
+        "watertight_ratio": 1.0,
+        "faces": 76,
+        "vertices": 44,
+        "volume_m3": 0.0126,
+        "bbox_min": [
+          -0.3535,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.3535,
+          0.95,
+          0.1532
+        ],
+        "size_m": {
+          "x": 0.707,
+          "y": 0.95,
+          "z": 0.1532
+        },
+        "parts": 1,
+        "topology_hash": "c58ee4d49108f3b7f8782fdff5e8841ba5e1efbae88f89b7319b2970f0e54ff9",
+        "core_components": 3,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_pipe_metal-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 20,
+        "vertices": 12,
+        "volume_m3": 0.0877,
+        "bbox_min": [
+          -0.15,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.15,
+          1.5,
+          0.2598
+        ],
+        "size_m": {
+          "x": 0.3,
+          "y": 1.5,
+          "z": 0.2598
+        },
+        "parts": 1,
+        "topology_hash": "5f4ba69e84c4e95a4072cb6ec266b4f0cc90d7115108273b4801a78e5e320cee",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_bridge_pillar-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 2,
+        "watertight_ratio": 1.0,
+        "faces": 40,
+        "vertices": 24,
+        "volume_m3": 0.4446,
+        "bbox_min": [
+          -0.3,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.3,
+          3.0,
+          0.6
+        ],
+        "size_m": {
+          "x": 0.6,
+          "y": 3.0,
+          "z": 0.6
+        },
+        "parts": 1,
+        "topology_hash": "8dd5b06143c1c980d85db26f98470eb5b1a3240ed286bbbf820f533b8cb69a0d",
+        "core_components": 2,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_awning_shop-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 3,
+        "watertight_ratio": 1.0,
+        "faces": 44,
+        "vertices": 28,
+        "volume_m3": 0.1269,
+        "bbox_min": [
+          -1.25,
+          -0.0,
+          0.0
+        ],
+        "bbox_max": [
+          1.25,
+          1.25,
+          0.4622
+        ],
+        "size_m": {
+          "x": 2.5,
+          "y": 1.25,
+          "z": 0.4622
+        },
+        "parts": 1,
+        "topology_hash": "84eb1df44d40dcdd1531745c4b7349546fc105f876f8ef45e61c13109ca42106",
+        "core_components": 3,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_fence_wood-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 4,
+        "watertight_ratio": 1.0,
+        "faces": 48,
+        "vertices": 32,
+        "volume_m3": 0.1128,
+        "bbox_min": [
+          -0.9662,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.9662,
+          1.9999,
+          0.1653
+        ],
+        "size_m": {
+          "x": 1.9324,
+          "y": 1.9999,
+          "z": 0.1653
+        },
+        "parts": 1,
+        "topology_hash": "0ac2b82554b814cfee809234c98a536ad2945ecb1bfcd6b02e503e30abcf707c",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_fence_fortified-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 10,
+        "watertight_ratio": 1.0,
+        "faces": 120,
+        "vertices": 80,
+        "volume_m3": 0.2534,
+        "bbox_min": [
+          -0.9662,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.9662,
+          1.9999,
+          0.2049
+        ],
+        "size_m": {
+          "x": 1.9324,
+          "y": 1.9999,
+          "z": 0.2049
+        },
+        "parts": 1,
+        "topology_hash": "71a4fba9e0326549dae3921158084310df340e55db2b5ed8ea680418c9144914",
+        "core_components": 10,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_signpost_wood-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 3,
+        "watertight_ratio": 1.0,
+        "faces": 44,
+        "vertices": 28,
+        "volume_m3": 0.101,
+        "bbox_min": [
+          -0.4881,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.4427,
+          1.9999,
+          0.1868
+        ],
+        "size_m": {
+          "x": 0.9308,
+          "y": 1.9999,
+          "z": 0.1868
+        },
+        "parts": 1,
+        "topology_hash": "b40788b8d100a7707614a035e62f6e7f372bb05d2de281917d839dc107509e9f",
+        "core_components": 3,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_tool_axe-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 2,
+        "watertight_ratio": 1.0,
+        "faces": 84,
+        "vertices": 46,
+        "volume_m3": 0.0079,
+        "bbox_min": [
+          -0.2578,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.1447,
+          0.9,
+          0.1087
+        ],
+        "size_m": {
+          "x": 0.4025,
+          "y": 0.9,
+          "z": 0.1087
+        },
+        "parts": 1,
+        "topology_hash": "570792324a4b0f1443695911a83f0f3516870d75469a12d112aed00b7a04c344",
+        "core_components": 2,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_tool_hammer-i00",
+      "category": "prop",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 2,
+        "watertight_ratio": 1.0,
+        "faces": 52,
+        "vertices": 30,
+        "volume_m3": 0.028,
+        "bbox_min": [
+          -0.2052,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.2052,
+          0.6999,
+          0.1824
+        ],
+        "size_m": {
+          "x": 0.4104,
+          "y": 0.6999,
+          "z": 0.1824
+        },
+        "parts": 1,
+        "topology_hash": "c27232106f62e23cfe549bd955f7993b5f8cd6de0eabefbfc99d3a0fd39a6078",
+        "core_components": 2,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_barrel_wood-i00",
+      "category": "prop",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 412,
+        "vertices": 208,
+        "volume_m3": 0.2521,
+        "bbox_min": [
+          -0.3094,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.3094,
+          0.9,
+          0.6187
+        ],
+        "size_m": {
+          "x": 0.6187,
+          "y": 0.9,
+          "z": 0.6187
+        },
+        "parts": 1,
+        "topology_hash": "78fac91a2eec77c44ecc146cf76b44a6eee9736b3fd8b5709975eaf81e47f35a",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_dumpster_street-i00",
+      "category": "prop",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 8,
+        "watertight_ratio": 1.0,
+        "faces": 252,
+        "vertices": 142,
+        "volume_m3": 2.5655,
+        "bbox_min": [
+          -1.4768,
+          -0.2865,
+          0.0
+        ],
+        "bbox_max": [
+          0.9233,
+          1.3123,
+          2.3561
+        ],
+        "size_m": {
+          "x": 2.4001,
+          "y": 1.5989,
+          "z": 2.3561
+        },
+        "parts": 1,
+        "topology_hash": "ae7dafca0a31fef5d33824ae10b25c79197eb6c5ef9aad7b1b840aef43d2ebe0",
+        "core_components": 8,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_pole_utility-i00",
+      "category": "prop",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 14,
+        "watertight_ratio": 1.0,
+        "faces": 472,
+        "vertices": 264,
+        "volume_m3": 2.576,
+        "bbox_min": [
+          -3.0809,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          2.9189,
+          5.4395,
+          2.2196
+        ],
+        "size_m": {
+          "x": 5.9998,
+          "y": 5.4395,
+          "z": 2.2196
+        },
+        "parts": 1,
+        "topology_hash": "814109654991d5cbcfcea228d82edb75ad43694f8b4f3579419a1e1a763cb951",
+        "core_components": 14,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_ladder_wood-i00",
+      "category": "prop",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 8,
+        "watertight_ratio": 1.0,
+        "faces": 224,
+        "vertices": 128,
+        "volume_m3": 0.2889,
+        "bbox_min": [
+          -0.15,
+          0.0,
+          0.0
+        ],
+        "bbox_max": [
+          0.15,
+          2.0,
+          1.1
+        ],
+        "size_m": {
+          "x": 0.3,
+          "y": 2.0,
+          "z": 1.1
+        },
+        "parts": 1,
+        "topology_hash": "2d1e17a3af3f38713b54eb0c01cde9d24cba38afd450b2a1de1a84c8661146e3",
+        "core_components": 8,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_crate_military-i00",
+      "category": "prop",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 10676,
+        "vertices": 5334,
+        "volume_m3": 0.4316,
+        "bbox_min": [
+          -0.0212,
+          -0.0212,
+          0.0
+        ],
+        "bbox_max": [
+          1.7988,
+          0.7407,
+          1.3544
+        ],
+        "size_m": {
+          "x": 1.82,
+          "y": 0.7619,
+          "z": 1.3544
+        },
+        "parts": 1,
+        "topology_hash": "3368aaf6029e1e71230be503419311b7c47bf19f4fbd860ce19bbda2a21b3296",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_armchair_lounge-i00",
+      "category": "prop",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 34980,
+        "vertices": 17354,
+        "volume_m3": 0.067,
+        "bbox_min": [
+          -0.0099,
+          -0.0099,
+          0.0
+        ],
+        "bbox_max": [
+          0.8421,
+          1.0601,
+          0.7728
+        ],
+        "size_m": {
+          "x": 0.852,
+          "y": 1.07,
+          "z": 0.7728
+        },
+        "parts": 1,
+        "topology_hash": "9f2a88926a0972b10081c7748dc4a0af2d2dfdf3046e2830a99cde0e95bc032f",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-prop-prop_crate_wooden-i00",
+      "category": "prop",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 1,
+        "watertight_ratio": 1.0,
+        "faces": 8292,
+        "vertices": 4132,
+        "volume_m3": 0.2839,
+        "bbox_min": [
+          -0.014,
+          -0.014,
+          0.0
+        ],
+        "bbox_max": [
+          1.186,
+          0.4884,
+          0.614
+        ],
+        "size_m": {
+          "x": 1.2,
+          "y": 0.5023,
+          "z": 0.614
+        },
+        "parts": 1,
+        "topology_hash": "f7e1c841086d4cb0b0fd9edca8c10af064209264388e4a7e589ab567724114f7",
+        "core_components": 1,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-oak_broad-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 47,
+        "watertight_ratio": 1.0,
+        "faces": 3520,
+        "vertices": 1854,
+        "volume_m3": 126.8275,
+        "bbox_min": [
+          -2.7627,
+          -2.2446,
+          0.0
+        ],
+        "bbox_max": [
+          2.829,
+          2.6414,
+          5.8634
+        ],
+        "size_m": {
+          "x": 5.5917,
+          "y": 4.886,
+          "z": 5.8634
+        },
+        "parts": 2,
+        "topology_hash": "0c159c905dc5344f688ed05d6eda1b39a27d7228b9e308facac86dbc0e202701",
+        "core_components": 40,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-oak_broad-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 632,
+        "vertices": 350,
+        "volume_m3": 80.4226,
+        "bbox_min": [
+          -3.0072,
+          -2.4153,
+          0.0
+        ],
+        "bbox_max": [
+          2.7596,
+          2.9304,
+          5.8662
+        ],
+        "size_m": {
+          "x": 5.7667,
+          "y": 5.3457,
+          "z": 5.8662
+        },
+        "parts": 2,
+        "topology_hash": "64898574c6eaaca96962baf97615e79c13ff3c53a5f52ccbcf848de25b12d31c",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-oak_broad-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 6,
+        "watertight_ratio": 1.0,
+        "faces": 240,
+        "vertices": 132,
+        "volume_m3": 18.3783,
+        "bbox_min": [
+          -1.673,
+          -1.285,
+          0.0
+        ],
+        "bbox_max": [
+          1.7784,
+          2.1867,
+          4.0613
+        ],
+        "size_m": {
+          "x": 3.4514,
+          "y": 3.4717,
+          "z": 4.0613
+        },
+        "parts": 2,
+        "topology_hash": "fa6fabf0538bdd61d6bb40fd0192e6fe56f7695c793b49b8a9ada2b4f11494b8",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-pine_conical-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 16,
+        "watertight_ratio": 1.0,
+        "faces": 584,
+        "vertices": 324,
+        "volume_m3": 30.0233,
+        "bbox_min": [
+          -2.41,
+          -2.41,
+          0.0
+        ],
+        "bbox_max": [
+          2.41,
+          2.41,
+          10.3797
+        ],
+        "size_m": {
+          "x": 4.82,
+          "y": 4.82,
+          "z": 10.3797
+        },
+        "parts": 2,
+        "topology_hash": "0b19d50d18b9bc1b80a629f5c3943dbe10ed1abd6e43bd0518ea1d7ce936e6f2",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-pine_conical-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 16,
+        "watertight_ratio": 1.0,
+        "faces": 408,
+        "vertices": 236,
+        "volume_m3": 29.7586,
+        "bbox_min": [
+          -2.42,
+          -2.42,
+          0.0
+        ],
+        "bbox_max": [
+          2.42,
+          2.42,
+          10.4333
+        ],
+        "size_m": {
+          "x": 4.84,
+          "y": 4.84,
+          "z": 10.4333
+        },
+        "parts": 2,
+        "topology_hash": "fe0c6124e8662dde9590e7fe5854f7ed69fe5a00b0b8ad6fd9e9fec47dfa5649",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-pine_conical-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 7,
+        "watertight_ratio": 1.0,
+        "faces": 128,
+        "vertices": 78,
+        "volume_m3": 26.6986,
+        "bbox_min": [
+          -2.4,
+          -2.4,
+          0.0
+        ],
+        "bbox_max": [
+          2.4,
+          2.4,
+          10.328
+        ],
+        "size_m": {
+          "x": 4.8,
+          "y": 4.8,
+          "z": 10.328
+        },
+        "parts": 2,
+        "topology_hash": "b1467259794c6fa613c1515ce40bfed36143949d641142ff689ed4893c0c3310",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-birch_slim-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 47,
+        "watertight_ratio": 1.0,
+        "faces": 3520,
+        "vertices": 1854,
+        "volume_m3": 20.836,
+        "bbox_min": [
+          -1.8456,
+          -1.3811,
+          0.0
+        ],
+        "bbox_max": [
+          1.7593,
+          1.6701,
+          6.6844
+        ],
+        "size_m": {
+          "x": 3.6049,
+          "y": 3.0512,
+          "z": 6.6844
+        },
+        "parts": 2,
+        "topology_hash": "0c159c905dc5344f688ed05d6eda1b39a27d7228b9e308facac86dbc0e202701",
+        "core_components": 40,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-birch_slim-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 632,
+        "vertices": 350,
+        "volume_m3": 5.8095,
+        "bbox_min": [
+          -1.0327,
+          -0.9677,
+          0.0
+        ],
+        "bbox_max": [
+          1.3365,
+          1.6625,
+          4.9134
+        ],
+        "size_m": {
+          "x": 2.3692,
+          "y": 2.6301,
+          "z": 4.9134
+        },
+        "parts": 2,
+        "topology_hash": "64898574c6eaaca96962baf97615e79c13ff3c53a5f52ccbcf848de25b12d31c",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-birch_slim-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 6,
+        "watertight_ratio": 1.0,
+        "faces": 240,
+        "vertices": 132,
+        "volume_m3": 3.1699,
+        "bbox_min": [
+          -1.2607,
+          -0.6697,
+          0.0
+        ],
+        "bbox_max": [
+          1.0348,
+          1.0413,
+          4.7053
+        ],
+        "size_m": {
+          "x": 2.2955,
+          "y": 1.711,
+          "z": 4.7053
+        },
+        "parts": 2,
+        "topology_hash": "fa6fabf0538bdd61d6bb40fd0192e6fe56f7695c793b49b8a9ada2b4f11494b8",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-maple_wide-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 92,
+        "watertight_ratio": 1.0,
+        "faces": 4960,
+        "vertices": 2664,
+        "volume_m3": 204.6589,
+        "bbox_min": [
+          -3.2987,
+          -2.7585,
+          0.0
+        ],
+        "bbox_max": [
+          2.9037,
+          2.9986,
+          5.7343
+        ],
+        "size_m": {
+          "x": 6.2024,
+          "y": 5.7572,
+          "z": 5.7343
+        },
+        "parts": 2,
+        "topology_hash": "9a0d5442011546f4b60a07aa4685ad23d8bc0680c10cf300209f14834bf41049",
+        "core_components": 85,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-maple_wide-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 25,
+        "watertight_ratio": 1.0,
+        "faces": 824,
+        "vertices": 462,
+        "volume_m3": 95.7615,
+        "bbox_min": [
+          -3.0343,
+          -2.4603,
+          0.0
+        ],
+        "bbox_max": [
+          2.2599,
+          2.8231,
+          5.091
+        ],
+        "size_m": {
+          "x": 5.2943,
+          "y": 5.2834,
+          "z": 5.091
+        },
+        "parts": 2,
+        "topology_hash": "3a334391bbf9c5d2ea4bcebbaf2dc601ff953f12dbe7d089b6c55a8d48b5f0e6",
+        "core_components": 21,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-maple_wide-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 7,
+        "watertight_ratio": 1.0,
+        "faces": 260,
+        "vertices": 144,
+        "volume_m3": 49.5514,
+        "bbox_min": [
+          -2.7533,
+          -2.0783,
+          0.0
+        ],
+        "bbox_max": [
+          2.1438,
+          2.4527,
+          4.7799
+        ],
+        "size_m": {
+          "x": 4.8971,
+          "y": 4.531,
+          "z": 4.7799
+        },
+        "parts": 2,
+        "topology_hash": "de0eea7217c8b7b4b42dad4a1808250aa9ac808a226ad88a6c25fc309c146ddf",
+        "core_components": 5,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-palm_tall-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 384,
+        "vertices": 226,
+        "volume_m3": 0.7132,
+        "bbox_min": [
+          -1.1228,
+          -1.7867,
+          0.0
+        ],
+        "bbox_max": [
+          1.9855,
+          1.7867,
+          6.6475
+        ],
+        "size_m": {
+          "x": 3.1082,
+          "y": 3.5733,
+          "z": 6.6475
+        },
+        "parts": 2,
+        "topology_hash": "b27679ff6f887bb4e4925dc86853c22d96fa8bbda594ca2d6326fbdb7ed298cf",
+        "core_components": 9,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-palm_tall-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 312,
+        "vertices": 190,
+        "volume_m3": 0.7957,
+        "bbox_min": [
+          -1.2273,
+          -1.965,
+          0.0
+        ],
+        "bbox_max": [
+          2.1945,
+          1.965,
+          7.335
+        ],
+        "size_m": {
+          "x": 3.4218,
+          "y": 3.9301,
+          "z": 7.335
+        },
+        "parts": 2,
+        "topology_hash": "c1304b9a257d42bffc0d95be5d09513b1c94d6607157c0b8dd64842d1e5f31c6",
+        "core_components": 9,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-palm_tall-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 276,
+        "vertices": 172,
+        "volume_m3": 0.6896,
+        "bbox_min": [
+          -1.232,
+          -1.9732,
+          0.0
+        ],
+        "bbox_max": [
+          2.204,
+          1.9732,
+          7.375
+        ],
+        "size_m": {
+          "x": 3.436,
+          "y": 3.9463,
+          "z": 7.375
+        },
+        "parts": 2,
+        "topology_hash": "d1d968c7f76deda68005f6e8d008f5617d5720824e9ce17f8ea9bee64bf5c87f",
+        "core_components": 9,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-dead_bare-hero-i00",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 40,
+        "watertight_ratio": 1.0,
+        "faces": 1280,
+        "vertices": 720,
+        "volume_m3": 0.5497,
+        "bbox_min": [
+          -0.6812,
+          -0.3756,
+          0.0
+        ],
+        "bbox_max": [
+          0.8222,
+          0.8085,
+          3.2774
+        ],
+        "size_m": {
+          "x": 1.5034,
+          "y": 1.1841,
+          "z": 3.2774
+        },
+        "parts": 1,
+        "topology_hash": "445150dcd2da71a0a39c99440cec4e81f09e9cfc901e1158270249d539dead85",
+        "core_components": 40,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-dead_bare-mid-i01",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 13,
+        "watertight_ratio": 1.0,
+        "faces": 312,
+        "vertices": 182,
+        "volume_m3": 0.5829,
+        "bbox_min": [
+          -0.6321,
+          -0.6269,
+          0.0
+        ],
+        "bbox_max": [
+          0.6213,
+          0.5465,
+          3.0841
+        ],
+        "size_m": {
+          "x": 1.2534,
+          "y": 1.1734,
+          "z": 3.0841
+        },
+        "parts": 1,
+        "topology_hash": "0c9402781dcf87ffb76a0bdb1f11a7088214ebc7205d71ee3bca1074d942d7dd",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-dead_bare-low-i02",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 4,
+        "watertight_ratio": 1.0,
+        "faces": 80,
+        "vertices": 48,
+        "volume_m3": 0.2419,
+        "bbox_min": [
+          -0.334,
+          -0.2378,
+          0.0
+        ],
+        "bbox_max": [
+          0.3291,
+          0.2907,
+          2.2698
+        ],
+        "size_m": {
+          "x": 0.6631,
+          "y": 0.5285,
+          "z": 2.2698
+        },
+        "parts": 1,
+        "topology_hash": "27af4c091b351b5d69af7ce3cf3e61a7b6b103d2000f9df86666421bb1d9bbde",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-oak_broad-retune-i18",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 47,
+        "watertight_ratio": 1.0,
+        "faces": 3520,
+        "vertices": 1854,
+        "volume_m3": 130.5286,
+        "bbox_min": [
+          -3.1548,
+          -2.2766,
+          0.0
+        ],
+        "bbox_max": [
+          2.6281,
+          2.7087,
+          5.9014
+        ],
+        "size_m": {
+          "x": 5.7829,
+          "y": 4.9852,
+          "z": 5.9014
+        },
+        "parts": 2,
+        "topology_hash": "0c159c905dc5344f688ed05d6eda1b39a27d7228b9e308facac86dbc0e202701",
+        "core_components": 40,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-pine_conical-retune-i19",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 7,
+        "watertight_ratio": 1.0,
+        "faces": 128,
+        "vertices": 78,
+        "volume_m3": 27.3991,
+        "bbox_min": [
+          -2.42,
+          -2.42,
+          0.0
+        ],
+        "bbox_max": [
+          2.42,
+          2.42,
+          10.4333
+        ],
+        "size_m": {
+          "x": 4.84,
+          "y": 4.84,
+          "z": 10.4333
+        },
+        "parts": 2,
+        "topology_hash": "b1467259794c6fa613c1515ce40bfed36143949d641142ff689ed4893c0c3310",
+        "core_components": 4,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-birch_slim-retune-i20",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 632,
+        "vertices": 350,
+        "volume_m3": 7.9993,
+        "bbox_min": [
+          -1.0618,
+          -1.1753,
+          0.0
+        ],
+        "bbox_max": [
+          1.4964,
+          1.4981,
+          5.6832
+        ],
+        "size_m": {
+          "x": 2.5582,
+          "y": 2.6734,
+          "z": 5.6832
+        },
+        "parts": 2,
+        "topology_hash": "64898574c6eaaca96962baf97615e79c13ff3c53a5f52ccbcf848de25b12d31c",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-maple_wide-retune-i21",
+      "category": "tree",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 92,
+        "watertight_ratio": 1.0,
+        "faces": 4960,
+        "vertices": 2664,
+        "volume_m3": 204.6589,
+        "bbox_min": [
+          -3.3178,
+          -2.9464,
+          0.0
+        ],
+        "bbox_max": [
+          2.7757,
+          3.4072,
+          5.5979
+        ],
+        "size_m": {
+          "x": 6.0935,
+          "y": 6.3536,
+          "z": 5.5979
+        },
+        "parts": 2,
+        "topology_hash": "9a0d5442011546f4b60a07aa4685ad23d8bc0680c10cf300209f14834bf41049",
+        "core_components": 85,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-palm_tall-retune-i22",
+      "category": "tree",
+      "usage_level": "low",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 17,
+        "watertight_ratio": 1.0,
+        "faces": 276,
+        "vertices": 172,
+        "volume_m3": 0.6896,
+        "bbox_min": [
+          -1.232,
+          -1.9732,
+          0.0
+        ],
+        "bbox_max": [
+          2.204,
+          1.9732,
+          7.375
+        ],
+        "size_m": {
+          "x": 3.436,
+          "y": 3.9463,
+          "z": 7.375
+        },
+        "parts": 2,
+        "topology_hash": "d1d968c7f76deda68005f6e8d008f5617d5720824e9ce17f8ea9bee64bf5c87f",
+        "core_components": 9,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-tree-dead_bare-retune-i23",
+      "category": "tree",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 13,
+        "watertight_ratio": 1.0,
+        "faces": 312,
+        "vertices": 182,
+        "volume_m3": 0.4387,
+        "bbox_min": [
+          -0.597,
+          -0.5458,
+          0.0
+        ],
+        "bbox_max": [
+          0.6249,
+          0.6592,
+          2.873
+        ],
+        "size_m": {
+          "x": 1.2219,
+          "y": 1.2051,
+          "z": 2.873
+        },
+        "parts": 1,
+        "topology_hash": "0c9402781dcf87ffb76a0bdb1f11a7088214ebc7205d71ee3bca1074d942d7dd",
+        "core_components": 13,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i00",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.0865,
+        "bbox_min": [
+          -2.15,
+          -0.92,
+          0.0
+        ],
+        "bbox_max": [
+          2.15,
+          0.92,
+          1.46
+        ],
+        "size_m": {
+          "x": 4.3,
+          "y": 1.84,
+          "z": 1.46
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i01",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 11.7153,
+        "bbox_min": [
+          -2.355,
+          -1.0,
+          0.0
+        ],
+        "bbox_max": [
+          2.355,
+          1.0,
+          1.6
+        ],
+        "size_m": {
+          "x": 4.71,
+          "y": 2.0,
+          "z": 1.6
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i02",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 6.9404,
+        "bbox_min": [
+          -1.955,
+          -0.85,
+          0.0
+        ],
+        "bbox_max": [
+          1.955,
+          0.85,
+          1.33
+        ],
+        "size_m": {
+          "x": 3.91,
+          "y": 1.7,
+          "z": 1.33
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i03",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.2234,
+        "bbox_min": [
+          -2.16,
+          -0.92,
+          0.0
+        ],
+        "bbox_max": [
+          2.16,
+          0.92,
+          1.47
+        ],
+        "size_m": {
+          "x": 4.32,
+          "y": 1.84,
+          "z": 1.47
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i04",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.3538,
+        "bbox_min": [
+          -2.17,
+          -0.93,
+          0.0
+        ],
+        "bbox_max": [
+          2.17,
+          0.93,
+          1.47
+        ],
+        "size_m": {
+          "x": 4.34,
+          "y": 1.86,
+          "z": 1.47
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i00",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 8.814,
+        "bbox_min": [
+          -1.975,
+          -0.8835,
+          0.0
+        ],
+        "bbox_max": [
+          1.975,
+          0.8835,
+          1.5
+        ],
+        "size_m": {
+          "x": 3.95,
+          "y": 1.767,
+          "z": 1.5
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i01",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 11.4747,
+        "bbox_min": [
+          -2.165,
+          -0.9684,
+          0.0
+        ],
+        "bbox_max": [
+          2.165,
+          0.9684,
+          1.64
+        ],
+        "size_m": {
+          "x": 4.33,
+          "y": 1.9367,
+          "z": 1.64
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i02",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 6.7207,
+        "bbox_min": [
+          -1.795,
+          -0.81,
+          0.0
+        ],
+        "bbox_max": [
+          1.795,
+          0.81,
+          1.36
+        ],
+        "size_m": {
+          "x": 3.59,
+          "y": 1.62,
+          "z": 1.36
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i03",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 8.9528,
+        "bbox_min": [
+          -1.985,
+          -0.8885,
+          0.0
+        ],
+        "bbox_max": [
+          1.985,
+          0.8885,
+          1.51
+        ],
+        "size_m": {
+          "x": 3.97,
+          "y": 1.777,
+          "z": 1.51
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i04",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.0862,
+        "bbox_min": [
+          -1.995,
+          -0.8935,
+          0.0
+        ],
+        "bbox_max": [
+          1.995,
+          0.8935,
+          1.52
+        ],
+        "size_m": {
+          "x": 3.99,
+          "y": 1.787,
+          "z": 1.52
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-suv-i00",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 12.4497,
+        "bbox_min": [
+          -2.35,
+          -0.9484,
+          0.0
+        ],
+        "bbox_max": [
+          2.35,
+          0.9484,
+          1.74
+        ],
+        "size_m": {
+          "x": 4.7,
+          "y": 1.8968,
+          "z": 1.74
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-suv-i01",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 16.2251,
+        "bbox_min": [
+          -2.575,
+          -1.0382,
+          0.0
+        ],
+        "bbox_max": [
+          2.575,
+          1.0382,
+          1.91
+        ],
+        "size_m": {
+          "x": 5.15,
+          "y": 2.0765,
+          "z": 1.91
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-suv-i02",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.5275,
+        "bbox_min": [
+          -2.14,
+          -0.87,
+          0.0
+        ],
+        "bbox_max": [
+          2.14,
+          0.87,
+          1.58
+        ],
+        "size_m": {
+          "x": 4.28,
+          "y": 1.74,
+          "z": 1.58
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-suv-i03",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 12.6287,
+        "bbox_min": [
+          -2.36,
+          -0.9534,
+          0.0
+        ],
+        "bbox_max": [
+          2.36,
+          0.9534,
+          1.75
+        ],
+        "size_m": {
+          "x": 4.72,
+          "y": 1.9068,
+          "z": 1.75
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-suv-i04",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 12.8584,
+        "bbox_min": [
+          -2.375,
+          -0.9584,
+          0.0
+        ],
+        "bbox_max": [
+          2.375,
+          0.9584,
+          1.76
+        ],
+        "size_m": {
+          "x": 4.75,
+          "y": 1.9167,
+          "z": 1.76
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i00",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 11.969,
+        "bbox_min": [
+          -2.6,
+          -0.9833,
+          0.0
+        ],
+        "bbox_max": [
+          2.6,
+          0.9833,
+          1.74
+        ],
+        "size_m": {
+          "x": 5.2,
+          "y": 1.9667,
+          "z": 1.74
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i01",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 15.5687,
+        "bbox_min": [
+          -2.845,
+          -1.0782,
+          0.0
+        ],
+        "bbox_max": [
+          2.845,
+          1.0782,
+          1.91
+        ],
+        "size_m": {
+          "x": 5.69,
+          "y": 2.1563,
+          "z": 1.91
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i02",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 9.0976,
+        "bbox_min": [
+          -2.365,
+          -0.9,
+          0.0
+        ],
+        "bbox_max": [
+          2.365,
+          0.9,
+          1.58
+        ],
+        "size_m": {
+          "x": 4.73,
+          "y": 1.8,
+          "z": 1.58
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i03",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 12.1748,
+        "bbox_min": [
+          -2.615,
+          -0.9883,
+          0.0
+        ],
+        "bbox_max": [
+          2.615,
+          0.9883,
+          1.75
+        ],
+        "size_m": {
+          "x": 5.23,
+          "y": 1.9766,
+          "z": 1.75
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i04",
+      "category": "vehicle",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 29,
+        "watertight_ratio": 1.0,
+        "faces": 1832,
+        "vertices": 974,
+        "volume_m3": 12.3423,
+        "bbox_min": [
+          -2.625,
+          -0.9933,
+          0.0
+        ],
+        "bbox_max": [
+          2.625,
+          0.9933,
+          1.76
+        ],
+        "size_m": {
+          "x": 5.25,
+          "y": 1.9866,
+          "z": 1.76
+        },
+        "parts": 25,
+        "topology_hash": "3658837a935cbdb834336159c36ec08d5054d0c3b0e57561ce8c967363090674",
+        "core_components": 29,
+        "core_max_part_gap_m": 0.0
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i00",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 22345.3461,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i01",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 24383.0012,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i02",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 20426.1594,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i03",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 22463.8145,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i04",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 22558.5891,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i05",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 22345.3461,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-downtown-i06",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 324,
+        "watertight_ratio": 1.0,
+        "faces": 11288,
+        "vertices": 6292,
+        "volume_m3": 24383.0012,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          32.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 32.45
+        },
+        "parts": 24,
+        "topology_hash": "d3e545c2a0e5e95a69944fa62320016cf9ed571e3864de3b51940f1f6a05a5ea",
+        "core_components": 324,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i00",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 7938.6799,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i01",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 8598.922,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i02",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 7306.3354,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i03",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 7975.8766,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i04",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 8013.0734,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i05",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 7938.6799,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-residential-i06",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 294,
+        "watertight_ratio": 1.0,
+        "faces": 10928,
+        "vertices": 6052,
+        "volume_m3": 8598.922,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          16.25
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 16.45
+        },
+        "parts": 24,
+        "topology_hash": "01de3c6f1cd018aaff7a4be21be123cb5902d18bf00265f8a02d01220aa96d91",
+        "core_components": 294,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i00",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 11890.9412,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i01",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 12924.8044,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i02",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 10906.783,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i03",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 11950.5872,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i04",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 12000.2922,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i05",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 11890.9412,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-scene-industrial-i06",
+      "category": "scene",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 282,
+        "watertight_ratio": 1.0,
+        "faces": 10784,
+        "vertices": 5956,
+        "volume_m3": 12924.8044,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          9.85
+        ],
+        "size_m": {
+          "x": 64.0,
+          "y": 46.0,
+          "z": 10.05
+        },
+        "parts": 24,
+        "topology_hash": "72c664b4fef0aa6a72416c1e94c33d47ecfd5ab6dc0f37ec2bc3bbd1c052330c",
+        "core_components": 282,
+        "core_max_part_gap_m": 0.0005
+      }
+    },
+    {
+      "task_id": "r7-character-worker-broad-i00",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2723,
+        "bbox_min": [
+          -0.7157,
+          -0.2097,
+          0.0005
+        ],
+        "bbox_max": [
+          0.7157,
+          0.2106,
+          1.8125
+        ],
+        "size_m": {
+          "x": 1.4314,
+          "y": 0.4203,
+          "z": 1.812
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0035
+      }
+    },
+    {
+      "task_id": "r7-character-worker-broad-i01",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.3558,
+        "bbox_min": [
+          -0.7825,
+          -0.2292,
+          0.0006
+        ],
+        "bbox_max": [
+          0.7825,
+          0.2303,
+          1.9818
+        ],
+        "size_m": {
+          "x": 1.5651,
+          "y": 0.4595,
+          "z": 1.9813
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0039
+      }
+    },
+    {
+      "task_id": "r7-character-worker-lean-i00",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1784,
+        "bbox_min": [
+          -0.6525,
+          -0.1702,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6525,
+          0.2037,
+          1.7504
+        ],
+        "size_m": {
+          "x": 1.3051,
+          "y": 0.3738,
+          "z": 1.7499
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0036
+      }
+    },
+    {
+      "task_id": "r7-character-worker-lean-i01",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2352,
+        "bbox_min": [
+          -0.7156,
+          -0.1866,
+          0.0006
+        ],
+        "bbox_max": [
+          0.7156,
+          0.2233,
+          1.9195
+        ],
+        "size_m": {
+          "x": 1.4311,
+          "y": 0.4099,
+          "z": 1.919
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0039
+      }
+    },
+    {
+      "task_id": "r7-character-office-slim-i00",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1597,
+        "bbox_min": [
+          -0.6345,
+          -0.1637,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6345,
+          0.2002,
+          1.7206
+        ],
+        "size_m": {
+          "x": 1.269,
+          "y": 0.3639,
+          "z": 1.7201
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0036
+      }
+    },
+    {
+      "task_id": "r7-character-office-slim-i01",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2081,
+        "bbox_min": [
+          -0.6932,
+          -0.1788,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6932,
+          0.2187,
+          1.8797
+        ],
+        "size_m": {
+          "x": 1.3864,
+          "y": 0.3975,
+          "z": 1.8792
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0039
+      }
+    },
+    {
+      "task_id": "r7-character-office-tall-i00",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2258,
+        "bbox_min": [
+          -0.7069,
+          -0.1856,
+          0.0005
+        ],
+        "bbox_max": [
+          0.7069,
+          0.2175,
+          1.8673
+        ],
+        "size_m": {
+          "x": 1.4138,
+          "y": 0.4032,
+          "z": 1.8668
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0038
+      }
+    },
+    {
+      "task_id": "r7-character-office-tall-i01",
+      "category": "character",
+      "usage_level": "hero",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.297,
+        "bbox_min": [
+          -0.7746,
+          -0.2034,
+          0.0006
+        ],
+        "bbox_max": [
+          0.7746,
+          0.2384,
+          2.0461
+        ],
+        "size_m": {
+          "x": 1.5492,
+          "y": 0.4418,
+          "z": 2.0455
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0042
+      }
+    },
+    {
+      "task_id": "r7-character-student-short-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.136,
+        "bbox_min": [
+          -0.5892,
+          -0.16,
+          0.0005
+        ],
+        "bbox_max": [
+          0.5892,
+          0.1875,
+          1.6198
+        ],
+        "size_m": {
+          "x": 1.1783,
+          "y": 0.3474,
+          "z": 1.6193
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0034
+      }
+    },
+    {
+      "task_id": "r7-character-student-short-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1774,
+        "bbox_min": [
+          -0.6437,
+          -0.1748,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6437,
+          0.2048,
+          1.7697
+        ],
+        "size_m": {
+          "x": 1.2874,
+          "y": 0.3796,
+          "z": 1.7692
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0037
+      }
+    },
+    {
+      "task_id": "r7-character-student-round-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1791,
+        "bbox_min": [
+          -0.6133,
+          -0.1867,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6133,
+          0.1909,
+          1.6519
+        ],
+        "size_m": {
+          "x": 1.2265,
+          "y": 0.3776,
+          "z": 1.6515
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0033
+      }
+    },
+    {
+      "task_id": "r7-character-student-round-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2364,
+        "bbox_min": [
+          -0.6727,
+          -0.2048,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6727,
+          0.2094,
+          1.8121
+        ],
+        "size_m": {
+          "x": 1.3454,
+          "y": 0.4142,
+          "z": 1.8116
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0037
+      }
+    },
+    {
+      "task_id": "r7-character-vendor-lean-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1677,
+        "bbox_min": [
+          -0.634,
+          -0.1714,
+          0.0005
+        ],
+        "bbox_max": [
+          0.634,
+          0.1967,
+          1.6908
+        ],
+        "size_m": {
+          "x": 1.268,
+          "y": 0.3681,
+          "z": 1.6903
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0035
+      }
+    },
+    {
+      "task_id": "r7-character-vendor-lean-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2196,
+        "bbox_min": [
+          -0.6936,
+          -0.1875,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6936,
+          0.2152,
+          1.8499
+        ],
+        "size_m": {
+          "x": 1.3873,
+          "y": 0.4027,
+          "z": 1.8494
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0038
+      }
+    },
+    {
+      "task_id": "r7-character-courier-slim-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.1689,
+        "bbox_min": [
+          -0.651,
+          -0.1657,
+          0.0005
+        ],
+        "bbox_max": [
+          0.651,
+          0.2071,
+          1.7779
+        ],
+        "size_m": {
+          "x": 1.302,
+          "y": 0.3728,
+          "z": 1.7774
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0037
+      }
+    },
+    {
+      "task_id": "r7-character-courier-slim-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2217,
+        "bbox_min": [
+          -0.7128,
+          -0.1814,
+          0.0006
+        ],
+        "bbox_max": [
+          0.7128,
+          0.2268,
+          1.9468
+        ],
+        "size_m": {
+          "x": 1.4256,
+          "y": 0.4082,
+          "z": 1.9462
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0041
+      }
+    },
+    {
+      "task_id": "r7-character-elder-stout-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2013,
+        "bbox_min": [
+          -0.6338,
+          -0.1946,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6338,
+          0.1946,
+          1.6554
+        ],
+        "size_m": {
+          "x": 1.2676,
+          "y": 0.3893,
+          "z": 1.6549
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0033
+      }
+    },
+    {
+      "task_id": "r7-character-elder-stout-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.2652,
+        "bbox_min": [
+          -0.6949,
+          -0.2134,
+          0.0005
+        ],
+        "bbox_max": [
+          0.6949,
+          0.2134,
+          1.8149
+        ],
+        "size_m": {
+          "x": 1.3898,
+          "y": 0.4268,
+          "z": 1.8144
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0036
+      }
+    },
+    {
+      "task_id": "r7-character-child-small-i00",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.0514,
+        "bbox_min": [
+          -0.4373,
+          -0.1122,
+          0.0004
+        ],
+        "bbox_max": [
+          0.4373,
+          0.1435,
+          1.2513
+        ],
+        "size_m": {
+          "x": 0.8745,
+          "y": 0.2557,
+          "z": 1.2509
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0026
+      }
+    },
+    {
+      "task_id": "r7-character-child-small-i01",
+      "category": "character",
+      "usage_level": "mid",
+      "pass": true,
+      "failed_codes": [],
+      "deterministic": true,
+      "metrics": {
+        "components": 28,
+        "watertight_ratio": 1.0,
+        "faces": 1880,
+        "vertices": 996,
+        "volume_m3": 0.0677,
+        "bbox_min": [
+          -0.4796,
+          -0.1231,
+          0.0004
+        ],
+        "bbox_max": [
+          0.4796,
+          0.1574,
+          1.3724
+        ],
+        "size_m": {
+          "x": 0.9591,
+          "y": 0.2805,
+          "z": 1.372
+        },
+        "parts": 26,
+        "topology_hash": "1df8908c71dc878fe0df3b983eac91e3eb8b864007e82367171e7200cf26b1a0",
+        "core_components": 22,
+        "core_max_part_gap_m": 0.0029
+      }
+    }
+  ]
+}

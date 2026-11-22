@@ -1,0 +1,113 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/vegetation/tree_pine_conical_mid",
+  "name": "tree_pine_conical_mid",
+  "category": "tree",
+  "semantic_category": "tree",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/vegetation/tree_pine_conical_mid.glb",
+      "bytes": 9144,
+      "sha256": "36cfb754236e757f8114290b2ef32b6b778f4f3e34969c123f4ab54be2736ea7"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_assets.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "由本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_assets.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 408
+  },
+  "geometry": {
+    "faces": 408,
+    "vertices": 236,
+    "parts": [
+      {
+        "node": "tree_pine_conical_mid_trunk",
+        "faces": 312,
+        "vertices": 182,
+        "bbox_min": [
+          -0.8526,
+          -1.0715,
+          0.0
+        ],
+        "bbox_max": [
+          0.4885,
+          1.1089,
+          5.4062
+        ]
+      },
+      {
+        "node": "tree_canopy_pine_conical_mid",
+        "faces": 96,
+        "vertices": 54,
+        "bbox_min": [
+          -2.4,
+          -2.4,
+          4.704
+        ],
+        "bbox_max": [
+          2.4,
+          2.4,
+          10.328
+        ]
+      }
+    ],
+    "bbox_min": [
+      -2.4,
+      -2.4,
+      0.0
+    ],
+    "bbox_max": [
+      2.4,
+      2.4,
+      10.328
+    ],
+    "ground_offset_m": 0.0
+  },
+  "recipe": {
+    "recipe_id": "vegetation_species",
+    "variant": "mid",
+    "params": {
+      "name": "pine_conical",
+      "height": 8.6,
+      "trunk_r": 0.24,
+      "canopy_r": 2.4,
+      "canopy_h": 5.2,
+      "shape": "conical",
+      "branches": 3,
+      "levels": 2,
+      "seed": 23,
+      "note": "针叶锥冠，街角点缀"
+    },
+    "lod": {
+      "segments": 6,
+      "levels": 2,
+      "canopy_blobs": 4,
+      "canopy_subdiv": 1,
+      "branch_ratio": 0.38
+    }
+  },
+  "nodes": [
+    "tree_pine_conical_mid_trunk",
+    "tree_canopy_pine_conical_mid"
+  ],
+  "semantic_categories": {
+    "tree_pine_conical_mid_trunk": "tree",
+    "tree_canopy_pine_conical_mid": "foliage"
+  }
+}

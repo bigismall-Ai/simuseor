@@ -1,0 +1,3673 @@
+{
+  "kind": "shot_package_check",
+  "version": "1.0.0",
+  "generated_at": "2026-11-22T01:21:57+0800",
+  "generator": "harness/verify_shot_packages.py",
+  "authority": "assets/validation/camera_intrinsics.json",
+  "reprojection_limit_px": 0.0001,
+  "summary": {
+    "n_shots": 9,
+    "n_shots_all_pass": 9,
+    "total_checks": 272,
+    "total_passed": 272,
+    "max_usd_reprojection_error_px": 5.684341886080801e-13,
+    "reprojection_within_limit": true,
+    "handheld_fft_dominant_hz": 1.6,
+    "handheld_fft_band_hz": [
+      0.5,
+      3.0
+    ],
+    "handheld_fft_in_band": true,
+    "all_pass": true
+  },
+  "shots": [
+    {
+      "shot_id": "shot_dolly_in",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "dfc25d89c4d0ab80659c55894ac1706443c4e9e07384654bd7b4d606c92dd7a1",
+          "limit": "dfc25d89c4d0ab80659c55894ac1706443c4e9e07384654bd7b4d606c92dd7a1",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "dfc25d89c4d0ab80659c55894ac1706443c4e9e07384654bd7b4d606c92dd7a1",
+          "limit": "dfc25d89c4d0ab80659c55894ac1706443c4e9e07384654bd7b4d606c92dd7a1",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 5.684341886080801e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 1.1368683772161603e-13,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 3.814697269177714e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 1.1900210106219333e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9768368214888596e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 3.3333333249174757e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 13,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 5.684341886080801e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 5.684341886080801e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 3.694822225952521e-13,
+            "f_px_usd": 475.01120448179273,
+            "f_px_intrinsics": 475.01120448179273,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 478.6890756302521,
+            "f_px_intrinsics": 478.6890756302521,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 4.263256414560601e-13,
+            "f_px_usd": 482.6498599439776,
+            "f_px_intrinsics": 482.6498599439776,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 486.32773109243703,
+            "f_px_intrinsics": 486.32773109243703,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 490.00560224089634,
+            "f_px_intrinsics": 490.00560224089634,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 3.979039320256561e-13,
+            "f_px_usd": 493.68347338935575,
+            "f_px_intrinsics": 493.68347338935575,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 497.6442577030813,
+            "f_px_intrinsics": 497.6442577030813,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 4.263256414560601e-13,
+            "f_px_usd": 501.3221288515406,
+            "f_px_intrinsics": 501.3221288515406,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 505.0,
+            "f_px_intrinsics": 505.0,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 1.1368683772161603e-13,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1980364
+      },
+      "authority_slice_sha256": "dfc25d89c4d0ab80659c55894ac1706443c4e9e07384654bd7b4d606c92dd7a1"
+    },
+    {
+      "shot_id": "shot_dolly_out",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "13c8b446eb61a9d7414da4d68c1a774d916c67b0195d653472bee07793cb3eb8",
+          "limit": "13c8b446eb61a9d7414da4d68c1a774d916c67b0195d653472bee07793cb3eb8",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "13c8b446eb61a9d7414da4d68c1a774d916c67b0195d653472bee07793cb3eb8",
+          "limit": "13c8b446eb61a9d7414da4d68c1a774d916c67b0195d653472bee07793cb3eb8",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 2.2737367544323206e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 5.684341886080802e-14,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 4.2915344167226976e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 1.1877697492224115e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9718990157689973e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 3.7348274872783804e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 13,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 2.2737367544323206e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 396.4556489262372,
+            "f_px_intrinsics": 396.4556489262372,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 400.1335200746965,
+            "f_px_intrinsics": 400.1335200746965,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 404.09430438842196,
+            "f_px_intrinsics": 404.09430438842196,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 407.7721755368814,
+            "f_px_intrinsics": 407.7721755368814,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 411.4500466853408,
+            "f_px_intrinsics": 411.4500466853408,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 415.1279178338002,
+            "f_px_intrinsics": 415.1279178338002,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 419.08870214752574,
+            "f_px_intrinsics": 419.08870214752574,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 422.76657329598504,
+            "f_px_intrinsics": 422.76657329598504,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 5.684341886080802e-14,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1923036
+      },
+      "authority_slice_sha256": "13c8b446eb61a9d7414da4d68c1a774d916c67b0195d653472bee07793cb3eb8"
+    },
+    {
+      "shot_id": "shot_follow",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512",
+          "limit": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512",
+          "limit": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 2.2737367544323206e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 0.0,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 2.9802322387695312e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.860028869289266e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 2.2222224060897133e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 2.2737367544323206e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 392.77777777777777,
+            "f_px_intrinsics": 392.77777777777777,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1982636
+      },
+      "authority_slice_sha256": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512"
+    },
+    {
+      "shot_id": "shot_handheld",
+      "n_checks": 32,
+      "n_pass": 32,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "8236461a9d4b13ec12fd745634a7c986a341a97d26947941b6eaeee7b390bb6b",
+          "limit": "8236461a9d4b13ec12fd745634a7c986a341a97d26947941b6eaeee7b390bb6b",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "8236461a9d4b13ec12fd745634a7c986a341a97d26947941b6eaeee7b390bb6b",
+          "limit": "8236461a9d4b13ec12fd745634a7c986a341a97d26947941b6eaeee7b390bb6b",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 4.547473508864641e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 1.1097737440124433e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 1.175330797131835e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9711971993862107e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 3.3333333249174757e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "handheld_fft_band",
+          "name_zh": "手持噪声 FFT 主频落在 0.5–3 Hz（从落盘数据重算）",
+          "value": 1.6,
+          "limit": [
+            0.5,
+            3.0
+          ],
+          "op": "in",
+          "pass": true,
+          "detail": "频率栅格 0.20 Hz"
+        },
+        {
+          "id": "handheld_fft_dominant",
+          "name_zh": "手持噪声主频是频谱最大峰",
+          "value": 1.6,
+          "limit": 0.5,
+          "op": ">=",
+          "pass": true,
+          "detail": "主频 1.60 Hz（残差 RMS 0.0145 m）"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 4.547473508864641e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 2.5579538487363607e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 2004370
+      },
+      "authority_slice_sha256": "8236461a9d4b13ec12fd745634a7c986a341a97d26947941b6eaeee7b390bb6b"
+    },
+    {
+      "shot_id": "shot_orbit",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "998552f7b2970b7d7300f15b4330f26a3bb6c3f3776b86b776eaa4e3946b1bf1",
+          "limit": "998552f7b2970b7d7300f15b4330f26a3bb6c3f3776b86b776eaa4e3946b1bf1",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "998552f7b2970b7d7300f15b4330f26a3bb6c3f3776b86b776eaa4e3946b1bf1",
+          "limit": "998552f7b2970b7d7300f15b4330f26a3bb6c3f3776b86b776eaa4e3946b1bf1",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 2.2737367544323206e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 9.536743084126442e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 2.3596322851204832e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9231016940300947e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 1.1111109188277624e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 2.2737367544323206e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1880128
+      },
+      "authority_slice_sha256": "998552f7b2970b7d7300f15b4330f26a3bb6c3f3776b86b776eaa4e3946b1bf1"
+    },
+    {
+      "shot_id": "shot_pan",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "d84ce7118aba9a2a0d08e8601c95cc0cd0a64f6597eae7c076f01782baf3d5ec",
+          "limit": "d84ce7118aba9a2a0d08e8601c95cc0cd0a64f6597eae7c076f01782baf3d5ec",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "d84ce7118aba9a2a0d08e8601c95cc0cd0a64f6597eae7c076f01782baf3d5ec",
+          "limit": "d84ce7118aba9a2a0d08e8601c95cc0cd0a64f6597eae7c076f01782baf3d5ec",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 2.5579538487363607e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9702542314602454e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 3.3333333249174757e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 2.5579538487363607e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 1.9895196601282805e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 2.5579538487363607e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 471.3333333333333,
+            "f_px_intrinsics": 471.3333333333333,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1810590
+      },
+      "authority_slice_sha256": "d84ce7118aba9a2a0d08e8601c95cc0cd0a64f6597eae7c076f01782baf3d5ec"
+    },
+    {
+      "shot_id": "shot_pedestal",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "a764fc8ae9c196256e06c94b9d1a9bdce959ad5b5db68017547a3344e5f7221b",
+          "limit": "a764fc8ae9c196256e06c94b9d1a9bdce959ad5b5db68017547a3344e5f7221b",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "a764fc8ae9c196256e06c94b9d1a9bdce959ad5b5db68017547a3344e5f7221b",
+          "limit": "a764fc8ae9c196256e06c94b9d1a9bdce959ad5b5db68017547a3344e5f7221b",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 4.547473508864641e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 4.768371586472142e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 1.1448744841047187e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9608613449916277e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 4.4444448121794267e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 4.547473508864641e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 1.8474111129762605e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 2.5579538487363607e-13,
+            "f_px_usd": 426.44444444444446,
+            "f_px_intrinsics": 426.44444444444446,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 2038136
+      },
+      "authority_slice_sha256": "a764fc8ae9c196256e06c94b9d1a9bdce959ad5b5db68017547a3344e5f7221b"
+    },
+    {
+      "shot_id": "shot_tilt",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "5a0702f25b25ac6c6096bee2852713ec9f8bc59114729aafbb607fb4d64d2e55",
+          "limit": "5a0702f25b25ac6c6096bee2852713ec9f8bc59114729aafbb607fb4d64d2e55",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "5a0702f25b25ac6c6096bee2852713ec9f8bc59114729aafbb607fb4d64d2e55",
+          "limit": "5a0702f25b25ac6c6096bee2852713ec9f8bc59114729aafbb607fb4d64d2e55",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 2.2737367544323206e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9692189040808614e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 1.1111109188277624e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 2.2737367544323206e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 1.7053025658242404e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 1976742
+      },
+      "authority_slice_sha256": "5a0702f25b25ac6c6096bee2852713ec9f8bc59114729aafbb607fb4d64d2e55"
+    },
+    {
+      "shot_id": "shot_truck",
+      "n_checks": 30,
+      "n_pass": 30,
+      "all_pass": true,
+      "checks": [
+        {
+          "id": "products_present",
+          "name_zh": "五类产物齐备（spec / camera×3 / conditions / validation / 预览）",
+          "value": 7,
+          "limit": 6,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "conditions_frames_present",
+          "name_zh": "条件图逐帧目录数",
+          "value": 120,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "帧目录 120 个"
+        },
+        {
+          "id": "authority_slice_present",
+          "name_zh": "权威源里有该镜头的切片",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_identical",
+          "name_zh": "镜头包 intrinsics 与权威源切片逐字段相等",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha256",
+          "name_zh": "切片 sha256 与权威源登记一致",
+          "value": "dec2a3f4b84f2d744cd2929056c2a40d725c0c4de8b4c3ef3074267fa74991fb",
+          "limit": "dec2a3f4b84f2d744cd2929056c2a40d725c0c4de8b4c3ef3074267fa74991fb",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "authority_slice_sha_matches_doc",
+          "name_zh": "镜头包自报的 sha256 与实际内容一致",
+          "value": "dec2a3f4b84f2d744cd2929056c2a40d725c0c4de8b4c3ef3074267fa74991fb",
+          "limit": "dec2a3f4b84f2d744cd2929056c2a40d725c0c4de8b4c3ef3074267fa74991fb",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_reproj_error",
+          "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+          "value": 4.547473508864641e-13,
+          "limit": 0.0001,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样 10 帧"
+        },
+        {
+          "id": "usd_per_frame_samples",
+          "name_zh": "USD 相机时序逐帧采样（translate/rotate/focal）",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_stage_metadata",
+          "name_zh": "USD 舞台元数据（upAxis=Z / metersPerUnit=1 / timeCodesPerSecond）",
+          "value": "Z/1.0/24.0",
+          "limit": "Z/1.0/24",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_aperture_square_pixels",
+          "name_zh": "USD 两轴 f_px 一致（方形像素）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "usd_euler_convention_matches_export_usd",
+          "name_zh": "欧拉约定与 export_usd._look_at_rot 一致（度）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_camera_perspective",
+          "name_zh": "glTF camera 是 perspective",
+          "value": "perspective",
+          "limit": "perspective",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_yfov_matches_intrinsics",
+          "name_zh": "glTF yfov 与第 0 帧 f_px 一致（rad）",
+          "value": 0.0,
+          "limit": 1e-09,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_znear_zfar",
+          "name_zh": "glTF znear/zfar 与镜头裁剪面一致",
+          "value": "0.1/200.0",
+          "limit": "0.1/200.0",
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_node_matches_frame0",
+          "name_zh": "glTF 节点变换与第 0 帧一致",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_translation",
+          "name_zh": "glTF 动画平移与 intrinsics 逐帧一致（m）",
+          "value": 9.536743172944284e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_rotation",
+          "name_zh": "glTF 动画四元数与 intrinsics 逐帧一致",
+          "value": 2.9774184118203095e-08,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_animation_frames",
+          "name_zh": "glTF 动画采样帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "gltf_channels",
+          "name_zh": "glTF 动画通道数（translation + rotation）",
+          "value": 2,
+          "limit": 2,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_channels_complete",
+          "name_zh": "六通道齐备帧数",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_sidecar_ok",
+          "name_zh": "sidecar 七字段通过数（不含非 sidecar 的 JSON）",
+          "value": 720,
+          "limit": 720,
+          "op": ">=",
+          "pass": true,
+          "detail": "共 840 个 JSON，其中 120 个是 R1 的关键点 JSON（按契约跳过）"
+        },
+        {
+          "id": "conditions_index",
+          "name_zh": "conditions/index.json 存在",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "conditions_camera_matches_intrinsics",
+          "name_zh": "条件图 sidecar 的相机与 intrinsics 一致",
+          "value": 1.1111109188277624e-07,
+          "limit": 1e-06,
+          "op": "<=",
+          "pass": true,
+          "detail": "抽样比对 eye/target/f_px"
+        },
+        {
+          "id": "preview_contact_sheet",
+          "name_zh": "联系表可解码",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "尺寸 [1440, 672]"
+        },
+        {
+          "id": "preview_avi_frames",
+          "name_zh": "预览视频帧数与镜头帧数一致",
+          "value": 120,
+          "limit": 120,
+          "op": ">=",
+          "pass": true,
+          "detail": "codec=MJPG 360x202 24.000 fps"
+        },
+        {
+          "id": "validation_report_pass",
+          "name_zh": "镜头包验证报告 pass",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "validation_report_checks",
+          "name_zh": "验证报告校验条目数",
+          "value": 14,
+          "limit": 5,
+          "op": ">=",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_fields",
+          "name_zh": "shot_spec 必备字段齐备（§2.5.1）",
+          "value": 14,
+          "limit": 13,
+          "op": ">=",
+          "pass": true,
+          "detail": "缺: 无"
+        },
+        {
+          "id": "shot_spec_camera_move",
+          "name_zh": "shot_spec.camera.move 存在（镜头类型库核心字段）",
+          "value": true,
+          "limit": true,
+          "op": "==",
+          "pass": true,
+          "detail": ""
+        },
+        {
+          "id": "shot_spec_keys_match_intrinsics",
+          "name_zh": "shot_spec.camera.keys 与 intrinsics 逐帧一致",
+          "value": 1,
+          "limit": 1,
+          "op": ">=",
+          "pass": true,
+          "detail": "keys=120 frames=120"
+        }
+      ],
+      "usd_reprojection": {
+        "n_sampled": 10,
+        "sampled_frames": [
+          0,
+          13,
+          26,
+          40,
+          53,
+          66,
+          79,
+          93,
+          106,
+          119
+        ],
+        "max_reproj_error_px": 4.547473508864641e-13,
+        "per_frame": [
+          {
+            "frame": 0,
+            "t_code": 0,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 13,
+            "t_code": 13,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 26,
+            "t_code": 26,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 40,
+            "t_code": 40,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 53,
+            "t_code": 53,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 66,
+            "t_code": 66,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 79,
+            "t_code": 79,
+            "max_abs_err_px": 1.1368683772161603e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 93,
+            "t_code": 93,
+            "max_abs_err_px": 1.4210854715202004e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 106,
+            "t_code": 106,
+            "max_abs_err_px": 2.2737367544323206e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          },
+          {
+            "frame": 119,
+            "t_code": 119,
+            "max_abs_err_px": 4.547473508864641e-13,
+            "f_px_usd": 448.8888888888889,
+            "f_px_intrinsics": 448.8888888888889,
+            "eye_max_abs_diff_m": 0.0,
+            "n_points": 27
+          }
+        ],
+        "f_px_horizontal_vs_vertical_max_diff": 0.0,
+        "up_axis": "Z",
+        "meters_per_unit": 1.0,
+        "time_codes_per_second": 24.0,
+        "end_time_code": 119.0,
+        "n_translate_samples": 120,
+        "n_rotate_samples": 120,
+        "n_focal_samples": 120
+      },
+      "avi": {
+        "frames": 120,
+        "width": 360,
+        "height": 202,
+        "fps": 23.99980800153599,
+        "codec": "MJPG",
+        "bytes": 2074462
+      },
+      "authority_slice_sha256": "dec2a3f4b84f2d744cd2929056c2a40d725c0c4de8b4c3ef3074267fa74991fb"
+    }
+  ]
+}

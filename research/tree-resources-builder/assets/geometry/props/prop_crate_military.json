@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_crate_military",
+  "name": "prop_crate_military",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_crate_military.glb",
+      "bytes": 192868,
+      "sha256": "3689873204e7c0400b7a042f30f6dc54cba6a9c6999fa75b3bf654d15fbec3ba"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://polyhaven.com/a/old_military_crate",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Poly Haven（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Poly Haven 官方包下载，剥材质后按米制标定",
+    "source_url": "https://polyhaven.com/a/old_military_crate",
+    "is_ai": 0,
+    "source_pack": "old_military_crate",
+    "source_model": "old_military_crate",
+    "source_file": "var/public-assets/polyhaven/old_military_crate/old_military_crate_1k.gltf",
+    "source_sha256": "ef4b69dca61542c4d724c4807233161129150220695742b5137ed65d8d2e1f24",
+    "source_faces": 10476,
+    "scale_factor": 0.04233,
+    "target_max_dim_m": 1.82,
+    "process": {
+      "mode": "voxel_remesh",
+      "voxel_m": 0.022,
+      "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+    }
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 10676
+  },
+  "geometry": {
+    "faces": 10676,
+    "vertices": 5334,
+    "bbox_min": [
+      -0.0212,
+      -0.0212,
+      0.0
+    ],
+    "bbox_max": [
+      1.7988,
+      0.7407,
+      1.3544
+    ],
+    "size_m": [
+      1.82,
+      0.7619,
+      1.3544
+    ],
+    "max_dim_m": 1.82,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_crate_military",
+    "params": {
+      "scale_factor": 0.04233,
+      "target_max_dim_m": 1.82,
+      "process": {
+        "mode": "voxel_remesh",
+        "voxel_m": 0.022,
+        "note": "扫描资产体素重采样成水密实体（确定性几何重采样）"
+      }
+    }
+  },
+  "origin": "Poly Haven"
+}

@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_awning_shop",
+  "name": "prop_awning_shop",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_awning_shop.glb",
+      "bytes": 1552,
+      "sha256": "6530dff86c2a91ad28c67b6dd803e685f2176e7ba6d0e489836272766688a7f2"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/city-kit-commercial",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/city-kit-commercial",
+    "is_ai": 0,
+    "source_pack": "city-kit-commercial",
+    "source_model": "detail-awning-wide",
+    "source_file": "var/public-assets/kenney/city-kit-commercial/Models/GLB format/detail-awning-wide.glb",
+    "source_sha256": "d37ba34be414cef84db966e548e2c558088aec3fdf68763565b9caf95c11ac5f",
+    "source_faces": 40,
+    "scale_factor": 3.125,
+    "target_max_dim_m": 2.5,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 2,
+      "rounds": 2
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 44
+  },
+  "geometry": {
+    "faces": 44,
+    "vertices": 28,
+    "bbox_min": [
+      -1.25,
+      -0.0,
+      0.0
+    ],
+    "bbox_max": [
+      1.25,
+      1.25,
+      0.4622
+    ],
+    "size_m": [
+      2.5,
+      1.25,
+      0.4622
+    ],
+    "max_dim_m": 2.5,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_awning_shop",
+    "params": {
+      "scale_factor": 3.125,
+      "target_max_dim_m": 2.5,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 2,
+        "rounds": 2
+      }
+    }
+  },
+  "origin": "Kenney"
+}

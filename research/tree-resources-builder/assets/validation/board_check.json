@@ -1,0 +1,655 @@
+{
+  "checked_at": "2026-11-22 01:28:59",
+  "board": "boards/shot_board.html",
+  "generator": "harness/board.py",
+  "verifier": "harness/verify_board.py",
+  "static": {
+    "bytes": 1092225,
+    "external_resource_tags": 0,
+    "css_imports": 0,
+    "data_uris": 1,
+    "svg_inline": 1,
+    "img_tags": 1,
+    "sections": [
+      "overview",
+      "list",
+      "wall",
+      "detail",
+      "assets",
+      "sources",
+      "boundary"
+    ],
+    "nav_targets": [
+      "assets",
+      "boundary",
+      "detail",
+      "list",
+      "overview",
+      "sources",
+      "wall"
+    ],
+    "title": "最小导演台 · 只读本地 | Tree Resources Builder",
+    "external_anchors": 0,
+    "http_occurrences_total": 0,
+    "protocol_relative": 0,
+    "cjk_ok": true,
+    "undecodable_images": 0,
+    "js_bytes": 14676,
+    "embedded_thumb_blobs": 9,
+    "embedded_thumb_blobs_decodable": 9,
+    "embedded_thumb_bytes_total": 896056
+  },
+  "js_syntax": {
+    "ok": true,
+    "stderr": ""
+  },
+  "board_checks": {
+    "n_payload_shots": 9,
+    "expected_shot_ids": [
+      "shot_dolly_in",
+      "shot_dolly_out",
+      "shot_pan",
+      "shot_tilt",
+      "shot_truck",
+      "shot_follow",
+      "shot_orbit",
+      "shot_pedestal",
+      "shot_handheld"
+    ],
+    "all_library_shots_present": true,
+    "n_expected": 9,
+    "rows": [
+      {
+        "shot_id": "shot_dolly_in",
+        "镜号": "01",
+        "类型": "dolly_in",
+        "类型_中文": "推镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 10,
+        "校验项数_库": 10,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "镜号": "02",
+        "类型": "dolly_out",
+        "类型_中文": "拉镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 10,
+        "校验项数_库": 10,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_pan",
+        "镜号": "03",
+        "类型": "pan",
+        "类型_中文": "摇镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_tilt",
+        "镜号": "04",
+        "类型": "tilt",
+        "类型_中文": "俯仰镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_truck",
+        "镜号": "05",
+        "类型": "truck",
+        "类型_中文": "移镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_follow",
+        "镜号": "06",
+        "类型": "follow",
+        "类型_中文": "跟镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_orbit",
+        "镜号": "07",
+        "类型": "orbit",
+        "类型_中文": "环绕镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "镜号": "08",
+        "类型": "pedestal",
+        "类型_中文": "升降镜",
+        "时长_s": 5.0,
+        "校验通过_包": 30,
+        "校验项数_包": 30,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      },
+      {
+        "shot_id": "shot_handheld",
+        "镜号": "09",
+        "类型": "handheld",
+        "类型_中文": "手持镜",
+        "时长_s": 5.0,
+        "校验通过_包": 32,
+        "校验项数_包": 32,
+        "校验通过_库": 11,
+        "校验项数_库": 11,
+        "状态": "validated"
+      }
+    ],
+    "fields_present_all": true,
+    "link_targets": [
+      {
+        "shot_id": "shot_dolly_in",
+        "kind": "spec",
+        "href": "../shots/shot_dolly_in/shot_spec.json",
+        "resolved": "shots/shot_dolly_in/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_in",
+        "kind": "intrinsics",
+        "href": "../shots/shot_dolly_in/camera/intrinsics.json",
+        "resolved": "shots/shot_dolly_in/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_in",
+        "kind": "report",
+        "href": "../shots/shot_dolly_in/validation_report.json",
+        "resolved": "shots/shot_dolly_in/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_in",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_dolly_in/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_dolly_in/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_in",
+        "kind": "package_dir",
+        "href": "../shots/shot_dolly_in/",
+        "resolved": "shots/shot_dolly_in",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "kind": "spec",
+        "href": "../shots/shot_dolly_out/shot_spec.json",
+        "resolved": "shots/shot_dolly_out/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "kind": "intrinsics",
+        "href": "../shots/shot_dolly_out/camera/intrinsics.json",
+        "resolved": "shots/shot_dolly_out/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "kind": "report",
+        "href": "../shots/shot_dolly_out/validation_report.json",
+        "resolved": "shots/shot_dolly_out/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_dolly_out/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_dolly_out/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "kind": "package_dir",
+        "href": "../shots/shot_dolly_out/",
+        "resolved": "shots/shot_dolly_out",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "kind": "spec",
+        "href": "../shots/shot_pan/shot_spec.json",
+        "resolved": "shots/shot_pan/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "kind": "intrinsics",
+        "href": "../shots/shot_pan/camera/intrinsics.json",
+        "resolved": "shots/shot_pan/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "kind": "report",
+        "href": "../shots/shot_pan/validation_report.json",
+        "resolved": "shots/shot_pan/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_pan/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_pan/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "kind": "package_dir",
+        "href": "../shots/shot_pan/",
+        "resolved": "shots/shot_pan",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "kind": "spec",
+        "href": "../shots/shot_tilt/shot_spec.json",
+        "resolved": "shots/shot_tilt/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "kind": "intrinsics",
+        "href": "../shots/shot_tilt/camera/intrinsics.json",
+        "resolved": "shots/shot_tilt/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "kind": "report",
+        "href": "../shots/shot_tilt/validation_report.json",
+        "resolved": "shots/shot_tilt/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_tilt/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_tilt/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "kind": "package_dir",
+        "href": "../shots/shot_tilt/",
+        "resolved": "shots/shot_tilt",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "kind": "spec",
+        "href": "../shots/shot_truck/shot_spec.json",
+        "resolved": "shots/shot_truck/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "kind": "intrinsics",
+        "href": "../shots/shot_truck/camera/intrinsics.json",
+        "resolved": "shots/shot_truck/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "kind": "report",
+        "href": "../shots/shot_truck/validation_report.json",
+        "resolved": "shots/shot_truck/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_truck/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_truck/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "kind": "package_dir",
+        "href": "../shots/shot_truck/",
+        "resolved": "shots/shot_truck",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "kind": "spec",
+        "href": "../shots/shot_follow/shot_spec.json",
+        "resolved": "shots/shot_follow/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "kind": "intrinsics",
+        "href": "../shots/shot_follow/camera/intrinsics.json",
+        "resolved": "shots/shot_follow/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "kind": "report",
+        "href": "../shots/shot_follow/validation_report.json",
+        "resolved": "shots/shot_follow/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_follow/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_follow/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "kind": "package_dir",
+        "href": "../shots/shot_follow/",
+        "resolved": "shots/shot_follow",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "kind": "spec",
+        "href": "../shots/shot_orbit/shot_spec.json",
+        "resolved": "shots/shot_orbit/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "kind": "intrinsics",
+        "href": "../shots/shot_orbit/camera/intrinsics.json",
+        "resolved": "shots/shot_orbit/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "kind": "report",
+        "href": "../shots/shot_orbit/validation_report.json",
+        "resolved": "shots/shot_orbit/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_orbit/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_orbit/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "kind": "package_dir",
+        "href": "../shots/shot_orbit/",
+        "resolved": "shots/shot_orbit",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "kind": "spec",
+        "href": "../shots/shot_pedestal/shot_spec.json",
+        "resolved": "shots/shot_pedestal/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "kind": "intrinsics",
+        "href": "../shots/shot_pedestal/camera/intrinsics.json",
+        "resolved": "shots/shot_pedestal/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "kind": "report",
+        "href": "../shots/shot_pedestal/validation_report.json",
+        "resolved": "shots/shot_pedestal/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_pedestal/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_pedestal/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "kind": "package_dir",
+        "href": "../shots/shot_pedestal/",
+        "resolved": "shots/shot_pedestal",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "kind": "spec",
+        "href": "../shots/shot_handheld/shot_spec.json",
+        "resolved": "shots/shot_handheld/shot_spec.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "kind": "intrinsics",
+        "href": "../shots/shot_handheld/camera/intrinsics.json",
+        "resolved": "shots/shot_handheld/camera/intrinsics.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "kind": "report",
+        "href": "../shots/shot_handheld/validation_report.json",
+        "resolved": "shots/shot_handheld/validation_report.json",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "kind": "contact_sheet",
+        "href": "../shots/shot_handheld/preview/contact_sheet.jpg",
+        "resolved": "shots/shot_handheld/preview/contact_sheet.jpg",
+        "exists": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "kind": "package_dir",
+        "href": "../shots/shot_handheld/",
+        "resolved": "shots/shot_handheld",
+        "exists": true
+      }
+    ],
+    "n_links": 45,
+    "n_links_missing": 0,
+    "thumb_checks": [
+      {
+        "shot_id": "shot_dolly_in",
+        "path": "shots/shot_dolly_in/preview/contact_sheet.jpg",
+        "bytes": 75220,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_dolly_out",
+        "path": "shots/shot_dolly_out/preview/contact_sheet.jpg",
+        "bytes": 71908,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_pan",
+        "path": "shots/shot_pan/preview/contact_sheet.jpg",
+        "bytes": 69686,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_tilt",
+        "path": "shots/shot_tilt/preview/contact_sheet.jpg",
+        "bytes": 73758,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_truck",
+        "path": "shots/shot_truck/preview/contact_sheet.jpg",
+        "bytes": 78912,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_follow",
+        "path": "shots/shot_follow/preview/contact_sheet.jpg",
+        "bytes": 75805,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_orbit",
+        "path": "shots/shot_orbit/preview/contact_sheet.jpg",
+        "bytes": 73859,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_pedestal",
+        "path": "shots/shot_pedestal/preview/contact_sheet.jpg",
+        "bytes": 76495,
+        "identical": true
+      },
+      {
+        "shot_id": "shot_handheld",
+        "path": "shots/shot_handheld/preview/contact_sheet.jpg",
+        "bytes": 76388,
+        "identical": true
+      }
+    ],
+    "thumbs_identical": true,
+    "mismatches": [],
+    "n_mismatches": 0,
+    "intrinsics_shots_covered": 9,
+    "intrinsics_all_covered": true,
+    "manifest_version": 2,
+    "status_closed_set": true,
+    "timeline_frames_per_shot": {
+      "shot_dolly_in": 120,
+      "shot_dolly_out": 120,
+      "shot_pan": 120,
+      "shot_tilt": 120,
+      "shot_truck": 120,
+      "shot_follow": 120,
+      "shot_orbit": 120,
+      "shot_pedestal": 120,
+      "shot_handheld": 120
+    },
+    "timeline_matches_intrinsics": true
+  },
+  "ui": {
+    "url": "file:////Users/moc/workspaces/projects/SiMuseor/research/tree-resources-builder/boards/shot_board.html",
+    "errors": [],
+    "external_requests": [],
+    "failed_requests": [],
+    "checks": {
+      "page": {
+        "href": "file:///Users/moc/workspaces/projects/SiMuseor/research/tree-resources-builder/boards/shot_board.html",
+        "ready": "complete",
+        "title": "最小导演台 · 只读本地 | Tree Resources Builder"
+      },
+      "probe": {
+        "title": "最小导演台 · 只读本地 | Tree Resources Builder",
+        "rows": 9,
+        "cards": 9,
+        "row_cells": [
+          "01",
+          "shot_dolly_in",
+          "推镜 dolly_in",
+          "推镜 · 主体迎面走来，机位沿视线恒速推近",
+          "5.0 s24 fps · 120 帧",
+          "720×404",
+          "character_hero",
+          "scene_street",
+          "世界机位（固定坐标系）",
+          "包 30/30库 10/10",
+          "validated"
+        ],
+        "detail_title": "01 · shot_dolly_in",
+        "detail_title_outer": "<span id=\"detailTitle\">01 · shot_dolly_in</span>",
+        "detail_outer_head": "<div class=\"panel\"><div style=\"display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap\">",
+        "detail_h2_outer": "<h2>镜头详情 · <span id=\"detailTitle\">01 · shot_dolly_in</span></h2>",
+        "detail_has_params": true,
+        "detail_has_spark": 3,
+        "detail_has_checks": true,
+        "detail_has_assets": true,
+        "detail_has_note": true,
+        "images_total": 9,
+        "images_broken": 0,
+        "external_anchors": 0,
+        "data_uri_images": 0,
+        "package_links": 10,
+        "wall_data_uri": 9,
+        "board_meta": "2026-11-22T01:28:26+0800 · 生成器 harness/board.py · 9 个镜头包 / 9 类运镜",
+        "list_count": "9 / 9 个镜头包"
+      },
+      "click_row": {
+        "ok": true,
+        "before": "01 · shot_dolly_in",
+        "after": "03 · shot_pan"
+      },
+      "filter": {
+        "filtered_rows": 2,
+        "filtered_cards": 2,
+        "restored_rows": 9
+      },
+      "notes": {
+        "ok": true,
+        "storage": 25
+      }
+    },
+    "images": {
+      "total": 9,
+      "broken": 0
+    },
+    "shots": [
+      "board_full.png",
+      "board_top.png",
+      "board_wall.png",
+      "board_list.png",
+      "board_detail.png"
+    ],
+    "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "ok": true
+  },
+  "summary": {
+    "static_ok": true,
+    "js_ok": true,
+    "board_ok": true,
+    "ui_ok": true,
+    "console_errors": 0,
+    "external_requests": 0,
+    "failed_requests": 0,
+    "broken_images": 0,
+    "shots_listed": 9,
+    "thumb_cards": 9
+  },
+  "ok": true
+}

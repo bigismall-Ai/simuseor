@@ -1,0 +1,121 @@
+{
+  "kind": "cross_render_compare",
+  "status": "ok",
+  "generated_by": "harness/cross_render_compare.py",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "resources3d_dir": "/Users/moc/workspaces/SiMuseor/resources3D",
+  "resources3d_wmcore": "/Users/moc/workspaces/SiMuseor/resources3D/research/harness",
+  "resources3d_readonly": true,
+  "resolution": [
+    512,
+    512
+  ],
+  "scene": {
+    "source": "generate_assets.generate_all() (merged single mesh)",
+    "objects": 22,
+    "vertices": 21384,
+    "faces": 40474,
+    "merged": true
+  },
+  "camera": {
+    "source": "single f_px definition; each side derives its own convention",
+    "eye_zup": [
+      4.6,
+      -11.5,
+      1.35
+    ],
+    "target_zup": [
+      -1.2,
+      2.0,
+      1.1
+    ],
+    "up_zup": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "f_px": 512.0,
+    "principal_point": [
+      256.0,
+      256.0
+    ],
+    "ours": {
+      "convention": "vertical FOV / square pixels",
+      "fov_y_deg": 53.130102,
+      "focal_mm": 36.0,
+      "sensor_mm": 36.0,
+      "computed_f_px": 512.0
+    },
+    "resources3d": {
+      "convention": "horizontal sensor-fit",
+      "focal_mm": 36.0,
+      "sensor_width_mm": 36.0,
+      "computed_f_px": 512.0,
+      "eye_yup": [
+        4.6,
+        1.35,
+        11.5
+      ],
+      "target_yup": [
+        -1.2,
+        1.1,
+        -2.0
+      ],
+      "up_yup": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "up_axis_ours": "Z",
+    "up_axis_resources3d": "Y",
+    "axis_conversion": "p_yup = (x, z, -y)；det=+1 真旋转，相机基逐项对应"
+  },
+  "depth_polarity": {
+    "ours": "near_1_far_0",
+    "resources3d": "near_1_far_0 (wmcore.depth_to_unit: 1 - (d-lo)/(hi-lo))",
+    "aligned": true,
+    "note": "R0 裁定后两边同极性，比对前不需要任何翻转"
+  },
+  "results": {
+    "headline_metric": "depth_pixel_consistency_rate",
+    "headline_tolerance": 0.0001,
+    "tolerance_rationale": "主容差 1e-4（归一化）：两侧光栅器精度不同（本项目 float32 / resources3D float64），残差是浮点舍入而非语义差异；实测最大归一化差 ~5.7e-6、最大度量深度差 ~0.21 mm。该容差比交付产物自身的 8bit PNG 量化（1/255≈3.9e-3）细 25 倍。严格档一并报出。",
+    "headline_rate": 1.0,
+    "threshold": 0.99,
+    "pass": true,
+    "depth_consistency_rate_by_tolerance": {
+      "tol_1e-06": 0.9773635864257812,
+      "tol_1e-05": 1.0,
+      "tol_0.0001": 1.0,
+      "tol_0.001": 1.0
+    },
+    "depth_max_abs_diff_normalized": 5.661868020867544e-06,
+    "depth_mean_abs_diff_normalized": 3.053051067134634e-07,
+    "depth_max_abs_diff_meters": 0.00020931807867352603,
+    "depth_mean_abs_diff_meters": 2.7848511180520444e-06,
+    "mask_pixel_agreement": 1.0,
+    "lineart_pixel_agreement": 0.9999313354492188,
+    "lineart_mismatch_px": 18,
+    "pixel_counts": {
+      "total": 262144,
+      "both_foreground": 235824,
+      "both_background": 26320,
+      "only_ours": 0,
+      "only_resources3d": 0
+    }
+  },
+  "timing_ms": {
+    "ours_render": 133.99,
+    "resources3d_render": 1062.58,
+    "total": 1360.79
+  },
+  "outputs": {
+    "depth_ours": "assets/previews/cross_render/depth_ours.png",
+    "depth_resources3d": "assets/previews/cross_render/depth_resources3d.png",
+    "depth_diff_x1000": "assets/previews/cross_render/depth_diff_x1000.png",
+    "mask_diff": "assets/previews/cross_render/mask_diff.png",
+    "lineart_diff": "assets/previews/cross_render/lineart_diff.png"
+  }
+}

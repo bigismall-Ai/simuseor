@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Tree Resources Builder · 面向图/视频生成的路线看板</title>
+<style>
+:root{
+  --bg:#f7f8fa; --panel:#ffffff; --ink:#1d2430; --muted:#5d6878; --line:#e1e5ec;
+  --accent:#2f5f8f; --accent2:#c07a3e; --ok:#2f7d5c; --bad:#b34b4b; --warn:#b8862b;
+  --radius:10px; --mono:"Cascadia Mono","Consolas","SFMono-Regular",monospace;
+}
+html[data-theme="dark"]{
+  --bg:#12161c; --panel:#181e27; --ink:#e6eaf0; --muted:#98a3b3; --line:#2a3341;
+  --accent:#7aa7d6; --accent2:#d99a5b; --ok:#6bbd94; --bad:#dd7b7b; --warn:#d9b45f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.72 "Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif}
+a{color:var(--accent);text-decoration:none}
+code{font-family:var(--mono);font-size:.87em;background:rgba(127,140,160,.12);padding:1px 5px;border-radius:4px;word-break:break-all}
+.side{position:fixed;inset:0 auto 0 0;width:246px;border-right:1px solid var(--line);background:var(--panel);padding:20px 14px 24px;overflow:auto;z-index:20}
+.brand{font-weight:700;font-size:14.5px;letter-spacing:.02em}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:4px}
+.nav{margin-top:16px;display:flex;flex-direction:column;gap:2px}
+.nav a{padding:6px 9px;border-radius:6px;color:var(--muted);font-size:12.8px}
+.nav a:hover{background:rgba(127,140,160,.10);text-decoration:none;color:var(--ink)}
+.nav a.active{background:rgba(47,95,143,.13);color:var(--accent);font-weight:600}
+.tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn:hover{color:var(--ink);border-color:var(--muted)}
+.btn.on{background:rgba(47,95,143,.13);color:var(--accent);border-color:transparent}
+main{margin-left:246px;padding:40px 44px 80px;max-width:1260px}
+main section{overflow-x:auto}
+h1{font-size:30px;line-height:1.3;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:21px;margin:46px 0 12px;padding-top:10px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:24px 0 8px}
+h4{font-size:13.5px;margin:16px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+p{margin:8px 0}
+.lead{font-size:15.5px;color:var(--muted);max-width:900px}
+.kicker{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);font-weight:600}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0 22px;border-left:4px solid var(--accent)}
+.hero b{color:var(--accent)}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.card .n{font-size:25px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+.card .l{font-size:12.2px;color:var(--muted);margin-top:3px}
+.card .t{font-size:13px;margin-top:6px;color:var(--ink)}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.2px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:rgba(127,140,160,.10);font-weight:600;font-size:12.4px}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.warn{color:var(--warn);border-color:var(--warn)}
+.tag.bad{color:var(--bad);border-color:var(--bad)}
+.tag.acc{color:var(--accent);border-color:var(--accent)}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:12px 0}
+.stage h3{margin:0 0 2px;font-size:16px}
+.stage .goal{color:var(--accent);font-weight:600;margin:4px 0 8px;font-size:13.4px}
+.stage dl{margin:8px 0 0;display:grid;grid-template-columns:86px 1fr;gap:3px 12px;font-size:13.1px}
+.stage dt{color:var(--muted);font-weight:600;font-size:12.2px;padding-top:1px}
+.stage dd{margin:0}
+.stage .no{color:var(--bad)}
+.badge{display:inline-block;min-width:26px;text-align:center;padding:1px 7px;border-radius:5px;background:rgba(47,95,143,.14);color:var(--accent);font-weight:700;font-size:12px;font-family:var(--mono)}
+.flow{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px;overflow-x:auto}
+.flow svg{display:block;min-width:560px;width:100%;height:auto}
+ul{margin:6px 0 6px 20px;padding:0}
+li{margin:3px 0}
+.note{border-left:3px solid var(--accent2);background:rgba(192,122,62,.07);padding:9px 13px;margin:10px 0;border-radius:0 6px 6px 0;font-size:13.2px}
+.fix{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent2);border-radius:8px;padding:11px 14px;margin:10px 0}
+.fix h4{margin:0 0 4px;color:var(--accent2);font-size:13.4px;text-transform:none;letter-spacing:0}
+.src{font-size:12.2px;color:var(--muted)}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12.4px}
+.now{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.now .card{padding:11px 13px}
+.now h4,.card h4{margin:0 0 4px;font-size:13.6px;color:var(--ink);text-transform:none;letter-spacing:0}
+.now .st{font-size:12.6px;color:var(--muted);line-height:1.62}
+.now .gp{font-size:12.4px;margin-top:5px;border-top:1px dashed var(--line);padding-top:5px;line-height:1.6}
+.phases{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.3px;background:rgba(47,95,143,.14);color:var(--accent);font-weight:700;font-family:var(--mono);margin-bottom:5px}
+.pill.ok{background:rgba(47,125,92,.14);color:var(--ok)}
+.pill.warn{background:rgba(184,134,43,.16);color:var(--warn)}
+.card .r{font-size:12.4px;color:var(--muted);margin-top:6px;border-top:1px dashed var(--line);padding-top:6px;line-height:1.6}
+.redline{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.redline li{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:8px;padding:9px 12px;font-size:13.2px;line-height:1.66}
+.redline li b{color:var(--bad)}
+.redline .alt{display:block;color:var(--muted);font-size:12.4px;margin-top:3px}
+.redline .alt b{color:var(--ink)}
+.sect-break{margin:46px 0 2px;padding-top:18px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:11.6px;letter-spacing:.24em}
+.mini{font-size:12.7px;color:var(--muted);line-height:1.62}
+@media print{
+  .side{display:none} main{margin:0;padding:0;max-width:none} main section{overflow:visible}
+  body{background:#fff;font-size:11.6px}
+  h2{page-break-after:avoid;margin-top:22px}
+  table,.stage,.card,.fix{page-break-inside:avoid}
+  .tools{display:none}
+}
+</style>
+</head>
+<body>
+<aside class="side">
+  <div class="brand">Tree Resources Builder
+    <small>面向图 / 视频生成的下一阶段路线看板</small>
+  </div>
+  <nav class="nav">
+    <a href="#conclusion">先看结论</a>
+    <a href="#summary">结论与关键数字</a>
+    <a href="#status">现状能力盘点</a>
+    <a href="#signals">控制信号层级排序</a>
+    <a href="#conditions">条件图通道</a>
+    <a href="#assets">五类资产补全矩阵</a>
+    <a href="#camera">运镜与镜头包</a>
+    <a href="#schema">Shot / Asset Schema</a>
+    <a href="#stages">阶段路线 R0–R7</a>
+    <a href="#community">借鉴与不借鉴</a>
+    <a href="#risks">风险与诚实边界</a>
+    <a href="#decisions">待拍板决策点</a>
+    <a href="#fixes">对既有结论的修正建议</a>
+    <a href="#sources">来源清单</a>
+  </nav>
+  <div class="tools">
+    <button class="btn" id="themeBtn" type="button">切换主题</button>
+    <button class="btn" id="printBtn" type="button">打印 / 导出 PDF</button>
+  </div>
+</aside>
+<main>
+
+<p class="kicker">research/tree-resources-builder · plans/ROADMAP-IMAGE-VIDEO.md 摘要</p>
+<h1>面向图 / 视频生成的白模路线看板</h1>
+<p class="lead">硬约束继承 PLAN.md C1–C5：禁 3D 生成式模型（扩散 / SDS / 原生生成器）｜本地全 CPU｜LLM 仅云端 API｜白模分几何层与非几何参考层｜交付物须含可回读校验的真实生成物。本看板是单文件离线 HTML，0 外链、0 联网依赖。</p>
+
+<div class="hero">
+  <b>一句话结论：</b>这套白模体系对下游图/视频生成的核心价值不是「好看的模型」，而是「可回读的相机与结构数据」。下一阶段最该补的不是更多资产，而是 <b>①把条件图通道补成下游真正消费的那几件</b>、<b>②把运镜从一次推镜做成可复用的镜头库</b>。资产侧补全必要，但边际价值排在相机 / 条件图之后。
+</div>
+
+<section id="conclusion">
+<h2>先看结论 · 一页读完</h2>
+<p class="lead">这一屏是结论页：现状要点、阶段路线、红线清单、待拍板 5 条都在这里。下方完整看板与两份长文档是它的依据。同样的内容另有一份纯文字版：<code>plans/ONE-PAGE.md</code>。</p>
+
+<h3>现状要点（六类东西的真实状态，均已落盘）</h3>
+<div class="now">
+  <div class="card"><h4>人物</h4><div class="st">22 部件 / 3,344 面 / 1.74 m 主角模型，SOMA 三后端 CPU 实跑</div><div class="gp">缺口：面部 / 口型 / 手部细节；身份变体太少；服装是外挂一层壳</div></div>
+  <div class="card"><h4>植被</h4><div class="st">树模型 + L-system 参数；公共树 1,599,403 面减到 74,097 面已落盘</div><div class="gp">缺口：树种配方仅 1 套；无实例化表；无分档 LOD 规则</div></div>
+  <div class="card"><h4>道具</h4><div class="st">程序化 1 件（箱子）+ 公共件 9 件，逐件带 sha256 与许可</div><div class="gp"><span class="tag bad">最大空洞</span> 1 件加 9 件，构不成「零件库」这一层</div></div>
+  <div class="card"><h4>载具</h4><div class="st">一台车（放样、抽壳、门缝、独立门板、4 轮、灯、内饰代理）+ 一条船</div><div class="gp">缺口：无变体（同拓扑多参数不可用）；零件库只有一套；飞机 / 轮船未实跑</div></div>
+  <div class="card"><h4>场景</h4><div class="st">一个街区 + USD 汇合层 + 布局 / 人群 / 特效参数文件</div><div class="gp">缺口：只有 1 个街区；无分块 LOD；3 件减面公共件未混排</div></div>
+  <div class="card"><h4>运镜</h4><div class="st">一次推镜：4 关键帧 / 87 采样点 / 3.6 s；入画 100%，高度占比 52%</div><div class="gp"><span class="tag bad">只有 1 种镜头</span> 无类型库 / 无构图指标 / 无批量镜头包</div></div>
+</div>
+
+<h3>阶段路线 R0–R7（先定契约，再补通道与台账，最后才谈资产与对齐）</h3>
+<div class="grid phases">
+  <div class="card"><span class="pill">R0</span><h4>契约统一</h4><div class="st">把「下游要什么」写成可校验的契约，裁定与 resources3D 的深度极性 / 上轴冲突</div><div class="r"><b>为什么最先：</b>它阻塞其余全部，契约不定后面无法验收</div></div>
+  <div class="card"><span class="pill">R1</span><h4>条件图六通道</h4><div class="st">补 mask / lineart / pose 三张，凑齐六通道</div><div class="r"><b>为什么第二个：</b>下游最通用的线稿系与人体姿态现在完全没有</div></div>
+  <div class="card"><span class="pill">R2</span><h4>运镜体系化</h4><div class="st">9 类镜头 + 镜头包，每镜自带可自动判定的构图 / 运动指标</div><div class="r"><b>为什么在 R1 后：</b>镜头包要出条件序列，通道不齐出不来</div></div>
+  <div class="card"><span class="pill">R3</span><h4>Schema 落地</h4><div class="st">资产与镜头变成有 id、指纹、许可、验证状态、可被引用的一等实体</div><div class="r"><b>为什么与 R1 并行：</b>都只依赖 R0</div></div>
+  <div class="card"><span class="pill">R4</span><h4>资产补全</h4><div class="st">道具补到 20 件零件库，其余四类从「一件」扩到「一族」</div><div class="r"><b>为什么在 R3 后：</b>没有台账，新资产无处挂</div></div>
+  <div class="card"><span class="pill">R5</span><h4>最小导演台</h4><div class="st">离线界面：选镜头、选资产、看校验</div><div class="r"><b>为什么与 R4 并行：</b>只依赖 R2 与 R3</div></div>
+  <div class="card"><span class="pill">R6</span><h4>与 resources3D 对齐</h4><div class="st">同一契约下交叉渲染，逐像素比对一致率 ≥ 99%</div><div class="r"><b>为什么靠后：</b>得先有 R0 / R1 / R3 的产物才有得比</div></div>
+  <div class="card"><span class="pill">R7</span><h4>云端 LLM 接入</h4><div class="st">统计首次成功率与 3 轮收敛率，把「验证闭环」真实化</div><div class="r"><b>为什么可并行：</b>只依赖 R0 与 R3</div></div>
+</div>
+<p class="src" style="margin-top:10px">依赖：R0 → (R1, R3) → R2 → (R4, R5) → R6 / R7。完整交付物与验收方式见下方「阶段路线 R0–R7」与 <code>plans/ROADMAP-IMAGE-VIDEO.md</code> §4。</p>
+
+<h3>红线清单（明确不做，每条都有替代方案）</h3>
+<ul class="redline">
+  <li><b>不追求照片级有机细节</b>（毛发 / 皮肤 / 树冠写实 / 布料褶皱）——纯 CPU 加无生成式模型是硬天花板。<span class="alt">替代：<b>代理表达 + 结构正确 + 运动正确</b></span></li>
+  <li><b>不去找「成熟开源参数化汽车底座」</b>——诚实边界：不存在。<span class="alt">替代：<b>自建 JSON 配方 schema</b>，做同拓扑四个车身</span></li>
+  <li><b>不采集扫描件做近景主资产</b>——CPU 减面与修复成本高，实测高模件无法可靠分件。<span class="alt">替代：<b>CC0 低模库（Kenney 为主）占位</b>，Poly Haven 高模只作少量 hero</span></li>
+  <li><b>不做完整的资产库服务 / 数据库</b>——过重，本项目产出量级不需要。<span class="alt">替代：<b>JSON + 内容寻址 + 离线看板</b></span></li>
+  <li><b>不采用 OTIO 全量作为时间线模型</b>——OTIO 是剪辑时间线（track / clip / source range），我们是镜头生成时间线（相机轨迹 + 条件序列），语义不同。<span class="alt">替代：<b>借字段命名与「外部引用」概念</b>，自建 shot spec</span></li>
+  <li><b>不在本机跑下游预训练检测器</b>（HED / Midas / OpenPose）——我们输出的是「喂给下游的图」，且违反不下载模型权重纪律。<span class="alt">替代：<b>关键点图由 SOMA 关节导出，线稿由 face_id 取轮廓</b></span></li>
+  <li><b>不用 Blender 做条件图渲染运行时</b>——bpy 5.0.0 本机实测可用，但启动开销大、结果与 numpy 光栅不同源、跨解释器一致性成本高。<span class="alt">替代：<b>继续用 numpy z-buffer</b>，Blender 留作下游验证工具</span></li>
+  <li><b>不把语义 seg 扩成 100+ 类</b>的 Segment Anything 体系——我们只有 12 类资产，扩展成本高收益低。<span class="alt">替代：<b>保持 12–16 类固定调色板</b></span></li>
+</ul>
+
+<h3>待拍板的 5 件事（建议进 R0 之前定）</h3>
+<div class="grid g2">
+  <div class="card"><h4>D1 · 镜头库的数据模型</h4><div class="st"><b>建议 A1：</b>自建 shot spec，只借 <code>OpenAssetIO</code> 的数据模型，不引入外部运行时</div><div class="r"><b>选错会怎样：</b>整套引入 OTIO → 管线绑死外部库版本、语义错位（剪辑 clip vs 镜头包），下游接入更慢</div></div>
+  <div class="card"><h4>D2 · 条件图通道与深度极性</h4><div class="st"><b>建议 A：</b>六通道，深度改「近=1 远=0」，与评估协议一致</div><div class="r"><b>选错会怎样：</b>保持「近=0 远=1」→ 与 resources3D 口径反向，图发给下游容易整个反了还不报错</div></div>
+  <div class="card"><h4>D3 · 道具零件库来源</h4><div class="st"><b>建议 A：</b>Kenney 为主 + 少量 Poly Haven hero，特定缺口用纯程序化兜底</div><div class="r"><b>选错会怎样：</b>Poly Haven 为主 → 每件 5k–100k 面、要强减面、下载量大；纯程序化 → 品类受限、风格单一</div></div>
+  <div class="card"><h4>D4 · 资产补全 vs 镜头库谁先</h4><div class="st"><b>建议 A：</b>镜头库优先（R2 先于 R4）</div><div class="r"><b>选错会怎样：</b>资产优先 → 道具缺口补上了，但镜头库拖后，下游能接上的时间点往后推</div></div>
+  <div class="card"><h4>D5 · 要不要引入 Blender</h4><div class="st"><b>建议 A：</b>继续只用 numpy z-buffer，Blender 仅人工验证；引入 bpy 作为 R6 可选分支</div><div class="r"><b>选错会怎样：</b>引入 bpy → 跨解释器一致性成本 + 启动开销，且渲染结果与 numpy 光栅不同源</div></div>
+</div>
+</section>
+
+<div class="sect-break">以下为完整细节存档</div>
+
+<section id="summary">
+<h2>结论与关键数字</h2>
+<div class="grid g4">
+  <div class="card"><div class="n">16/16</div><div class="l">校验项通过</div><div class="t">validation_report.json，pass_rate 1.0</div></div>
+  <div class="card"><div class="n">24/24</div><div class="l">导出回读通过</div><div class="t">exports.json（GLB/OBJ/STL/USDA）</div></div>
+  <div class="card"><div class="n">79</div><div class="l">manifest 登记文件</div><div class="t">8,168,502 字节</div></div>
+  <div class="card"><div class="n">120</div><div class="l">帧竖切片（24fps / 720×404）</div><div class="t">入画 100%，高度占比 52%</div></div>
+  <div class="card"><div class="n">3</div><div class="l">条件图通道（depth/normal/seg）</div><div class="t"><span class="tag warn">缺 mask / lineart / pose</span></div></div>
+  <div class="card"><div class="n">1</div><div class="l">种镜头（一次推镜）</div><div class="t"><span class="tag bad">缺镜头类型库</span></div></div>
+  <div class="card"><div class="n">1</div><div class="l">件程序化道具（prop_crate）</div><div class="t"><span class="tag bad">最大空洞</span></div></div>
+  <div class="card"><div class="n">83.24<span style="font-size:14px"> ms</span></div><div class="l">512×512 三通道渲染</div><div class="t">预算 1500 ms 内</div></div>
+</div>
+<div class="grid g3" style="margin-top:14px">
+  <div class="card"><h4 style="margin-top:0">J1 · 控制力排序要分通道说</h4><div class="t">2D 条件图通道：几何 ≈ 动作 ≈ 相机 &gt; 特效。原生 3D / 位姿通道：相机 &gt; 动作 &gt; 几何 &gt; 特效。既有结论「相机与动作最强、体积最弱」成立，但须补「前提」二字。</div></div>
+  <div class="card"><h4 style="margin-top:0">J2 · 缺的是成套契约，不是通道种类</h4><div class="t">本项目 depth 为「近=0 远=1」，resources3D 为「近=1 远=0」，<b>完全相反</b>；上轴 Z-up vs Y-up 也相反。混用会静默出错——不报错、结果全错。</div></div>
+  <div class="card"><h4 style="margin-top:0">J3 · 镜头库按「可校验量」建</h4><div class="t">社区的镜头预设是给美术用的；我们的镜头库要给验证器用。每个镜头类型必须自带 2–4 个可自动判定的构图 / 运动指标，否则只是「一条好看的关键帧」。</div></div>
+</div>
+</section>
+
+<section id="status">
+<h2>现状能力盘点</h2>
+<p class="lead">全部来自仓库内已落盘文件与读数，未实跑任何新代码。</p>
+<table>
+<thead><tr><th style="width:74px">类别</th><th>几何层（已落盘）</th><th>非几何参考层</th><th style="width:210px">验证层读数</th><th style="width:190px">缺口</th></tr></thead>
+<tbody>
+<tr><td><b>人物</b></td><td>character_hero（22 部件 / 3,344 面 / 1.74 m）；soma_anny_adult、soma_native_low、soma_mhr_low</td><td>character_rig.json；soma 关节 npy/json；shot001_hero.npz；motion_walk_2s.bvh</td><td>水密 22/22；体积 0.0819 m³；退化面 0；间隙 0.004 m；贴地 0.0005 m</td><td>面部 / 口型 / 手部；变体少；服装是独立壳</td></tr>
+<tr><td><b>植被</b></td><td>vegetation_tree.glb + _trunk.obj</td><td>vegetation_params.json（L-system）</td><td>island_tree_01 1,599,403 → <b>74,097</b> 面（已落盘 public_normalized/）</td><td>树种配方仅 1 套；无实例化表；无 LOD 规则文件</td></tr>
+<tr><td><b>道具</b></td><td><b>仅</b> prop_crate.glb/.stl</td><td>无道具专属台账</td><td>公共件 9 项逐件带 sha256 / 许可</td><td><span class="tag bad">最大空洞</span>：1 件程序化 + 9 件公共件，构不成零件库</td></tr>
+<tr><td><b>载具</b></td><td>vehicle_car（loft + 抽壳 + 门缝 + <b>独立门板</b> + 4 轮 + 后视镜 + 灯 + 内饰代理）；vehicle_boat</td><td>vehicle_dynamics.json（速度 / 加速度 / 横摆 / 轮转角 / 悬挂姿态 / 转向灯）</td><td>vehicle_parts.json 分件与标签分类报告</td><td>无变体（同拓扑多参数）；零件库只一套；飞机 / 轮船未实跑</td></tr>
+<tr><td><b>场景</b></td><td>scene_street.glb + scene_street.usda</td><td>scene_layout.json（units / up_axis / objects[] / camera_ref / fx_ref）；crowd_layout；fx_proxy</td><td>贴地 / 穿插 / 人群间距 / 首帧构图 / 类别覆盖</td><td>只有 1 个街区；无分块 LOD；公共件未混排</td></tr>
+<tr><td><b>运镜</b></td><td>—</td><td>camera_path.json（<b>4 关键帧 / 87 采样点 / 3.6 s</b>，推镜 eye [7.4,-8.8,3.9]→[0.4,-5.2,1.62]，focal 45→55）；shot_spec.json（mode=mounted）</td><td>shot_001.json：入画 1.0、高度占比 0.52、脚滑均值 0.0047 m / 最大 0.0303 m、pass=true</td><td><span class="tag bad">只有 1 种镜头</span>：无类型库 / 无构图指标 / 无镜头包</td></tr>
+</tbody>
+</table>
+<h3>harness 已有模块 → 复用点</h3>
+<table>
+<thead><tr><th style="width:170px">模块</th><th>已有能力</th><th style="width:280px">本路线复用点</th><th style="width:210px">缺口</th></tr></thead>
+<tbody>
+<tr><td><code>conditions.py</code></td><td>numpy z-buffer 软光栅；depth/normal/seg；语义调色板；近平面裁剪；背面剔除；hide=True 隐藏几何</td><td>条件图渲染主干，<b>不换</b></td><td>缺 mask / lineart / pose；缺 sidecar 契约</td></tr>
+<tr><td><code>shot_spec.py</code></td><td>mode ∈ {world, mounted}；actors[].track（pos+yaw）；smoothstep；resolve_camera 返回世界坐标；validate_spec</td><td><b>运镜体系地基</b>：加一个 camera.move 层即可长出镜头类型库</td><td>SUPPORTED_CONDITIONS 只 3 通道；无 move.type / easing / 手持参数</td></tr>
+<tr><td><code>vehicle_dynamics.py</code></td><td>sample_track / track_to_matrix / derive_dynamics（速度 / 加速度 / 横摆 / 轮转角 / 悬挂 / 转向灯）</td><td>跟拍镜头的被摄体轨迹源；镜头「运动校验量」算法底座</td><td>无「载具类型 → 动力学预设」</td></tr>
+<tr><td><code>vehicle_parts.py</code></td><td>无 scipy 连通分量；名字 / 几何分类部件；decimate_by_part（保底 12 面）</td><td><b>道具 / 载具零件库的方法论模板</b></td><td>只针对载具语义，无通用「资产 → 语义件」流水线</td></tr>
+<tr><td><code>pose_store.py</code></td><td>pose 存储（只存 77 关节轴角 + 根位移，比烘焙省 57×）；跨解释器重建</td><td><b>pose 关键点通道的数据源</b>（关节已在手，零新增几何成本）</td><td>无 pose → 关键点图导出器</td></tr>
+<tr><td><code>export_usd.py</code></td><td>USD 舞台：几何 + 相机时序 + UsdSkel + FX 体积球</td><td>下游相机控制载体</td><td>相机时序按 samples[::6] 抽样（87→15）；无 glTF camera；无逐帧内外参 JSON</td></tr>
+<tr><td><code>validate.py</code></td><td>几何 / 场景 / BVH / camera / fx / layout / crowd / rig 校验器，四字段诊断（code / ok / message / hint）</td><td><b>验证层现成骨架</b>，新增校验项只需 add(...)</td><td>无构图量化指标集（覆盖率 / 居中 / 离屏 / 速度曲线 / 抖动频带）</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="signals">
+<h2>控制信号层级排序（对既有结论的复核）</h2>
+<p class="lead">控制力不是信号的固有属性，而是「信号 × 下游接口」的乘积。因此排序必须分通道给。</p>
+<table>
+<thead><tr><th style="width:112px">信号</th><th style="width:120px">2D 条件图通道</th><th style="width:120px">原生 3D / 位姿通道</th><th>最终以什么形式进入下游</th></tr></thead>
+<tbody>
+<tr><td><b>相机</b><br><span class="src">机位 / 焦距 / 时序</span></td><td><span class="tag warn">中</span><br>焦距与位姿投影成 2D 后大部分不可逆丢失</td><td><span class="tag ok">最强</span><br>位姿可直接作 3D 驱动条件</td><td>① USD 相机时序（UsdGeom.Camera + 时间采样，export_usd.py 已能写）② glTF camera（cameras[] / type=perspective / aspectRatio·yfov·znear·zfar）③ 逐帧内参外参 JSON（f_px·cx·cy / K·R·t）④ 构图约束（覆盖率 / 居中 / 离屏）</td></tr>
+<tr><td><b>动作</b><br><span class="src">骨骼 / 轨迹</span></td><td><span class="tag ok">高</span><br>可降维成 OpenPose / COCO 关键点图，是 ControlNet 原生条件类型</td><td><span class="tag ok">高</span><br>序列姿态可被 3D-aware 视频模型消费</td><td>① 关键点图 PNG（由 SOMA 77 关节导出）② BVH / UsdSkel 动画 ③ 逐帧 pose 序列（pose_store.py 已有）</td></tr>
+<tr><td><b>几何</b><br><span class="src">网格 / 代理</span></td><td><span class="tag ok">高</span><br>depth / normal / seg / lineart 把三维压成二维，而下游吃的就是二维</td><td><span class="tag warn">中</span><br>通常要先走重建或渲染才成信号</td><td>① 条件图四件套 ② mask（前景显式图）③ GLB / USDA 几何本体</td></tr>
+<tr><td><b>特效占位</b><br><span class="src">体积 / 轨迹</span></td><td><span class="tag bad">最弱</span><br>体积没有标准下游接口，必须先压成深度 / 法线 / 遮罩</td><td><span class="tag bad">弱</span></td><td>① 深度 / 法线上的补丁 ② FX 事件时间轴 ③ USD 体积球串</td></tr>
+<tr><td><b>权威数据表</b><br><span class="src">manifest / validation</span></td><td colspan="2"><span class="tag">不产生任何视觉控制</span>（0 张像素）</td><td>不进入模型；它是<b>准入闸</b>——决定哪些资产能进管线、哪些镜头算合格</td></tr>
+</tbody>
+</table>
+<div class="note"><b>复核结论：</b>✅「相机与动作最强」成立，但前提是下游真的提供 2D 条件图与位姿序列两类接口。✅「体积最弱」成立，且有工程后果：特效占位只能作为在深度 / 法线上叠加的补丁，不能作主要控制手段。⚠️ 需修正的是「几何是中间档」——那只在原生 3D 通道下成立；在 2D 条件图通道下几何与相机、动作同档。<b>结论：通道决定排序，不信号决定排序。</b></div>
+</section>
+
+<section id="conditions">
+<h2>条件图通道补全（最高优先级）</h2>
+<p class="lead">ControlNet 官方 README 自列 9 类条件（canny / M-LSD / HED / scribble / fake-scribble / pose / seg / depth / normal），并点名 HED、Midas、Openpose 三类检测器。resources3D 的评估协议则把下游契约定义为 mask / depth / lineart / shade 四件套，并要求「随图必须带三样东西」：画幅 + 焦距、深度归一化区间、通道语义 + 主体投影口径。两个口径合并即六通道契约。</p>
+<table>
+<thead><tr><th style="width:88px">通道</th><th style="width:190px">下游对应</th><th style="width:96px">我们有吗</th><th>怎么补（复用既有件）</th></tr></thead>
+<tbody>
+<tr><td><code>depth</code></td><td>ControlNet depth / depth_structure_consistency</td><td><span class="tag ok">有</span></td><td>保留；sidecar 声明 near/far 与极性</td></tr>
+<tr><td><code>normal</code></td><td>ControlNet normal</td><td><span class="tag ok">有</span></td><td>保留（含 16bit 无损版）</td></tr>
+<tr><td><code>seg</code></td><td>ControlNet seg</td><td><span class="tag ok">有</span></td><td>保留；扩到新资产类别（调色板颜色两两不同的约束要保留）</td></tr>
+<tr><td><code>mask</code></td><td>主体投影 / 前景遮罩</td><td><span class="tag warn">隐含</span></td><td>从 depth 前景掩码直接存 8bit PNG，<b>零额外光栅成本</b></td></tr>
+<tr><td><code>lineart</code></td><td>canny / M-LSD / HED / scribble；edge_consistency</td><td><span class="tag bad">无</span></td><td>建议移植 resources3D <code>wmcore.line_art_from_face_id</code>（基于 face_id 取轮廓，轮廓纯度更好）</td></tr>
+<tr><td><code>pose</code></td><td>ControlNet pose（OpenPose / COCO）</td><td><span class="tag bad">无</span></td><td>由 pose_store.py 已有的 77 关节导出 COCO-18 / OpenPose-25 关键点 JSON + PNG，<b>零新增几何成本</b></td></tr>
+<tr><td><code>shade</code></td><td>评估协议四件套之一</td><td><span class="tag bad">无</span></td><td>可选（resources3D wmcore.rasterize 已返回朗伯 shade）。<b>优先级最低</b>：没有标准下游接口吃 shade</td></tr>
+</tbody>
+</table>
+<h3>必须先裁定的两件事</h3>
+<table>
+<thead><tr><th style="width:110px">项</th><th>tree-resources-builder</th><th>resources3D</th><th style="width:280px">为什么危险 / 建议裁定</th></tr></thead>
+<tbody>
+<tr><td><b>深度极性</b></td><td><code>0=最近，1=最远</code>（conditions.py 的 DEPTH_ENCODING；背景 1.0）</td><td><code>近=1 / 远=0</code>（wmcore.depth_to_unit）</td><td><b>完全相反。</b>混用会让下游 depth 条件完全反相——<b>静默</b>的，不报错、只是结果全错。建议统一为「近=1 远=0」，并在 sidecar 显式写 encoding</td></tr>
+<tr><td><b>上轴</b></td><td>Z-up（stage SetStageUpAxis(z)、layout up_axis:"Z"、camera up=(0,0,1)）</td><td>Y-up（wmcore.Camera.up=(0,1,0)）</td><td>混用会让相机俯仰与投影整体翻转。建议<b>保持各自上轴</b>，但所有跨边界文件必须带 up_axis，读取端不一致即判红</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="assets">
+<h2>五类资产补全状态矩阵</h2>
+<div style="margin:8px 0 4px"><button class="btn on" data-filter="all" type="button">全部</button> <button class="btn" data-filter="R4" type="button">仅 R4（资产补全）</button> <button class="btn" data-filter="gap" type="button">只看有缺口的</button></div>
+<table id="assetMatrix">
+<thead><tr><th style="width:76px">类别</th><th style="width:200px">下一步做什么</th><th style="width:200px">底座 / 模板库</th><th style="width:210px">产出文件</th><th style="width:190px">如何校验</th><th style="width:150px">谁来做</th><th style="width:80px">阶段</th></tr></thead>
+<tbody>
+<tr data-stage="R4" data-gap="1"><td><b>人物</b></td><td>10 个身份变体（ANNY 六表型扩组合）；人形部件拆分（移植 vehicle_parts 方法论）；服装改贴合壳；面部只做线稿级体块</td><td>SOMA-X（Apache-2.0，77 关节，三后端已跑通）+ 体块人偶作低模对照</td><td>soma_variants/*.glb（10）；character_parts/*.glb；soma_variants.json</td><td>水密 / 退化面 / 身高带 1.6–1.86 m / 部件数 / 悬空 / 贴地；新增部件不穿插、关节限位、服装间隙</td><td>LLM 出配方 + 程序化生成</td><td><span class="badge">R4</span></td></tr>
+<tr data-stage="R4" data-gap="1"><td><b>植被</b></td><td>LOD 规则表（low ≤1k / mid ≤8k / hero ≤50k，<b>按实测口径写</b>）；6 树种配方（针叶/阔叶/灌木/枯木/草丛/藤蔓）；实例化表 + USD PointInstancer</td><td>自建 L-system + 已减面 island_tree_01 + Kenney nature-kit</td><td>vegetation/*.glb（6）；vegetation_params.json 扩写；vegetation_lod.json</td><td>水密 / 退化面 / 树种尺寸先验 / 贴地；新增 LOD 单调性、实例后总面数预算</td><td>LLM 出配方 + 程序化生成 + CC0 下载（hero）</td><td><span class="badge">R4</span></td></tr>
+<tr data-stage="R4" data-gap="1"><td><b>道具</b></td><td><b>补一个 20 件的 CC0 白模零件库 + 命名与许可台账 + LOD 规则</b>；命名 <code>&lt;category&gt;_&lt;name&gt;_&lt;variant&gt;</code>，对齐 resolve_category 语义表</td><td>Kenney 为主（CC0、&lt;1k 面、风格统一、可脚本化）；Poly Haven 高模只作少量 hero；MakeHuman 服装已在手</td><td>props/&lt;category&gt;/&lt;name&gt;.glb（20×3 档）；prop_library.json；prop_catalog.json</td><td>逐件水密 / 退化面 / 类别尺寸带 / 贴地 / LOD 单调性；<b>台账缺许可或 sha256 即判红</b></td><td>CC0 下载 + 本地脚本归一减面；变体由 LLM 出配方</td><td><span class="badge">R4</span></td></tr>
+<tr data-stage="R4" data-gap="1"><td><b>载具</b></td><td>把 28 点截面环提升为 schema 化配方（length/width/height/wheelbase/roof_frac/window_band），产出<b>同拓扑</b>四车身；语义零件库；载具类型 → 动力学预设</td><td>自建 schema（主，绕开「没有成熟开源参数化汽车底座」）；Kenney car-kit 占位；Poly Pizza 跑车作参考（CC-BY 需署名）</td><td>vehicle_car_&lt;variant&gt;.glb（4）；vehicle_parts/&lt;part&gt;.glb；vehicle_dynamics.json 扩分档</td><td>分件报告；新增<b>同拓扑校验</b>（四车顶点拓扑哈希一致）、车轮不穿地、车门间隙 0–10 mm 带</td><td>LLM 出配方 + 程序化生成 + CC0 下载</td><td><span class="badge">R4</span></td></tr>
+<tr data-stage="R4" data-gap="1"><td><b>场景</b></td><td>3 种街区布局（住宅/商业/巷道）；分块 LOD（搬 resources3D 已实测的 UsdLod.RootAPI）；公共件混排（3 件已减面）</td><td>现有程序化街区 + 已减面公共件 + USD 汇合层</td><td>scene_&lt;variant&gt;.glb + .usda；scene_layout.json 扩多场景 + instances[]；scene_mix.json</td><td>贴地 / 人车穿插 / 人群间距 / 首帧构图 / 类别覆盖；新增 LOD 层级正确性、块间不重叠、混排后总面数</td><td>LLM 出配方 + 程序化生成 + CC0 下载</td><td><span class="badge">R4</span></td></tr>
+<tr data-stage="R2" data-gap="1"><td><b>运镜</b></td><td>9 类镜头类型库（推/拉/摇/俯仰/移/跟/环绕/升降/手持）；每类自带可自动判定的构图 / 运动量；镜头包批量产出</td><td>shot_spec.py 的 world/mounted 模式 + vehicle_dynamics 轨迹 + conditions 渲染器</td><td>camera_moves.py；shot_package.py；shot_library.json；camera_intrinsics.json；shots/&lt;id&gt;/ 9 个镜头包</td><td>每镜 ≥5 项：入画率 / 高度占比 / 居中偏移 / 视锥内比例 / 速度曲线 / 焦距变化率 / 抖动频带</td><td>程序化生成（LLM 出配方可选）</td><td><span class="badge">R2</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="camera">
+<h2>运镜与镜头包</h2>
+<table>
+<thead><tr><th style="width:96px">镜头</th><th style="width:230px">参数化表达</th><th style="width:84px">典型焦段</th><th>可校验量（自动判定）</th></tr></thead>
+<tbody>
+<tr><td>推 dolly in</td><td>eye 沿视线靠近 target，focal 可锁定</td><td>35–50</td><td>主体高度占比单调上升；速度曲线平滑（无折角）</td></tr>
+<tr><td>拉 dolly out</td><td>eye 远离</td><td>24–35</td><td>主体高度占比单调下降；主体仍在画幅内</td></tr>
+<tr><td>摇 pan</td><td>eye 固定，target 绕 up 轴转</td><td>24–50</td><td>角速度 ≤ 上限；无 wrap 跳变；全程主体在视锥内比例达标</td></tr>
+<tr><td>俯仰 tilt</td><td>eye 固定，target 在俯仰面内转</td><td>24–50</td><td>俯仰角速度 ≤ 上限；地平线不出现异常占幅</td></tr>
+<tr><td>移 truck</td><td>eye 平行地面横移</td><td>24–35</td><td>线速度恒定或按缓动；主体在视锥内比例 ≥ 阈值</td></tr>
+<tr><td>跟 follow</td><td>eye 挂在被摄体刚体上（mounted）</td><td>35–50</td><td>主体全程在画幅内；机位与被摄体距离恒定带宽内</td></tr>
+<tr><td>环绕 orbit / arc</td><td>eye 绕 target 在水平面转</td><td>24–85（可变焦）</td><td>角速度恒定；高度占比恒定；<b>与被摄体距离恒定</b>（环绕最易破的指标）</td></tr>
+<tr><td>升降 pedestal / crane</td><td>eye 沿世界 up 轴升降</td><td>18–35</td><td>垂直速度符合缓动；主体不被裁切</td></tr>
+<tr><td>手持 handheld</td><td>基础轨道 + 受限频带噪声</td><td>35–50</td><td>噪声必须落在受限频带（如 0.5–3 Hz 正弦 / 柏林叠加），<b>不是白噪声</b>；位移幅度 ≤ 构图容差</td></tr>
+</tbody>
+</table>
+<h3>一个镜头包 = 一个自包含目录</h3>
+<div class="card"><pre style="margin:0;font-family:var(--mono);font-size:12.6px;line-height:1.62;white-space:pre-wrap">shots/&lt;shot_id&gt;/
+├── shot_spec.json          # 场景 + 角色 + 相机 + 时间段 + 状态
+├── camera/
+│   ├── camera.usda         # USD 相机时序（逐帧时间采样，不抽样）
+│   ├── camera.gltf         # glTF camera（perspective + yfov/znear/zfar）
+│   └── intrinsics.json     # 逐帧 f_px/cx/cy + near/far + 内外参 R/t（唯一权威源）
+├── conditions/             # 逐帧条件序列
+│   ├── frame_0000_depth.png / _normal.png / _seg.png / _mask.png / _lineart.png / _pose.png
+│   └── sidecar.json        # 画幅+焦距 / near-far / 通道语义 / up_axis
+├── geometry/               # 该镜头用到的资产实例（GLB）
+├── validation_report.json  # 几何 + 构图 + 运动 + 条件图四类校验
+└── contact_sheet.jpg + previs.mp4</pre></div>
+<div class="note"><b>两条实现规则（本轮调研新增）：</b>① <b>恒速推轨用线性插值</b>，缓动只用于「有起停」的镜头，且缓动作用在<b>位移量</b>上而非每帧角度上（作用在角度上会做出弧线）——现有 <code>shot_spec._smoothstep</code> 是无条件缓动，落地时需按 move 类型分档。② <b>焦距与机身分两张预设表</b>：Lens Settings（焦距 / F 值 / 光圈叶片）与 Filmback（传感器宽高 / Sensor Fit）相互独立（社区同构：Blender 相机 Presets、Unreal Lens / Filmback）；我们已有 <code>sensor_width_mm</code> + <code>focal_mm</code>，只需补 <code>lens_preset</code> / <code>filmback_preset</code> 两个枚举。</div>
+<div class="note"><b>为什么必须同时出「条件序列」和「相机参数」：</b>下游视频模型吃的是<b>逐帧条件序列</b>；3D 驱动视频吃的是<b>相机轨迹</b>。只出 PNG 会把焦距与位姿信息丢掉——这正是 §控制信号排序的核心结论。好消息：USD 相机约定（−Z 朝前、+Y 向上）与 glTF 一致，<code>export_usd.py</code> 的 <code>_look_at_rot</code> 可直接复用，不需要转轴。</div>
+</section>
+
+<section id="schema">
+<h2>Shot / Asset 最小 Schema</h2>
+<h3>Shot spec（对齐 harness/shot_spec.py）</h3>
+<table>
+<thead><tr><th style="width:186px">字段</th><th style="width:76px">现状</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>shot_id</code> / <code>kind</code></td><td><span class="tag ok">有</span> / <span class="tag warn">缺</span></td><td>全局唯一；kind 统一为 "shot_spec"</td></tr>
+<tr><td><code>fps</code> / <code>duration_s</code> / <code>resolution</code></td><td><span class="tag ok">有</span> / <span class="tag ok">有</span> / <span class="tag bad">缺</span></td><td>resolution 必须有（sidecar 与条件图要引用）</td></tr>
+<tr><td><code>up_axis</code></td><td><span class="tag bad">缺</span></td><td>显式声明，防两套工作混用</td></tr>
+<tr><td><code>assets[]</code></td><td><span class="tag warn">部分</span></td><td><code>{asset_id, transform, role}</code>，改成引用 manifest 的 asset_id</td></tr>
+<tr><td><code>actors[]</code>（asset + track）</td><td><span class="tag ok">有</span></td><td>保留</td></tr>
+<tr><td><code>camera.mode</code> / <code>camera.mount</code> / <code>camera.keys[]</code></td><td><span class="tag ok">有</span></td><td>保留；keys[].focal_mm 是焦距控制入口</td></tr>
+<tr><td><code>camera.move</code></td><td><span class="tag bad">缺</span></td><td><b>新增</b>：<code>{type, easing, handheld?}</code>，镜头类型库的核心字段</td></tr>
+<tr><td><code>camera.sensor_width_mm</code> / <code>near</code> / <code>far</code></td><td><span class="tag warn">部分</span></td><td>补 near / far</td></tr>
+<tr><td><code>conditions</code></td><td><span class="tag bad">缺</span></td><td><b>新增</b>：<code>{channels[], depth{near,far,encoding}, mask_semantics, palette_version}</code></td></tr>
+<tr><td><code>timeline.events[]</code></td><td><span class="tag warn">分散</span></td><td>合并 fx_proxy.json；FX 才有时间轴归属</td></tr>
+<tr><td><code>validation</code> / <code>license[]</code> / <code>status</code></td><td><span class="tag bad">缺</span></td><td><b>新增</b>：shot → 验证报告回链；资产许可随 shot 带出；状态 draft/validated/approved</td></tr>
+</tbody>
+</table>
+<h3>Asset manifest（字段设计照抄 resources3D gallery/manifest.json）</h3>
+<table>
+<thead><tr><th style="width:186px">字段</th><th style="width:76px">现状</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td><span class="tag bad">缺</span></td><td>稳定标识，shot 通过它引用</td></tr>
+<tr><td><code>path</code> / <code>bytes</code></td><td><span class="tag ok">有</span></td><td>保留</td></tr>
+<tr><td><code>category</code> / <code>kind</code></td><td><span class="tag bad">缺</span></td><td>category 对齐 conditions.resolve_category 语义表；kind 显式 C4 两层</td></tr>
+<tr><td><code>license</code>（spdx / source_url / attribution）</td><td><span class="tag warn">分散</span></td><td>公共件在 public_assets.json 有，程序化件没有 → <b>统一进 manifest</b></td></tr>
+<tr><td><code>fingerprint</code>（sha256）</td><td><span class="tag warn">分散</span></td><td>公共件有、程序化件无 → 新增内容指纹</td></tr>
+<tr><td><code>version</code> / <code>source{generator,cmd,params,tool_version}</code></td><td><span class="tag bad">缺</span></td><td>照抄 gallery manifest</td></tr>
+<tr><td><code>geometry{verts,faces,watertight,bbox_m,up_axis,units}</code></td><td><span class="tag warn">分离</span></td><td>现在在 validation_report 的 metrics 里 → 合并进 manifest</td></tr>
+<tr><td><code>hierarchy{parent_id,children[]}</code></td><td><span class="tag bad">缺</span></td><td>支撑「模型 → 部件」与「场景 → 实例」</td></tr>
+<tr><td><code>lod{level,faces}</code></td><td><span class="tag warn">分离</span></td><td>现在在 public_decimated.json → 合并</td></tr>
+<tr><td><code>validation{report_path,pass,checks[],validated_at}</code> / <code>tags[]</code></td><td><span class="tag warn">分离</span> / <span class="tag bad">缺</span></td><td>合并；tags 用于检索</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="stages">
+<h2>阶段路线 R0–R7</h2>
+<div class="flow">
+<svg viewBox="0 0 660 300" role="img" aria-label="阶段依赖图">
+  <defs><marker id="ah" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#8b96a6"/></marker></defs>
+  <g font-family="inherit" font-size="12">
+    <rect x="18" y="18" width="120" height="46" rx="9" fill="none" stroke="#2f5f8f" stroke-width="1.6"/>
+    <text x="78" y="38" text-anchor="middle" fill="#2f5f8f" font-weight="700">R0 契约统一</text>
+    <text x="78" y="54" text-anchor="middle" fill="#5d6878" font-size="10.5">六通道 + 极性裁定</text>
+    <rect x="176" y="110" width="120" height="46" rx="9" fill="none" stroke="#2f5f8f" stroke-width="1.6"/>
+    <text x="236" y="130" text-anchor="middle" fill="#2f5f8f" font-weight="700">R1 条件图</text>
+    <text x="236" y="146" text-anchor="middle" fill="#5d6878" font-size="10.5">mask/lineart/pose</text>
+    <rect x="386" y="110" width="120" height="46" rx="9" fill="none" stroke="#2f5f8f" stroke-width="1.6"/>
+    <text x="446" y="130" text-anchor="middle" fill="#2f5f8f" font-weight="700">R3 Schema</text>
+    <text x="446" y="146" text-anchor="middle" fill="#5d6878" font-size="10.5">manifest v2 + 引用完整性</text>
+    <rect x="281" y="200" width="120" height="46" rx="9" fill="none" stroke="#c07a3e" stroke-width="1.8"/>
+    <text x="341" y="220" text-anchor="middle" fill="#c07a3e" font-weight="700">R2 运镜体系</text>
+    <text x="341" y="236" text-anchor="middle" fill="#5d6878" font-size="10.5">9 类镜头 + 镜头包</text>
+    <rect x="40" y="200" width="120" height="46" rx="9" fill="none" stroke="#2f7d5c" stroke-width="1.6"/>
+    <text x="100" y="220" text-anchor="middle" fill="#2f7d5c" font-weight="700">R4 资产补全</text>
+    <text x="100" y="236" text-anchor="middle" fill="#5d6878" font-size="10.5">五类 + LOD + 台账</text>
+    <rect x="176" y="200" width="120" height="46" rx="9" fill="none" stroke="#2f7d5c" stroke-width="1.6"/>
+    <text x="236" y="220" text-anchor="middle" fill="#2f7d5c" font-weight="700">R5 最小导演台</text>
+    <text x="236" y="236" text-anchor="middle" fill="#5d6878" font-size="10.5">只读本地看板</text>
+    <rect x="446" y="200" width="120" height="46" rx="9" fill="none" stroke="#5d6878" stroke-width="1.6"/>
+    <text x="506" y="220" text-anchor="middle" fill="#5d6878" font-weight="700">R6 契约对齐</text>
+    <text x="506" y="236" text-anchor="middle" fill="#5d6878" font-size="10.5">跨 resources3D 比对</text>
+    <rect x="176" y="18" width="120" height="46" rx="9" fill="none" stroke="#5d6878" stroke-width="1.6"/>
+    <text x="236" y="38" text-anchor="middle" fill="#5d6878" font-weight="700">R7 云端 LLM</text>
+    <text x="236" y="54" text-anchor="middle" fill="#5d6878" font-size="10.5">首过率 / 收敛率</text>
+    <g stroke="#8b96a6" stroke-width="1.4" fill="none" marker-end="url(#ah)">
+      <path d="M98,64 L98,86 L236,86 L236,108"/>
+      <path d="M98,64 L98,86 L446,86 L446,108"/>
+      <path d="M236,156 L236,176 L341,176 L341,198"/>
+      <path d="M446,156 L446,176 L341,176"/>
+      <path d="M341,246 L341,262 L236,262 L236,248"/>
+      <path d="M341,246 L341,262 L100,262 L100,248"/>
+      <path d="M506,246 L506,276 L341,276"/>
+      <path d="M236,64 L236,44"/>
+    </g>
+  </g>
+</svg>
+</div>
+<p class="src">依赖关系：R0 → (R1, R3) → R2 → (R4, R5) → R6 / R7。R7 依赖 R0 与 R3。</p>
+
+<div class="stage">
+  <h3><span class="badge">R0</span> 契约统一 <span class="tag acc">最高优先级 · 阻塞其余全部</span></h3>
+  <div class="goal">目标：把「下游到底要什么」写成可校验的契约，并裁定与 resources3D 的两个冲突</div>
+  <dl>
+    <dt>范围</dt><dd>六通道契约定义；深度极性裁定与改码；随图 sidecar 三要素（画幅+焦距 / near-far / 通道语义）；up_axis 显式化；跨边界字段清单</dd>
+    <dt>交付物</dt><dd><code>plans/CONTRACT-conditions.md</code>；conditions.py 增 mask 通道 + 深度编码常量显式化；shot_spec.py 的 SUPPORTED_CONDITIONS 扩到 6；sidecar 写出器</dd>
+    <dt>验收</dt><dd>同场景导出六通道 PNG + sidecar；sidecar 必含 resolution/f_px/near/far/encoding/up_axis/mask_semantics；与 resources3D 同相机同场景交叉渲染，深度极性对齐后逐像素一致率 ≥ 99%</dd>
+    <dt>依赖</dt><dd>无</dd>
+    <dt class="no">不做</dt><dd>不改 PLAN.md / paradigms.md 等既有文件；不引入 Blender 渲染；不下载模型权重；不做下游 A/B 验证（用户已明确暂不执行）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R1</span> 条件图六通道落地（含 pose 关键点）</h3>
+  <div class="goal">目标：把下游最通用的条件通道补齐，让竖切片直接产出可消费的条件序列</div>
+  <dl>
+    <dt>范围</dt><dd>mask（零额外光栅成本）；lineart（face_id 取轮廓）；pose（SOMA 77 关节 → COCO-18 / OpenPose-25）；每 shot 出 conditions/ 子目录；条件图指标按 metrics_spec 口径接入 validation_report</dd>
+    <dt>交付物</dt><dd>conditions.py 增 3 通道；<code>harness/pose_keypoints.py</code>；conditions_check.json 扩展；shots/shot_001/conditions/ 抽样集</dd>
+    <dt>验收</dt><dd>六通道齐备率 100%；隐藏几何回归仍成立；单通道耗时与总耗时可对账（现测 83.24 ms，加 3 通道后仍 &lt; 1500 ms）；关键点图与 pose_store 关节序列抽样 10 帧逐帧一致</dd>
+    <dt>依赖</dt><dd>R0</dd>
+    <dt class="no">不做</dt><dd>不做 shade 通道（无标准下游接口）；<b>不下载任何预训练检测器</b>（HED/Midas/OpenPose）——我们输出的是喂给下游的图，不需要在本机跑下游的检测器</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R2</span> 运镜体系化（镜头类型库 + 镜头包）</h3>
+  <div class="goal">目标：从「一次推镜」变成「9 类镜头 × 可校验 × 可批量」</div>
+  <dl>
+    <dt>范围</dt><dd>9 类镜头参数化；镜头包目录与写出器；构图 / 运动校验量；相机时序逐帧写 USD；glTF camera 导出；逐帧内外参 JSON 作为唯一权威源</dd>
+    <dt>交付物</dt><dd><code>harness/camera_moves.py</code>；<code>harness/shot_package.py</code>；shot_library.json；camera_intrinsics.json；9 个样例镜头包</dd>
+    <dt>验收</dt><dd>9 类各 1 个样例，每类通过 ≥5 项校验；每包含全部 5 类产物；USD 时序与 intrinsics.json 抽样 10 帧重投影误差 ≤ 1e-4；手持噪声主频落在 0.5–3 Hz</dd>
+    <dt>依赖</dt><dd>R1</dd>
+    <dt class="no">不做</dt><dd>不做手持以外的物理相机模型；不做卷帘快门 / 畸变；不做「镜头语言」自动评分（需人工判读，超出 CPU 自动校验能力）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R3</span> 镜头库与资产库 schema 落地</h3>
+  <div class="goal">目标：把「资产」和「镜头」变成可引用、可版本化、可追溯的一等实体</div>
+  <dl>
+    <dt>范围</dt><dd>shot spec 补 11 个缺失字段；asset manifest v2（保留 files[] 兼容 verify_exports.py）；指纹 / 许可 / 层级 / LOD / 验证状态入 manifest；scene_layout 改引用 asset_id；新增 validate_manifest 校验器</dd>
+    <dt>交付物</dt><dd><code>harness/asset_manifest.py</code>；manifest.json v2；manifest_report.json</dd>
+    <dt>验收</dt><dd>每条目有 id + fingerprint + license + validation 四项，缺一即红；shot 引用的 asset_id 均存在；旧 verify_exports.py 仍跑通（向后兼容回归）</dd>
+    <dt>依赖</dt><dd>R0</dd>
+    <dt class="no">不做</dt><dd>不引入数据库；不引入 USD Asset Resolver 运行时；不做图形资产浏览器（界面在 R5）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R4</span> 五类资产补全（道具优先）</h3>
+  <div class="goal">目标：补上「道具只有 1 件」这个最大空洞，并把另外四类从「一件」扩到「一族」</div>
+  <dl>
+    <dt>范围</dt><dd>道具 20 件 CC0 零件库 + 台账 + LOD 规则；植被 6 树种 + 三档 LOD + 实例化表；载具 4 种同拓扑车身 + 零件库 + 4 类动力学预设；场景 3 种街区 + 分块 LOD + 公共件混排；人物 10 变体 + 部件拆分 + 贴合服装壳</dd>
+    <dt>交付物</dt><dd>props/**、vegetation/**、vehicle_car_*.glb、scene_*.glb、soma_variants/**；prop_library.json、vegetation_lod.json、scene_mix.json</dd>
+    <dt>验收</dt><dd>每类有 validation_report 条目且全绿；面数预算达标（道具 low ≤ 500 / mid ≤ 5k / hero ≤ 50k）；台账逐件可查许可与 sha256；混排后无穿插、贴地为 0；四种车身拓扑哈希一致</dd>
+    <dt>依赖</dt><dd>R3</dd>
+    <dt class="no">不做</dt><dd>不做扫描高模直入；不做 AI 生成件；不做面部表情；不做飞机 / 轮船参数化底座（OpenVSP/Freeship 未实跑）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R5</span> 最小导演台（只读本地）</h3>
+  <div class="goal">目标：给人一个「选镜头、选资产、看校验」的最小界面</div>
+  <dl>
+    <dt>范围</dt><dd>镜头列表（镜号 / 描述 / 主体 / 场景 / 时长 / 机位 / 状态）；缩略图墙（读 contact sheet）；时间轴（读 intrinsics.json）；状态字段；本地批注位</dd>
+    <dt>交付物</dt><dd><code>harness/board.py</code>；<code>boards/shot_board.html</code>（单文件离线）</dd>
+    <dt>验收</dt><dd>离线 file:// 打开，0 外链、0 控制台错误（沿用 verify_report.py 口径）；能从镜头列表跳到镜头包；状态字段可编辑并回写 shot spec</dd>
+    <dt>依赖</dt><dd>R2、R3</dd>
+    <dt class="no">不做</dt><dd>不做多人协作、不做服务端、不做审片流、不做缩略图生成（用现成 contact sheet）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R6</span> 与 resources3D 的契约对齐</h3>
+  <div class="goal">目标：两套工作接到同一份契约上，并完成交叉验证</div>
+  <dl>
+    <dt>范围</dt><dd>深度极性 / 上轴 / 像素方向的最终裁定落码；wmcore 的 lineart/shade 与本项目实现的等价性比对；metrics_spec 五类 CPU 指标接入 validation_report；13 行覆盖矩阵与本项目类别矩阵对齐</dd>
+    <dt>交付物</dt><dd>契约对齐记录；condition_metrics.json</dd>
+    <dt>验收</dt><dd>同相机同场景两套实现的深度图逐像素一致率 ≥ 99%；五类指标可在本项目产物上算出并落盘；覆盖矩阵对齐表无空行</dd>
+    <dt>依赖</dt><dd>R0、R1、R3</dd>
+    <dt class="no">不做</dt><dd><b>不改 resources3D 目录任何文件</b>；不物理合并两个仓库；不把 Blender 引入为渲染运行时（可选分支见决策点 5）</dd>
+  </dl>
+</div>
+
+<div class="stage">
+  <h3><span class="badge">R7</span> 云端 LLM 接入（把「验证闭环」真实化）</h3>
+  <div class="goal">目标：完成 PLAN.md §6 的 V5：统计首次执行成功率与 3 轮收敛率</div>
+  <dl>
+    <dt>范围</dt><dd>云端 LLM API 出 JSON 配方 → 本地确定性执行 → validate.py 判定 → 结构化 hint → 修复；批量任务统计</dd>
+    <dt>交付物</dt><dd>LLM 配方→执行的记录文件；成功率与收敛率统计</dd>
+    <dt>验收</dt><dd>N 个资产的「首过率」「3 轮内收敛率」有落盘统计（每档样本 ≥ 20）；失败案例保留完整 hint 链</dd>
+    <dt>依赖</dt><dd>R0、R3</dd>
+    <dt class="no">不做</dt><dd>不本地推理；不使用任何 3D 生成式模型；不把「模型认为对了」当作通过（仍以 validate.py 判定为准）</dd>
+  </dl>
+</div>
+</section>
+
+<section id="community">
+<h2>社区做法：可借鉴 / 需改造 / 明确不做</h2>
+<p class="lead">详细调研正文见 <code>research/community_pipeline_practices.md</code>（逐条带来源链接 + 来源清单）。</p>
+<h3>可直接照抄</h3>
+<table>
+<thead><tr><th style="width:250px">做法</th><th style="width:96px">落在哪层</th><th>在我们体系里具体是什么</th></tr></thead>
+<tbody>
+<tr><td>资产清单字段设计（id / 分类 / 许可 / 指纹 / 版本 / 生成命令与参数 / 工具版本 / 几何统计 / 验证状态）</td><td>编排层</td><td>Asset manifest 字段表（照抄 resources3D gallery manifest）</td></tr>
+<tr><td>逐件许可字段 + 署名文本进交付物</td><td>编排层 + 验证层</td><td>public_assets.json 的许可字段合入 manifest；shot 的 license[] 字段带出</td></tr>
+<tr><td>条件图六通道 + 随图 sidecar 三要素</td><td>编排层 + 镜头层</td><td>见 §条件图通道</td></tr>
+<tr><td>镜头 shot list 的字段集（镜号 / 描述 / 主体 / 场景 / 时长 / 机位 / 状态）</td><td>镜头层</td><td>shot spec 的 description / status 字段</td></tr>
+<tr><td>内容指纹（sha256）做资产身份</td><td>编排层 + 验证层</td><td>manifest[].fingerprint，缺即判红</td></tr>
+<tr><td>镜头库焦距预设集合 + 传感器尺寸换算口径</td><td>镜头层</td><td>camera.lens_preset 字段 + f_px 换算进 sidecar</td></tr>
+<tr><td>Kitsu 层级骨架：项目 → 序列 → 镜头，与资产库并列两分支，交点设为「镜头引用资产」</td><td>编排层 + 界面层</td><td>shot spec 的 assets[] 引用 + asset manifest 的 id</td></tr>
+<tr><td>Kitsu 状态词表与「镜头状态 / 任务状态分层」原则（todo / in-progress / waiting-for-approval / done + retake）</td><td>界面层</td><td>shot 级与 task 级两套字段</td></tr>
+<tr><td>Previs Pro 的区块划分（缩略图墙 + 镜头列表 + 覆盖视图 + 时间轴 + 脚本面板 + 审阅 + 导出中心）</td><td>界面层</td><td>R5 最小导演台的区块骨架</td></tr>
+<tr><td>许可值域用 <b>SPDX ID</b> + REUSE 规范（库根 <code>LICENSES/</code> 文件名即 SPDX 标识）+ 文件级 SPDX 头</td><td>编排层</td><td>manifest 的 <code>license.spdx</code> 值域 + <code>LICENSES/</code> 目录 + <code>SPDX-License-Identifier</code> 头</td></tr>
+<tr><td>元数据<b>四层结构</b>：描述 + tags + 机读 attributes + 指纹与统计</td><td>编排层</td><td>manifest 的四段结构</td></tr>
+<tr><td><b>双层指纹</b>（资产级内容哈希 + 文件级哈希），预览图单独版本化</td><td>编排层 + 验证层</td><td>manifest 的 <code>fingerprint</code> + <code>files[].md5</code> + 预览图版本号</td></tr>
+<tr><td>「人做 / AI 生成」做成<b>显式检索维度</b>（Sketchfab <code>is_ai=0/1</code>）</td><td>编排层 + 验证层</td><td>manifest 的 <code>provenance</code> 段 —— 台账里要有这个位才能证明合规</td></tr>
+<tr><td>署名要求作为<b>许可条款的派生结论</b>存储，不各自维护布尔字段</td><td>编排层</td><td><code>attribution_required</code> 由 <code>spdx</code> 派生</td></tr>
+<tr><td><b>Lens 与 Filmback 分两张预设表</b>（焦距 / F 值 / 光圈叶片 ⊥ 传感器宽高 / Sensor Fit）</td><td>镜头层</td><td><code>camera.lens_preset</code> + <code>camera.filmback_preset</code></td></tr>
+<tr><td>机位跟随用<b>约束语义</b>（朝向目标 + up 轴 roll）而非手打关键帧</td><td>镜头层</td><td><code>camera.move</code> 的 <code>look_at</code> / <code>up_roll</code>（我们已有 <code>resolve_camera</code>）</td></tr>
+<tr><td>条件图按<b>数据</b>而非颜色存储（单通道 / Non-Color），人看的预览另走 display 变换</td><td>验证层</td><td>条件图存 PNG-16 / EXR 灰度；预览图与条件图分离</td></tr>
+</tbody>
+</table>
+<h3>需要改造后使用</h3>
+<table>
+<thead><tr><th style="width:250px">做法</th><th style="width:96px">落在哪层</th><th>改造点</th></tr></thead>
+<tbody>
+<tr><td>资产分级（Hero / Mid / Low）</td><td>几何层</td><td>社区按「镜头距离」划；我们改成<b>按用途</b>（hero=近景主线、mid=中景、low=远景占位），并绑定面数预算</td></tr>
+<tr><td>命名与目录规范 &lt;category&gt;_&lt;name&gt;_&lt;variant&gt;</td><td>编排层</td><td>与 conditions.resolve_category 语义表对齐，避免两套类别词表</td></tr>
+<tr><td>变体管理（参数化底座 / 几何节点变体）</td><td>几何层</td><td>我们没有几何节点，改为 <b>JSON 配方 schema</b>（载具四车身同拓扑是第一个样例）</td></tr>
+<tr><td>USD 资产库 / Asset Resolver</td><td>编排层</td><td>不做完整 Asset Resolver，只借其 assetInfo 元数据字段做 manifest 标注</td></tr>
+<tr><td>导演台界面</td><td>界面层</td><td>只做<b>只读本地</b>看板：镜头列表 + 缩略图墙 + 状态；不做协作、不做服务端</td></tr>
+<tr><td>色彩管理（ACES / AgX）</td><td>验证层</td><td>条件图阶段不做影视色彩变换，但必须固定「depth / 线稿 / 法线与显示色彩无关」的约定</td></tr>
+<tr><td>镜头表字段（景别 / 机位运动 / 焦段 / 帧率 / 机位角度 / 声音 / 场景）</td><td>镜头层</td><td>照抄维度清单，裁成导演台子集：去掉器材 / 工时 / 排期类（属制片域），改为可扩展自定义字段</td></tr>
+<tr><td>脚本拆解（脚本 → 场景 → 帧）</td><td>编排层</td><td>借鉴切分<b>结果的结构</b>，但改为由人确认切分点，机器不生成画面</td></tr>
+<tr><td><b>OpenAssetIO 的实体引用模型</b>（按身份而非路径引用，属性按需解析）</td><td>编排层</td><td>我们自建 <code>asset_id</code> + <code>version</code> + <code>fingerprint</code> 语义 +「有 id 按 id 解析、无 id 按路径兜底」两级查找；<b>不引入运行时依赖</b></td></tr>
+<tr><td>resolver 插件式资产定位（ArDefaultResolver 兜底 + ArSetPreferredResolver 指定）</td><td>编排层</td><td>改成「目录索引 + 路径规则」两级查找，纯 CPU、无运行时依赖</td></tr>
+<tr><td>「规则 / 要求 / 一键修」的资产校验框架（Omniverse Asset Validator）</td><td>验证层</td><td>换成白模专属规则集：单位、朝向、面数上限、命名、LOD 配对、许可完备性</td></tr>
+<tr><td>「源文件 + 导入产物成对同步」（Unity Asset Database）</td><td>编排层</td><td>改成白模源 + 派生产物（部件级 / LOD / 预览）双向可追</td></tr>
+<tr><td>商业站自有许可（Fab / QAL）</td><td>编排层</td><td>改成「许可 ID + 条款版本号 + 条款快照哈希」</td></tr>
+<tr><td>COLMAP 的位姿格式（四元数 + 平移，Hamilton 约定）</td><td>镜头层</td><td>内部统一用 USD/glTF 约定；转 COLMAP 时在转换函数里做 Y 翻转，不靠调用方记忆</td></tr>
+</tbody>
+</table>
+<h3>明确不做</h3>
+<table>
+<thead><tr><th style="width:250px">做法</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>AI 生成件 / 扩散或 SDS 重建 / AI 出图出视频出音频</td><td>直接违反 C1</td></tr>
+<tr><td>扫描高模直接进管线</td><td>CPU + 体量；实测高模件无法可靠分件（ToyCar「玻璃学不出车门」）</td></tr>
+<tr><td>生成式合成路线（Wonder Studio / Flow Studio 式把 CG 自动合成进实拍）</td><td>生成式合成，与约束直接冲突</td></tr>
+<tr><td>生成计费与历史机制（Credits / Generation History）</td><td>与白模管线无关</td></tr>
+<tr><td>依赖模型自动产出创作判断（自动分镜画面 / 自动 coverage 建议 / 自动审批结论）</td><td>违反 C1 与「不下载模型权重」纪律</td></tr>
+<tr><td>多人协作 / 权限 / 审片流</td><td>本项目无团队、无服务端</td></tr>
+<tr><td>数据库型资产管理（ShotGrid / Ftrack 级）</td><td>过重；JSON + 内容寻址足够</td></tr>
+<tr><td>完整采用 OpenTimelineIO 作为时间线模型</td><td>OTIO 面向<b>剪辑时间线</b>（track / clip / source range），我们是<b>镜头生成时间线</b>（相机轨迹 + 条件序列），语义不同</td></tr>
+<tr><td>摄影机物理仿真（卷帘快门 / 镜头畸变 / 呼吸效应）</td><td>白模定位不需要；CPU 成本与收益不匹配</td></tr>
+<tr><td>在本机跑下游预训练检测器（HED / Midas / OpenPose）</td><td>我们输出的是喂给下游的图；且违反「不下载模型权重」纪律</td></tr>
+<tr><td>引入 OpenAssetIO / OTIO 作为<b>运行时依赖</b></td><td>两者都是 Apache-2.0 且很合适，但会把管线绑到外部库版本上 —— 只借数据模型，不引运行时</td></tr>
+<tr><td>全站统一 CC0、库里无许可字段的模型（Poly Haven 式）</td><td>我们混采多许可源，逐资产许可字段是必需项</td></tr>
+<tr><td>商店式订阅 / 买断经济与付费墙（KitBash3D / Fab / CGTrader 路线）</td><td>与离线白模库无关</td></tr>
+<tr><td>Nucleus 式中心化在线协同服务器与实时共编</td><td>纯离线体系</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="risks">
+<h2>风险与诚实边界</h2>
+<table>
+<thead><tr><th style="width:210px">风险</th><th style="width:170px">影响</th><th style="width:190px">触发条件</th><th>应对 / 归属阶段</th></tr></thead>
+<tbody>
+<tr><td><b>深度极性 / 上轴混用</b></td><td>下游条件图静默反相或翻转——不报错、结果全错</td><td>两套工作产物混用</td><td>契约显式化 + 跨渲染比对 + 读取端不一致即判红｜R0 / R6</td></tr>
+<tr><td>条件图通道堆得越多、下游可用越少</td><td>做了六通道但下游只吃两张，投入浪费</td><td>未与下游接口对齐就扩通道</td><td>先定契约再扩通道；通道清单必须对应到具体下游条件类型｜R0 / R1</td></tr>
+<tr><td>镜头库变成「好看的关键帧集合」</td><td>无自动校验量的镜头不可维护、不可复用</td><td>镜头类型只写名字不写可校验量</td><td>每类镜头必须带 ≥2 个可自动判定的构图 / 运动量｜R2</td></tr>
+<tr><td>资产库扩张快于验证能力</td><td>新增资产进不了管线，白做</td><td>R4 一次补 20+ 件</td><td>每类资产先跑通 1 件的完整链路再扩量｜R4</td></tr>
+<tr><td>公共件许可与再分发风险</td><td>交付物不可商用</td><td>CC-BY 署名遗漏、CC-BY-ND 被误用</td><td>台账逐件记许可 + 署名文本；validate_manifest 缺许可即红｜R3 / R4</td></tr>
+<tr><td>LLM 配方一次通过率低</td><td>返工</td><td>C3 允许但 C5 要求真实产物</td><td>验证前置 + 白名单配方 + 结构化 hint（PLAN.md D1 / D3）｜R7</td></tr>
+<tr><td>CPU 耗时随镜头数线性增长</td><td>批量出镜头包不可行</td><td>每镜 120 帧 × 6 通道</td><td>先小样验证再定预算｜R1 / R2</td></tr>
+<tr><td>界面层做过头</td><td>变成另一个产品</td><td>R5 越界到协作 / 服务端</td><td>明确「只读本地」｜R5</td></tr>
+</tbody>
+</table>
+<h3>诚实边界（本看板明确不声称的事）</h3>
+<ul>
+<li><b>没有实跑任何新代码。</b>所有数字来自仓库内已落盘的 JSON 读数；阶段、配方、schema 都是<b>建议</b>，不是已完成的工作。</li>
+<li><b>六通道的耗时是推算不是实测。</b>现测只有三通道（512×512 合计 83.24 ms）；加 mask/lineart/pose 后未实测，R1 必须先测再定预算。</li>
+<li><b>「镜头库被下游用起来」没有证据。</b>下游 A/B 按用户要求暂不执行，因此只能保证「产物格式正确、可被解析」，<b>不能保证「下游模型听话」</b>。</li>
+<li><b>手持是可控频带的机械噪声</b>，不是真人手持的物理仿真；「推 / 摇 / 移」是机位运动，不是光学变焦。</li>
+<li><b>社区调研停在公开资料层面</b>（官方文档 / 官方仓库 / 论文），未做行业访谈；「主流 / 个别 / 不适用」的判断是基于公开证据的评估，不是从业者统计。</li>
+<li><b>「没有成熟开源参数化汽车底座」这个判断未变</b>——自建 schema 是绕道方案，不是替代品。</li>
+</ul>
+</section>
+
+<section id="decisions">
+<h2>需用户拍板的 5 个决策点</h2>
+<div class="stage">
+  <h3>D1 · 镜头库的数据模型：自造 vs 采用现成</h3>
+  <dl><dt>A1（建议）</dt><dd>自建 shot spec + <b>只借 OpenAssetIO 的数据模型</b>（asset_id + version + fingerprint；「有 id 按 id 解析、无 id 按路径兜底」两级查找），<b>不引入外部运行时</b></dd>
+  <dt>A2</dt><dd>完整引入 OpenAssetIO 运行时（Apache-2.0）——但会把管线绑到外部库版本</dd>
+  <dt>B</dt><dd>采用 OpenTimelineIO 作为时间线层——语义错位（剪辑 clip vs 镜头包）且引入依赖与「source range」心智负担</dd>
+  <dt>影响</dt><dd>R2 / R3 是否完全自控；下游若要接 OTIO 需另写适配器</dd></dl>
+  <div class="note" style="margin-top:8px"><b>本轮调研新增：</b>「按身份而非按路径引用资产」已有现成标准 —— <b>OpenAssetIO</b>（Apache-2.0，github.com/OpenAssetIO/OpenAssetIO），官方已有 USD AR2 解析器插件 <code>usdOpenAssetIOResolver</code>、OTIO 插件 <code>otio-openassetio</code>、ShotGrid manager 插件 <code>fpt_openassetio_manager</code>，以及刻意简化的参照 manager <code>OpenAssetIO-Manager-BAL</code>。它的问题陈述与我们的处境高度一致：「用文件系统位置引用受管数据，会剥掉关于数据身份、用途与来源的语义信息」。<b>建议 A1：拿语义，不背依赖。</b></div>
+</div>
+<div class="stage">
+  <h3>D2 · 条件图通道清单与深度极性</h3>
+  <dl><dt>A（建议）</dt><dd>六通道（depth/normal/seg/mask/lineart/pose），深度改「近=1 远=0」——与评估协议一致</dd>
+  <dt>B</dt><dd>保持「近=0 远=1」，六通道照做——不动既有产物，但与评估口径反向，且需确认下游约定（ControlNet depth 通常近处更亮）</dd>
+  <dt>影响</dt><dd>是否需要重新生成已有条件图产物</dd></dl>
+</div>
+<div class="stage">
+  <h3>D3 · 道具零件库的来源策略</h3>
+  <dl><dt>A（建议）</dt><dd>Kenney 为主 + 少量 Poly Haven hero——CC0、面数低、风格统一、可脚本化</dd>
+  <dt>B</dt><dd>以 Poly Haven 为主——写实度好，但 5k–100k 面、需强减面、下载量大</dd>
+  <dt>C</dt><dd>纯程序化生成——不下载外部件，许可最干净，但品类受限、风格单一</dd>
+  <dt>影响</dt><dd>视觉风格、近景质量、下载与减面工作量</dd></dl>
+</div>
+<div class="stage">
+  <h3>D4 · 资产补全 vs 镜头库：谁先做</h3>
+  <dl><dt>A（建议）</dt><dd>镜头库优先（R2 先于 R4）——相机 / 条件图对下游控制力最强且阻塞下游接入</dd>
+  <dt>B</dt><dd>资产优先（R4 先于 R2）——内容先到位，但镜头库拖后，下游接入晚</dd>
+  <dt>影响</dt><dd>下游可接入的时间点</dd></dl>
+</div>
+<div class="stage">
+  <h3>D5 · 是否把 Blender 引入为可选的下游验证工具</h3>
+  <dl><dt>A（建议）</dt><dd>继续只用 numpy z-buffer，Blender 仅用于人工验证——保持轻量、结果同源</dd>
+  <dt>B</dt><dd>引入本机已实测可用的 bpy 5.0.0（resources3D/venvs/df，Python 3.11.16，CPU）——可做 PLAN.md §6 的 V3：在 Blender 里导入 BVH 与 USDA 验下游消费</dd>
+  <dt>影响</dt><dd>跨解释器一致性成本、启动开销、依赖面</dd></dl>
+</div>
+</section>
+
+<section id="fixes">
+<h2>对既有结论的修正建议</h2>
+<p class="lead">只提建议，<b>不改任何既有文件</b>（PLAN.md / paradigms.md / community_assets.md 均未改动）。位置、实测依据、建议改法如下。</p>
+<div class="fix">
+  <h4>M1 · PLAN.md §0「本机资源基线」——代理端口已过时</h4>
+  <p><b>实测：</b>2026-11-21 <code>curl -x http://127.0.0.1:7890</code> 连接失败（exit 7）；<code>lsof -nP -iTCP -sTCP:LISTEN</code> 显示本机代理实际监听在 <b>7897</b>（进程 verge-mih）。用 7897 访问公开站点正常返回 200。</p>
+  <p><b>建议：</b>改为「本机代理 <code>127.0.0.1:7897</code>（Clash Verge / verge-mih 监听；2026-11-21 实测）」，并注明「端口以 lsof 实测为准，常见 7890 / 7897」。</p>
+</div>
+<div class="fix">
+  <h4>M2 · PLAN.md §0「未安装 Blender / OpenSCAD / FreeCAD」——表述过强</h4>
+  <p><b>实测：</b>兄弟目录 <code>resources3D/venvs/df/bin/python</code>（<b>Python 3.11.16</b>）里 <b>bpy 5.0.0 可用</b>；该项目的 gallery/manifest.json 记录的渲染器正是 <code>"bpy 5.0.0 (Blender as a Python module)"</code>、<code>"render_device": "CPU"</code>。同目录 <code>venvs/blender-portable/</code> 与 <code>venvs/openscad-portable/</code> 的 <code>bin</code> 目录<b>为空</b>，即只有 <code>df</code> 这一套实测可用。</p>
+  <p><b>建议：</b>改为「<b>主 .venv（Python 3.13）装不上 bpy；bpy 需装在独立的 Python 3.11 venv 中</b>（本机已有可用实例：resources3D/venvs/df，bpy 5.0.0，CPU）」。这与 paradigms.md §A1 已写明的口径一致——PLAN.md §0 把「主 venv 装不上」说成「本机未安装」，属过度概括。<b>这一改会影响「要不要用 Blender」的决策基础</b>（见 D5）。</p>
+</div>
+<div class="fix">
+  <h4>M3 · PLAN.md §6 第 1 条（V2b）——状态与实际读数不符</h4>
+  <p><b>实测：</b><code>assets/validation/retarget_bvh.json</code> 已存在并有读数：<b>48 帧 / 2.0 s / 脚滑均值 0.0135 m、最大 0.0663 m / 贴地 0.0 / method = semantic_replay</b>，文件内自带与原生步态的对比（shot_001: 0.47 cm mean / 3.03 cm max）；<code>shot003_retarget_pose.npz</code> 已落盘。</p>
+  <p><b>建议：</b>改为「<b>部分完成</b>：已有语义重放（semantic_replay）版读数，脚滑均值 1.35 cm / 最大 6.63 cm，<b>约为原生步态的 2.9 倍 / 2.2 倍</b>，未达竖切片水平；严格骨架重定向仍未做」。</p>
+</div>
+<div class="fix">
+  <h4>M4 · PLAN.md §6 第 6 条——「需减面」部分已完成</h4>
+  <p><b>实测：</b><code>public_decimated.json</code>（2026-11-21T13:54:11Z）已记录减面完成：island_tree_01 1,599,403 → <b>74,097</b> 面；ToyCar 108,936 → <b>29,998</b>；ambulance 2,804 → <b>1,497</b>；工具 fast_simplification 0.2.0 + trimesh 5.2.1；结果已落盘 <code>assets/public_normalized/</code>。</p>
+  <p><b>建议：</b>改为「<b>减面已完成</b>…；<b>未完成的</b>是『接入正式场景』与『公共资产层』的台账化」。另注：island_tree_01 实测 74,097 面<b>超过</b>当时 60,000 的目标（每部件保底 12 面的策略所致），按目标值验收会误判。</p>
+</div>
+<div class="fix">
+  <h4>M5 · PLAN.md §3 / §5——条件图通道数需要补记</h4>
+  <p><b>实测：</b><code>conditions.py</code> 与 <code>shot_spec.py:SUPPORTED_CONDITIONS</code> 都只列 <b>3 个通道（depth/normal/seg）</b>；<code>save_condition_pngs</code> 的 docstring 也写明「把三个通道写成 PNG」。</p>
+  <p><b>建议：</b>明确写「当前条件图为 <b>3 通道</b>，<b>尚未</b>包含下游最常用的线稿系与人体姿态；六通道契约见 ROADMAP-IMAGE-VIDEO.md §2.2」，避免下游误以为「条件图四件套已就位」。</p>
+</div>
+<div class="fix">
+  <h4>M6 · community_assets.md §4——ToyCar 的「用途」需要写准</h4>
+  <p><b>实测：</b><code>public_decimated.json</code> 的 <code>parted_detail</code> 给出明确结论：「只有玻璃/车窗类独立件（Glass），车身仍是单网格；玻璃学不出车门，<b>不能治门漂移</b>」。</p>
+  <p><b>建议：</b>ToyCar 的用途列改为「<b>仅整体参考 + 材质/相机测试</b>；不可用作部件级条件源（车身未分件，分不出车门）」，并在风险列加一句，避免后续把它当成分件管线的验证样本。</p>
+</div>
+<div class="fix">
+  <h4>M7 · community_assets.md §5 第 1 条——建议补资产分级口径</h4>
+  <p><b>建议：</b>补一句分级——「近景主资产」宜明确为 <b>hero 级（≤ 50k 面）</b>，其余下载件归 mid/low 级（≤ 5k / ≤ 500 面）；Kenney 单件面数 &lt;1,000 天然落在 low/mid 带，Poly Haven 需减面才能进 mid 带。只改措辞，不改既有结论。</p>
+</div>
+<div class="fix">
+  <h4>M8 · 新增建议：把「跨项目契约」提升为一等文档</h4>
+  <p><b>理由：</b>本项目与 resources3D 已在<b>深度极性</b>与<b>上轴</b>上出现<b>相反约定</b>。两份文档各自都正确，合起来会静默出错。最省事的防错手段不是改代码，而是把「深度极性 / 上轴 / 通道清单 / 随图三要素 / 跨边界字段」写成一份共享契约（建议 <code>plans/CONTRACT-conditions.md</code>），并让两个项目的读取端都带校验。</p>
+</div>
+<div class="fix">
+  <h4>M9 · 「OpenAssetManagement (OAM)」应更正为「OpenAssetIO」</h4>
+  <p><b>实测：</b>ASWF 名下 <code>OpenAssetManagement</code> / <code>OpenAssetManager</code> 两个仓库地址<b>均为 404</b>，GitHub 仓库检索也返回空（本轮两路独立核对，结论一致）。真正存在并活跃的是 <b>OpenAssetIO</b>（Apache-2.0），定位是「面向媒体生产中工具与内容管理系统的开源互操作标准」。</p>
+  <p><b>建议：</b>路线讨论里凡提到 OAM 的，一律改称 OpenAssetIO，并引用其官方插件（USD AR2 / OTIO / ShotGrid / 最小 manager 参照）。<b>意义：</b>它的核心主张与我们高度一致（按身份引用、属性按需解析），直接支持 §Shot / Asset Schema 的 <code>asset_id</code> + <code>version</code> + <code>fingerprint</code> 设计。</p>
+</div>
+<div class="fix">
+  <h4>M10 · shot_spec.py 的缓动口径需要按镜头类型分档</h4>
+  <p><b>依据：</b>摄影机运动学的通行实践是——<b>恒速推轨应用线性插值</b>（Bezier/自动手柄会在两端引入缓动、破坏匀速感）；缓动只用于有起停的镜头，且应作用在<b>位移量</b>上而非每帧角度上。官方插值文档本轮被 Cloudflare 挑战拦住，故按通行实践标注、不当权威。</p>
+  <p><b>建议：</b>镜头库落地时让 <code>camera.move</code> 显式带 <code>easing</code>（linear / smoothstep / handheld），恒速类默认 <code>linear</code>；保留现有 <code>_smoothstep</code> 作为有起停镜头的默认值，不改既有代码路径，避免影响已验证的竖切片。</p>
+</div>
+</section>
+
+<section id="sources">
+<h2>来源清单</h2>
+<p class="lead">本看板本身不含任何外链（0 外链、0 联网依赖）。下列为文档所引用的公开来源，URL 以纯文本列出；「访问结果」为撰写时的实际核对状态。</p>
+<table>
+<thead><tr><th style="width:250px">主题</th><th>链接</th><th style="width:130px">访问结果</th></tr></thead>
+<tbody>
+<tr><td>OpenUSD UsdGeom schema 总览（Camera = 镜头/光圈/快门；UsdGeom 右手系 up=+Y / forward=−Z；上轴按 stage 配置；官方 shot 装配结构示例）</td><td><code>openusd.org/dev/user_guides/schemas/usdGeom/overview.html</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>glTF 2.0 <b>核心规范</b> · Cameras 章节（cameras[] / type / aspectRatio / yfov / znear / zfar；相机局部 +X 右、−Z 前、+Y 上）</td><td><code>raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>glTF 2.0 官方扩展目录（<b>27 个扩展、无 camera 扩展</b>）→ 相机只有核心规范这一条路，不必自造扩展</td><td><code>api.github.com/repos/KhronosGroup/glTF/contents/extensions/2.0/Khronos</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td><b>OpenAssetIO</b>（Apache-2.0，资产管理互操作标准：按身份引用 + 属性按需解析）</td><td><code>github.com/OpenAssetIO/OpenAssetIO</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>OpenAssetIO 官方插件：usdOpenAssetIOResolver（USD AR2）/ otio-openassetio / fpt_openassetio_manager / Manager-BAL</td><td><code>github.com/OpenAssetIO</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>COLMAP 相机模型与位姿格式（四元数 + 平移；X 右 / Y 下 / Z 前 —— 与 USD/glTF 差一个 Y 翻转）</td><td><code>colmap.github.io/format.html</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Blender 官方手册源码（相机 Presets / Sensor Fit / shift / Track To 约束 / AgX / ACES / scene-linear）</td><td><code>projects.blender.org/blender/blender-manual/raw/branch/main/manual/</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>CameraCtrl 论文（相机位姿条件化，arXiv 2404.02101）· TrajectoryCrafter · CamI2V · SVD/SV3D · Wan2.2 · CogVideoX</td><td><code>arxiv.org/abs/2404.02101</code> · <code>arxiv.org/abs/2503.05638</code> · <code>github.com/ZGCTroy/CamI2V</code> · <code>github.com/Stability-AI/generative-models</code> · <code>github.com/Wan-Video/Wan2.2</code> · <code>github.com/THUDM/CogVideo</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Poly Haven API（四层元数据 / files_hash / 双层指纹 / img_version）· ambientCG API · SPDX 许可列表 · REUSE 3.3</td><td><code>polyhaven.org/our-api</code> · <code>ambientcg.com/api/v2/full_json</code> · <code>spdx.org/licenses/</code> · <code>reuse.software/spec-3.3/</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>ControlNet 官方 README（9 类条件应用；HED / Midas / Openpose 检测器；ICCV 2023）</td><td><code>raw.githubusercontent.com/lllyasviel/ControlNet/main/README.md</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>OpenTimelineIO 仓库与许可（Apache License 2.0）</td><td><code>github.com/AcademySoftwareFoundation/OpenTimelineIO</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Kitsu 仓库与许可（GNU AGPL v3）+ 生产结构 / 任务状态 / 镜头页 / 开发者指南</td><td><code>github.com/cgwire/kitsu</code> · <code>kitsu.cg-wire.com/guides/production-structure</code> · <code>kitsu.cg-wire.com/guides/task-configuration</code> · <code>kitsu.cg-wire.com/guides/production-structure/manage-shots</code> · <code>dev.kitsu.cloud/guides/production-setup</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Autodesk Flow Production Tracking（原 ShotGrid）实体链接语义与产品页</td><td><code>autodesk.com/support/technical/article/Linking-entities-in-Flow-Production-Tracking</code> · <code>autodesk.com/products/flow-production-tracking/overview</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Previs Pro 官方 wiki（信息架构全景）</td><td><code>wiki.previspro.com</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>StudioBinder 镜头表字段与 Shot Tagging</td><td><code>studiobinder.com/shot-list-storyboard</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Toon Boom Storyboard Pro 界面分区 / Script 与 caption fields</td><td><code>docs.toonboom.com/help/storyboard-pro-22/storyboard/getting-started/interface.html</code> · <code>docs.toonboom.com/help/storyboard-pro-22/storyboard/caption/about-caption.html</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Blender 官方手册 · 故事板工作流</td><td><code>docs.blender.org/manual/en/latest/video_editing/storyboarding/index.html</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Storyboarder（开源，wonderunit）</td><td><code>github.com/wonderunit/storyboarder</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>Boords 分镜生成 / 资产库 / 导出格式</td><td><code>boords.com/storyboard-creator</code> · <code>boords.com/export</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>TwelveLabs 转写与视频切分</td><td><code>docs.twelvelabs.io/api-reference/manage-assets/retrieve-transcription</code> · <code>docs.twelvelabs.io/docs/guides/segment-videos</code></td><td><span class="tag ok">已打开核对</span></td></tr>
+<tr><td>glTF 注册表（registry.khronos.org）——被 Cloudflare 挑战拦截，按纪律停止不绕过，改用 Khronos 自有 GitHub 源</td><td><code>registry.khronos.org/glTF/specs/2.0/</code></td><td><span class="tag warn">未验（被拦）</span></td></tr>
+<tr><td>Autodesk Flow Studio（AI previs）——访问网关拒绝，未据此下结论</td><td><code>autodesk.com/products/flow-studio/overview</code></td><td><span class="tag warn">未验（被拦）</span></td></tr>
+<tr><td>Celtx 镜头列表 —— 两次 TLS 握手失败，未打开</td><td><code>celtx.com/shot-list-software</code></td><td><span class="tag warn">未验（打不开）</span></td></tr>
+<tr><td>本仓库内既有材料：PLAN.md / paradigms.md / somax.md / community_assets.md / harness/*.py / assets/**/*.json</td><td><code>research/tree-resources-builder/</code></td><td><span class="tag ok">已逐份读取</span></td></tr>
+<tr><td>兄弟目录 resources3D（只读，未改动）：eval/metrics_spec.md、research/harness/wmcore.py、gallery/manifest.json、research/05-synthesis.md</td><td><code>/Users/moc/workspaces/SiMuseor/resources3D</code></td><td><span class="tag ok">已逐份读取</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<footer>
+  生成于 2026-11-21 · 单文件离线看板（内嵌 CSS/JS/SVG，0 外链、0 联网依赖）· 入口页 <code>plans/ONE-PAGE.md</code> · 对应文档 <code>plans/ROADMAP-IMAGE-VIDEO.md</code> 与 <code>research/community_pipeline_practices.md</code> ·
+  本轮只新增这 3 个文件，未修改 artifacts/ web/ backend/ scripts/ tests/ 与 tree-resources-builder 下任何既有文件，未提交、未推送、未建 PR。
+</footer>
+
+</main>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  var saved=null; try{saved=localStorage.getItem('trb-theme');}catch(e){}
+  if(saved){root.setAttribute('data-theme',saved);}
+  btn.addEventListener('click',function(){
+    var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('trb-theme',next);}catch(e){}
+  });
+  document.getElementById('printBtn').addEventListener('click',function(){window.print();});
+
+  var links=[].slice.call(document.querySelectorAll('.nav a'));
+  var map={};
+  links.forEach(function(a){var id=a.getAttribute('href').slice(1);var s=document.getElementById(id);if(s)map[id]=a;});
+  function spy(){
+    var best=null,bd=1e9,pos=window.scrollY+90;
+    Object.keys(map).forEach(function(id){var s=document.getElementById(id);var d=Math.abs(s.getBoundingClientRect().top+window.scrollY-pos);if(s.getBoundingClientRect().top<=140&&d<bd){bd=d;best=id;}});
+    links.forEach(function(a){a.classList.remove('active');});
+    if(best&&map[best])map[best].classList.add('active');
+  }
+  window.addEventListener('scroll',spy,{passive:true});
+  spy();
+
+  var btns=[].slice.call(document.querySelectorAll('[data-filter]'));
+  var rows=[].slice.call(document.querySelectorAll('#assetMatrix tbody tr'));
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      btns.forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      var f=b.getAttribute('data-filter');
+      rows.forEach(function(r){
+        var show=(f==='all')||(f==='gap'&&r.getAttribute('data-gap')==='1')||(r.getAttribute('data-stage')===f);
+        r.style.display=show?'':'none';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

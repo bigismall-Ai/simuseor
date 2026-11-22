@@ -1,0 +1,1953 @@
+{
+  "kind": "r4_prop_library",
+  "cpu_only": true,
+  "generated_at": "",
+  "summary": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "failed_assets": []
+  },
+  "items": [
+    {
+      "asset": "prop_armchair_lounge",
+      "id": "geometry/props/prop_armchair_lounge",
+      "origin": "Poly Haven",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 34980,
+      "license": "CC0-1.0",
+      "source": "https://polyhaven.com/a/ArmChair_01",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_armchair_lounge' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_armchair_lounge') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 34980，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://polyhaven.com/a/ArmChair_01",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.067 m^3，包围盒占比 9.5101%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 34980,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_awning_shop",
+      "id": "geometry/props/prop_awning_shop",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 44,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-commercial",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_awning_shop' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_awning_shop') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 44，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-commercial",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.1269 m^3，包围盒占比 8.7858%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 3（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 44,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_barrel_wood",
+      "id": "geometry/props/prop_barrel_wood",
+      "origin": "Kenney",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 412,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_barrel_wood' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_barrel_wood') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 412，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2521 m^3，包围盒占比 73.1762%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 412,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_barrier_construction",
+      "id": "geometry/props/prop_barrier_construction",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 60,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_barrier_construction' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_barrier_construction') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 60，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 2.0416 m^3，包围盒占比 73.3436%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 60,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_bridge_pillar",
+      "id": "geometry/props/prop_bridge_pillar",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 40,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_bridge_pillar' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_bridge_pillar') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 40，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.4446 m^3，包围盒占比 41.1667%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 2（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 40,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_cone_traffic",
+      "id": "geometry/props/prop_cone_traffic",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 72,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_cone_traffic' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_cone_traffic') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 72，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.0966 m^3，包围盒占比 35.8327%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 2（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 72,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_crate_military",
+      "id": "geometry/props/prop_crate_military",
+      "origin": "Poly Haven",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 10676,
+      "license": "CC0-1.0",
+      "source": "https://polyhaven.com/a/old_military_crate",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_crate_military' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_crate_military') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 10676，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://polyhaven.com/a/old_military_crate",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.4316 m^3，包围盒占比 22.9808%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 10676,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_crate_wooden",
+      "id": "geometry/props/prop_crate_wooden",
+      "origin": "Poly Haven",
+      "usage_level": "hero",
+      "budget_faces": 50000,
+      "faces": 8292,
+      "license": "CC0-1.0",
+      "source": "https://polyhaven.com/a/wooden_crate_01",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_crate_wooden' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_crate_wooden') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'hero'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 8292，预算 50000（hero 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://polyhaven.com/a/wooden_crate_01",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2839 m^3，包围盒占比 76.7101%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 8292,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_dumpster_street",
+      "id": "geometry/props/prop_dumpster_street",
+      "origin": "Kenney",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 252,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_dumpster_street' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_dumpster_street') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 252，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "8/8 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 2.5655 m^3，包围盒占比 28.3745%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 8（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 252,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_fence_construction",
+      "id": "geometry/props/prop_fence_construction",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 144,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_fence_construction' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_fence_construction') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 144，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.1218 m^3，包围盒占比 15.9708%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 4（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 144,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_fence_fortified",
+      "id": "geometry/props/prop_fence_fortified",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 120,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_fence_fortified' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_fence_fortified') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 120，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "10/10 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2534 m^3，包围盒占比 32.0007%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 10（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 120,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_fence_wood",
+      "id": "geometry/props/prop_fence_wood",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 48,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_fence_wood' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_fence_wood') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 48，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "4/4 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.1128 m^3，包围盒占比 17.6576%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 4（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 48,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_ladder_wood",
+      "id": "geometry/props/prop_ladder_wood",
+      "origin": "Kenney",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 224,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/prototype-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_ladder_wood' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_ladder_wood') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 224，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/prototype-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "8/8 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.2889 m^3，包围盒占比 43.7727%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 8（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 224,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_pipe_metal",
+      "id": "geometry/props/prop_pipe_metal",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 20,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/prototype-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_pipe_metal' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_pipe_metal') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 20，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/prototype-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.0877 m^3，包围盒占比 75.0150%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 20,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_pole_utility",
+      "id": "geometry/props/prop_pole_utility",
+      "origin": "Kenney",
+      "usage_level": "mid",
+      "budget_faces": 5000,
+      "faces": 472,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_pole_utility' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_pole_utility') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'mid'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 472，预算 5000（mid 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "14/14 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 2.576 m^3，包围盒占比 3.5561%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 14（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 472,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_sign_empty",
+      "id": "geometry/props/prop_sign_empty",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 44,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/city-kit-roads",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_sign_empty' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_sign_empty') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 44，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/city-kit-roads",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "1/1 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.0378 m^3，包围盒占比 42.6538%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 1（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 44,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_signpost_wood",
+      "id": "geometry/props/prop_signpost_wood",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 44,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_signpost_wood' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_signpost_wood') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 44，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.101 m^3，包围盒占比 29.0456%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 3（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 44,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_tool_axe",
+      "id": "geometry/props/prop_tool_axe",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 84,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_tool_axe' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_tool_axe') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 84，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.0079 m^3，包围盒占比 20.0627%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 2（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 84,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_tool_hammer",
+      "id": "geometry/props/prop_tool_hammer",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 52,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_tool_hammer' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_tool_hammer') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 52，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "2/2 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.028 m^3，包围盒占比 53.4429%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 2（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 52,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    },
+    {
+      "asset": "prop_tool_pickaxe",
+      "id": "geometry/props/prop_tool_pickaxe",
+      "origin": "Kenney",
+      "usage_level": "low",
+      "budget_faces": 500,
+      "faces": 76,
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "pass": true,
+      "checks": [
+        {
+          "code": "NAME_CONVENTION",
+          "ok": true,
+          "message": "资产名 'prop_tool_pickaxe' 符合 <category>_<name>_<variant>",
+          "hint": "命名必须是 <category>_<name>_<variant>，category 词取自语义表"
+        },
+        {
+          "code": "CATEGORY_SEMANTIC",
+          "ok": true,
+          "message": "resolve_category('prop_tool_pickaxe') = 'prop'（期望 'prop'）",
+          "hint": "语义类别走 conditions.resolve_category 的真表，不另造词表"
+        },
+        {
+          "code": "LOD_TIER",
+          "ok": true,
+          "message": "用途分级 'low'（hero 近景主线 / mid 中景 / low 远景占位）",
+          "hint": "分级按用途，不按镜头距离"
+        },
+        {
+          "code": "FACE_BUDGET",
+          "ok": true,
+          "message": "总面数 76，预算 500（low 档）",
+          "hint": "预算：low<=500 / mid<=5000 / hero<=50000"
+        },
+        {
+          "code": "LICENSE_PRESENT",
+          "ok": true,
+          "message": "许可 CC0-1.0；来源 https://kenney.nl/assets/survival-kit",
+          "hint": "许可逐件可查：SPDX + 来源页 + 署名文本"
+        },
+        {
+          "code": "FINGERPRINT_MATCH",
+          "ok": true,
+          "message": "sidecar 指纹与磁盘文件一致",
+          "hint": "台账逐件可查 sha256：落盘文件变了指纹必须跟着变"
+        },
+        {
+          "code": "COLOR_INDEPENDENT",
+          "ok": true,
+          "message": "深度/线稿/法线与显示色彩无关：GLB 无材质/贴图",
+          "hint": "R4 资产一律纯几何（无 images/textures/materials），条件通道不可能被显示色彩污染"
+        },
+        {
+          "code": "MESH_WATERTIGHT",
+          "ok": true,
+          "message": "3/3 个部件水密",
+          "hint": "检查 loft 截面闭合/法线方向；布尔失败时退回部件合并"
+        },
+        {
+          "code": "MESH_VOLUME",
+          "ok": true,
+          "message": "体积 0.0126 m^3，包围盒占比 12.2453%（阈值 0.01%，尺度无关判据）",
+          "hint": "体积近零通常意味着面反转或截面退化"
+        },
+        {
+          "code": "DEGENERATE_FACES",
+          "ok": true,
+          "message": "退化面 0 个",
+          "hint": "清理零面积三角形"
+        },
+        {
+          "code": "FLOATING_PART",
+          "ok": true,
+          "message": "最大部件间隙 0.000 m（阈值 0.06）",
+          "hint": "把肢体/头部关节偏移归零，或将部件重新贴合躯干"
+        },
+        {
+          "code": "COMPONENT_LIMIT",
+          "ok": true,
+          "message": "geometry_0 部件数 3（上限 16）",
+          "hint": "合并相邻部件或减少细节件"
+        },
+        {
+          "code": "GROUND_CONTACT",
+          "ok": true,
+          "message": "资产最低点 z=0.0000 m（阈值 0.05）",
+          "hint": "沿 Z 平移使最低点贴地"
+        }
+      ],
+      "metrics": {
+        "faces": 76,
+        "nodes": 1,
+        "max_part_gap_m": 0.0,
+        "degenerate_faces": 0
+      }
+    }
+  ]
+}

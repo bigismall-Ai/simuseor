@@ -1,0 +1,121 @@
+{
+  "kind": "condition_sidecar",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "channel": "normal",
+  "resolution": [
+    720,
+    404
+  ],
+  "f_px": 471.333333,
+  "near": 2.612366,
+  "far": 35.548931,
+  "near_far_unit": "meter",
+  "encoding": {
+    "channel": "normal",
+    "contract": "conditions_contract",
+    "contract_version": "1.1.0",
+    "bit_depth": 16,
+    "anti_aliasing": "none",
+    "semantics": "世界空间面法线（flat shading，逐像素常量）",
+    "formula": "c = n_world * 0.5 + 0.5；反解 n = normalize(c * 2 - 1)",
+    "polarity": "n/a",
+    "value_range": [
+      0.0,
+      1.0
+    ],
+    "background": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "normalization": "none",
+    "metric": "world-space unit normal",
+    "color_space": "linear RGB",
+    "note": "16bit 通道图（_normal_r16/_g16/_b16）才是可逆产物；8bit 仅预览"
+  },
+  "up_axis": "Z",
+  "up_axis_vector": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "handedness": "right",
+  "units": "meter",
+  "mask_semantics": {
+    "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+    "source": "conditions.render_conditions -> mask",
+    "foreground_value": 255,
+    "background_value": 0,
+    "anti_aliasing": "none",
+    "post_process": "none",
+    "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+  },
+  "principal_point": [
+    360.0,
+    202.0
+  ],
+  "generator": "harness/conditions.py::save_condition_pack",
+  "camera": {
+    "eye": [
+      2.6,
+      1.6,
+      1.55
+    ],
+    "target": [
+      0.5999557090454557,
+      -8.073406727880998,
+      -0.007249212941452088
+    ],
+    "up": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "fov_y": 46.397181,
+    "focal_mm": 42.0,
+    "sensor_mm": 36.0,
+    "f_px": 471.333333,
+    "near": 0.05
+  },
+  "png": {
+    "primary": "cond_normal.png",
+    "files": [
+      "cond_normal.png",
+      "cond_normal_r16.png",
+      "cond_normal_g16.png",
+      "cond_normal_b16.png"
+    ],
+    "bit_depth": 16,
+    "sha256": "0e849eae965f82c60d68ca257b472a92f58be48c8e9d365d55ef57f43d11ceee"
+  },
+  "shot": {
+    "id": "shot_pan",
+    "frame": 106,
+    "t_s": 4.4167,
+    "fps": 24,
+    "move_type": "pan"
+  },
+  "scene": {
+    "source": "assets/geometry/scene_street.glb + shot001_hero.npz",
+    "objects": 23,
+    "labels": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "hidden_meshes": []
+  },
+  "pose_joints": {
+    "source": "soma77（77 公共关节，不含 Root）",
+    "count": 77,
+    "keypoint_set": "coco18"
+  },
+  "camera_authority": "shots/shot_pan/camera/intrinsics.json"
+}

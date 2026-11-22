@@ -1,0 +1,1646 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/scene_block_industrial",
+  "name": "scene_block_industrial",
+  "category": "scene",
+  "semantic_category": "other",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/scene_block_industrial.glb",
+      "bytes": 166472,
+      "sha256": "812067f3e04c6101c9e5a79d558473af0aceeeab6f20059f43b864645e55370e"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_scenes.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成并混排公共件（纯 CPU）",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_scenes.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 9000
+  },
+  "geometry": {
+    "faces": 9000,
+    "vertices": 4990,
+    "parts": [
+      {
+        "node": "ground_block_industrial",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -32.0,
+          -23.0,
+          -0.2
+        ],
+        "bbox_max": [
+          32.0,
+          23.0,
+          0.0
+        ]
+      },
+      {
+        "node": "road_block_industrial",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -32.0,
+          -3.5,
+          -0.06
+        ],
+        "bbox_max": [
+          32.0,
+          3.5,
+          0.0
+        ]
+      },
+      {
+        "node": "sidewalk_block_industrial_south",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -32.0,
+          -6.4,
+          -0.12
+        ],
+        "bbox_max": [
+          32.0,
+          -4.2,
+          0.0
+        ]
+      },
+      {
+        "node": "sidewalk_block_industrial_north",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -32.0,
+          4.2,
+          -0.12
+        ],
+        "bbox_max": [
+          32.0,
+          6.4,
+          0.0
+        ]
+      },
+      {
+        "node": "building_block_industrial_01",
+        "faces": 192,
+        "vertices": 128,
+        "bbox_min": [
+          -27.2,
+          -20.7,
+          0.0
+        ],
+        "bbox_max": [
+          -12.8,
+          -9.3,
+          9.85
+        ]
+      },
+      {
+        "node": "building_block_industrial_02",
+        "faces": 192,
+        "vertices": 128,
+        "bbox_min": [
+          -9.2,
+          -20.7,
+          0.0
+        ],
+        "bbox_max": [
+          9.2,
+          -9.3,
+          9.85
+        ]
+      },
+      {
+        "node": "building_block_industrial_03",
+        "faces": 24,
+        "vertices": 16,
+        "bbox_min": [
+          12.8,
+          -20.7,
+          0.0
+        ],
+        "bbox_max": [
+          27.2,
+          -9.3,
+          13.05
+        ]
+      },
+      {
+        "node": "building_block_industrial_04",
+        "faces": 192,
+        "vertices": 128,
+        "bbox_min": [
+          -27.2,
+          9.3,
+          0.0
+        ],
+        "bbox_max": [
+          -12.8,
+          20.7,
+          9.85
+        ]
+      },
+      {
+        "node": "building_block_industrial_05",
+        "faces": 192,
+        "vertices": 128,
+        "bbox_min": [
+          -9.2,
+          9.3,
+          0.0
+        ],
+        "bbox_max": [
+          9.2,
+          20.7,
+          9.85
+        ]
+      },
+      {
+        "node": "building_block_industrial_06",
+        "faces": 24,
+        "vertices": 16,
+        "bbox_min": [
+          12.8,
+          9.3,
+          0.0
+        ],
+        "bbox_max": [
+          27.2,
+          20.7,
+          13.05
+        ]
+      },
+      {
+        "node": "tree_dead_bare_hero_trunk",
+        "faces": 1280,
+        "vertices": 720,
+        "bbox_min": [
+          -24.477,
+          4.1941,
+          0.0
+        ],
+        "bbox_max": [
+          -23.0864,
+          5.8332,
+          3.3066
+        ]
+      },
+      {
+        "node": "tree_pine_conical_mid_trunk",
+        "faces": 312,
+        "vertices": 182,
+        "bbox_min": [
+          -8.8526,
+          4.0285,
+          0.0
+        ],
+        "bbox_max": [
+          -7.5115,
+          6.2089,
+          5.4062
+        ]
+      },
+      {
+        "node": "tree_canopy_pine_conical_mid",
+        "faces": 96,
+        "vertices": 54,
+        "bbox_min": [
+          -10.4,
+          2.7,
+          4.704
+        ],
+        "bbox_max": [
+          -5.6,
+          7.5,
+          10.328
+        ]
+      },
+      {
+        "node": "tree_dead_bare_mid_trunk",
+        "faces": 312,
+        "vertices": 182,
+        "bbox_min": [
+          7.3667,
+          4.7746,
+          0.0
+        ],
+        "bbox_max": [
+          8.724,
+          5.7343,
+          2.8174
+        ]
+      },
+      {
+        "node": "tree_pine_conical_low_trunk",
+        "faces": 80,
+        "vertices": 48,
+        "bbox_min": [
+          23.5554,
+          4.2955,
+          0.0
+        ],
+        "bbox_max": [
+          24.24,
+          5.7613,
+          4.6929
+        ]
+      },
+      {
+        "node": "tree_canopy_pine_conical_low",
+        "faces": 48,
+        "vertices": 30,
+        "bbox_min": [
+          21.6,
+          2.7,
+          4.704
+        ],
+        "bbox_max": [
+          26.4,
+          7.5,
+          10.328
+        ]
+      },
+      {
+        "node": "prop_dumpster_street",
+        "faces": 252,
+        "vertices": 142,
+        "bbox_min": [
+          -21.4768,
+          5.3135,
+          0.0
+        ],
+        "bbox_max": [
+          -19.0767,
+          6.9123,
+          2.3561
+        ]
+      },
+      {
+        "node": "prop_barrier_construction",
+        "faces": 60,
+        "vertices": 32,
+        "bbox_min": [
+          -7.6556,
+          -6.2022,
+          0.0
+        ],
+        "bbox_max": [
+          -6.5,
+          -4.9978,
+          2.0
+        ]
+      },
+      {
+        "node": "prop_pipe_metal",
+        "faces": 20,
+        "vertices": 12,
+        "bbox_min": [
+          6.35,
+          4.1,
+          0.0
+        ],
+        "bbox_max": [
+          6.65,
+          5.6,
+          0.2598
+        ]
+      },
+      {
+        "node": "prop_tool_axe",
+        "faces": 84,
+        "vertices": 46,
+        "bbox_min": [
+          20.0,
+          5.4553,
+          0.0
+        ],
+        "bbox_max": [
+          20.9,
+          5.8578,
+          0.1087
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_body",
+        "faces": 576,
+        "vertices": 290,
+        "bbox_min": [
+          -22.6,
+          0.5767,
+          0.26
+        ],
+        "bbox_max": [
+          -17.4,
+          2.5233,
+          1.74
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_cabin",
+        "faces": 200,
+        "vertices": 102,
+        "bbox_min": [
+          -21.1818,
+          0.6545,
+          0.5848
+        ],
+        "bbox_max": [
+          -19.2909,
+          2.4455,
+          1.74
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_windshield",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -18.47,
+          0.8431,
+          0.8048
+        ],
+        "bbox_max": [
+          -18.41,
+          2.2569,
+          1.2528
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_window_rear",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -21.798,
+          0.9163,
+          0.816
+        ],
+        "bbox_max": [
+          -21.738,
+          2.1837,
+          1.2192
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_window_side_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -21.176,
+          2.4025,
+          0.8216
+        ],
+        "bbox_max": [
+          -18.784,
+          2.4525,
+          1.1912
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_window_side_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -21.176,
+          0.6475,
+          0.8216
+        ],
+        "bbox_max": [
+          -18.784,
+          0.6975,
+          1.1912
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_door_front_left",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -21.1845,
+          2.2104,
+          0.5838
+        ],
+        "bbox_max": [
+          -20.2364,
+          2.5333,
+          1.6975
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_door_front_right",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -21.1845,
+          0.5667,
+          0.5838
+        ],
+        "bbox_max": [
+          -20.2364,
+          0.8896,
+          1.6975
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_door_rear_left",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -20.2364,
+          2.2291,
+          0.4656
+        ],
+        "bbox_max": [
+          -19.2831,
+          2.5333,
+          1.6976
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_door_rear_right",
+        "faces": 68,
+        "vertices": 36,
+        "bbox_min": [
+          -20.2364,
+          0.5667,
+          0.4656
+        ],
+        "bbox_max": [
+          -19.2831,
+          0.8709,
+          1.6976
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_wheel_front_left",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -18.77,
+          2.29,
+          0.0
+        ],
+        "bbox_max": [
+          -17.99,
+          2.53,
+          0.78
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_wheel_front_right",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -18.77,
+          0.57,
+          0.0
+        ],
+        "bbox_max": [
+          -17.99,
+          0.81,
+          0.78
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_wheel_rear_left",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -22.01,
+          2.29,
+          0.0
+        ],
+        "bbox_max": [
+          -21.23,
+          2.53,
+          0.78
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_wheel_rear_right",
+        "faces": 136,
+        "vertices": 72,
+        "bbox_min": [
+          -22.01,
+          0.57,
+          0.0
+        ],
+        "bbox_max": [
+          -21.23,
+          0.81,
+          0.78
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_mirror_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -19.109,
+          2.158,
+          0.8582
+        ],
+        "bbox_max": [
+          -19.019,
+          2.268,
+          0.9082
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_mirror_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -19.109,
+          0.832,
+          0.8582
+        ],
+        "bbox_max": [
+          -19.019,
+          0.942,
+          0.9082
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_headlight_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -17.503,
+          1.9275,
+          0.43
+        ],
+        "bbox_max": [
+          -17.453,
+          2.1475,
+          0.53
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_headlight_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -17.503,
+          0.9525,
+          0.43
+        ],
+        "bbox_max": [
+          -17.453,
+          1.1725,
+          0.53
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_taillight_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -22.547,
+          1.821,
+          0.45
+        ],
+        "bbox_max": [
+          -22.497,
+          1.981,
+          0.55
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_taillight_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -22.547,
+          1.119,
+          0.45
+        ],
+        "bbox_max": [
+          -22.497,
+          1.279,
+          0.55
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_seat_left",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -20.428,
+          1.691,
+          0.33
+        ],
+        "bbox_max": [
+          -19.988,
+          2.111,
+          0.79
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_seat_right",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -20.428,
+          0.989,
+          0.33
+        ],
+        "bbox_max": [
+          -19.988,
+          1.409,
+          0.79
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_dashboard",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -19.382,
+          0.848,
+          0.5
+        ],
+        "bbox_max": [
+          -19.162,
+          2.252,
+          0.66
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_steering_wheel",
+        "faces": 72,
+        "vertices": 38,
+        "bbox_min": [
+          -19.63,
+          1.184,
+          0.5523
+        ],
+        "bbox_max": [
+          -19.33,
+          1.214,
+          0.8477
+        ]
+      },
+      {
+        "node": "vehicle_car_pickup_chassis",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -22.236,
+          0.8675,
+          0.23
+        ],
+        "bbox_max": [
+          -17.764,
+          2.2325,
+          0.33
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -26.1904,
+          -4.1066,
+          0.9034
+        ],
+        "bbox_max": [
+          -25.8096,
+          -3.8934,
+          1.3891
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -26.1379,
+          -4.1044,
+          0.8191
+        ],
+        "bbox_max": [
+          -25.8621,
+          -3.8956,
+          1.0071
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.0486,
+          -4.0486,
+          1.36
+        ],
+        "bbox_max": [
+          -25.9514,
+          -3.9514,
+          1.4766
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -26.0938,
+          -4.0971,
+          1.4664
+        ],
+        "bbox_max": [
+          -25.9062,
+          -3.8931,
+          1.6908
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -25.8891,
+          -4.0699,
+          1.3192
+        ],
+        "bbox_max": [
+          -25.7492,
+          -3.9301,
+          1.4591
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -25.8603,
+          -4.0541,
+          1.0978
+        ],
+        "bbox_max": [
+          -25.5616,
+          -3.9455,
+          1.4242
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -25.6395,
+          -4.0341,
+          1.083
+        ],
+        "bbox_max": [
+          -25.5519,
+          -3.9465,
+          1.1707
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -25.6324,
+          -4.0338,
+          0.8653
+        ],
+        "bbox_max": [
+          -25.4113,
+          -3.9269,
+          1.1507
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -25.467,
+          -3.9976,
+          0.7893
+        ],
+        "bbox_max": [
+          -25.4135,
+          -3.9247,
+          0.8816
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -25.986,
+          -4.0792,
+          0.4839
+        ],
+        "bbox_max": [
+          -25.8275,
+          -3.9208,
+          0.906
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -25.953,
+          -4.0462,
+          0.4298
+        ],
+        "bbox_max": [
+          -25.8411,
+          -3.9343,
+          0.5417
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -25.9511,
+          -4.0443,
+          0.0768
+        ],
+        "bbox_max": [
+          -25.843,
+          -3.9362,
+          0.487
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -25.9417,
+          -4.0316,
+          0.0005
+        ],
+        "bbox_max": [
+          -25.8523,
+          -3.8033,
+          0.0733
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -26.2508,
+          -4.0699,
+          1.3192
+        ],
+        "bbox_max": [
+          -26.1109,
+          -3.9301,
+          1.4591
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.4384,
+          -4.0541,
+          1.0978
+        ],
+        "bbox_max": [
+          -26.1397,
+          -3.9455,
+          1.4242
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -26.4481,
+          -4.0341,
+          1.083
+        ],
+        "bbox_max": [
+          -26.3605,
+          -3.9465,
+          1.1707
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.5887,
+          -4.0338,
+          0.8653
+        ],
+        "bbox_max": [
+          -26.3676,
+          -3.9269,
+          1.1507
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -26.5865,
+          -3.9976,
+          0.7893
+        ],
+        "bbox_max": [
+          -26.533,
+          -3.9247,
+          0.8816
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.1725,
+          -4.0792,
+          0.4839
+        ],
+        "bbox_max": [
+          -26.014,
+          -3.9208,
+          0.906
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -26.1589,
+          -4.0462,
+          0.4298
+        ],
+        "bbox_max": [
+          -26.047,
+          -3.9343,
+          0.5417
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.157,
+          -4.0443,
+          0.0768
+        ],
+        "bbox_max": [
+          -26.0489,
+          -3.9362,
+          0.487
+        ]
+      },
+      {
+        "node": "hero_vendor_lean_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -26.1477,
+          -4.0316,
+          0.0005
+        ],
+        "bbox_max": [
+          -26.0583,
+          -3.8033,
+          0.0733
+        ]
+      },
+      {
+        "node": "jacket_hero_vendor_lean_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -26.257,
+          -4.1714,
+          0.952
+        ],
+        "bbox_max": [
+          -25.743,
+          -3.8286,
+          1.4086
+        ]
+      },
+      {
+        "node": "jacket_hero_vendor_lean_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -25.9092,
+          -4.1165,
+          0.8359
+        ],
+        "bbox_max": [
+          -25.366,
+          -3.8731,
+          1.4731
+        ]
+      },
+      {
+        "node": "jacket_hero_vendor_lean_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -26.634,
+          -4.1165,
+          0.8359
+        ],
+        "bbox_max": [
+          -26.0908,
+          -3.8731,
+          1.4731
+        ]
+      },
+      {
+        "node": "jacket_hero_vendor_lean_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -26.1069,
+          -4.1069,
+          1.36
+        ],
+        "bbox_max": [
+          -25.8931,
+          -3.8931,
+          1.4086
+        ]
+      },
+      {
+        "node": "hero_courier_slim_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -13.1778,
+          -4.1171,
+          0.9513
+        ],
+        "bbox_max": [
+          -12.8222,
+          -3.8829,
+          1.4627
+        ]
+      },
+      {
+        "node": "hero_courier_slim_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -13.1232,
+          -4.1021,
+          0.8687
+        ],
+        "bbox_max": [
+          -12.8768,
+          -3.8979,
+          1.0543
+        ]
+      },
+      {
+        "node": "hero_courier_slim_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.0494,
+          -4.0494,
+          1.432
+        ],
+        "bbox_max": [
+          -12.9506,
+          -3.9506,
+          1.5547
+        ]
+      },
+      {
+        "node": "hero_courier_slim_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -13.0974,
+          -4.0997,
+          1.5464
+        ],
+        "bbox_max": [
+          -12.9052,
+          -3.8904,
+          1.7779
+        ]
+      },
+      {
+        "node": "hero_courier_slim_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -12.894,
+          -4.0204,
+          1.3936
+        ],
+        "bbox_max": [
+          -12.7606,
+          -3.887,
+          1.5317
+        ]
+      },
+      {
+        "node": "hero_courier_slim_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -12.8688,
+          -4.0049,
+          1.1579
+        ],
+        "bbox_max": [
+          -12.5684,
+          -3.8406,
+          1.4973
+        ]
+      },
+      {
+        "node": "hero_courier_slim_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -12.6445,
+          -3.9247,
+          1.1432
+        ],
+        "bbox_max": [
+          -12.5609,
+          -3.8412,
+          1.2298
+        ]
+      },
+      {
+        "node": "hero_courier_slim_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -12.6402,
+          -3.9238,
+          0.9123
+        ],
+        "bbox_max": [
+          -12.4231,
+          -3.7788,
+          1.21
+        ]
+      },
+      {
+        "node": "hero_courier_slim_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -12.4897,
+          -3.8553,
+          0.8311
+        ],
+        "bbox_max": [
+          -12.4155,
+          -3.7666,
+          0.9282
+        ]
+      },
+      {
+        "node": "hero_courier_slim_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -12.9871,
+          -4.0522,
+          0.5096
+        ],
+        "bbox_max": [
+          -12.8351,
+          -3.9002,
+          0.9538
+        ]
+      },
+      {
+        "node": "hero_courier_slim_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -12.9572,
+          -4.017,
+          0.4562
+        ],
+        "bbox_max": [
+          -12.8505,
+          -3.9103,
+          0.5667
+        ]
+      },
+      {
+        "node": "hero_courier_slim_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -12.9557,
+          -4.0155,
+          0.0809
+        ],
+        "bbox_max": [
+          -12.852,
+          -3.9118,
+          0.5127
+        ]
+      },
+      {
+        "node": "hero_courier_slim_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -13.0003,
+          -4.0178,
+          0.0005
+        ],
+        "bbox_max": [
+          -12.8471,
+          -3.7613,
+          0.0772
+        ]
+      },
+      {
+        "node": "hero_courier_slim_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -13.2394,
+          -4.113,
+          1.3936
+        ],
+        "bbox_max": [
+          -13.106,
+          -3.9796,
+          1.5317
+        ]
+      },
+      {
+        "node": "hero_courier_slim_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.436,
+          -4.1403,
+          1.1579
+        ],
+        "bbox_max": [
+          -13.1324,
+          -3.9943,
+          1.4973
+        ]
+      },
+      {
+        "node": "hero_courier_slim_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -13.4444,
+          -4.1391,
+          1.1432
+        ],
+        "bbox_max": [
+          -13.3608,
+          -4.0555,
+          1.2298
+        ]
+      },
+      {
+        "node": "hero_courier_slim_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.5967,
+          -4.1436,
+          0.9123
+        ],
+        "bbox_max": [
+          -13.367,
+          -4.0546,
+          1.21
+        ]
+      },
+      {
+        "node": "hero_courier_slim_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -13.6057,
+          -4.1543,
+          0.8311
+        ],
+        "bbox_max": [
+          -13.5315,
+          -4.0657,
+          0.9282
+        ]
+      },
+      {
+        "node": "hero_courier_slim_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.1649,
+          -4.0998,
+          0.5096
+        ],
+        "bbox_max": [
+          -13.0129,
+          -3.9478,
+          0.9538
+        ]
+      },
+      {
+        "node": "hero_courier_slim_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -13.1548,
+          -4.0699,
+          0.4562
+        ],
+        "bbox_max": [
+          -13.0481,
+          -3.9632,
+          0.5667
+        ]
+      },
+      {
+        "node": "hero_courier_slim_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.1533,
+          -4.0685,
+          0.0809
+        ],
+        "bbox_max": [
+          -13.0496,
+          -3.9647,
+          0.5127
+        ]
+      },
+      {
+        "node": "hero_courier_slim_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -13.1979,
+          -4.0708,
+          0.0005
+        ],
+        "bbox_max": [
+          -13.0447,
+          -3.8142,
+          0.0772
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -13.2464,
+          -4.1813,
+          1.0024
+        ],
+        "bbox_max": [
+          -12.7536,
+          -3.8187,
+          1.4831
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -12.9177,
+          -4.064,
+          0.8833
+        ],
+        "bbox_max": [
+          -12.3768,
+          -3.7285,
+          1.5458
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -13.6406,
+          -4.1976,
+          0.8833
+        ],
+        "bbox_max": [
+          -13.0847,
+          -3.9344,
+          1.5458
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -13.1087,
+          -4.1087,
+          1.432
+        ],
+        "bbox_max": [
+          -12.8913,
+          -3.8913,
+          1.4831
+        ]
+      }
+    ],
+    "bbox_min": [
+      -32.0,
+      -23.0,
+      -0.2
+    ],
+    "bbox_max": [
+      32.0,
+      23.0,
+      13.05
+    ],
+    "ground_offset_m": 0.2
+  },
+  "recipe": {
+    "recipe_id": "scene_blocks",
+    "variant": "industrial",
+    "params": {
+      "floors": [
+        3,
+        4
+      ],
+      "width": [
+        14.0,
+        18.0
+      ],
+      "depth": 11.0,
+      "trees": [
+        "dead_bare",
+        "pine_conical"
+      ],
+      "props": [
+        "prop_dumpster_street",
+        "prop_barrier_construction",
+        "prop_pipe_metal",
+        "prop_tool_axe"
+      ],
+      "vehicles": [
+        "pickup"
+      ],
+      "chars": [
+        "hero_vendor_lean",
+        "hero_courier_slim"
+      ],
+      "note": "工业区：厂房 + 围挡 + 裸树"
+    },
+    "chunks": [
+      "near",
+      "mid",
+      "far"
+    ]
+  },
+  "nodes": [
+    "ground_block_industrial",
+    "road_block_industrial",
+    "sidewalk_block_industrial_south",
+    "sidewalk_block_industrial_north",
+    "building_block_industrial_01",
+    "building_block_industrial_02",
+    "building_block_industrial_03",
+    "building_block_industrial_04",
+    "building_block_industrial_05",
+    "building_block_industrial_06",
+    "tree_dead_bare_hero_trunk",
+    "tree_pine_conical_mid_trunk",
+    "tree_canopy_pine_conical_mid",
+    "tree_dead_bare_mid_trunk",
+    "tree_pine_conical_low_trunk",
+    "tree_canopy_pine_conical_low",
+    "prop_dumpster_street",
+    "prop_barrier_construction",
+    "prop_pipe_metal",
+    "prop_tool_axe",
+    "vehicle_car_pickup_body",
+    "vehicle_car_pickup_cabin",
+    "vehicle_car_pickup_windshield",
+    "vehicle_car_pickup_window_rear",
+    "vehicle_car_pickup_window_side_left",
+    "vehicle_car_pickup_window_side_right",
+    "vehicle_car_pickup_door_front_left",
+    "vehicle_car_pickup_door_front_right",
+    "vehicle_car_pickup_door_rear_left",
+    "vehicle_car_pickup_door_rear_right",
+    "vehicle_car_pickup_wheel_front_left",
+    "vehicle_car_pickup_wheel_front_right",
+    "vehicle_car_pickup_wheel_rear_left",
+    "vehicle_car_pickup_wheel_rear_right",
+    "vehicle_car_pickup_mirror_left",
+    "vehicle_car_pickup_mirror_right",
+    "vehicle_car_pickup_headlight_left",
+    "vehicle_car_pickup_headlight_right",
+    "vehicle_car_pickup_taillight_left",
+    "vehicle_car_pickup_taillight_right",
+    "vehicle_car_pickup_seat_left",
+    "vehicle_car_pickup_seat_right",
+    "vehicle_car_pickup_dashboard",
+    "vehicle_car_pickup_steering_wheel",
+    "vehicle_car_pickup_chassis",
+    "hero_vendor_lean_torso",
+    "hero_vendor_lean_pelvis",
+    "hero_vendor_lean_neck",
+    "hero_vendor_lean_head",
+    "hero_vendor_lean_shoulder_L",
+    "hero_vendor_lean_upperarm_L",
+    "hero_vendor_lean_elbow_L",
+    "hero_vendor_lean_forearm_L",
+    "hero_vendor_lean_hand_L",
+    "hero_vendor_lean_thigh_L",
+    "hero_vendor_lean_knee_L",
+    "hero_vendor_lean_shin_L",
+    "hero_vendor_lean_foot_L",
+    "hero_vendor_lean_shoulder_R",
+    "hero_vendor_lean_upperarm_R",
+    "hero_vendor_lean_elbow_R",
+    "hero_vendor_lean_forearm_R",
+    "hero_vendor_lean_hand_R",
+    "hero_vendor_lean_thigh_R",
+    "hero_vendor_lean_knee_R",
+    "hero_vendor_lean_shin_R",
+    "hero_vendor_lean_foot_R",
+    "jacket_hero_vendor_lean_body",
+    "jacket_hero_vendor_lean_sleeve_l",
+    "jacket_hero_vendor_lean_sleeve_r",
+    "jacket_hero_vendor_lean_collar",
+    "hero_courier_slim_torso",
+    "hero_courier_slim_pelvis",
+    "hero_courier_slim_neck",
+    "hero_courier_slim_head",
+    "hero_courier_slim_shoulder_L",
+    "hero_courier_slim_upperarm_L",
+    "hero_courier_slim_elbow_L",
+    "hero_courier_slim_forearm_L",
+    "hero_courier_slim_hand_L",
+    "hero_courier_slim_thigh_L",
+    "hero_courier_slim_knee_L",
+    "hero_courier_slim_shin_L",
+    "hero_courier_slim_foot_L",
+    "hero_courier_slim_shoulder_R",
+    "hero_courier_slim_upperarm_R",
+    "hero_courier_slim_elbow_R",
+    "hero_courier_slim_forearm_R",
+    "hero_courier_slim_hand_R",
+    "hero_courier_slim_thigh_R",
+    "hero_courier_slim_knee_R",
+    "hero_courier_slim_shin_R",
+    "hero_courier_slim_foot_R",
+    "jacket_hero_courier_slim_body",
+    "jacket_hero_courier_slim_sleeve_l",
+    "jacket_hero_courier_slim_sleeve_r",
+    "jacket_hero_courier_slim_collar"
+  ],
+  "instances": 93,
+  "note": "工业区：厂房 + 围挡 + 裸树"
+}

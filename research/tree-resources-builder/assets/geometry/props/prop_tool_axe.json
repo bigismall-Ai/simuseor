@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_tool_axe",
+  "name": "prop_tool_axe",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_tool_axe.glb",
+      "bytes": 2276,
+      "sha256": "6f406171b26ad6ce37a3f8cb5d98f68937ed925dd66b8af7bc842f452899fadb"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "is_ai": 0,
+    "source_pack": "survival-kit",
+    "source_model": "tool-axe",
+    "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/tool-axe.glb",
+    "source_sha256": "de5c6cc51cdb5bcfad8bd7128b7ff0e37a34e6f4f8deddec82bb8634c25cc20d",
+    "source_faces": 84,
+    "scale_factor": 3.51562,
+    "target_max_dim_m": 0.9,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 0,
+      "rounds": 1
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 84
+  },
+  "geometry": {
+    "faces": 84,
+    "vertices": 46,
+    "bbox_min": [
+      -0.2578,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.1447,
+      0.9,
+      0.1087
+    ],
+    "size_m": [
+      0.4025,
+      0.9,
+      0.1087
+    ],
+    "max_dim_m": 0.9,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_tool_axe",
+    "params": {
+      "scale_factor": 3.51562,
+      "target_max_dim_m": 0.9,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 0,
+        "rounds": 1
+      }
+    }
+  },
+  "origin": "Kenney"
+}

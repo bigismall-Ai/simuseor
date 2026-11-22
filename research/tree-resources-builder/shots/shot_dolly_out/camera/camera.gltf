@@ -1,0 +1,134 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "harness/shot_package.py (R2 · 运镜体系化)"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "shot_dolly_out",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "shot_dolly_out_camera",
+      "camera": 0,
+      "translation": [
+        2.2699999809265137,
+        1.4199999570846558,
+        -1.2400000095367432
+      ],
+      "rotation": [
+        0.21672296524047852,
+        0.7129723429679871,
+        -0.6182548403739929,
+        0.24992522597312927
+      ]
+    }
+  ],
+  "cameras": [
+    {
+      "name": "shot_dolly_out_camera",
+      "type": "perspective",
+      "aspectRatio": 1.7821782178217822,
+      "yfov": 0.9500215125301937,
+      "znear": 0.1,
+      "zfar": 200.0
+    }
+  ],
+  "animations": [
+    {
+      "name": "camera_track",
+      "samplers": [
+        {
+          "input": 0,
+          "output": 1,
+          "interpolation": "LINEAR"
+        },
+        {
+          "input": 0,
+          "output": 2,
+          "interpolation": "LINEAR"
+        }
+      ],
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 0,
+            "path": "translation"
+          }
+        },
+        {
+          "sampler": 1,
+          "target": {
+            "node": 0,
+            "path": "rotation"
+          }
+        }
+      ]
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 3840,
+      "uri": "data:application/octet-stream;base64,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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 480,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 480,
+      "byteLength": 1440,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1920,
+      "byteLength": 1920,
+      "target": 34962
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 120,
+      "type": "SCALAR",
+      "min": [
+        0.0
+      ],
+      "max": [
+        4.9583330154418945
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 120,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 120,
+      "type": "VEC4"
+    }
+  ],
+  "extras": {
+    "r2_note": "glTF 核心规范没有相机动画，逐帧位姿走节点 TRS 动画；camera.yfov/znear/zfar 对应第 0 帧内参。",
+    "authority": "assets/validation/camera_intrinsics.json（逐帧内外参唯一权威源）",
+    "up_axis_source": "Z-up 世界系 → glTF Y-up 世界系，p_yup = (x, z, −y)",
+    "frames": 120,
+    "fps": 24
+  }
+}

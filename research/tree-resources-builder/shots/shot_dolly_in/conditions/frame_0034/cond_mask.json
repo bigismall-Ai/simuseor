@@ -1,0 +1,113 @@
+{
+  "kind": "condition_sidecar",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "channel": "mask",
+  "resolution": [
+    720,
+    404
+  ],
+  "f_px": 480.952381,
+  "near": 2.994661,
+  "far": 44.006424,
+  "near_far_unit": "meter",
+  "encoding": {
+    "channel": "mask",
+    "contract": "conditions_contract",
+    "contract_version": "1.1.0",
+    "bit_depth": 8,
+    "anti_aliasing": "none",
+    "semantics": "前景二值掩码（几何可见性）",
+    "formula": "mask = 255 if z-buffer hit else 0",
+    "polarity": "n/a",
+    "value_range": [
+      0,
+      255
+    ],
+    "background": 0,
+    "normalization": "none",
+    "metric": "binary visibility",
+    "color_space": "linear gray"
+  },
+  "up_axis": "Z",
+  "up_axis_vector": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "handedness": "right",
+  "units": "meter",
+  "mask_semantics": {
+    "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+    "source": "conditions.render_conditions -> mask",
+    "foreground_value": 255,
+    "background_value": 0,
+    "anti_aliasing": "none",
+    "post_process": "none",
+    "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+  },
+  "principal_point": [
+    360.0,
+    202.0
+  ],
+  "generator": "harness/conditions.py::save_condition_pack",
+  "camera": {
+    "eye": [
+      2.977836724822216,
+      1.527341446636183,
+      1.8634315701341473
+    ],
+    "target": [
+      0.0,
+      -2.190387225151062,
+      0.9
+    ],
+    "up": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "fov_y": 45.564811,
+    "focal_mm": 42.857142857142854,
+    "sensor_mm": 36.0,
+    "f_px": 480.952381,
+    "near": 0.05
+  },
+  "png": {
+    "primary": "cond_mask.png",
+    "files": [
+      "cond_mask.png"
+    ],
+    "bit_depth": 8,
+    "sha256": "def151c5902b1514d80c4aacb5e167f9c41be9bc1cd9161f31a2519236a7e2e3"
+  },
+  "shot": {
+    "id": "shot_dolly_in",
+    "frame": 34,
+    "t_s": 1.4167,
+    "fps": 24,
+    "move_type": "dolly_in"
+  },
+  "scene": {
+    "source": "assets/geometry/scene_street.glb + shot001_hero.npz",
+    "objects": 23,
+    "labels": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "hidden_meshes": []
+  },
+  "pose_joints": {
+    "source": "soma77（77 公共关节，不含 Root）",
+    "count": 77,
+    "keypoint_set": "coco18"
+  },
+  "camera_authority": "shots/shot_dolly_in/camera/intrinsics.json"
+}

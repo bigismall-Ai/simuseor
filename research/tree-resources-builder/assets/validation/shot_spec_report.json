@@ -1,0 +1,83 @@
+{
+  "kind": "shot_spec_validation",
+  "cpu_only": true,
+  "shot_id": "S03",
+  "schema_version": 2,
+  "pass": true,
+  "problems": [],
+  "checks": [
+    {
+      "code": "SHOT_KIND",
+      "ok": true,
+      "message": "kind='shot_spec'",
+      "hint": "固定为 shot_spec"
+    },
+    {
+      "code": "SHOT_RESOLUTION",
+      "ok": true,
+      "message": "resolution=[512, 512]",
+      "hint": "[w, h]：条件图 sidecar 要引用同一分辨率"
+    },
+    {
+      "code": "SHOT_UP_AXIS",
+      "ok": true,
+      "message": "up_axis='Z'",
+      "hint": "本项目固定 Z-up"
+    },
+    {
+      "code": "SHOT_ASSETS",
+      "ok": true,
+      "message": "assets[] 引用 17 个 asset_id",
+      "hint": "asset_id 必须在 assets/manifest.json 里存在"
+    },
+    {
+      "code": "SHOT_CAMERA_MOVE",
+      "ok": true,
+      "message": "camera.move={'type': 'follow', 'easing': 'smoothstep'}",
+      "hint": "{type, easing, handheld?}；type 取 CAMERA_MOVE_TYPES"
+    },
+    {
+      "code": "SHOT_CAMERA_CLIP",
+      "ok": true,
+      "message": "camera.near=0.05 camera.far=14.863043",
+      "hint": "近远裁剪面（米），与 conditions.depth 同值"
+    },
+    {
+      "code": "SHOT_CONDITIONS",
+      "ok": true,
+      "message": "conditions 形态=object",
+      "hint": "v2 用对象形态 {channels[], depth{...}, mask_semantics, palette_version}"
+    },
+    {
+      "code": "SHOT_TIMELINE",
+      "ok": true,
+      "message": "timeline.events[] 5 条",
+      "hint": "FX 才有时间轴归属"
+    },
+    {
+      "code": "SHOT_VALIDATION",
+      "ok": true,
+      "message": "validation.report_path='assets/validation/shot_spec_report.json'",
+      "hint": "shot 必须回链验证报告"
+    },
+    {
+      "code": "SHOT_LICENSE",
+      "ok": true,
+      "message": "license[] 带出 5 个资产的许可",
+      "hint": "shot 必须带出资产许可，否则交付不可用"
+    },
+    {
+      "code": "SHOT_STATUS",
+      "ok": true,
+      "message": "status='validated'",
+      "hint": "draft|validated|approved"
+    },
+    {
+      "code": "SHOT_VALIDATE_SPEC",
+      "ok": true,
+      "message": "validate_spec 报出 0 个问题",
+      "hint": "问题清单见 problems 字段"
+    }
+  ],
+  "frames": 192
+}

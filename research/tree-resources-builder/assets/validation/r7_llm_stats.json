@@ -1,0 +1,327 @@
+{
+  "kind": "r7_llm_stats",
+  "note": "V5 统计：首过率 = 首次执行即通过机器判定的比例；3 轮内收敛率 = 最多 3 次执行内通过的比例。判定权在校验器（模型自评不算）；LLM 调用失败单独计。",
+  "generated_at": "2026-11-22 02:47:50",
+  "model": "minimax-direct/MiniMax-M3.1-Flash",
+  "models_used": [
+    "MiniMax-M3.1-Flash"
+  ],
+  "providers_used": [
+    "minimax-direct"
+  ],
+  "max_rounds": 3,
+  "elapsed_s": 95.5,
+  "sample_floor": 20,
+  "buckets_below_floor": [],
+  "calls": {
+    "calls": 111,
+    "ok": 111,
+    "failed": 0,
+    "prompt_tokens": 112452,
+    "completion_tokens": 66614,
+    "total_tokens": 179066
+  },
+  "stats": {
+    "overall": {
+      "samples": 105,
+      "judged_samples": 105,
+      "llm_errors": 0,
+      "first_pass": 99,
+      "first_pass_rate": 0.9429,
+      "converged_within_3": 105,
+      "converged_within_3_rate": 1.0,
+      "mean_rounds_to_pass": 1.057,
+      "convergence_curve": [
+        {
+          "round": 1,
+          "cumulative_pass": 99,
+          "cumulative_rate": 0.9429
+        },
+        {
+          "round": 2,
+          "cumulative_pass": 105,
+          "cumulative_rate": 1.0
+        },
+        {
+          "round": 3,
+          "cumulative_pass": 105,
+          "cumulative_rate": 1.0
+        },
+        {
+          "round": 4,
+          "cumulative_pass": 105,
+          "cumulative_rate": 1.0
+        }
+      ],
+      "final_failed_codes": {}
+    },
+    "by_category": {
+      "character": {
+        "samples": 20,
+        "judged_samples": 20,
+        "llm_errors": 0,
+        "first_pass": 18,
+        "first_pass_rate": 0.9,
+        "converged_within_3": 20,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.1,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 18,
+            "cumulative_rate": 0.9
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "prop": {
+        "samples": 20,
+        "judged_samples": 20,
+        "llm_errors": 0,
+        "first_pass": 20,
+        "first_pass_rate": 1.0,
+        "converged_within_3": 20,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.0,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "scene": {
+        "samples": 21,
+        "judged_samples": 21,
+        "llm_errors": 0,
+        "first_pass": 21,
+        "first_pass_rate": 1.0,
+        "converged_within_3": 21,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.0,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "tree": {
+        "samples": 24,
+        "judged_samples": 24,
+        "llm_errors": 0,
+        "first_pass": 20,
+        "first_pass_rate": 0.8333,
+        "converged_within_3": 24,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.167,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 20,
+            "cumulative_rate": 0.8333
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 24,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 24,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 24,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "vehicle": {
+        "samples": 20,
+        "judged_samples": 20,
+        "llm_errors": 0,
+        "first_pass": 20,
+        "first_pass_rate": 1.0,
+        "converged_within_3": 20,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.0,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 20,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      }
+    },
+    "by_tier": {
+      "hero": {
+        "samples": 39,
+        "judged_samples": 39,
+        "llm_errors": 0,
+        "first_pass": 37,
+        "first_pass_rate": 0.9487,
+        "converged_within_3": 39,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.051,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 37,
+            "cumulative_rate": 0.9487
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 39,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 39,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 39,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "low": {
+        "samples": 21,
+        "judged_samples": 21,
+        "llm_errors": 0,
+        "first_pass": 18,
+        "first_pass_rate": 0.8571,
+        "converged_within_3": 21,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.143,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 18,
+            "cumulative_rate": 0.8571
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 21,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      },
+      "mid": {
+        "samples": 45,
+        "judged_samples": 45,
+        "llm_errors": 0,
+        "first_pass": 44,
+        "first_pass_rate": 0.9778,
+        "converged_within_3": 45,
+        "converged_within_3_rate": 1.0,
+        "mean_rounds_to_pass": 1.022,
+        "convergence_curve": [
+          {
+            "round": 1,
+            "cumulative_pass": 44,
+            "cumulative_rate": 0.9778
+          },
+          {
+            "round": 2,
+            "cumulative_pass": 45,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 3,
+            "cumulative_pass": 45,
+            "cumulative_rate": 1.0
+          },
+          {
+            "round": 4,
+            "cumulative_pass": 45,
+            "cumulative_rate": 1.0
+          }
+        ],
+        "final_failed_codes": {}
+      }
+    }
+  }
+}

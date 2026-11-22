@@ -1,0 +1,97 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/vegetation/tree_dead_bare_hero",
+  "name": "tree_dead_bare_hero",
+  "category": "tree",
+  "semantic_category": "tree",
+  "usage_level": "hero",
+  "budget_faces": 50000,
+  "files": [
+    {
+      "path": "assets/geometry/vegetation/tree_dead_bare_hero.glb",
+      "bytes": 24784,
+      "sha256": "4290f7ba35c967393dc932cac6068db74e2b483e117763dd383a06c540f4f30d"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_assets.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "由本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_assets.py"
+  },
+  "lod": {
+    "level": "hero",
+    "faces": 1280
+  },
+  "geometry": {
+    "faces": 1280,
+    "vertices": 720,
+    "parts": [
+      {
+        "node": "tree_dead_bare_hero_trunk",
+        "faces": 1280,
+        "vertices": 720,
+        "bbox_min": [
+          -0.477,
+          -0.9059,
+          0.0
+        ],
+        "bbox_max": [
+          0.9136,
+          0.7332,
+          3.3066
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.477,
+      -0.9059,
+      0.0
+    ],
+    "bbox_max": [
+      0.9136,
+      0.7332,
+      3.3066
+    ],
+    "ground_offset_m": 0.0
+  },
+  "recipe": {
+    "recipe_id": "vegetation_species",
+    "variant": "hero",
+    "params": {
+      "name": "dead_bare",
+      "height": 4.6,
+      "trunk_r": 0.28,
+      "canopy_r": 0.0,
+      "canopy_h": 0.0,
+      "shape": "bare",
+      "branches": 3,
+      "levels": 3,
+      "seed": 79,
+      "note": "枯枝，无冠层（构图用负形）"
+    },
+    "lod": {
+      "segments": 8,
+      "levels": 3,
+      "canopy_blobs": 7,
+      "canopy_subdiv": 2,
+      "branch_ratio": 0.45
+    }
+  },
+  "nodes": [
+    "tree_dead_bare_hero_trunk"
+  ],
+  "semantic_categories": {
+    "tree_dead_bare_hero_trunk": "tree",
+    "tree_canopy_dead_bare_hero": null
+  }
+}

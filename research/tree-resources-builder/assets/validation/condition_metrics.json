@@ -1,0 +1,381 @@
+{
+  "kind": "r6_condition_metrics",
+  "status": "ok",
+  "generated_by": "harness/r6_condition_metrics.py",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "resources3d_dir": "/Users/moc/workspaces/SiMuseor/resources3D",
+  "resources3d_metrics_path": "/Users/moc/workspaces/SiMuseor/resources3D/eval/metrics.py",
+  "resources3d_readonly": true,
+  "five_metrics": {
+    "ids": [
+      "edge_consistency",
+      "depth_structure_consistency",
+      "composition_consistency",
+      "camera_consistency",
+      "composite_score"
+    ],
+    "all_present": {
+      "edge_consistency": true,
+      "depth_structure_consistency": true,
+      "composition_consistency": true,
+      "camera_consistency": true,
+      "composite_score": true
+    },
+    "implementation": "直接调用 resources3D eval/metrics.py（本项目不另抄一份）",
+    "spec": "resources3D eval/metrics_spec.md §2",
+    "catalog_entries": 6
+  },
+  "shot_id": "shot_001",
+  "n_frames_total": 120,
+  "n_frames_sampled": 12,
+  "sampling": "等间隔抽样（覆盖起幅/中段/收幅，不只取开头）",
+  "missing": [],
+  "reference_image": "shots/shot_001/frames/frame_XXXX.jpg（本机确定性渲染帧，非下游生成图）",
+  "median": {
+    "a_edge_tolerant_iou": 0.4446,
+    "a_edge_chamfer_mean_px": 5.5125,
+    "b_structure_spearman": -0.4075,
+    "b_structure_strata_residual": 0.0346,
+    "c_composition_fg_iou": 0.0003,
+    "c_composition_height_ratio_err": 0.8329,
+    "c_composition_subject_fg_iou": 0.0,
+    "b_structure_subject_spearman": 0.3325,
+    "d_camera_pitch_err_deg": 0.1167,
+    "e_composite_total": 35.99
+  },
+  "reading_notes": [
+    "参考图是本机确定性渲染帧，不是下游模型输出 —— 这些读数量的是「条件图与同源渲染的结构一致度」，不是「下游保留度」（下游 A/B 按 ROADMAP 不做）",
+    "metrics_spec 的阈值来自 resources3D 的主体级合成自检，对整场景帧（含天空与整条街）不直接适用；这里只报口径与读数，不做达标判定",
+    "structure_spearman 为负：参考帧是平面着色的 previs 渲染（远处建筑/天空更亮、近处地面更暗），深度与灰阶在这张参考图上本就负相关；限定到主体掩码时为正。深度通道本身的对错由交叉渲染逐像素一致率保证，不由这条指标保证",
+    "composition_fg_iou 接近 0：契约 mask 是「全部可见几何」，metrics 的前景估计是「主体」，两者语义不同；且该估计器在整场景帧里选不出主角（subject_recall_in_estimate = 0），所以这条指标要背景干净的主体级渲染才有意义",
+    "d_camera_pitch_err_deg 是条件深度反解机位 vs 真值相机（Z-up -> Y-up 边界换算后）的俯仰误差，判据 ≤2° 合格 —— 这一条直接依赖本契约的坐标系与深度口径，对齐成立"
+  ],
+  "per_frame": [
+    {
+      "frame": "frame_0000",
+      "edge_tolerant_iou": 0.4444,
+      "edge_chamfer_mean_px": 5.541,
+      "structure_spearman": -0.3203,
+      "structure_strata_residual": 0.0398,
+      "composition_fg_iou": 0.0001,
+      "composition_height_ratio_err": 0.9158,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.2961,
+      "camera_pitch_err_deg": 0.1008,
+      "camera_fit_quality": 0.6869,
+      "composite_total": 35.94,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 950,
+        "estimated_fg_area_ratio": 0.0033,
+        "subject_px": 4615,
+        "subject_area_ratio": 0.0159,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0010",
+      "edge_tolerant_iou": 0.4448,
+      "edge_chamfer_mean_px": 5.484,
+      "structure_spearman": -0.3276,
+      "structure_strata_residual": 0.0401,
+      "composition_fg_iou": 0.0001,
+      "composition_height_ratio_err": 0.9109,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3251,
+      "camera_pitch_err_deg": 0.1015,
+      "camera_fit_quality": 0.6802,
+      "composite_total": 35.95,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 1083,
+        "estimated_fg_area_ratio": 0.0037,
+        "subject_px": 4716,
+        "subject_area_ratio": 0.0162,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0020",
+      "edge_tolerant_iou": 0.4339,
+      "edge_chamfer_mean_px": 6.724,
+      "structure_spearman": -0.3388,
+      "structure_strata_residual": 0.0347,
+      "composition_fg_iou": 0.0001,
+      "composition_height_ratio_err": 0.8886,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3227,
+      "camera_pitch_err_deg": 0.1292,
+      "camera_fit_quality": 0.6718,
+      "composite_total": 35.63,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 1574,
+        "estimated_fg_area_ratio": 0.0054,
+        "subject_px": 4964,
+        "subject_area_ratio": 0.0171,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0030",
+      "edge_tolerant_iou": 0.4634,
+      "edge_chamfer_mean_px": 5.115,
+      "structure_spearman": -0.3607,
+      "structure_strata_residual": 0.0324,
+      "composition_fg_iou": 0.0001,
+      "composition_height_ratio_err": 0.8812,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3776,
+      "camera_pitch_err_deg": 0.1191,
+      "camera_fit_quality": 0.6648,
+      "composite_total": 36.39,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 2249,
+        "estimated_fg_area_ratio": 0.0077,
+        "subject_px": 4805,
+        "subject_area_ratio": 0.0165,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0040",
+      "edge_tolerant_iou": 0.4652,
+      "edge_chamfer_mean_px": 6.195,
+      "structure_spearman": -0.3748,
+      "structure_strata_residual": 0.0283,
+      "composition_fg_iou": 0.0002,
+      "composition_height_ratio_err": 0.8614,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.378,
+      "camera_pitch_err_deg": 0.1112,
+      "camera_fit_quality": 0.6599,
+      "composite_total": 36.45,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 3087,
+        "estimated_fg_area_ratio": 0.0106,
+        "subject_px": 4858,
+        "subject_area_ratio": 0.0167,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0050",
+      "edge_tolerant_iou": 0.4299,
+      "edge_chamfer_mean_px": 4.428,
+      "structure_spearman": -0.4047,
+      "structure_strata_residual": 0.0302,
+      "composition_fg_iou": 0.0002,
+      "composition_height_ratio_err": 0.8366,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3103,
+      "camera_pitch_err_deg": 0.1142,
+      "camera_fit_quality": 0.6507,
+      "composite_total": 35.56,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 3563,
+        "estimated_fg_area_ratio": 0.0122,
+        "subject_px": 5619,
+        "subject_area_ratio": 0.0193,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0060",
+      "edge_tolerant_iou": 0.4288,
+      "edge_chamfer_mean_px": 4.664,
+      "structure_spearman": -0.4104,
+      "structure_strata_residual": 0.0307,
+      "composition_fg_iou": 0.0003,
+      "composition_height_ratio_err": 0.8292,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3681,
+      "camera_pitch_err_deg": 0.1237,
+      "camera_fit_quality": 0.6464,
+      "composite_total": 35.52,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 3813,
+        "estimated_fg_area_ratio": 0.0131,
+        "subject_px": 5679,
+        "subject_area_ratio": 0.0195,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0070",
+      "edge_tolerant_iou": 0.4232,
+      "edge_chamfer_mean_px": 5.71,
+      "structure_spearman": -0.4177,
+      "structure_strata_residual": 0.0324,
+      "composition_fg_iou": 0.0004,
+      "composition_height_ratio_err": 0.8168,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3339,
+      "camera_pitch_err_deg": 0.1134,
+      "camera_fit_quality": 0.6462,
+      "composite_total": 35.4,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 3993,
+        "estimated_fg_area_ratio": 0.0137,
+        "subject_px": 5855,
+        "subject_area_ratio": 0.0201,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0080",
+      "edge_tolerant_iou": 0.4483,
+      "edge_chamfer_mean_px": 6.953,
+      "structure_spearman": -0.4352,
+      "structure_strata_residual": 0.0345,
+      "composition_fg_iou": 0.0003,
+      "composition_height_ratio_err": 0.8218,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3778,
+      "camera_pitch_err_deg": 0.1042,
+      "camera_fit_quality": 0.6335,
+      "composite_total": 36.04,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 4491,
+        "estimated_fg_area_ratio": 0.0154,
+        "subject_px": 5744,
+        "subject_area_ratio": 0.0197,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0090",
+      "edge_tolerant_iou": 0.4499,
+      "edge_chamfer_mean_px": 6.219,
+      "structure_spearman": -0.4554,
+      "structure_strata_residual": 0.0381,
+      "composition_fg_iou": 0.0003,
+      "composition_height_ratio_err": 0.8218,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.401,
+      "camera_pitch_err_deg": 0.1336,
+      "camera_fit_quality": 0.623,
+      "composite_total": 36.03,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 5336,
+        "estimated_fg_area_ratio": 0.0183,
+        "subject_px": 6572,
+        "subject_area_ratio": 0.0226,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0100",
+      "edge_tolerant_iou": 0.466,
+      "edge_chamfer_mean_px": 4.097,
+      "structure_spearman": -0.4642,
+      "structure_strata_residual": 0.0608,
+      "composition_fg_iou": 0.0003,
+      "composition_height_ratio_err": 0.8069,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.2746,
+      "camera_pitch_err_deg": 0.3349,
+      "camera_fit_quality": 0.6191,
+      "composite_total": 36.37,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 6021,
+        "estimated_fg_area_ratio": 0.0207,
+        "subject_px": 7486,
+        "subject_area_ratio": 0.0257,
+        "subject_recall_in_estimate": 0.0
+      }
+    },
+    {
+      "frame": "frame_0110",
+      "edge_tolerant_iou": 0.4417,
+      "edge_chamfer_mean_px": 4.146,
+      "structure_spearman": -0.4803,
+      "structure_strata_residual": 0.0469,
+      "composition_fg_iou": 0.0006,
+      "composition_height_ratio_err": 0.7946,
+      "composition_subject_fg_iou": 0.0,
+      "structure_subject_spearman": 0.3311,
+      "camera_pitch_err_deg": 0.3189,
+      "camera_fit_quality": 0.6094,
+      "composite_total": 36.4,
+      "composite_active": [
+        "camera",
+        "composition",
+        "edge",
+        "structure"
+      ],
+      "foreground_estimator_diag": {
+        "estimated_fg_px": 6700,
+        "estimated_fg_area_ratio": 0.023,
+        "subject_px": 7728,
+        "subject_area_ratio": 0.0266,
+        "subject_recall_in_estimate": 0.0
+      }
+    }
+  ],
+  "elapsed_s": 3.963
+}

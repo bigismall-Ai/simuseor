@@ -1,0 +1,113 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/vegetation/tree_birch_slim_mid",
+  "name": "tree_birch_slim_mid",
+  "category": "tree",
+  "semantic_category": "tree",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/vegetation/tree_birch_slim_mid.glb",
+      "bytes": 13156,
+      "sha256": "2e66cc8441a1d5a0eb40676ce91a2e1d95ac717de66330baab64219c315d1866"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_assets.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "由本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_assets.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 632
+  },
+  "geometry": {
+    "faces": 632,
+    "vertices": 350,
+    "parts": [
+      {
+        "node": "tree_birch_slim_mid_trunk",
+        "faces": 312,
+        "vertices": 182,
+        "bbox_min": [
+          -0.9576,
+          -0.5547,
+          0.0
+        ],
+        "bbox_max": [
+          0.7015,
+          0.831,
+          4.4784
+        ]
+      },
+      {
+        "node": "tree_canopy_birch_slim_mid",
+        "faces": 320,
+        "vertices": 168,
+        "bbox_min": [
+          -1.4771,
+          -0.9814,
+          3.0976
+        ],
+        "bbox_max": [
+          1.2611,
+          1.6686,
+          5.4032
+        ]
+      }
+    ],
+    "bbox_min": [
+      -1.4771,
+      -0.9814,
+      0.0
+    ],
+    "bbox_max": [
+      1.2611,
+      1.6686,
+      5.4032
+    ],
+    "ground_offset_m": 0.0
+  },
+  "recipe": {
+    "recipe_id": "vegetation_species",
+    "variant": "mid",
+    "params": {
+      "name": "birch_slim",
+      "height": 7.2,
+      "trunk_r": 0.16,
+      "canopy_r": 1.55,
+      "canopy_h": 3.4,
+      "shape": "column",
+      "branches": 3,
+      "levels": 3,
+      "seed": 37,
+      "note": "细高白桦，窄巷背景"
+    },
+    "lod": {
+      "segments": 6,
+      "levels": 2,
+      "canopy_blobs": 4,
+      "canopy_subdiv": 1,
+      "branch_ratio": 0.38
+    }
+  },
+  "nodes": [
+    "tree_birch_slim_mid_trunk",
+    "tree_canopy_birch_slim_mid"
+  ],
+  "semantic_categories": {
+    "tree_birch_slim_mid_trunk": "tree",
+    "tree_canopy_birch_slim_mid": "foliage"
+  }
+}

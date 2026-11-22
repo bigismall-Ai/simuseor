@@ -1,0 +1,2366 @@
+{
+  "kind": "shot_conditions_index",
+  "shot_id": "shot_follow",
+  "move_type": "follow",
+  "channels": [
+    "depth",
+    "normal",
+    "seg",
+    "mask",
+    "lineart",
+    "pose"
+  ],
+  "resolution": [
+    720,
+    404
+  ],
+  "fps": 24,
+  "frames": 120,
+  "layout": "conditions/frame_<i>/cond_<channel>.png + cond_<channel>.json",
+  "sidecar_required_fields": [
+    "resolution",
+    "f_px",
+    "near",
+    "far",
+    "encoding",
+    "up_axis",
+    "mask_semantics"
+  ],
+  "palette_version": "tree_resources_builder_fixed_v1",
+  "palette": {
+    "building": [
+      198,
+      106,
+      68
+    ],
+    "character": [
+      226,
+      112,
+      200
+    ],
+    "crowd": [
+      214,
+      158,
+      116
+    ],
+    "foliage": [
+      120,
+      186,
+      92
+    ],
+    "ground": [
+      141,
+      166,
+      110
+    ],
+    "road": [
+      70,
+      70,
+      78
+    ],
+    "sidewalk": [
+      163,
+      163,
+      170
+    ],
+    "tree": [
+      86,
+      140,
+      62
+    ],
+    "vehicle": [
+      52,
+      108,
+      214
+    ]
+  },
+  "sidecar_scan": {
+    "frames_scanned": 120,
+    "sidecar_files": 840,
+    "sidecar_ok": 720,
+    "all_ok": true
+  },
+  "render_wall_ms": 10983.19,
+  "per_frame": [
+    {
+      "frame": 0,
+      "dir": "conditions/frame_0000",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 200117,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 1,
+      "dir": "conditions/frame_0001",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 200089,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 2,
+      "dir": "conditions/frame_0002",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 200037,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 3,
+      "dir": "conditions/frame_0003",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199991,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 4,
+      "dir": "conditions/frame_0004",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199947,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 5,
+      "dir": "conditions/frame_0005",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199915,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 6,
+      "dir": "conditions/frame_0006",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199893,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 7,
+      "dir": "conditions/frame_0007",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199875,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 8,
+      "dir": "conditions/frame_0008",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199863,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 9,
+      "dir": "conditions/frame_0009",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199862,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 10,
+      "dir": "conditions/frame_0010",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199865,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 11,
+      "dir": "conditions/frame_0011",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199880,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 12,
+      "dir": "conditions/frame_0012",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199897,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 13,
+      "dir": "conditions/frame_0013",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199911,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 14,
+      "dir": "conditions/frame_0014",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199918,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 15,
+      "dir": "conditions/frame_0015",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199938,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 16,
+      "dir": "conditions/frame_0016",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199959,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 17,
+      "dir": "conditions/frame_0017",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199971,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 18,
+      "dir": "conditions/frame_0018",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199958,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 19,
+      "dir": "conditions/frame_0019",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199927,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 20,
+      "dir": "conditions/frame_0020",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199899,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 21,
+      "dir": "conditions/frame_0021",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199862,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 22,
+      "dir": "conditions/frame_0022",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199821,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 23,
+      "dir": "conditions/frame_0023",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199775,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 24,
+      "dir": "conditions/frame_0024",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199723,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 25,
+      "dir": "conditions/frame_0025",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199673,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 26,
+      "dir": "conditions/frame_0026",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199625,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 27,
+      "dir": "conditions/frame_0027",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199586,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 28,
+      "dir": "conditions/frame_0028",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199550,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 29,
+      "dir": "conditions/frame_0029",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199512,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 30,
+      "dir": "conditions/frame_0030",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199486,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 31,
+      "dir": "conditions/frame_0031",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199470,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 32,
+      "dir": "conditions/frame_0032",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199462,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 33,
+      "dir": "conditions/frame_0033",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199457,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 34,
+      "dir": "conditions/frame_0034",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199461,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 35,
+      "dir": "conditions/frame_0035",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199470,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 36,
+      "dir": "conditions/frame_0036",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199485,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 37,
+      "dir": "conditions/frame_0037",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199497,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 38,
+      "dir": "conditions/frame_0038",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199505,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 39,
+      "dir": "conditions/frame_0039",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199520,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 40,
+      "dir": "conditions/frame_0040",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199540,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 41,
+      "dir": "conditions/frame_0041",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199552,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 42,
+      "dir": "conditions/frame_0042",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199545,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 43,
+      "dir": "conditions/frame_0043",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199531,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 44,
+      "dir": "conditions/frame_0044",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199520,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 45,
+      "dir": "conditions/frame_0045",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199487,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 46,
+      "dir": "conditions/frame_0046",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199458,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 47,
+      "dir": "conditions/frame_0047",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199425,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 48,
+      "dir": "conditions/frame_0048",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199408,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 49,
+      "dir": "conditions/frame_0049",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199385,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 50,
+      "dir": "conditions/frame_0050",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199360,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 51,
+      "dir": "conditions/frame_0051",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199330,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 52,
+      "dir": "conditions/frame_0052",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199300,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 53,
+      "dir": "conditions/frame_0053",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199279,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 54,
+      "dir": "conditions/frame_0054",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199269,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 55,
+      "dir": "conditions/frame_0055",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199255,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 56,
+      "dir": "conditions/frame_0056",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199246,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 57,
+      "dir": "conditions/frame_0057",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199239,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 58,
+      "dir": "conditions/frame_0058",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199237,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 59,
+      "dir": "conditions/frame_0059",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199241,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 60,
+      "dir": "conditions/frame_0060",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199245,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 61,
+      "dir": "conditions/frame_0061",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199252,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 62,
+      "dir": "conditions/frame_0062",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199257,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 63,
+      "dir": "conditions/frame_0063",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199270,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 64,
+      "dir": "conditions/frame_0064",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199283,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 65,
+      "dir": "conditions/frame_0065",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199304,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 66,
+      "dir": "conditions/frame_0066",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199316,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 67,
+      "dir": "conditions/frame_0067",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199319,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 68,
+      "dir": "conditions/frame_0068",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199318,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 69,
+      "dir": "conditions/frame_0069",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199308,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 70,
+      "dir": "conditions/frame_0070",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199293,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 71,
+      "dir": "conditions/frame_0071",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199270,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 72,
+      "dir": "conditions/frame_0072",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199237,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 73,
+      "dir": "conditions/frame_0073",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199205,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 74,
+      "dir": "conditions/frame_0074",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199176,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 75,
+      "dir": "conditions/frame_0075",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199152,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 76,
+      "dir": "conditions/frame_0076",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199129,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 77,
+      "dir": "conditions/frame_0077",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199096,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 78,
+      "dir": "conditions/frame_0078",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199075,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 79,
+      "dir": "conditions/frame_0079",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199063,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 80,
+      "dir": "conditions/frame_0080",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199056,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 81,
+      "dir": "conditions/frame_0081",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199049,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 82,
+      "dir": "conditions/frame_0082",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199048,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 83,
+      "dir": "conditions/frame_0083",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199053,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 84,
+      "dir": "conditions/frame_0084",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199059,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 85,
+      "dir": "conditions/frame_0085",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199065,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 86,
+      "dir": "conditions/frame_0086",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199072,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 87,
+      "dir": "conditions/frame_0087",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199083,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 88,
+      "dir": "conditions/frame_0088",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199097,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 89,
+      "dir": "conditions/frame_0089",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199115,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 90,
+      "dir": "conditions/frame_0090",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199127,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 91,
+      "dir": "conditions/frame_0091",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199131,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 92,
+      "dir": "conditions/frame_0092",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199138,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 93,
+      "dir": "conditions/frame_0093",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199128,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 94,
+      "dir": "conditions/frame_0094",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199101,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 95,
+      "dir": "conditions/frame_0095",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199075,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 96,
+      "dir": "conditions/frame_0096",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199056,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 97,
+      "dir": "conditions/frame_0097",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199034,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 98,
+      "dir": "conditions/frame_0098",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 199003,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 99,
+      "dir": "conditions/frame_0099",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198975,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 100,
+      "dir": "conditions/frame_0100",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198946,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 101,
+      "dir": "conditions/frame_0101",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198924,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 102,
+      "dir": "conditions/frame_0102",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198913,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 103,
+      "dir": "conditions/frame_0103",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198903,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 104,
+      "dir": "conditions/frame_0104",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198893,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 105,
+      "dir": "conditions/frame_0105",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198887,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 106,
+      "dir": "conditions/frame_0106",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198884,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 107,
+      "dir": "conditions/frame_0107",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198888,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 108,
+      "dir": "conditions/frame_0108",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198892,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 109,
+      "dir": "conditions/frame_0109",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198899,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 110,
+      "dir": "conditions/frame_0110",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198903,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 111,
+      "dir": "conditions/frame_0111",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198916,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 112,
+      "dir": "conditions/frame_0112",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198932,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 113,
+      "dir": "conditions/frame_0113",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        40.1641
+      ],
+      "foreground_px": 198951,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 114,
+      "dir": "conditions/frame_0114",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198962,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 115,
+      "dir": "conditions/frame_0115",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198964,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 116,
+      "dir": "conditions/frame_0116",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198963,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 117,
+      "dir": "conditions/frame_0117",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198955,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 118,
+      "dir": "conditions/frame_0118",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198939,
+      "keypoints": 18,
+      "f_px": 392.777778
+    },
+    {
+      "frame": 119,
+      "dir": "conditions/frame_0119",
+      "channels": [
+        "depth",
+        "normal",
+        "seg",
+        "mask",
+        "lineart",
+        "pose"
+      ],
+      "near_far_m": [
+        2.3104,
+        38.0094
+      ],
+      "foreground_px": 198916,
+      "keypoints": 18,
+      "f_px": 392.777778
+    }
+  ]
+}

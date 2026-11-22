@@ -1,0 +1,340 @@
+{
+  "kind": "r4_instance_table",
+  "schema": "r4-recipe/1",
+  "recipe_id": "vegetation_instances",
+  "category": "tree",
+  "semantic_category": "tree",
+  "note": "植被实例化表：树种 × LOD 档 × 街区 × 变换（分块 LOD 随块走）。",
+  "instances": [
+    {
+      "instance": "tree_oak_broad_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_oak_broad_hero@-24.0,5.1",
+      "asset": "tree_oak_broad_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_hero",
+      "kind": "foliage",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_oak_broad_hero@-24.0,5.1",
+      "asset": "tree_oak_broad_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 2240,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_maple_wide_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_maple_wide_mid@-8.0,5.1",
+      "asset": "tree_maple_wide_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 504,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_maple_wide_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_maple_wide_mid@-8.0,5.1",
+      "asset": "tree_maple_wide_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_oak_broad_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_maple_wide_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_maple_wide_low@24.0,5.1",
+      "asset": "tree_maple_wide_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 100,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_canopy_maple_wide_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_maple_wide_low@24.0,5.1",
+      "asset": "tree_maple_wide_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_downtown"
+    },
+    {
+      "instance": "tree_birch_slim_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_birch_slim_hero@-24.0,5.1",
+      "asset": "tree_birch_slim_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_birch_slim_hero",
+      "kind": "foliage",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_birch_slim_hero@-24.0,5.1",
+      "asset": "tree_birch_slim_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 2240,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_oak_broad_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@-8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_oak_broad_mid@-8.0,5.1",
+      "asset": "tree_oak_broad_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_birch_slim_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_birch_slim_mid@8.0,5.1",
+      "asset": "tree_birch_slim_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_birch_slim_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_birch_slim_mid@8.0,5.1",
+      "asset": "tree_birch_slim_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 320,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_oak_broad_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_oak_broad_low@24.0,5.1",
+      "asset": "tree_oak_broad_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_canopy_oak_broad_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_oak_broad_low@24.0,5.1",
+      "asset": "tree_oak_broad_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 160,
+      "scene": "scene_block_residential"
+    },
+    {
+      "instance": "tree_dead_bare_hero_trunk",
+      "kind": "tree",
+      "chunk": "near",
+      "lod": "hero",
+      "group": "tree_dead_bare_hero@-24.0,5.1",
+      "asset": "tree_dead_bare_hero",
+      "transform": [
+        -24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 1280,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_pine_conical_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_pine_conical_mid@-8.0,5.1",
+      "asset": "tree_pine_conical_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_canopy_pine_conical_mid",
+      "kind": "foliage",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_pine_conical_mid@-8.0,5.1",
+      "asset": "tree_pine_conical_mid",
+      "transform": [
+        -8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 96,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_dead_bare_mid_trunk",
+      "kind": "tree",
+      "chunk": "mid",
+      "lod": "mid",
+      "group": "tree_dead_bare_mid@8.0,5.1",
+      "asset": "tree_dead_bare_mid",
+      "transform": [
+        8.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 312,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_pine_conical_low_trunk",
+      "kind": "tree",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_pine_conical_low@24.0,5.1",
+      "asset": "tree_pine_conical_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 80,
+      "scene": "scene_block_industrial"
+    },
+    {
+      "instance": "tree_canopy_pine_conical_low",
+      "kind": "foliage",
+      "chunk": "far",
+      "lod": "low",
+      "group": "tree_pine_conical_low@24.0,5.1",
+      "asset": "tree_pine_conical_low",
+      "transform": [
+        24.0,
+        5.1000000000000005,
+        0.0
+      ],
+      "faces": 48,
+      "scene": "scene_block_industrial"
+    }
+  ]
+}

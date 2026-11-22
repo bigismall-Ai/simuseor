@@ -1,0 +1,83 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/props/prop_tool_pickaxe",
+  "name": "prop_tool_pickaxe",
+  "category": "prop",
+  "semantic_category": "prop",
+  "usage_level": "low",
+  "budget_faces": 500,
+  "files": [
+    {
+      "path": "assets/geometry/props/prop_tool_pickaxe.glb",
+      "bytes": 2152,
+      "sha256": "426dcafcc6b3613689801ecc5da090cf425df620b3ef8d76fe2b89d0bcf4eb41"
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution_required": false,
+    "credit": "Kenney（CC0 1.0）"
+  },
+  "provenance": {
+    "origin": "public-download",
+    "statement": "Kenney 官方包下载，剥材质后按米制标定",
+    "source_url": "https://kenney.nl/assets/survival-kit",
+    "is_ai": 0,
+    "source_pack": "survival-kit",
+    "source_model": "tool-pickaxe",
+    "source_file": "var/public-assets/kenney/survival-kit/Models/GLB format/tool-pickaxe.glb",
+    "source_sha256": "2b77a238b8666338094d83fc5561984643c335c49ccacd9e0e0a50fb2849c542",
+    "source_faces": 74,
+    "scale_factor": 3.95833,
+    "target_max_dim_m": 0.95,
+    "process": {
+      "mode": "watertight_repair",
+      "capped_loops": 1,
+      "rounds": 2
+    }
+  },
+  "lod": {
+    "level": "low",
+    "faces": 76
+  },
+  "geometry": {
+    "faces": 76,
+    "vertices": 44,
+    "bbox_min": [
+      -0.3535,
+      0.0,
+      0.0
+    ],
+    "bbox_max": [
+      0.3535,
+      0.95,
+      0.1532
+    ],
+    "size_m": [
+      0.707,
+      0.95,
+      0.1532
+    ],
+    "max_dim_m": 0.95,
+    "watertight": true,
+    "winding_consistent": true,
+    "degenerate_faces": 0
+  },
+  "recipe": {
+    "recipe_id": "prop_library_street",
+    "variant": "prop_tool_pickaxe",
+    "params": {
+      "scale_factor": 3.95833,
+      "target_max_dim_m": 0.95,
+      "process": {
+        "mode": "watertight_repair",
+        "capped_loops": 1,
+        "rounds": 2
+      }
+    }
+  },
+  "origin": "Kenney"
+}

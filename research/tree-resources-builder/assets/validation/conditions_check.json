@@ -1,7 +1,10 @@
 {
   "kind": "conditions_check",
   "generated_by": "harness/conditions.py --demo",
-  "scene_source": "generate_assets.generate_all()",
+  "contract": "conditions_contract v1.1.0",
+  "up_axis": "Z",
+  "units": "meter",
+  "scene_source": "generate_assets.street_scene()（只读，不写任何资产文件）",
   "resolution": [
     512,
     512
@@ -20,12 +23,15 @@
     "fov_y": 53.13
   },
   "timing_ms": {
-    "rasterize": 70.85,
-    "depth": 1.05,
-    "normal": 5.9,
-    "seg": 5.28,
-    "total_render_conditions": 83.24,
-    "demo_total": 1006.17
+    "rasterize": 92.92,
+    "depth": 0.38,
+    "normal": 6.54,
+    "seg": 8.63,
+    "mask": 0.28,
+    "lineart": 0.57,
+    "pose": 8.36,
+    "total_render_conditions": 117.79,
+    "demo_total": 917.57
   },
   "budget_ms": 1500.0,
   "within_budget": true,
@@ -66,20 +72,24 @@
     "hidden_mesh_count": 2
   },
   "depth": {
-    "encoding": "depth = (z - z_near_fg) / (z_far_fg - z_near_fg) ∈ [0,1]（z = 相机空间前向轴距离/米，0=最近，1=最远）；背景像素固定为 background_depth = 1.0",
-    "background_value": 1.0,
+    "encoding": "depth = (z_far_fg - z) / (z_far_fg - z_near_fg) ∈ [0,1]（z = 相机空间前向轴距离/米，1=最近，0=最远）；背景像素固定为 background_depth = 0.0",
+    "polarity": "near_1_far_0",
+    "near_value": 1.0,
+    "far_value": 0.0,
+    "background_value": 0.0,
     "foreground_min": 0.0,
     "foreground_max": 1.0,
     "background_unique": true,
     "near_far_m": [
       2.6165,
       40.165
-    ]
+    ],
+    "note": "R0 极性裁定后：近=1 远=0（背景=0.0）；旧口径（近=0 远=1）的读数已作废并刷新"
   },
   "normal": {
     "encoding": "c = (n_world * 0.5 + 0.5) ∈ [0,1]^3；存 16bit: v16 = round(c * 65535)；反解: n = normalize(v16 / 65535 * 2 - 1)；背景像素固定为 (0,0,0)",
     "space": "world",
-    "decode_max_error_float": 6.673608765606076e-08,
+    "decode_max_error_float": 6.646773645369031e-08,
     "decode_max_error_png16": 1.845783568160675e-05,
     "threshold": 0.001,
     "pass": true,
@@ -269,23 +279,4823 @@
   },
   "hidden_meshes": [],
   "outputs": {
-    "cond_depth": "assets\\previews\\cond_depth.png",
-    "cond_normal": "assets\\previews\\cond_normal.png",
-    "cond_seg": "assets\\previews\\cond_seg.png",
-    "cond_normal_r16": "assets\\previews\\cond_normal_r16.png",
-    "cond_normal_g16": "assets\\previews\\cond_normal_g16.png",
-    "cond_normal_b16": "assets\\previews\\cond_normal_b16.png",
-    "cond_car_depth": "assets\\previews\\cond_car_depth.png",
-    "cond_car_normal": "assets\\previews\\cond_car_normal.png",
-    "cond_car_seg": "assets\\previews\\cond_car_seg.png",
-    "cond_car_normal_r16": "assets\\previews\\cond_car_normal_r16.png",
-    "cond_car_normal_g16": "assets\\previews\\cond_car_normal_g16.png",
-    "cond_car_normal_b16": "assets\\previews\\cond_car_normal_b16.png",
-    "cond_pov_depth": "assets\\previews\\cond_pov_depth.png",
-    "cond_pov_normal": "assets\\previews\\cond_pov_normal.png",
-    "cond_pov_seg": "assets\\previews\\cond_pov_seg.png",
-    "cond_pov_normal_r16": "assets\\previews\\cond_pov_normal_r16.png",
-    "cond_pov_normal_g16": "assets\\previews\\cond_pov_normal_g16.png",
-    "cond_pov_normal_b16": "assets\\previews\\cond_pov_normal_b16.png"
+    "cond_depth": "assets/previews/cond_depth.png",
+    "cond_normal": "assets/previews/cond_normal.png",
+    "cond_seg": "assets/previews/cond_seg.png",
+    "cond_normal_r16": "assets/previews/cond_normal_r16.png",
+    "cond_normal_g16": "assets/previews/cond_normal_g16.png",
+    "cond_normal_b16": "assets/previews/cond_normal_b16.png",
+    "cond_car_depth": "assets/previews/cond_car_depth.png",
+    "cond_car_normal": "assets/previews/cond_car_normal.png",
+    "cond_car_seg": "assets/previews/cond_car_seg.png",
+    "cond_car_normal_r16": "assets/previews/cond_car_normal_r16.png",
+    "cond_car_normal_g16": "assets/previews/cond_car_normal_g16.png",
+    "cond_car_normal_b16": "assets/previews/cond_car_normal_b16.png",
+    "cond_pov_depth": "assets/previews/cond_pov_depth.png",
+    "cond_pov_normal": "assets/previews/cond_pov_normal.png",
+    "cond_pov_seg": "assets/previews/cond_pov_seg.png",
+    "cond_pov_normal_r16": "assets/previews/cond_pov_normal_r16.png",
+    "cond_pov_normal_g16": "assets/previews/cond_pov_normal_g16.png",
+    "cond_pov_normal_b16": "assets/previews/cond_pov_normal_b16.png"
+  },
+  "channels": {
+    "requested": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "present": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "completion_rate": 1.0,
+    "note": "六通道共享同一次光栅化（z-buffer/face_id 缓冲）"
+  },
+  "r1_six_channels": {
+    "kind": "r1_six_channels",
+    "resolution": [
+      512,
+      512
+    ],
+    "channels": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "channels_present": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "missing": [],
+    "completion_rate": 1.0,
+    "timing_ms": {
+      "rasterize": 92.92,
+      "depth": 0.38,
+      "normal": 6.54,
+      "seg": 8.63,
+      "mask": 0.28,
+      "lineart": 0.57,
+      "pose": 8.36,
+      "channel_sum": 24.76,
+      "total_render_conditions": 117.79,
+      "demo_total": 917.57
+    },
+    "note": "光栅化是六通道共享的一次成本；六个通道的耗时是同一次光栅化之后各自的提取耗时（depth/normal/seg/mask/lineart/pose）",
+    "budget_ms": 1500.0,
+    "within_budget": true,
+    "pose_keypoint_sets": {
+      "canonical": "coco18",
+      "all": [
+        "human_rig_21",
+        "coco18",
+        "openpose25"
+      ],
+      "keypoints": {
+        "human_rig_21": 21,
+        "coco18": 18,
+        "openpose25": 25
+      },
+      "bones": {
+        "human_rig_21": 20,
+        "coco18": 19,
+        "openpose25": 23
+      },
+      "joint_source": {
+        "type": "rig21",
+        "joint_count": 21
+      },
+      "joint_source_note": "generate_assets.HUMAN_JOINTS (rest pose)"
+    }
+  },
+  "r1_shot_conditions": {
+    "kind": "r1_shot_conditions",
+    "shot": "shot_001",
+    "sequence": "assets/nongeometry/shot001_hero.npz",
+    "resolution": [
+      720,
+      404
+    ],
+    "camera_source": "render_shot.cam_at（与 shots/<shot>/frames 同一套机位）",
+    "frames_total": 120,
+    "frames_exported": 120,
+    "channels": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "channel_completion_rate": 1.0,
+    "frames_with_all_channels": 120,
+    "sidecar_scan": {
+      "frames_scanned": 120,
+      "frames_all_ok": 120,
+      "rate": 1.0
+    },
+    "timing_ms": {
+      "depth": {
+        "median_ms": 0.41,
+        "mean_ms": 0.59,
+        "max_ms": 1.88,
+        "share_pct": 0.3
+      },
+      "normal": {
+        "median_ms": 9.16,
+        "mean_ms": 9.92,
+        "max_ms": 46.51,
+        "share_pct": 7.2
+      },
+      "seg": {
+        "median_ms": 9.79,
+        "mean_ms": 9.71,
+        "max_ms": 23.27,
+        "share_pct": 7.7
+      },
+      "mask": {
+        "median_ms": 0.24,
+        "mean_ms": 0.22,
+        "max_ms": 0.41,
+        "share_pct": 0.2
+      },
+      "lineart": {
+        "median_ms": 0.53,
+        "mean_ms": 0.44,
+        "max_ms": 1.43,
+        "share_pct": 0.4
+      },
+      "pose": {
+        "median_ms": 3.81,
+        "mean_ms": 3.95,
+        "max_ms": 7.51,
+        "share_pct": 3.0
+      },
+      "rasterize": {
+        "median_ms": 103.41,
+        "note": "光栅化是共享成本：六通道共用同一次 z-buffer"
+      },
+      "total_render_conditions": {
+        "median_ms": 127.06
+      },
+      "wall_total": {
+        "ms": 20765.88,
+        "note": "整段导出耗时（含 PNG 落盘与 sidecar 写出）"
+      }
+    },
+    "budget_ms": 1500.0,
+    "within_budget": true,
+    "pose_consistency": {
+      "method": "落盘关键点 -> 独立重投影（契约 §1.1 公式）+ PNG 圆心像素抽查；3D 源值直接回查 npz 的 joints 行",
+      "source_sequence": "assets/nongeometry/shot001_hero.npz",
+      "n_frames": 10,
+      "max_abs_3d_m": 4.99e-07,
+      "max_abs_2d_px": 0.000673,
+      "png_pixels_mismatch_total": 0,
+      "all_pass": true,
+      "per_frame": [
+        {
+          "frame": 0,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.73e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000638,
+          "max_abs_depth_m": 4.5e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 13,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.94e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000614,
+          "max_abs_depth_m": 4.8e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 26,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.97e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000558,
+          "max_abs_depth_m": 4.9e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 40,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.98e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000658,
+          "max_abs_depth_m": 4.8e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 53,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.98e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000501,
+          "max_abs_depth_m": 4.6e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 66,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.95e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000548,
+          "max_abs_depth_m": 4.8e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 79,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.89e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000565,
+          "max_abs_depth_m": 4.8e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 93,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.99e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000581,
+          "max_abs_depth_m": 4.7e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 106,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.91e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000588,
+          "max_abs_depth_m": 4e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        },
+        {
+          "frame": 119,
+          "source_joints_checked": 15,
+          "max_abs_3d_m": 4.89e-07,
+          "n_keypoints_reprojected": 16,
+          "max_abs_2d_px": 0.000673,
+          "max_abs_depth_m": 3.8e-05,
+          "png_pixels_checked": 16,
+          "png_pixels_mismatch": 0,
+          "pass": true
+        }
+      ]
+    },
+    "pose_store_consistency": {
+      "available": true,
+      "sequence": "assets/nongeometry/shot003_pose.npz",
+      "loader": "pose_store.load_pose_sequence",
+      "joint_shape": [
+        120,
+        77,
+        3
+      ],
+      "n_frames": 10,
+      "max_abs_2d_px": 0.000655,
+      "all_pass": true,
+      "per_frame": [
+        {
+          "frame": 0,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000609,
+          "max_abs_depth_m": 4.4e-05
+        },
+        {
+          "frame": 13,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000644,
+          "max_abs_depth_m": 4.8e-05
+        },
+        {
+          "frame": 26,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000555,
+          "max_abs_depth_m": 4.9e-05
+        },
+        {
+          "frame": 40,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000579,
+          "max_abs_depth_m": 4.8e-05
+        },
+        {
+          "frame": 53,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000573,
+          "max_abs_depth_m": 4.6e-05
+        },
+        {
+          "frame": 66,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000601,
+          "max_abs_depth_m": 4.6e-05
+        },
+        {
+          "frame": 79,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000517,
+          "max_abs_depth_m": 5e-05
+        },
+        {
+          "frame": 93,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000655,
+          "max_abs_depth_m": 4.9e-05
+        },
+        {
+          "frame": 106,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000629,
+          "max_abs_depth_m": 4.7e-05
+        },
+        {
+          "frame": 119,
+          "structure_gate_checks": 7,
+          "n_keypoints": 16,
+          "max_abs_2d_px": 0.000589,
+          "max_abs_depth_m": 4.9e-05
+        }
+      ]
+    },
+    "metrics_spec": {
+      "available": true,
+      "spec": "resources3D eval/metrics_spec.md（a 边缘 / b 结构 / c 构图 / d 机位 / e 综合）",
+      "reference_image": "shots/<shot>/frames/frame_XXXX.jpg（本机确定性渲染帧，非下游生成图）",
+      "caveat": "参考图是本机确定性渲染，不是下游模型输出；这些读数度量的是「条件图与同源渲染的结构一致度」，**不是**下游保留度（下游 A/B 不做）",
+      "n_frames": 12,
+      "median": {
+        "edge_tolerant_iou": 0.4363,
+        "edge_chamfer_mean_px": 5.787,
+        "structure_spearman": -0.4109,
+        "structure_strata_residual": 0.0359,
+        "composition_fg_iou": 0.0003,
+        "composition_height_ratio_err": 0.8292,
+        "composition_subject_fg_iou": 0.0,
+        "structure_subject_spearman": 0.3422,
+        "camera_pitch_err_deg": 0.118,
+        "composite_total": 35.77
+      },
+      "reading_notes": [
+        "structure_spearman 为负: 参考帧是平面着色的 previs 渲染 (远处建筑/天空更亮, 近处地面更暗), 所以深度与灰阶在这张参考图上本来就该是负相关; 它量的是渲染亮度与深度的关系, 不是条件图深度通道的对错 (深度通道本身与 resources3D 交叉渲染逐像素 100% 一致, 见 R0 读数)",
+        "composition_fg_iou 约等于 0: 契约的 mask 是全部可见几何, metrics 的前景估计是主体, 两者语义不同, 直接相比没有意义; composition_subject_fg_iou 是主体口径 (主体掩码取自 seg 的 character 类), 实测仍为 0 —— 因为 resources3D 的前景估计器 (边框背景色差异 + Otsu + 中心椭圆 + 最大连通域) 在整场景帧里选不出主角 (subject_recall_in_estimate = 0, 见 foreground_estimator_diag); 这条指标要背景干净的主体级渲染才有意义, 与条件图对错无关",
+        "metrics_spec 的阈值来自 resources3D 的主体级合成自检, 对整场景帧 (含天空与整条街) 不直接适用; 这里只报口径与读数, 不做达标判定"
+      ],
+      "per_frame": [
+        {
+          "frame": 0,
+          "edge_tolerant_iou": 0.4444,
+          "edge_chamfer_mean_px": 5.541,
+          "structure_spearman": -0.3203,
+          "structure_strata_residual": 0.0398,
+          "composition_fg_iou": 0.0001,
+          "composition_height_ratio_err": 0.9158,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.2961,
+          "depth_strata_profile_gray": [
+            0.5603,
+            0.5652,
+            0.5867,
+            0.5825,
+            0.5544,
+            0.5678,
+            0.5704,
+            0.5666
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 950,
+            "estimated_fg_area_ratio": 0.0033,
+            "subject_px": 4615,
+            "subject_area_ratio": 0.0159,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1008,
+          "camera_fit_quality": 0.6869,
+          "composite_total": 35.94,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 11,
+          "edge_tolerant_iou": 0.4606,
+          "edge_chamfer_mean_px": 5.277,
+          "structure_spearman": -0.3277,
+          "structure_strata_residual": 0.0386,
+          "composition_fg_iou": 0.0001,
+          "composition_height_ratio_err": 0.9109,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3052,
+          "depth_strata_profile_gray": [
+            0.5608,
+            0.5676,
+            0.5887,
+            0.5797,
+            0.5541,
+            0.5681,
+            0.5705,
+            0.5666
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 1120,
+            "estimated_fg_area_ratio": 0.0039,
+            "subject_px": 4735,
+            "subject_area_ratio": 0.0163,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1115,
+          "camera_fit_quality": 0.6802,
+          "composite_total": 36.33,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 22,
+          "edge_tolerant_iou": 0.4208,
+          "edge_chamfer_mean_px": 6.309,
+          "structure_spearman": -0.343,
+          "structure_strata_residual": 0.0365,
+          "composition_fg_iou": 0.0001,
+          "composition_height_ratio_err": 0.8936,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3635,
+          "depth_strata_profile_gray": [
+            0.5618,
+            0.5714,
+            0.5889,
+            0.5769,
+            0.5562,
+            0.5665,
+            0.5702,
+            0.5667
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 1679,
+            "estimated_fg_area_ratio": 0.0058,
+            "subject_px": 5014,
+            "subject_area_ratio": 0.0172,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.118,
+          "camera_fit_quality": 0.6698,
+          "composite_total": 35.32,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 32,
+          "edge_tolerant_iou": 0.4394,
+          "edge_chamfer_mean_px": 6.169,
+          "structure_spearman": -0.3649,
+          "structure_strata_residual": 0.0303,
+          "composition_fg_iou": 0.0001,
+          "composition_height_ratio_err": 0.8762,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3541,
+          "depth_strata_profile_gray": [
+            0.5627,
+            0.5768,
+            0.5874,
+            0.5766,
+            0.5586,
+            0.5658,
+            0.5717,
+            0.567
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 2417,
+            "estimated_fg_area_ratio": 0.0083,
+            "subject_px": 4860,
+            "subject_area_ratio": 0.0167,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1395,
+          "camera_fit_quality": 0.6634,
+          "composite_total": 35.75,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 43,
+          "edge_tolerant_iou": 0.4389,
+          "edge_chamfer_mean_px": 5.762,
+          "structure_spearman": -0.3845,
+          "structure_strata_residual": 0.0284,
+          "composition_fg_iou": 0.0002,
+          "composition_height_ratio_err": 0.8589,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3227,
+          "depth_strata_profile_gray": [
+            0.5634,
+            0.58,
+            0.5875,
+            0.5739,
+            0.5626,
+            0.5656,
+            0.5721,
+            0.5668
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 3248,
+            "estimated_fg_area_ratio": 0.0112,
+            "subject_px": 5366,
+            "subject_area_ratio": 0.0184,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1119,
+          "camera_fit_quality": 0.658,
+          "composite_total": 35.79,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 54,
+          "edge_tolerant_iou": 0.4315,
+          "edge_chamfer_mean_px": 5.92,
+          "structure_spearman": -0.4102,
+          "structure_strata_residual": 0.0303,
+          "composition_fg_iou": 0.0003,
+          "composition_height_ratio_err": 0.8317,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3459,
+          "depth_strata_profile_gray": [
+            0.565,
+            0.5842,
+            0.5908,
+            0.5715,
+            0.5623,
+            0.5652,
+            0.5712,
+            0.5665
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 3703,
+            "estimated_fg_area_ratio": 0.0127,
+            "subject_px": 5653,
+            "subject_area_ratio": 0.0194,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1272,
+          "camera_fit_quality": 0.6487,
+          "composite_total": 35.58,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 65,
+          "edge_tolerant_iou": 0.4322,
+          "edge_chamfer_mean_px": 5.812,
+          "structure_spearman": -0.4116,
+          "structure_strata_residual": 0.0304,
+          "composition_fg_iou": 0.0003,
+          "composition_height_ratio_err": 0.8267,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3755,
+          "depth_strata_profile_gray": [
+            0.5645,
+            0.5845,
+            0.5909,
+            0.5708,
+            0.5639,
+            0.5654,
+            0.5717,
+            0.5662
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 3875,
+            "estimated_fg_area_ratio": 0.0133,
+            "subject_px": 5682,
+            "subject_area_ratio": 0.0195,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.1103,
+          "camera_fit_quality": 0.6473,
+          "composite_total": 35.62,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 76,
+          "edge_tolerant_iou": 0.4177,
+          "edge_chamfer_mean_px": 6.483,
+          "structure_spearman": -0.4294,
+          "structure_strata_residual": 0.0343,
+          "composition_fg_iou": 0.0005,
+          "composition_height_ratio_err": 0.8168,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3386,
+          "depth_strata_profile_gray": [
+            0.5648,
+            0.5888,
+            0.5936,
+            0.569,
+            0.5629,
+            0.5653,
+            0.5714,
+            0.5671
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 4286,
+            "estimated_fg_area_ratio": 0.0147,
+            "subject_px": 5875,
+            "subject_area_ratio": 0.0202,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.096,
+          "camera_fit_quality": 0.64,
+          "composite_total": 35.29,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 87,
+          "edge_tolerant_iou": 0.4272,
+          "edge_chamfer_mean_px": 6.206,
+          "structure_spearman": -0.4423,
+          "structure_strata_residual": 0.0353,
+          "composition_fg_iou": 0.0005,
+          "composition_height_ratio_err": 0.8243,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3483,
+          "depth_strata_profile_gray": [
+            0.5652,
+            0.5931,
+            0.5929,
+            0.5682,
+            0.5692,
+            0.5626,
+            0.5678,
+            0.571
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 5133,
+            "estimated_fg_area_ratio": 0.0176,
+            "subject_px": 6184,
+            "subject_area_ratio": 0.0213,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.118,
+          "camera_fit_quality": 0.6268,
+          "composite_total": 35.49,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 97,
+          "edge_tolerant_iou": 0.4488,
+          "edge_chamfer_mean_px": 5.294,
+          "structure_spearman": -0.4536,
+          "structure_strata_residual": 0.0581,
+          "composition_fg_iou": 0.0003,
+          "composition_height_ratio_err": 0.8094,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.238,
+          "depth_strata_profile_gray": [
+            0.5689,
+            0.5963,
+            0.5953,
+            0.5231,
+            0.528,
+            0.5626,
+            0.565,
+            0.5733
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 5838,
+            "estimated_fg_area_ratio": 0.0201,
+            "subject_px": 7450,
+            "subject_area_ratio": 0.0256,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.2128,
+          "camera_fit_quality": 0.6218,
+          "composite_total": 36.01,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 108,
+          "edge_tolerant_iou": 0.4559,
+          "edge_chamfer_mean_px": 4.02,
+          "structure_spearman": -0.4807,
+          "structure_strata_residual": 0.0465,
+          "composition_fg_iou": 0.0003,
+          "composition_height_ratio_err": 0.797,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3864,
+          "depth_strata_profile_gray": [
+            0.5691,
+            0.5981,
+            0.5969,
+            0.5672,
+            0.5504,
+            0.562,
+            0.5628,
+            0.576
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 6546,
+            "estimated_fg_area_ratio": 0.0225,
+            "subject_px": 7681,
+            "subject_area_ratio": 0.0264,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.3387,
+          "camera_fit_quality": 0.6096,
+          "composite_total": 36.47,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        },
+        {
+          "frame": 119,
+          "edge_tolerant_iou": 0.4336,
+          "edge_chamfer_mean_px": 4.699,
+          "structure_spearman": -0.4947,
+          "structure_strata_residual": 0.0424,
+          "composition_fg_iou": 0.0003,
+          "composition_height_ratio_err": 0.7921,
+          "composition_subject_fg_iou": 0.0,
+          "structure_subject_spearman": 0.3315,
+          "depth_strata_profile_gray": [
+            0.5686,
+            0.5996,
+            0.5968,
+            0.5688,
+            0.5581,
+            0.5625,
+            0.5668,
+            0.5716
+          ],
+          "foreground_estimator_diag": {
+            "estimated_fg_px": 6739,
+            "estimated_fg_area_ratio": 0.0232,
+            "subject_px": 7606,
+            "subject_area_ratio": 0.0261,
+            "subject_recall_in_estimate": 0.0
+          },
+          "camera_pitch_err_deg": 0.4438,
+          "camera_fit_quality": 0.615,
+          "composite_total": 35.91,
+          "composite_active": [
+            "camera",
+            "composition",
+            "edge",
+            "structure"
+          ]
+        }
+      ]
+    },
+    "outputs_dir": "shots/shot_001/conditions",
+    "per_frame": [
+      {
+        "frame": 0,
+        "dir": "shots/shot_001/conditions/frame_0000",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 10.81,
+          "seg": 4.74,
+          "mask": 0.14,
+          "lineart": 0.29,
+          "pose": 5.53,
+          "rasterize": 99.66,
+          "total": 121.69
+        },
+        "foreground_px": 258011,
+        "near_far_m": [
+          3.7879,
+          36.4772
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 1,
+        "dir": "shots/shot_001/conditions/frame_0001",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 7.3,
+          "seg": 10.56,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.41,
+          "rasterize": 105.39,
+          "total": 126.53
+        },
+        "foreground_px": 257969,
+        "near_far_m": [
+          3.7878,
+          36.4875
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 2,
+        "dir": "shots/shot_001/conditions/frame_0002",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.56,
+          "normal": 6.93,
+          "seg": 5.93,
+          "mask": 0.2,
+          "lineart": 0.37,
+          "pose": 5.39,
+          "rasterize": 99.08,
+          "total": 118.61
+        },
+        "foreground_px": 257882,
+        "near_far_m": [
+          3.7877,
+          36.5178
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 3,
+        "dir": "shots/shot_001/conditions/frame_0003",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.41,
+          "normal": 7.62,
+          "seg": 10.58,
+          "mask": 0.15,
+          "lineart": 0.25,
+          "pose": 2.28,
+          "rasterize": 108.41,
+          "total": 129.81
+        },
+        "foreground_px": 257833,
+        "near_far_m": [
+          3.7876,
+          36.5678
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 4,
+        "dir": "shots/shot_001/conditions/frame_0004",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 7.51,
+          "seg": 11.32,
+          "mask": 0.29,
+          "lineart": 0.55,
+          "pose": 5.16,
+          "rasterize": 107.56,
+          "total": 132.89
+        },
+        "foreground_px": 257822,
+        "near_far_m": [
+          3.7875,
+          36.637
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 5,
+        "dir": "shots/shot_001/conditions/frame_0005",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.41,
+          "normal": 9.16,
+          "seg": 10.37,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.32,
+          "rasterize": 110.25,
+          "total": 132.99
+        },
+        "foreground_px": 257840,
+        "near_far_m": [
+          3.7872,
+          36.7251
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 6,
+        "dir": "shots/shot_001/conditions/frame_0006",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.37,
+          "normal": 9.0,
+          "seg": 8.3,
+          "mask": 0.29,
+          "lineart": 0.55,
+          "pose": 5.33,
+          "rasterize": 107.73,
+          "total": 131.72
+        },
+        "foreground_px": 257903,
+        "near_far_m": [
+          3.787,
+          36.8319
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 7,
+        "dir": "shots/shot_001/conditions/frame_0007",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 7.0,
+          "seg": 10.8,
+          "mask": 0.2,
+          "lineart": 0.25,
+          "pose": 2.34,
+          "rasterize": 117.06,
+          "total": 138.13
+        },
+        "foreground_px": 257991,
+        "near_far_m": [
+          3.7867,
+          36.9572
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 8,
+        "dir": "shots/shot_001/conditions/frame_0008",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.1,
+          "normal": 7.4,
+          "seg": 4.62,
+          "mask": 0.14,
+          "lineart": 0.23,
+          "pose": 3.27,
+          "rasterize": 91.56,
+          "total": 108.54
+        },
+        "foreground_px": 258121,
+        "near_far_m": [
+          3.7864,
+          37.101
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 9,
+        "dir": "shots/shot_001/conditions/frame_0009",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.96,
+          "seg": 7.01,
+          "mask": 0.29,
+          "lineart": 0.57,
+          "pose": 4.89,
+          "rasterize": 90.81,
+          "total": 112.04
+        },
+        "foreground_px": 258271,
+        "near_far_m": [
+          3.786,
+          35.9807
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 10,
+        "dir": "shots/shot_001/conditions/frame_0010",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.75,
+          "normal": 7.69,
+          "seg": 7.21,
+          "mask": 0.29,
+          "lineart": 0.57,
+          "pose": 5.14,
+          "rasterize": 94.19,
+          "total": 115.99
+        },
+        "foreground_px": 258480,
+        "near_far_m": [
+          3.7856,
+          36.1485
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 11,
+        "dir": "shots/shot_001/conditions/frame_0011",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.16,
+          "seg": 11.69,
+          "mask": 0.3,
+          "lineart": 0.58,
+          "pose": 5.21,
+          "rasterize": 94.36,
+          "total": 119.81
+        },
+        "foreground_px": 258705,
+        "near_far_m": [
+          3.7852,
+          36.3335
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 12,
+        "dir": "shots/shot_001/conditions/frame_0012",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.55,
+          "seg": 11.75,
+          "mask": 0.14,
+          "lineart": 0.23,
+          "pose": 2.6,
+          "rasterize": 89.73,
+          "total": 112.51
+        },
+        "foreground_px": 258965,
+        "near_far_m": [
+          3.7847,
+          36.5358
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 13,
+        "dir": "shots/shot_001/conditions/frame_0013",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.74,
+          "normal": 9.6,
+          "seg": 6.89,
+          "mask": 0.14,
+          "lineart": 0.23,
+          "pose": 4.83,
+          "rasterize": 101.92,
+          "total": 124.49
+        },
+        "foreground_px": 259216,
+        "near_far_m": [
+          3.7842,
+          36.7558
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 14,
+        "dir": "shots/shot_001/conditions/frame_0014",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.99,
+          "normal": 7.61,
+          "seg": 7.82,
+          "mask": 0.4,
+          "lineart": 0.75,
+          "pose": 3.09,
+          "rasterize": 102.31,
+          "total": 123.14
+        },
+        "foreground_px": 259445,
+        "near_far_m": [
+          3.7837,
+          35.7245
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 15,
+        "dir": "shots/shot_001/conditions/frame_0015",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.42,
+          "seg": 11.41,
+          "mask": 0.27,
+          "lineart": 0.27,
+          "pose": 2.31,
+          "rasterize": 99.01,
+          "total": 121.2
+        },
+        "foreground_px": 259703,
+        "near_far_m": [
+          3.7831,
+          35.9617
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 16,
+        "dir": "shots/shot_001/conditions/frame_0016",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.64,
+          "normal": 6.8,
+          "seg": 10.11,
+          "mask": 0.29,
+          "lineart": 0.54,
+          "pose": 5.4,
+          "rasterize": 110.62,
+          "total": 134.57
+        },
+        "foreground_px": 259995,
+        "near_far_m": [
+          3.7826,
+          36.2159
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 17,
+        "dir": "shots/shot_001/conditions/frame_0017",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.76,
+          "normal": 8.88,
+          "seg": 8.34,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.32,
+          "rasterize": 98.53,
+          "total": 119.36
+        },
+        "foreground_px": 260199,
+        "near_far_m": [
+          3.782,
+          36.4871
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 18,
+        "dir": "shots/shot_001/conditions/frame_0018",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.4,
+          "seg": 11.45,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.28,
+          "rasterize": 91.17,
+          "total": 114.15
+        },
+        "foreground_px": 260306,
+        "near_far_m": [
+          3.7814,
+          35.5165
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 19,
+        "dir": "shots/shot_001/conditions/frame_0019",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.87,
+          "normal": 8.34,
+          "seg": 8.15,
+          "mask": 0.29,
+          "lineart": 0.52,
+          "pose": 4.05,
+          "rasterize": 110.11,
+          "total": 132.54
+        },
+        "foreground_px": 260425,
+        "near_far_m": [
+          3.7808,
+          35.8006
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 20,
+        "dir": "shots/shot_001/conditions/frame_0020",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 10.51,
+          "seg": 7.63,
+          "mask": 0.13,
+          "lineart": 0.23,
+          "pose": 3.74,
+          "rasterize": 102.02,
+          "total": 124.74
+        },
+        "foreground_px": 260552,
+        "near_far_m": [
+          3.7802,
+          36.1013
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 21,
+        "dir": "shots/shot_001/conditions/frame_0021",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.75,
+          "normal": 10.87,
+          "seg": 7.76,
+          "mask": 0.29,
+          "lineart": 0.53,
+          "pose": 5.38,
+          "rasterize": 95.07,
+          "total": 120.8
+        },
+        "foreground_px": 260682,
+        "near_far_m": [
+          3.7795,
+          36.4185
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 22,
+        "dir": "shots/shot_001/conditions/frame_0022",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.63,
+          "seg": 11.65,
+          "mask": 0.3,
+          "lineart": 0.57,
+          "pose": 4.56,
+          "rasterize": 92.7,
+          "total": 118.9
+        },
+        "foreground_px": 260817,
+        "near_far_m": [
+          3.7789,
+          36.7527
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 23,
+        "dir": "shots/shot_001/conditions/frame_0023",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.74,
+          "normal": 11.05,
+          "seg": 9.49,
+          "mask": 0.3,
+          "lineart": 0.53,
+          "pose": 5.04,
+          "rasterize": 88.75,
+          "total": 116.07
+        },
+        "foreground_px": 260973,
+        "near_far_m": [
+          3.7782,
+          35.8154
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 24,
+        "dir": "shots/shot_001/conditions/frame_0024",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.64,
+          "normal": 11.87,
+          "seg": 7.35,
+          "mask": 0.14,
+          "lineart": 0.25,
+          "pose": 3.84,
+          "rasterize": 100.74,
+          "total": 124.93
+        },
+        "foreground_px": 261147,
+        "near_far_m": [
+          3.6317,
+          36.1572
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 25,
+        "dir": "shots/shot_001/conditions/frame_0025",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 8.54,
+          "seg": 11.52,
+          "mask": 0.3,
+          "lineart": 0.45,
+          "pose": 2.34,
+          "rasterize": 93.08,
+          "total": 116.75
+        },
+        "foreground_px": 261348,
+        "near_far_m": [
+          3.6307,
+          36.5149
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 26,
+        "dir": "shots/shot_001/conditions/frame_0026",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.78,
+          "normal": 11.47,
+          "seg": 10.6,
+          "mask": 0.31,
+          "lineart": 0.95,
+          "pose": 5.21,
+          "rasterize": 149.81,
+          "total": 179.34
+        },
+        "foreground_px": 261557,
+        "near_far_m": [
+          3.6296,
+          36.8886
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 27,
+        "dir": "shots/shot_001/conditions/frame_0027",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.76,
+          "normal": 10.22,
+          "seg": 4.93,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.38,
+          "rasterize": 97.99,
+          "total": 116.8
+        },
+        "foreground_px": 261796,
+        "near_far_m": [
+          3.6285,
+          35.9712
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 28,
+        "dir": "shots/shot_001/conditions/frame_0028",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.71,
+          "normal": 46.51,
+          "seg": 11.18,
+          "mask": 0.29,
+          "lineart": 0.53,
+          "pose": 3.88,
+          "rasterize": 89.76,
+          "total": 152.99
+        },
+        "foreground_px": 262048,
+        "near_far_m": [
+          3.6275,
+          36.3473
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 29,
+        "dir": "shots/shot_001/conditions/frame_0029",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.81,
+          "normal": 9.49,
+          "seg": 7.2,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 3.74,
+          "rasterize": 101.85,
+          "total": 123.58
+        },
+        "foreground_px": 262321,
+        "near_far_m": [
+          3.6264,
+          36.7379
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 30,
+        "dir": "shots/shot_001/conditions/frame_0030",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.88,
+          "normal": 7.53,
+          "seg": 6.09,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 2.29,
+          "rasterize": 87.82,
+          "total": 105.16
+        },
+        "foreground_px": 262638,
+        "near_far_m": [
+          3.6253,
+          35.8398
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 31,
+        "dir": "shots/shot_001/conditions/frame_0031",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 10.51,
+          "seg": 4.72,
+          "mask": 0.11,
+          "lineart": 0.22,
+          "pose": 4.56,
+          "rasterize": 99.89,
+          "total": 120.49
+        },
+        "foreground_px": 262956,
+        "near_far_m": [
+          3.6242,
+          36.228
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 32,
+        "dir": "shots/shot_001/conditions/frame_0032",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 7.43,
+          "seg": 8.24,
+          "mask": 0.39,
+          "lineart": 0.55,
+          "pose": 5.25,
+          "rasterize": 95.84,
+          "total": 118.21
+        },
+        "foreground_px": 263305,
+        "near_far_m": [
+          3.6231,
+          36.6287
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 33,
+        "dir": "shots/shot_001/conditions/frame_0033",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.94,
+          "seg": 11.86,
+          "mask": 0.3,
+          "lineart": 0.57,
+          "pose": 5.34,
+          "rasterize": 110.47,
+          "total": 136.98
+        },
+        "foreground_px": 263691,
+        "near_far_m": [
+          3.6221,
+          35.7401
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 34,
+        "dir": "shots/shot_001/conditions/frame_0034",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 11.44,
+          "seg": 8.4,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.35,
+          "rasterize": 96.86,
+          "total": 119.92
+        },
+        "foreground_px": 264072,
+        "near_far_m": [
+          3.621,
+          36.1331
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 35,
+        "dir": "shots/shot_001/conditions/frame_0035",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.87,
+          "normal": 12.5,
+          "seg": 10.87,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 2.32,
+          "rasterize": 126.16,
+          "total": 153.31
+        },
+        "foreground_px": 264477,
+        "near_far_m": [
+          3.62,
+          36.5359
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 36,
+        "dir": "shots/shot_001/conditions/frame_0036",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.27,
+          "seg": 14.8,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 2.27,
+          "rasterize": 89.63,
+          "total": 115.84
+        },
+        "foreground_px": 264928,
+        "near_far_m": [
+          3.6189,
+          36.9476
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 37,
+        "dir": "shots/shot_001/conditions/frame_0037",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.3,
+          "seg": 8.3,
+          "mask": 0.3,
+          "lineart": 0.53,
+          "pose": 5.4,
+          "rasterize": 107.19,
+          "total": 130.52
+        },
+        "foreground_px": 265304,
+        "near_far_m": [
+          3.6179,
+          36.0363
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 38,
+        "dir": "shots/shot_001/conditions/frame_0038",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.38,
+          "seg": 7.28,
+          "mask": 0.12,
+          "lineart": 0.24,
+          "pose": 2.38,
+          "rasterize": 106.28,
+          "total": 125.17
+        },
+        "foreground_px": 265703,
+        "near_far_m": [
+          3.6169,
+          36.4316
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 39,
+        "dir": "shots/shot_001/conditions/frame_0039",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 6.09,
+          "seg": 11.82,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 2.29,
+          "rasterize": 88.08,
+          "total": 109.13
+        },
+        "foreground_px": 266063,
+        "near_far_m": [
+          3.616,
+          36.8322
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 40,
+        "dir": "shots/shot_001/conditions/frame_0040",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.77,
+          "normal": 10.46,
+          "seg": 13.06,
+          "mask": 0.29,
+          "lineart": 0.6,
+          "pose": 3.38,
+          "rasterize": 119.3,
+          "total": 148.06
+        },
+        "foreground_px": 266464,
+        "near_far_m": [
+          3.615,
+          35.9093
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 41,
+        "dir": "shots/shot_001/conditions/frame_0041",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 6.31,
+          "seg": 10.13,
+          "mask": 0.31,
+          "lineart": 0.72,
+          "pose": 5.84,
+          "rasterize": 85.51,
+          "total": 109.35
+        },
+        "foreground_px": 266726,
+        "near_far_m": [
+          3.6141,
+          36.2863
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 42,
+        "dir": "shots/shot_001/conditions/frame_0042",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.75,
+          "normal": 9.65,
+          "seg": 12.39,
+          "mask": 0.3,
+          "lineart": 0.55,
+          "pose": 4.99,
+          "rasterize": 114.77,
+          "total": 143.54
+        },
+        "foreground_px": 266905,
+        "near_far_m": [
+          3.6132,
+          36.664
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 43,
+        "dir": "shots/shot_001/conditions/frame_0043",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.74,
+          "seg": 12.78,
+          "mask": 0.13,
+          "lineart": 0.23,
+          "pose": 2.29,
+          "rasterize": 98.76,
+          "total": 124.41
+        },
+        "foreground_px": 267059,
+        "near_far_m": [
+          3.6123,
+          37.0409
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 44,
+        "dir": "shots/shot_001/conditions/frame_0044",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 6.79,
+          "seg": 8.29,
+          "mask": 0.33,
+          "lineart": 0.58,
+          "pose": 3.62,
+          "rasterize": 97.08,
+          "total": 117.19
+        },
+        "foreground_px": 267195,
+        "near_far_m": [
+          3.6114,
+          36.0688
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 45,
+        "dir": "shots/shot_001/conditions/frame_0045",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.68,
+          "seg": 14.44,
+          "mask": 0.3,
+          "lineart": 0.55,
+          "pose": 7.51,
+          "rasterize": 92.02,
+          "total": 125.0
+        },
+        "foreground_px": 267317,
+        "near_far_m": [
+          3.6106,
+          36.4112
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 46,
+        "dir": "shots/shot_001/conditions/frame_0046",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 6.74,
+          "seg": 10.23,
+          "mask": 0.39,
+          "lineart": 0.56,
+          "pose": 5.15,
+          "rasterize": 96.16,
+          "total": 119.73
+        },
+        "foreground_px": 267435,
+        "near_far_m": [
+          3.6098,
+          36.7476
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 47,
+        "dir": "shots/shot_001/conditions/frame_0047",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.58,
+          "normal": 11.86,
+          "seg": 9.79,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 2.28,
+          "rasterize": 85.12,
+          "total": 110.14
+        },
+        "foreground_px": 267541,
+        "near_far_m": [
+          3.6091,
+          37.076
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 48,
+        "dir": "shots/shot_001/conditions/frame_0048",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 7.62,
+          "seg": 7.84,
+          "mask": 0.28,
+          "lineart": 0.66,
+          "pose": 2.84,
+          "rasterize": 112.34,
+          "total": 132.09
+        },
+        "foreground_px": 267637,
+        "near_far_m": [
+          3.6084,
+          37.3944
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 49,
+        "dir": "shots/shot_001/conditions/frame_0049",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.21,
+          "seg": 6.72,
+          "mask": 0.12,
+          "lineart": 0.24,
+          "pose": 2.31,
+          "rasterize": 100.93,
+          "total": 118.05
+        },
+        "foreground_px": 267767,
+        "near_far_m": [
+          3.6077,
+          36.3264
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 50,
+        "dir": "shots/shot_001/conditions/frame_0050",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 7.16,
+          "seg": 12.72,
+          "mask": 0.13,
+          "lineart": 0.23,
+          "pose": 2.29,
+          "rasterize": 83.6,
+          "total": 106.64
+        },
+        "foreground_px": 267868,
+        "near_far_m": [
+          3.6071,
+          36.5958
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 51,
+        "dir": "shots/shot_001/conditions/frame_0051",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.78,
+          "normal": 8.56,
+          "seg": 9.54,
+          "mask": 0.29,
+          "lineart": 0.56,
+          "pose": 5.01,
+          "rasterize": 103.21,
+          "total": 128.16
+        },
+        "foreground_px": 267967,
+        "near_far_m": [
+          3.6066,
+          36.8496
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 52,
+        "dir": "shots/shot_001/conditions/frame_0052",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 7.3,
+          "seg": 7.91,
+          "mask": 0.34,
+          "lineart": 0.53,
+          "pose": 3.53,
+          "rasterize": 100.96,
+          "total": 121.08
+        },
+        "foreground_px": 268082,
+        "near_far_m": [
+          3.606,
+          37.0855
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 53,
+        "dir": "shots/shot_001/conditions/frame_0053",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.22,
+          "seg": 9.59,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 3.91,
+          "rasterize": 98.16,
+          "total": 120.22
+        },
+        "foreground_px": 268200,
+        "near_far_m": [
+          3.6056,
+          37.3013
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 54,
+        "dir": "shots/shot_001/conditions/frame_0054",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.76,
+          "normal": 11.52,
+          "seg": 8.58,
+          "mask": 0.29,
+          "lineart": 0.53,
+          "pose": 7.18,
+          "rasterize": 115.01,
+          "total": 144.03
+        },
+        "foreground_px": 268308,
+        "near_far_m": [
+          3.6052,
+          37.4949
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 55,
+        "dir": "shots/shot_001/conditions/frame_0055",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 11.23,
+          "seg": 11.54,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 2.42,
+          "rasterize": 109.38,
+          "total": 135.91
+        },
+        "foreground_px": 268393,
+        "near_far_m": [
+          3.6048,
+          37.6639
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 56,
+        "dir": "shots/shot_001/conditions/frame_0056",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.8,
+          "normal": 10.13,
+          "seg": 11.46,
+          "mask": 0.29,
+          "lineart": 0.53,
+          "pose": 5.5,
+          "rasterize": 112.92,
+          "total": 141.78
+        },
+        "foreground_px": 268499,
+        "near_far_m": [
+          3.6045,
+          36.4181
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 57,
+        "dir": "shots/shot_001/conditions/frame_0057",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.43,
+          "normal": 8.53,
+          "seg": 12.56,
+          "mask": 0.3,
+          "lineart": 0.59,
+          "pose": 3.5,
+          "rasterize": 88.53,
+          "total": 114.56
+        },
+        "foreground_px": 268605,
+        "near_far_m": [
+          3.6043,
+          36.5232
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 58,
+        "dir": "shots/shot_001/conditions/frame_0058",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.27,
+          "seg": 10.4,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 4.46,
+          "rasterize": 92.8,
+          "total": 116.78
+        },
+        "foreground_px": 268714,
+        "near_far_m": [
+          3.6041,
+          36.6002
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 59,
+        "dir": "shots/shot_001/conditions/frame_0059",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.88,
+          "normal": 12.22,
+          "seg": 11.95,
+          "mask": 0.28,
+          "lineart": 0.82,
+          "pose": 5.3,
+          "rasterize": 100.25,
+          "total": 131.86
+        },
+        "foreground_px": 268812,
+        "near_far_m": [
+          3.604,
+          36.6473
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 60,
+        "dir": "shots/shot_001/conditions/frame_0060",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.47,
+          "seg": 7.33,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 2.34,
+          "rasterize": 97.64,
+          "total": 115.65
+        },
+        "foreground_px": 268909,
+        "near_far_m": [
+          3.604,
+          36.6633
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 61,
+        "dir": "shots/shot_001/conditions/frame_0061",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 12.22,
+          "seg": 4.75,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 3.04,
+          "rasterize": 103.84,
+          "total": 124.68
+        },
+        "foreground_px": 268958,
+        "near_far_m": [
+          3.6039,
+          36.6833
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 62,
+        "dir": "shots/shot_001/conditions/frame_0062",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.5,
+          "seg": 5.4,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.33,
+          "rasterize": 96.15,
+          "total": 112.24
+        },
+        "foreground_px": 269023,
+        "near_far_m": [
+          3.6039,
+          36.7423
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 63,
+        "dir": "shots/shot_001/conditions/frame_0063",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.76,
+          "normal": 10.48,
+          "seg": 12.18,
+          "mask": 0.29,
+          "lineart": 0.54,
+          "pose": 2.67,
+          "rasterize": 117.39,
+          "total": 144.5
+        },
+        "foreground_px": 269126,
+        "near_far_m": [
+          3.6037,
+          36.8397
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 64,
+        "dir": "shots/shot_001/conditions/frame_0064",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 8.31,
+          "seg": 9.73,
+          "mask": 0.13,
+          "lineart": 0.66,
+          "pose": 4.4,
+          "rasterize": 98.85,
+          "total": 122.59
+        },
+        "foreground_px": 269268,
+        "near_far_m": [
+          3.6036,
+          36.975
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 65,
+        "dir": "shots/shot_001/conditions/frame_0065",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.83,
+          "normal": 11.27,
+          "seg": 11.92,
+          "mask": 0.25,
+          "lineart": 0.24,
+          "pose": 3.88,
+          "rasterize": 109.87,
+          "total": 138.4
+        },
+        "foreground_px": 269318,
+        "near_far_m": [
+          3.6033,
+          37.1479
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 66,
+        "dir": "shots/shot_001/conditions/frame_0066",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.33,
+          "seg": 7.12,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 2.29,
+          "rasterize": 85.65,
+          "total": 103.23
+        },
+        "foreground_px": 269281,
+        "near_far_m": [
+          3.603,
+          37.3587
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 67,
+        "dir": "shots/shot_001/conditions/frame_0067",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 10.26,
+          "seg": 7.93,
+          "mask": 0.12,
+          "lineart": 0.24,
+          "pose": 2.3,
+          "rasterize": 101.97,
+          "total": 123.32
+        },
+        "foreground_px": 269275,
+        "near_far_m": [
+          3.6027,
+          37.6075
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 68,
+        "dir": "shots/shot_001/conditions/frame_0068",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.78,
+          "normal": 10.74,
+          "seg": 12.28,
+          "mask": 0.24,
+          "lineart": 0.55,
+          "pose": 6.09,
+          "rasterize": 178.67,
+          "total": 209.57
+        },
+        "foreground_px": 269248,
+        "near_far_m": [
+          3.6024,
+          36.4943
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 69,
+        "dir": "shots/shot_001/conditions/frame_0069",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 10.94,
+          "seg": 9.09,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.61,
+          "rasterize": 135.68,
+          "total": 159.23
+        },
+        "foreground_px": 269276,
+        "near_far_m": [
+          3.602,
+          36.7965
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 70,
+        "dir": "shots/shot_001/conditions/frame_0070",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.45,
+          "normal": 8.5,
+          "seg": 11.48,
+          "mask": 0.3,
+          "lineart": 0.56,
+          "pose": 6.06,
+          "rasterize": 120.92,
+          "total": 148.38
+        },
+        "foreground_px": 269312,
+        "near_far_m": [
+          3.6015,
+          37.1361
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 71,
+        "dir": "shots/shot_001/conditions/frame_0071",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.38,
+          "seg": 8.5,
+          "mask": 0.17,
+          "lineart": 0.24,
+          "pose": 2.33,
+          "rasterize": 119.09,
+          "total": 139.21
+        },
+        "foreground_px": 269404,
+        "near_far_m": [
+          3.601,
+          37.5144
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 72,
+        "dir": "shots/shot_001/conditions/frame_0072",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 10.63,
+          "seg": 8.88,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 4.95,
+          "rasterize": 99.6,
+          "total": 125.42
+        },
+        "foreground_px": 269500,
+        "near_far_m": [
+          3.6005,
+          37.9327
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 73,
+        "dir": "shots/shot_001/conditions/frame_0073",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 11.77,
+          "seg": 9.61,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 5.65,
+          "rasterize": 106.32,
+          "total": 134.7
+        },
+        "foreground_px": 269624,
+        "near_far_m": [
+          3.5999,
+          36.9481
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 74,
+        "dir": "shots/shot_001/conditions/frame_0074",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 8.84,
+          "seg": 7.12,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 2.39,
+          "rasterize": 113.0,
+          "total": 132.26
+        },
+        "foreground_px": 269798,
+        "near_far_m": [
+          3.5993,
+          37.4126
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 75,
+        "dir": "shots/shot_001/conditions/frame_0075",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.79,
+          "seg": 9.89,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 5.89,
+          "rasterize": 110.97,
+          "total": 137.95
+        },
+        "foreground_px": 270022,
+        "near_far_m": [
+          3.5986,
+          37.9191
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 76,
+        "dir": "shots/shot_001/conditions/frame_0076",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 7.67,
+          "seg": 12.38,
+          "mask": 0.31,
+          "lineart": 0.57,
+          "pose": 3.2,
+          "rasterize": 116.91,
+          "total": 141.54
+        },
+        "foreground_px": 270251,
+        "near_far_m": [
+          3.598,
+          37.0129
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 77,
+        "dir": "shots/shot_001/conditions/frame_0077",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 10.08,
+          "seg": 13.12,
+          "mask": 0.16,
+          "lineart": 0.24,
+          "pose": 5.05,
+          "rasterize": 125.26,
+          "total": 154.4
+        },
+        "foreground_px": 270513,
+        "near_far_m": [
+          3.5972,
+          37.563
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 78,
+        "dir": "shots/shot_001/conditions/frame_0078",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 10.59,
+          "seg": 10.66,
+          "mask": 0.31,
+          "lineart": 0.53,
+          "pose": 4.94,
+          "rasterize": 94.92,
+          "total": 122.47
+        },
+        "foreground_px": 270810,
+        "near_far_m": [
+          3.5965,
+          38.1576
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 79,
+        "dir": "shots/shot_001/conditions/frame_0079",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 12.28,
+          "seg": 9.37,
+          "mask": 0.37,
+          "lineart": 0.79,
+          "pose": 4.44,
+          "rasterize": 101.8,
+          "total": 129.54
+        },
+        "foreground_px": 271146,
+        "near_far_m": [
+          3.5957,
+          37.3108
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 80,
+        "dir": "shots/shot_001/conditions/frame_0080",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.54,
+          "normal": 12.63,
+          "seg": 10.36,
+          "mask": 0.3,
+          "lineart": 0.55,
+          "pose": 5.71,
+          "rasterize": 108.24,
+          "total": 138.45
+        },
+        "foreground_px": 271551,
+        "near_far_m": [
+          3.5949,
+          37.9476
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 81,
+        "dir": "shots/shot_001/conditions/frame_0081",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.24,
+          "normal": 11.71,
+          "seg": 7.44,
+          "mask": 0.12,
+          "lineart": 0.61,
+          "pose": 3.79,
+          "rasterize": 109.86,
+          "total": 134.88
+        },
+        "foreground_px": 271957,
+        "near_far_m": [
+          3.594,
+          37.1509
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 82,
+        "dir": "shots/shot_001/conditions/frame_0082",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.79,
+          "normal": 15.88,
+          "seg": 14.14,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.39,
+          "rasterize": 121.66,
+          "total": 155.39
+        },
+        "foreground_px": 272417,
+        "near_far_m": [
+          3.5931,
+          37.8279
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 83,
+        "dir": "shots/shot_001/conditions/frame_0083",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.38,
+          "normal": 7.56,
+          "seg": 13.81,
+          "mask": 0.31,
+          "lineart": 0.54,
+          "pose": 3.7,
+          "rasterize": 119.4,
+          "total": 145.85
+        },
+        "foreground_px": 272872,
+        "near_far_m": [
+          3.5922,
+          37.0723
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 84,
+        "dir": "shots/shot_001/conditions/frame_0084",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.76,
+          "seg": 5.31,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 2.32,
+          "rasterize": 133.05,
+          "total": 150.27
+        },
+        "foreground_px": 273416,
+        "near_far_m": [
+          3.5913,
+          37.7876
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 85,
+        "dir": "shots/shot_001/conditions/frame_0085",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.41,
+          "normal": 11.31,
+          "seg": 9.0,
+          "mask": 0.32,
+          "lineart": 0.51,
+          "pose": 2.79,
+          "rasterize": 106.31,
+          "total": 130.89
+        },
+        "foreground_px": 273909,
+        "near_far_m": [
+          3.5903,
+          37.0648
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 86,
+        "dir": "shots/shot_001/conditions/frame_0086",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.8,
+          "normal": 11.28,
+          "seg": 9.86,
+          "mask": 0.3,
+          "lineart": 0.44,
+          "pose": 2.42,
+          "rasterize": 97.4,
+          "total": 122.61
+        },
+        "foreground_px": 274388,
+        "near_far_m": [
+          3.5893,
+          37.816
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 87,
+        "dir": "shots/shot_001/conditions/frame_0087",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.04,
+          "seg": 9.79,
+          "mask": 0.13,
+          "lineart": 0.27,
+          "pose": 5.26,
+          "rasterize": 117.01,
+          "total": 142.04
+        },
+        "foreground_px": 274884,
+        "near_far_m": [
+          3.5883,
+          37.1181
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 88,
+        "dir": "shots/shot_001/conditions/frame_0088",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.44,
+          "normal": 8.15,
+          "seg": 11.48,
+          "mask": 0.12,
+          "lineart": 0.63,
+          "pose": 5.62,
+          "rasterize": 101.05,
+          "total": 127.58
+        },
+        "foreground_px": 275175,
+        "near_far_m": [
+          3.5873,
+          37.9022
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 89,
+        "dir": "shots/shot_001/conditions/frame_0089",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.01,
+          "seg": 8.43,
+          "mask": 0.3,
+          "lineart": 0.55,
+          "pose": 4.63,
+          "rasterize": 106.51,
+          "total": 129.95
+        },
+        "foreground_px": 275314,
+        "near_far_m": [
+          3.5862,
+          37.2211
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 90,
+        "dir": "shots/shot_001/conditions/frame_0090",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.55,
+          "seg": 12.08,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.32,
+          "rasterize": 132.43,
+          "total": 157.25
+        },
+        "foreground_px": 275243,
+        "near_far_m": [
+          3.5851,
+          38.0343
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 91,
+        "dir": "shots/shot_001/conditions/frame_0091",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.59,
+          "normal": 9.15,
+          "seg": 11.77,
+          "mask": 0.14,
+          "lineart": 0.58,
+          "pose": 2.27,
+          "rasterize": 116.96,
+          "total": 141.6
+        },
+        "foreground_px": 275196,
+        "near_far_m": [
+          3.584,
+          37.3619
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 92,
+        "dir": "shots/shot_001/conditions/frame_0092",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.4,
+          "normal": 11.62,
+          "seg": 13.75,
+          "mask": 0.31,
+          "lineart": 0.54,
+          "pose": 5.49,
+          "rasterize": 107.26,
+          "total": 139.52
+        },
+        "foreground_px": 275131,
+        "near_far_m": [
+          3.5829,
+          38.1992
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 93,
+        "dir": "shots/shot_001/conditions/frame_0093",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.76,
+          "normal": 13.12,
+          "seg": 9.77,
+          "mask": 0.31,
+          "lineart": 0.56,
+          "pose": 4.42,
+          "rasterize": 118.64,
+          "total": 147.73
+        },
+        "foreground_px": 275022,
+        "near_far_m": [
+          3.5818,
+          37.5273
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 94,
+        "dir": "shots/shot_001/conditions/frame_0094",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.79,
+          "normal": 10.15,
+          "seg": 6.99,
+          "mask": 0.15,
+          "lineart": 1.11,
+          "pose": 3.05,
+          "rasterize": 103.61,
+          "total": 126.0
+        },
+        "foreground_px": 275019,
+        "near_far_m": [
+          3.5807,
+          36.8769
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 95,
+        "dir": "shots/shot_001/conditions/frame_0095",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.43,
+          "normal": 9.56,
+          "seg": 9.19,
+          "mask": 0.14,
+          "lineart": 0.53,
+          "pose": 3.57,
+          "rasterize": 132.01,
+          "total": 156.6
+        },
+        "foreground_px": 274853,
+        "near_far_m": [
+          3.5796,
+          37.7019
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 96,
+        "dir": "shots/shot_001/conditions/frame_0096",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 8.87,
+          "seg": 7.4,
+          "mask": 0.13,
+          "lineart": 0.24,
+          "pose": 3.62,
+          "rasterize": 97.25,
+          "total": 118.03
+        },
+        "foreground_px": 274851,
+        "near_far_m": [
+          3.5784,
+          37.0396
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 97,
+        "dir": "shots/shot_001/conditions/frame_0097",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.94,
+          "normal": 15.13,
+          "seg": 8.2,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.3,
+          "rasterize": 118.88,
+          "total": 145.93
+        },
+        "foreground_px": 274736,
+        "near_far_m": [
+          3.5773,
+          37.869
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 98,
+        "dir": "shots/shot_001/conditions/frame_0098",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.75,
+          "normal": 8.07,
+          "seg": 10.24,
+          "mask": 0.3,
+          "lineart": 0.53,
+          "pose": 4.34,
+          "rasterize": 107.07,
+          "total": 131.46
+        },
+        "foreground_px": 274695,
+        "near_far_m": [
+          3.5761,
+          37.186
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 99,
+        "dir": "shots/shot_001/conditions/frame_0099",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.05,
+          "normal": 10.51,
+          "seg": 7.56,
+          "mask": 0.12,
+          "lineart": 0.25,
+          "pose": 3.08,
+          "rasterize": 94.99,
+          "total": 117.7
+        },
+        "foreground_px": 274680,
+        "near_far_m": [
+          3.575,
+          38.0094
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 100,
+        "dir": "shots/shot_001/conditions/frame_0100",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.79,
+          "normal": 7.34,
+          "seg": 8.24,
+          "mask": 0.14,
+          "lineart": 0.6,
+          "pose": 3.55,
+          "rasterize": 104.65,
+          "total": 125.51
+        },
+        "foreground_px": 274501,
+        "near_far_m": [
+          3.5739,
+          37.2971
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 101,
+        "dir": "shots/shot_001/conditions/frame_0101",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.59,
+          "normal": 9.84,
+          "seg": 4.83,
+          "mask": 0.12,
+          "lineart": 0.23,
+          "pose": 2.34,
+          "rasterize": 105.83,
+          "total": 123.97
+        },
+        "foreground_px": 274492,
+        "near_far_m": [
+          3.5727,
+          38.1026
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 102,
+        "dir": "shots/shot_001/conditions/frame_0102",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.69,
+          "normal": 8.96,
+          "seg": 8.69,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 4.63,
+          "rasterize": 92.43,
+          "total": 115.88
+        },
+        "foreground_px": 274350,
+        "near_far_m": [
+          3.5716,
+          37.3524
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 103,
+        "dir": "shots/shot_001/conditions/frame_0103",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.78,
+          "normal": 14.09,
+          "seg": 12.24,
+          "mask": 0.41,
+          "lineart": 0.31,
+          "pose": 5.95,
+          "rasterize": 121.57,
+          "total": 155.58
+        },
+        "foreground_px": 274323,
+        "near_far_m": [
+          3.5705,
+          38.1264
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 104,
+        "dir": "shots/shot_001/conditions/frame_0104",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.41,
+          "normal": 8.08,
+          "seg": 11.67,
+          "mask": 0.29,
+          "lineart": 0.55,
+          "pose": 3.26,
+          "rasterize": 115.24,
+          "total": 139.7
+        },
+        "foreground_px": 274315,
+        "near_far_m": [
+          3.5695,
+          37.3305
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 105,
+        "dir": "shots/shot_001/conditions/frame_0105",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.94,
+          "normal": 11.71,
+          "seg": 10.67,
+          "mask": 0.14,
+          "lineart": 0.23,
+          "pose": 4.76,
+          "rasterize": 111.65,
+          "total": 140.28
+        },
+        "foreground_px": 274127,
+        "near_far_m": [
+          3.5685,
+          38.0585
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 106,
+        "dir": "shots/shot_001/conditions/frame_0106",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.59,
+          "normal": 8.96,
+          "seg": 7.66,
+          "mask": 0.14,
+          "lineart": 0.25,
+          "pose": 3.96,
+          "rasterize": 113.25,
+          "total": 134.97
+        },
+        "foreground_px": 274092,
+        "near_far_m": [
+          3.5674,
+          37.2102
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 107,
+        "dir": "shots/shot_001/conditions/frame_0107",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.75,
+          "normal": 10.83,
+          "seg": 11.61,
+          "mask": 0.15,
+          "lineart": 0.24,
+          "pose": 2.54,
+          "rasterize": 97.24,
+          "total": 123.5
+        },
+        "foreground_px": 274048,
+        "near_far_m": [
+          3.5665,
+          37.8772
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 108,
+        "dir": "shots/shot_001/conditions/frame_0108",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.88,
+          "normal": 13.34,
+          "seg": 10.74,
+          "mask": 0.15,
+          "lineart": 0.32,
+          "pose": 4.29,
+          "rasterize": 124.9,
+          "total": 155.78
+        },
+        "foreground_px": 273834,
+        "near_far_m": [
+          3.5656,
+          38.5364
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 109,
+        "dir": "shots/shot_001/conditions/frame_0109",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.65,
+          "normal": 16.75,
+          "seg": 23.27,
+          "mask": 0.31,
+          "lineart": 0.57,
+          "pose": 2.65,
+          "rasterize": 137.7,
+          "total": 182.07
+        },
+        "foreground_px": 273799,
+        "near_far_m": [
+          3.5647,
+          37.5629
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 110,
+        "dir": "shots/shot_001/conditions/frame_0110",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.68,
+          "normal": 9.09,
+          "seg": 10.07,
+          "mask": 0.31,
+          "lineart": 0.89,
+          "pose": 6.16,
+          "rasterize": 108.02,
+          "total": 135.39
+        },
+        "foreground_px": 273727,
+        "near_far_m": [
+          3.5638,
+          38.1357
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 111,
+        "dir": "shots/shot_001/conditions/frame_0111",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.41,
+          "normal": 15.27,
+          "seg": 10.9,
+          "mask": 0.31,
+          "lineart": 1.43,
+          "pose": 5.74,
+          "rasterize": 95.52,
+          "total": 129.71
+        },
+        "foreground_px": 273673,
+        "near_far_m": [
+          3.5631,
+          37.0999
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 112,
+        "dir": "shots/shot_001/conditions/frame_0112",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.93,
+          "normal": 11.51,
+          "seg": 11.12,
+          "mask": 0.3,
+          "lineart": 0.52,
+          "pose": 4.9,
+          "rasterize": 92.42,
+          "total": 121.87
+        },
+        "foreground_px": 273615,
+        "near_far_m": [
+          3.5624,
+          37.5737
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 113,
+        "dir": "shots/shot_001/conditions/frame_0113",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.77,
+          "normal": 11.59,
+          "seg": 7.9,
+          "mask": 0.31,
+          "lineart": 0.62,
+          "pose": 7.41,
+          "rasterize": 107.51,
+          "total": 136.3
+        },
+        "foreground_px": 273614,
+        "near_far_m": [
+          3.5617,
+          38.013
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 114,
+        "dir": "shots/shot_001/conditions/frame_0114",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.06,
+          "normal": 7.46,
+          "seg": 8.23,
+          "mask": 0.14,
+          "lineart": 0.24,
+          "pose": 2.31,
+          "rasterize": 116.71,
+          "total": 136.26
+        },
+        "foreground_px": 273596,
+        "near_far_m": [
+          3.5611,
+          38.4118
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 115,
+        "dir": "shots/shot_001/conditions/frame_0115",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.77,
+          "normal": 11.28,
+          "seg": 9.79,
+          "mask": 0.14,
+          "lineart": 0.25,
+          "pose": 2.28,
+          "rasterize": 98.21,
+          "total": 122.87
+        },
+        "foreground_px": 273650,
+        "near_far_m": [
+          3.5606,
+          37.1657
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 116,
+        "dir": "shots/shot_001/conditions/frame_0116",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 1.7,
+          "normal": 11.11,
+          "seg": 9.28,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 5.51,
+          "rasterize": 92.88,
+          "total": 121.49
+        },
+        "foreground_px": 273559,
+        "near_far_m": [
+          3.5602,
+          37.4396
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 117,
+        "dir": "shots/shot_001/conditions/frame_0117",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 11.67,
+          "seg": 7.16,
+          "mask": 0.3,
+          "lineart": 0.54,
+          "pose": 5.53,
+          "rasterize": 115.05,
+          "total": 140.8
+        },
+        "foreground_px": 273615,
+        "near_far_m": [
+          3.5599,
+          37.6601
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 118,
+        "dir": "shots/shot_001/conditions/frame_0118",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.97,
+          "normal": 8.96,
+          "seg": 12.81,
+          "mask": 0.14,
+          "lineart": 0.65,
+          "pose": 4.72,
+          "rasterize": 95.09,
+          "total": 123.5
+        },
+        "foreground_px": 273653,
+        "near_far_m": [
+          3.5596,
+          37.8224
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      },
+      {
+        "frame": 119,
+        "dir": "shots/shot_001/conditions/frame_0119",
+        "channels_present": [
+          "depth",
+          "normal",
+          "seg",
+          "mask",
+          "lineart",
+          "pose"
+        ],
+        "channel_complete": true,
+        "sidecar_files": 7,
+        "sidecar_ok": 6,
+        "sidecar_all_ok": true,
+        "timing_ms": {
+          "depth": 0.39,
+          "normal": 9.96,
+          "seg": 10.91,
+          "mask": 0.28,
+          "lineart": 0.25,
+          "pose": 7.19,
+          "rasterize": 121.91,
+          "total": 151.02
+        },
+        "foreground_px": 273681,
+        "near_far_m": [
+          3.5595,
+          37.9223
+        ],
+        "keypoints_canonical": 18,
+        "keypoints_unavailable": 2
+      }
+    ]
   }
 }

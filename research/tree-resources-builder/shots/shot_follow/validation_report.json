@@ -1,0 +1,362 @@
+{
+  "kind": "shot_validation_report",
+  "shot_id": "shot_follow",
+  "move_type": "follow",
+  "generated_at": "2026-11-22T01:21:03+0800",
+  "resolution": [
+    720,
+    404
+  ],
+  "fps": 24,
+  "frames": 120,
+  "pass": true,
+  "summary": {
+    "n_checks": 14,
+    "n_pass": 14,
+    "composition": {
+      "n": 6,
+      "pass": 6
+    },
+    "motion": {
+      "n": 7,
+      "pass": 7
+    },
+    "conditions": {
+      "n": 1,
+      "pass": 1
+    }
+  },
+  "geometry": {
+    "subject_bbox_m": {
+      "x": [
+        -0.5618935227394104,
+        0.5612406134605408
+      ],
+      "y": [
+        -4.058194255828857,
+        -1.3411529421806336
+      ],
+      "z": [
+        0.0,
+        1.8118054866790771
+      ]
+    },
+    "ground_min_z": 0.0,
+    "subject_height_m": 1.780621870358785,
+    "instances": [
+      {
+        "file": "scene_street.glb",
+        "sha256": "8a9b602dc92bfb92f8ddae66cc9bbc0712901d125e72b6a455ed1a6b52de95f5",
+        "bytes": 462292,
+        "source": "assets/geometry/scene_street.glb"
+      },
+      {
+        "file": "character_hero.glb",
+        "sha256": "e9024a4d78263b65214d0a0ed61ee70a1f34a12c909fba9bd31cd2823d609609",
+        "bytes": 61556,
+        "source": "assets/geometry/character_hero.glb"
+      }
+    ],
+    "assets_sha256": {
+      "scene_street.glb": "8a9b602dc92bfb92f8ddae66cc9bbc0712901d125e72b6a455ed1a6b52de95f5",
+      "character_hero.glb": "e9024a4d78263b65214d0a0ed61ee70a1f34a12c909fba9bd31cd2823d609609"
+    }
+  },
+  "composition": [
+    {
+      "id": "subject_in_frame_ratio",
+      "name_zh": "主体在画幅内的帧占比",
+      "value": 1.0,
+      "limit": 0.95,
+      "op": ">=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "subject_corner_inside_mean",
+      "name_zh": "主体包围盒角点在画幅内比例（均值）",
+      "value": 1.0,
+      "limit": 0.7,
+      "op": ">=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "centering_offset",
+      "name_zh": "构图居中偏移（归一化最大）",
+      "value": 0.151731,
+      "limit": 0.35,
+      "op": "<=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "offscreen_ratio",
+      "name_zh": "离屏比例（均值）",
+      "value": 0.0,
+      "limit": 0.15,
+      "op": "<=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "frustum_subject_ratio",
+      "name_zh": "视锥内主体比例",
+      "value": 1.0,
+      "limit": 0.9,
+      "op": ">=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "subject_height_ratio_band",
+      "name_zh": "主体高度占比（均值）",
+      "value": 0.637585,
+      "limit": [
+        0.1,
+        0.85
+      ],
+      "op": "in",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "motion": [
+    {
+      "id": "speed_curve_peak_accel",
+      "name_zh": "速度曲线连续性（峰值加速度上限 m/s^2）",
+      "value": 0.0,
+      "limit": 0.5,
+      "op": "<=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "focal_rate",
+      "name_zh": "焦距变化率（mm/s）",
+      "value": 0.0,
+      "limit": 30.0,
+      "op": "<=",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "id": "follow_distance_constant",
+      "name_zh": "与被摄体距离恒定（带宽 m）",
+      "value": 0.0,
+      "limit": 0.05,
+      "op": "<=",
+      "pass": true,
+      "detail": "distance 3.120 → 3.120"
+    },
+    {
+      "id": "follow_offset_constant",
+      "name_zh": "主体局部系下机位偏移恒定（带宽 m）",
+      "value": 0.0,
+      "limit": 0.02,
+      "op": "<=",
+      "pass": true,
+      "detail": "offset [1.5, 2.6, 1.75]"
+    },
+    {
+      "id": "follow_camera_locked_to_subject",
+      "name_zh": "相机朝向锁定主体（目标距离带宽 m）",
+      "value": 0.0,
+      "limit": 0.05,
+      "op": "<=",
+      "pass": true,
+      "detail": "target 距离 1.000 m"
+    },
+    {
+      "id": "usd_intrinsics_reprojection",
+      "name_zh": "USD 相机时序与 intrinsics 逐帧重投影误差（px）",
+      "value": 0.0,
+      "limit": 0.0001,
+      "op": "<=",
+      "pass": true,
+      "detail": "抽样 10 帧"
+    },
+    {
+      "id": "usd_per_frame_samples",
+      "name_zh": "USD 相机时序逐帧采样数",
+      "value": 120,
+      "limit": 120,
+      "op": ">=",
+      "pass": true,
+      "detail": "translate/rotate/focal 三组时间采样均为逐帧"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "conditions_sidecar_all_ok",
+      "name_zh": "条件图 sidecar 七字段全通过",
+      "value": 720,
+      "limit": 720,
+      "op": ">=",
+      "pass": true,
+      "detail": "720/720 通过（另有 120 个非 sidecar 的 JSON 被跳过）"
+    }
+  ],
+  "camera_consistency": {
+    "usd_reprojection": {
+      "n_sampled": 10,
+      "sampled_frames": [
+        0,
+        13,
+        26,
+        40,
+        53,
+        66,
+        79,
+        93,
+        106,
+        119
+      ],
+      "max_reproj_error_px": 2.2737367544323206e-13,
+      "per_frame": [
+        {
+          "frame": 0,
+          "t_code": 0,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 13,
+          "t_code": 13,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 26,
+          "t_code": 26,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 40,
+          "t_code": 40,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 53,
+          "t_code": 53,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 66,
+          "t_code": 66,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 79,
+          "t_code": 79,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 93,
+          "t_code": 93,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 106,
+          "t_code": 106,
+          "max_abs_err_px": 2.2737367544323206e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        },
+        {
+          "frame": 119,
+          "t_code": 119,
+          "max_abs_err_px": 1.9895196601282805e-13,
+          "f_px_usd": 392.77777777777777,
+          "f_px_intrinsics": 392.77777777777777,
+          "eye_max_abs_diff_m": 0.0,
+          "n_points": 27
+        }
+      ],
+      "f_px_horizontal_vs_vertical_max_diff": 0.0,
+      "up_axis": "Z",
+      "meters_per_unit": 1.0,
+      "time_codes_per_second": 24.0,
+      "end_time_code": 119.0,
+      "n_translate_samples": 120,
+      "n_rotate_samples": 120,
+      "n_focal_samples": 120
+    },
+    "intrinsics_authority": "assets/validation/camera_intrinsics.json",
+    "intrinsics_slice_sha256": "26a11a5b553313fe1d820bf9fc58185e07968b91b06b72a315748cb66c363512",
+    "gltf_camera": {
+      "yfov": 0.9500215125301937,
+      "znear": 0.1,
+      "zfar": 200.0
+    }
+  },
+  "metrics": {
+    "subject_in_frame_ratio": 1.0,
+    "subject_corner_inside_mean": 1.0,
+    "centering_offset_max": 0.15173135574203972,
+    "centering_offset_mean": 0.1262432163427993,
+    "offscreen_ratio_mean": 0.0,
+    "frustum_subject_ratio_mean": 1.0,
+    "subject_height_ratio_mean": 0.6375853923608266,
+    "subject_height_ratio_min": 0.6212713640237524,
+    "subject_height_ratio_max": 0.6508992849678172,
+    "speed_mean_mps": 0.0,
+    "speed_mean_world_mps": 0.6349787992589614,
+    "speed_peak_accel_mps2": 0.0,
+    "focal_rate_mm_per_s": 0.0,
+    "distance_to_subject_start_m": 3.1196954979613,
+    "distance_to_subject_end_m": 3.1196954979613,
+    "distance_to_subject_mean_m": 3.1196954979613003,
+    "distance_to_subject_span_m": 0.0
+  },
+  "limits": {},
+  "condition_metrics": {
+    "frames": 120,
+    "channels": [
+      "depth",
+      "normal",
+      "seg",
+      "mask",
+      "lineart",
+      "pose"
+    ],
+    "sidecar_files": 840,
+    "sidecar_skipped": 120,
+    "sidecar_ok": 720,
+    "sidecar_all_ok": true,
+    "render_wall_ms": 10983.191957697272,
+    "palette_version": "tree_resources_builder_fixed_v1"
+  }
+}

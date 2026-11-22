@@ -1,0 +1,973 @@
+{
+  "kind": "condition_sidecar",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "channel": "pose",
+  "resolution": [
+    720,
+    404
+  ],
+  "f_px": 471.333333,
+  "near": 2.612361,
+  "far": 44.010536,
+  "near_far_unit": "meter",
+  "encoding": {
+    "channel": "pose",
+    "contract": "conditions_contract",
+    "contract_version": "1.1.0",
+    "bit_depth": 8,
+    "anti_aliasing": "none",
+    "semantics": "2D 人体骨架叠加图（由 3D 关节经同一相机投影）",
+    "formula": "project(joint_world) -> pixel；骨段画线、关节画圆点",
+    "polarity": "n/a",
+    "value_range": [
+      0,
+      255
+    ],
+    "background": [
+      0,
+      0,
+      0
+    ],
+    "normalization": "none",
+    "metric": "pixel coordinate",
+    "color_space": "linear RGB",
+    "keypoint_set": "coco18",
+    "keypoint_set_canonical": "coco18",
+    "keypoint_sets": [
+      "human_rig_21",
+      "coco18",
+      "openpose25"
+    ],
+    "keypoint_names": [
+      "nose",
+      "left_eye",
+      "right_eye",
+      "left_ear",
+      "right_ear",
+      "left_shoulder",
+      "right_shoulder",
+      "left_elbow",
+      "right_elbow",
+      "left_wrist",
+      "right_wrist",
+      "left_hip",
+      "right_hip",
+      "left_knee",
+      "right_knee",
+      "left_ankle",
+      "right_ankle",
+      "neck"
+    ],
+    "bones": [
+      [
+        "nose",
+        "left_eye"
+      ],
+      [
+        "nose",
+        "right_eye"
+      ],
+      [
+        "left_eye",
+        "left_ear"
+      ],
+      [
+        "right_eye",
+        "right_ear"
+      ],
+      [
+        "neck",
+        "left_shoulder"
+      ],
+      [
+        "neck",
+        "right_shoulder"
+      ],
+      [
+        "neck",
+        "nose"
+      ],
+      [
+        "left_shoulder",
+        "right_shoulder"
+      ],
+      [
+        "left_shoulder",
+        "left_elbow"
+      ],
+      [
+        "right_shoulder",
+        "right_elbow"
+      ],
+      [
+        "left_elbow",
+        "left_wrist"
+      ],
+      [
+        "right_elbow",
+        "right_wrist"
+      ],
+      [
+        "left_shoulder",
+        "left_hip"
+      ],
+      [
+        "right_shoulder",
+        "right_hip"
+      ],
+      [
+        "left_hip",
+        "right_hip"
+      ],
+      [
+        "left_hip",
+        "left_knee"
+      ],
+      [
+        "right_hip",
+        "right_knee"
+      ],
+      [
+        "left_knee",
+        "left_ankle"
+      ],
+      [
+        "right_knee",
+        "right_ankle"
+      ]
+    ],
+    "views": {
+      "human_rig_21": {
+        "title": "项目自有骨架视图（character_rig.json / generate_assets.HUMAN_JOINTS 同源）",
+        "keypoint_names": [
+          "Hips",
+          "Spine",
+          "Chest",
+          "Neck",
+          "Head",
+          "L_Shoulder",
+          "L_Elbow",
+          "L_Wrist",
+          "L_Hand",
+          "R_Shoulder",
+          "R_Elbow",
+          "R_Wrist",
+          "R_Hand",
+          "L_Hip",
+          "L_Knee",
+          "L_Ankle",
+          "L_Toe",
+          "R_Hip",
+          "R_Knee",
+          "R_Ankle",
+          "R_Toe"
+        ],
+        "bones": [
+          [
+            "Hips",
+            "Spine"
+          ],
+          [
+            "Spine",
+            "Chest"
+          ],
+          [
+            "Chest",
+            "Neck"
+          ],
+          [
+            "Neck",
+            "Head"
+          ],
+          [
+            "Chest",
+            "L_Shoulder"
+          ],
+          [
+            "L_Shoulder",
+            "L_Elbow"
+          ],
+          [
+            "L_Elbow",
+            "L_Wrist"
+          ],
+          [
+            "L_Wrist",
+            "L_Hand"
+          ],
+          [
+            "Chest",
+            "R_Shoulder"
+          ],
+          [
+            "R_Shoulder",
+            "R_Elbow"
+          ],
+          [
+            "R_Elbow",
+            "R_Wrist"
+          ],
+          [
+            "R_Wrist",
+            "R_Hand"
+          ],
+          [
+            "Hips",
+            "L_Hip"
+          ],
+          [
+            "L_Hip",
+            "L_Knee"
+          ],
+          [
+            "L_Knee",
+            "L_Ankle"
+          ],
+          [
+            "L_Ankle",
+            "L_Toe"
+          ],
+          [
+            "Hips",
+            "R_Hip"
+          ],
+          [
+            "R_Hip",
+            "R_Knee"
+          ],
+          [
+            "R_Knee",
+            "R_Ankle"
+          ],
+          [
+            "R_Ankle",
+            "R_Toe"
+          ]
+        ]
+      },
+      "coco18": {
+        "title": "COCO-18 = COCO-17 原顺序 + neck 追加在末尾（index 17）",
+        "keypoint_names": [
+          "nose",
+          "left_eye",
+          "right_eye",
+          "left_ear",
+          "right_ear",
+          "left_shoulder",
+          "right_shoulder",
+          "left_elbow",
+          "right_elbow",
+          "left_wrist",
+          "right_wrist",
+          "left_hip",
+          "right_hip",
+          "left_knee",
+          "right_knee",
+          "left_ankle",
+          "right_ankle",
+          "neck"
+        ],
+        "bones": [
+          [
+            "nose",
+            "left_eye"
+          ],
+          [
+            "nose",
+            "right_eye"
+          ],
+          [
+            "left_eye",
+            "left_ear"
+          ],
+          [
+            "right_eye",
+            "right_ear"
+          ],
+          [
+            "neck",
+            "left_shoulder"
+          ],
+          [
+            "neck",
+            "right_shoulder"
+          ],
+          [
+            "neck",
+            "nose"
+          ],
+          [
+            "left_shoulder",
+            "right_shoulder"
+          ],
+          [
+            "left_shoulder",
+            "left_elbow"
+          ],
+          [
+            "right_shoulder",
+            "right_elbow"
+          ],
+          [
+            "left_elbow",
+            "left_wrist"
+          ],
+          [
+            "right_elbow",
+            "right_wrist"
+          ],
+          [
+            "left_shoulder",
+            "left_hip"
+          ],
+          [
+            "right_shoulder",
+            "right_hip"
+          ],
+          [
+            "left_hip",
+            "right_hip"
+          ],
+          [
+            "left_hip",
+            "left_knee"
+          ],
+          [
+            "right_hip",
+            "right_knee"
+          ],
+          [
+            "left_knee",
+            "left_ankle"
+          ],
+          [
+            "right_knee",
+            "right_ankle"
+          ]
+        ]
+      },
+      "openpose25": {
+        "title": "OpenPose BODY_25 标准顺序（nose / neck / 肢体 / mid_hip / 足）",
+        "keypoint_names": [
+          "Nose",
+          "Neck",
+          "RShoulder",
+          "RElbow",
+          "RWrist",
+          "LShoulder",
+          "LElbow",
+          "LWrist",
+          "MidHip",
+          "RHip",
+          "RKnee",
+          "RAnkle",
+          "LHip",
+          "LKnee",
+          "LAnkle",
+          "REye",
+          "LEye",
+          "REar",
+          "LEar",
+          "LBigToe",
+          "LSmallToe",
+          "LHeel",
+          "RBigToe",
+          "RSmallToe",
+          "RHeel"
+        ],
+        "bones": [
+          [
+            "Nose",
+            "Neck"
+          ],
+          [
+            "Neck",
+            "RShoulder"
+          ],
+          [
+            "Neck",
+            "LShoulder"
+          ],
+          [
+            "RShoulder",
+            "RElbow"
+          ],
+          [
+            "RElbow",
+            "RWrist"
+          ],
+          [
+            "LShoulder",
+            "LElbow"
+          ],
+          [
+            "LElbow",
+            "LWrist"
+          ],
+          [
+            "Neck",
+            "MidHip"
+          ],
+          [
+            "RShoulder",
+            "RHip"
+          ],
+          [
+            "RHip",
+            "RKnee"
+          ],
+          [
+            "RKnee",
+            "RAnkle"
+          ],
+          [
+            "RAnkle",
+            "RHeel"
+          ],
+          [
+            "RHip",
+            "MidHip"
+          ],
+          [
+            "LHip",
+            "MidHip"
+          ],
+          [
+            "LHip",
+            "LKnee"
+          ],
+          [
+            "LKnee",
+            "LAnkle"
+          ],
+          [
+            "LAnkle",
+            "LHeel"
+          ],
+          [
+            "LAnkle",
+            "LBigToe"
+          ],
+          [
+            "LBigToe",
+            "LSmallToe"
+          ],
+          [
+            "LSmallToe",
+            "LHeel"
+          ],
+          [
+            "RAnkle",
+            "RBigToe"
+          ],
+          [
+            "RBigToe",
+            "RSmallToe"
+          ],
+          [
+            "RSmallToe",
+            "RHeel"
+          ]
+        ]
+      }
+    },
+    "limb_width_px": 3,
+    "joint_radius_px": 2,
+    "occlusion": "not encoded（全身关节一律画出，不做遮挡剔除）",
+    "keypoints": [
+      {
+        "index": 0,
+        "name": "nose",
+        "role": "nose",
+        "x": 307.191,
+        "y": 113.537,
+        "depth_m": 4.6103,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.008665,
+          -2.330228,
+          1.686795
+        ],
+        "source": "midpoint(LeftEye,RightEye)",
+        "source_kind": "midpoint",
+        "source_joints": [
+          "LeftEye",
+          "RightEye"
+        ],
+        "source_indices": [
+          9,
+          10
+        ]
+      },
+      {
+        "index": 1,
+        "name": "left_eye",
+        "role": "left_eye",
+        "x": 304.514,
+        "y": 113.479,
+        "depth_m": 4.5915,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.021938,
+          -2.330985,
+          1.686795
+        ],
+        "source": "LeftEye",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftEye"
+        ],
+        "source_indices": [
+          9
+        ]
+      },
+      {
+        "index": 2,
+        "name": "right_eye",
+        "role": "right_eye",
+        "x": 309.847,
+        "y": 113.595,
+        "depth_m": 4.6291,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.039268,
+          -2.329471,
+          1.686794
+        ],
+        "source": "RightEye",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightEye"
+        ],
+        "source_indices": [
+          10
+        ]
+      },
+      {
+        "index": 3,
+        "name": "left_ear",
+        "role": "left_ear",
+        "x": null,
+        "y": null,
+        "depth_m": null,
+        "visible": false,
+        "in_frame": false,
+        "world": null,
+        "source": "unavailable",
+        "source_kind": "unavailable",
+        "source_joints": [],
+        "source_indices": [],
+        "reason": "SOMA 与项目 rig 均无耳关节"
+      },
+      {
+        "index": 4,
+        "name": "right_ear",
+        "role": "right_ear",
+        "x": null,
+        "y": null,
+        "depth_m": null,
+        "visible": false,
+        "in_frame": false,
+        "world": null,
+        "source": "unavailable",
+        "source_kind": "unavailable",
+        "source_joints": [],
+        "source_indices": [],
+        "reason": "SOMA 与项目 rig 均无耳关节"
+      },
+      {
+        "index": 5,
+        "name": "left_shoulder",
+        "role": "left_shoulder",
+        "x": 300.238,
+        "y": 135.949,
+        "depth_m": 4.4498,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.153667,
+          -2.210177,
+          1.473028
+        ],
+        "source": "LeftArm",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftArm"
+        ],
+        "source_indices": [
+          12
+        ]
+      },
+      {
+        "index": 6,
+        "name": "right_shoulder",
+        "role": "right_shoulder",
+        "x": 328.473,
+        "y": 135.581,
+        "depth_m": 4.647,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.168785,
+          -2.201036,
+          1.473204
+        ],
+        "source": "RightArm",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightArm"
+        ],
+        "source_indices": [
+          40
+        ]
+      },
+      {
+        "index": 7,
+        "name": "left_elbow",
+        "role": "left_elbow",
+        "x": 287.183,
+        "y": 161.552,
+        "depth_m": 4.3962,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.300443,
+          -2.213764,
+          1.238066
+        ],
+        "source": "LeftForeArm",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftForeArm"
+        ],
+        "source_indices": [
+          13
+        ]
+      },
+      {
+        "index": 8,
+        "name": "right_elbow",
+        "role": "right_elbow",
+        "x": 340.608,
+        "y": 158.754,
+        "depth_m": 4.7732,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.314897,
+          -2.197464,
+          1.239306
+        ],
+        "source": "RightForeArm",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightForeArm"
+        ],
+        "source_indices": [
+          41
+        ]
+      },
+      {
+        "index": 9,
+        "name": "left_wrist",
+        "role": "left_wrist",
+        "x": 274.594,
+        "y": 186.241,
+        "depth_m": 4.3457,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.43867,
+          -2.217143,
+          1.016792
+        ],
+        "source": "LeftHand",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftHand"
+        ],
+        "source_indices": [
+          14
+        ]
+      },
+      {
+        "index": 10,
+        "name": "right_wrist",
+        "role": "right_wrist",
+        "x": 351.522,
+        "y": 179.596,
+        "depth_m": 4.8927,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.453261,
+          -2.194082,
+          1.017812
+        ],
+        "source": "RightHand",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightHand"
+        ],
+        "source_indices": [
+          42
+        ]
+      },
+      {
+        "index": 11,
+        "name": "left_hip",
+        "role": "left_hip",
+        "x": 303.552,
+        "y": 187.662,
+        "depth_m": 4.5884,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.102948,
+          -2.248006,
+          0.973345
+        ],
+        "source": "LeftLeg",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftLeg"
+        ],
+        "source_indices": [
+          67
+        ]
+      },
+      {
+        "index": 12,
+        "name": "right_hip",
+        "role": "right_hip",
+        "x": 322.629,
+        "y": 186.008,
+        "depth_m": 4.7227,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.118533,
+          -2.240124,
+          0.972835
+        ],
+        "source": "RightLeg",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightLeg"
+        ],
+        "source_indices": [
+          72
+        ]
+      },
+      {
+        "index": 13,
+        "name": "left_knee",
+        "role": "left_knee",
+        "x": 299.454,
+        "y": 229.486,
+        "depth_m": 4.7279,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.100473,
+          -2.341165,
+          0.54141
+        ],
+        "source": "LeftShin",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftShin"
+        ],
+        "source_indices": [
+          68
+        ]
+      },
+      {
+        "index": 14,
+        "name": "right_knee",
+        "role": "right_knee",
+        "x": 328.363,
+        "y": 229.739,
+        "depth_m": 4.7178,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.116059,
+          -2.146999,
+          0.541059
+        ],
+        "source": "RightShin",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightShin"
+        ],
+        "source_indices": [
+          73
+        ]
+      },
+      {
+        "index": 15,
+        "name": "left_ankle",
+        "role": "left_ankle",
+        "x": 303.574,
+        "y": 271.942,
+        "depth_m": 4.7452,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          0.102154,
+          -2.277901,
+          0.115504
+        ],
+        "source": "LeftFoot",
+        "source_kind": "joint",
+        "source_joints": [
+          "LeftFoot"
+        ],
+        "source_indices": [
+          69
+        ]
+      },
+      {
+        "index": 16,
+        "name": "right_ankle",
+        "role": "right_ankle",
+        "x": 333.962,
+        "y": 272.441,
+        "depth_m": 4.713,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.113648,
+          -2.056252,
+          0.120309
+        ],
+        "source": "RightFoot",
+        "source_kind": "joint",
+        "source_joints": [
+          "RightFoot"
+        ],
+        "source_indices": [
+          74
+        ]
+      },
+      {
+        "index": 17,
+        "name": "neck",
+        "role": "neck_base",
+        "x": 314.102,
+        "y": 132.045,
+        "depth_m": 4.5462,
+        "visible": true,
+        "in_frame": true,
+        "world": [
+          -0.005757,
+          -2.211538,
+          1.508551
+        ],
+        "source": "Neck1",
+        "source_kind": "joint",
+        "source_joints": [
+          "Neck1"
+        ],
+        "source_indices": [
+          4
+        ]
+      }
+    ],
+    "keypoints_file": "cond_pose_keypoints.json（并列视图的完整 2D 坐标与源关节索引）"
+  },
+  "up_axis": "Z",
+  "up_axis_vector": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "handedness": "right",
+  "units": "meter",
+  "mask_semantics": {
+    "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+    "source": "conditions.render_conditions -> mask",
+    "foreground_value": 255,
+    "background_value": 0,
+    "anti_aliasing": "none",
+    "post_process": "none",
+    "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+  },
+  "principal_point": [
+    360.0,
+    202.0
+  ],
+  "generator": "harness/conditions.py::save_condition_pack",
+  "camera": {
+    "eye": [
+      2.6,
+      1.6,
+      1.55
+    ],
+    "target": [
+      -3.7310330426320006,
+      -5.982413567057328,
+      -0.007249212941452088
+    ],
+    "up": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "fov_y": 46.397181,
+    "focal_mm": 42.0,
+    "sensor_mm": 36.0,
+    "f_px": 471.333333,
+    "near": 0.05
+  },
+  "png": {
+    "primary": "cond_pose.png",
+    "files": [
+      "cond_pose.png",
+      "cond_pose_openpose25.png"
+    ],
+    "bit_depth": 8,
+    "sha256": "696afa73e8cbdad3fc5ecb5a42901435f9b30444ede20dfb4b8c72d85bf67874"
+  },
+  "shot": {
+    "id": "shot_pan",
+    "frame": 43,
+    "t_s": 1.7917,
+    "fps": 24,
+    "move_type": "pan"
+  },
+  "scene": {
+    "source": "assets/geometry/scene_street.glb + shot001_hero.npz",
+    "objects": 23,
+    "labels": [
+      "building",
+      "character",
+      "crowd",
+      "foliage",
+      "ground",
+      "road",
+      "sidewalk",
+      "tree",
+      "vehicle"
+    ],
+    "hidden_meshes": []
+  },
+  "pose_joints": {
+    "source": "soma77（77 公共关节，不含 Root）",
+    "count": 77,
+    "keypoint_set": "coco18"
+  },
+  "camera_authority": "shots/shot_pan/camera/intrinsics.json",
+  "pose_keypoints_file": "cond_pose_keypoints.json",
+  "pose_keypoint_sets": [
+    "human_rig_21",
+    "coco18",
+    "openpose25"
+  ],
+  "pose_keypoint_set_canonical": "coco18"
+}

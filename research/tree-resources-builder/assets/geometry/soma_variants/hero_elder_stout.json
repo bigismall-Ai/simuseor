@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_elder_stout",
+  "name": "hero_elder_stout",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_elder_stout.glb",
+      "bytes": 35416,
+      "sha256": "bca9d09ebb4fd095ae0f394ef520737997fd9ec07b551933371bcc90e8db96e8"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_elder_stout_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.2163,
+          -0.1211,
+          0.8822
+        ],
+        "bbox_max": [
+          0.2163,
+          0.1211,
+          1.3565
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1704,
+          -0.1147,
+          0.7884
+        ],
+        "bbox_max": [
+          0.1704,
+          0.1147,
+          0.9949
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0474,
+          -0.0474,
+          1.328
+        ],
+        "bbox_max": [
+          0.0474,
+          0.0474,
+          1.4418
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.0953,
+          -0.0988,
+          1.4275
+        ],
+        "bbox_max": [
+          0.0953,
+          0.1083,
+          1.6554
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.1084,
+          -0.0754,
+          1.281
+        ],
+        "bbox_max": [
+          0.2592,
+          0.0754,
+          1.4319
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.1395,
+          -0.0583,
+          1.069
+        ],
+        "bbox_max": [
+          0.4387,
+          0.0583,
+          1.3943
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.3547,
+          -0.0378,
+          1.0531
+        ],
+        "bbox_max": [
+          0.4493,
+          0.0567,
+          1.1476
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.3624,
+          -0.0375,
+          0.843
+        ],
+        "bbox_max": [
+          0.585,
+          0.0749,
+          1.126
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.5277,
+          0.0024,
+          0.7707
+        ],
+        "bbox_max": [
+          0.5799,
+          0.0735,
+          0.8608
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.017,
+          -0.0854,
+          0.4723
+        ],
+        "bbox_max": [
+          0.1879,
+          0.0854,
+          0.8849
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0516,
+          -0.0508,
+          0.414
+        ],
+        "bbox_max": [
+          0.1723,
+          0.0698,
+          0.5346
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0536,
+          -0.0488,
+          0.0749
+        ],
+        "bbox_max": [
+          0.1702,
+          0.0678,
+          0.4757
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0683,
+          -0.0308,
+          0.0005
+        ],
+        "bbox_max": [
+          0.1556,
+          0.1921,
+          0.0716
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.2592,
+          -0.0754,
+          1.281
+        ],
+        "bbox_max": [
+          -0.1084,
+          0.0754,
+          1.4319
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4387,
+          -0.0583,
+          1.069
+        ],
+        "bbox_max": [
+          -0.1395,
+          0.0583,
+          1.3943
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.4493,
+          -0.0378,
+          1.0531
+        ],
+        "bbox_max": [
+          -0.3547,
+          0.0567,
+          1.1476
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.585,
+          -0.0375,
+          0.843
+        ],
+        "bbox_max": [
+          -0.3624,
+          0.0749,
+          1.126
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.5799,
+          0.0024,
+          0.7707
+        ],
+        "bbox_max": [
+          -0.5277,
+          0.0735,
+          0.8608
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1879,
+          -0.0854,
+          0.4723
+        ],
+        "bbox_max": [
+          -0.017,
+          0.0854,
+          0.8849
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1723,
+          -0.0508,
+          0.414
+        ],
+        "bbox_max": [
+          -0.0516,
+          0.0698,
+          0.5346
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1702,
+          -0.0488,
+          0.0749
+        ],
+        "bbox_max": [
+          -0.0536,
+          0.0678,
+          0.4757
+        ]
+      },
+      {
+        "node": "hero_hero_elder_stout_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1556,
+          -0.0308,
+          0.0005
+        ],
+        "bbox_max": [
+          -0.0683,
+          0.1921,
+          0.0716
+        ]
+      },
+      {
+        "node": "jacket_hero_elder_stout_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.292,
+          -0.1946,
+          0.9296
+        ],
+        "bbox_max": [
+          0.292,
+          0.1946,
+          1.3754
+        ]
+      },
+      {
+        "node": "jacket_hero_elder_stout_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.0867,
+          -0.1256,
+          0.8113
+        ],
+        "bbox_max": [
+          0.6338,
+          0.1328,
+          1.4462
+        ]
+      },
+      {
+        "node": "jacket_hero_elder_stout_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.6338,
+          -0.1256,
+          0.8113
+        ],
+        "bbox_max": [
+          -0.0867,
+          0.1328,
+          1.4462
+        ]
+      },
+      {
+        "node": "jacket_hero_elder_stout_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1043,
+          -0.1043,
+          1.328
+        ],
+        "bbox_max": [
+          0.1043,
+          0.1043,
+          1.3754
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.6338,
+      -0.1946,
+      0.0005
+    ],
+    "bbox_max": [
+      0.6338,
+      0.1946,
+      1.6554
+    ],
+    "ground_offset_m": 0.0005
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "elder",
+    "params": {
+      "name": "elder",
+      "variant": "stout",
+      "height": 1.66,
+      "torso": 1.14,
+      "shoulder": 1.02,
+      "hip": 1.08,
+      "limb": 1.06,
+      "head": 1.04,
+      "note": "长者，中景"
+    },
+    "level": "mid"
+  },
+  "nodes": [
+    "hero_hero_elder_stout_torso",
+    "hero_hero_elder_stout_pelvis",
+    "hero_hero_elder_stout_neck",
+    "hero_hero_elder_stout_head",
+    "hero_hero_elder_stout_shoulder_L",
+    "hero_hero_elder_stout_upperarm_L",
+    "hero_hero_elder_stout_elbow_L",
+    "hero_hero_elder_stout_forearm_L",
+    "hero_hero_elder_stout_hand_L",
+    "hero_hero_elder_stout_thigh_L",
+    "hero_hero_elder_stout_knee_L",
+    "hero_hero_elder_stout_shin_L",
+    "hero_hero_elder_stout_foot_L",
+    "hero_hero_elder_stout_shoulder_R",
+    "hero_hero_elder_stout_upperarm_R",
+    "hero_hero_elder_stout_elbow_R",
+    "hero_hero_elder_stout_forearm_R",
+    "hero_hero_elder_stout_hand_R",
+    "hero_hero_elder_stout_thigh_R",
+    "hero_hero_elder_stout_knee_R",
+    "hero_hero_elder_stout_shin_R",
+    "hero_hero_elder_stout_foot_R",
+    "jacket_hero_elder_stout_body",
+    "jacket_hero_elder_stout_sleeve_l",
+    "jacket_hero_elder_stout_sleeve_r",
+    "jacket_hero_elder_stout_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_elder_stout_body",
+  "clothing_parts": [
+    "jacket_hero_elder_stout_body",
+    "jacket_hero_elder_stout_sleeve_l",
+    "jacket_hero_elder_stout_sleeve_r",
+    "jacket_hero_elder_stout_collar"
+  ],
+  "note": "长者，中景"
+}

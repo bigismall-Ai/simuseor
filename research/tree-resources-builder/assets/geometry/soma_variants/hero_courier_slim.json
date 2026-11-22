@@ -1,0 +1,495 @@
+{
+  "kind": "r4_asset",
+  "schema": "r4-asset/1",
+  "id": "geometry/soma_variants/hero_courier_slim",
+  "name": "hero_courier_slim",
+  "category": "character",
+  "semantic_category": "character",
+  "usage_level": "mid",
+  "budget_faces": 5000,
+  "files": [
+    {
+      "path": "assets/geometry/soma_variants/hero_courier_slim.glb",
+      "bytes": 35472,
+      "sha256": "8aa1c0ab678d2b52a88f615a3e5893d9980311a8b15e8cc9ab5968da9c33edaf"
+    }
+  ],
+  "license": {
+    "spdx": "LicenseRef-Proprietary",
+    "source_url": null,
+    "license_url": null,
+    "attribution_required": true,
+    "credit": "程序化生成（harness/r4_generate_characters.py，纯 CPU，无生成式模型）"
+  },
+  "provenance": {
+    "origin": "procedural",
+    "statement": "本仓库 harness 参数化生成（纯 CPU），非扫描、非 AI 生成",
+    "source_url": null,
+    "is_ai": 0,
+    "generator": "harness/r4_generate_characters.py"
+  },
+  "lod": {
+    "level": "mid",
+    "faces": 1880
+  },
+  "geometry": {
+    "faces": 1880,
+    "vertices": 996,
+    "parts": [
+      {
+        "node": "hero_hero_courier_slim_torso",
+        "faces": 120,
+        "vertices": 62,
+        "bbox_min": [
+          -0.1841,
+          -0.1031,
+          0.9513
+        ],
+        "bbox_max": [
+          0.1841,
+          0.1031,
+          1.4627
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_pelvis",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1276,
+          -0.1031,
+          0.8687
+        ],
+        "bbox_max": [
+          0.1276,
+          0.1031,
+          1.0543
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_neck",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.0511,
+          -0.0511,
+          1.432
+        ],
+        "bbox_max": [
+          0.0511,
+          0.0511,
+          1.5547
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_head",
+        "faces": 320,
+        "vertices": 162,
+        "bbox_min": [
+          -0.0968,
+          -0.1001,
+          1.5464
+        ],
+        "bbox_max": [
+          0.0968,
+          0.1104,
+          1.7779
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_shoulder_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.1098,
+          -0.069,
+          1.3936
+        ],
+        "bbox_max": [
+          0.2478,
+          0.069,
+          1.5317
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_upperarm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.1382,
+          -0.0534,
+          1.1579
+        ],
+        "bbox_max": [
+          0.4477,
+          0.0544,
+          1.4973
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_elbow_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.3708,
+          -0.033,
+          1.1432
+        ],
+        "bbox_max": [
+          0.4573,
+          0.0535,
+          1.2298
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_forearm_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.3778,
+          -0.0328,
+          0.9123
+        ],
+        "bbox_max": [
+          0.6063,
+          0.0748,
+          1.21
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_hand_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.5496,
+          0.0026,
+          0.8311
+        ],
+        "bbox_max": [
+          0.6058,
+          0.0793,
+          0.9282
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_thigh_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0139,
+          -0.0782,
+          0.5096
+        ],
+        "bbox_max": [
+          0.1703,
+          0.0782,
+          0.9538
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_knee_L",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          0.0471,
+          -0.045,
+          0.4562
+        ],
+        "bbox_max": [
+          0.1575,
+          0.0655,
+          0.5667
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_shin_L",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          0.0489,
+          -0.0431,
+          0.0809
+        ],
+        "bbox_max": [
+          0.1557,
+          0.0636,
+          0.5127
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_foot_L",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          0.0552,
+          -0.0332,
+          0.0005
+        ],
+        "bbox_max": [
+          0.1493,
+          0.2071,
+          0.0772
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_shoulder_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.2478,
+          -0.069,
+          1.3936
+        ],
+        "bbox_max": [
+          -0.1098,
+          0.069,
+          1.5317
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_upperarm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.4477,
+          -0.0534,
+          1.1579
+        ],
+        "bbox_max": [
+          -0.1382,
+          0.0544,
+          1.4973
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_elbow_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.4573,
+          -0.033,
+          1.1432
+        ],
+        "bbox_max": [
+          -0.3708,
+          0.0535,
+          1.2298
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_forearm_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.6063,
+          -0.0328,
+          0.9123
+        ],
+        "bbox_max": [
+          -0.3778,
+          0.0748,
+          1.21
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_hand_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.6058,
+          0.0026,
+          0.8311
+        ],
+        "bbox_max": [
+          -0.5496,
+          0.0793,
+          0.9282
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_thigh_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1703,
+          -0.0782,
+          0.5096
+        ],
+        "bbox_max": [
+          -0.0139,
+          0.0782,
+          0.9538
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_knee_R",
+        "faces": 80,
+        "vertices": 42,
+        "bbox_min": [
+          -0.1575,
+          -0.045,
+          0.4562
+        ],
+        "bbox_max": [
+          -0.0471,
+          0.0655,
+          0.5667
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_shin_R",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1557,
+          -0.0431,
+          0.0809
+        ],
+        "bbox_max": [
+          -0.0489,
+          0.0636,
+          0.5127
+        ]
+      },
+      {
+        "node": "hero_hero_courier_slim_foot_R",
+        "faces": 12,
+        "vertices": 8,
+        "bbox_min": [
+          -0.1493,
+          -0.0332,
+          0.0005
+        ],
+        "bbox_max": [
+          -0.0552,
+          0.2071,
+          0.0772
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_body",
+        "faces": 160,
+        "vertices": 82,
+        "bbox_min": [
+          -0.2486,
+          -0.1657,
+          1.0024
+        ],
+        "bbox_max": [
+          0.2486,
+          0.1657,
+          1.4831
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_sleeve_l",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          0.0899,
+          -0.115,
+          0.8833
+        ],
+        "bbox_max": [
+          0.651,
+          0.1278,
+          1.5458
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_sleeve_r",
+        "faces": 96,
+        "vertices": 52,
+        "bbox_min": [
+          -0.651,
+          -0.115,
+          0.8833
+        ],
+        "bbox_max": [
+          -0.0899,
+          0.1278,
+          1.5458
+        ]
+      },
+      {
+        "node": "jacket_hero_courier_slim_collar",
+        "faces": 48,
+        "vertices": 26,
+        "bbox_min": [
+          -0.1125,
+          -0.1125,
+          1.432
+        ],
+        "bbox_max": [
+          0.1125,
+          0.1125,
+          1.4831
+        ]
+      }
+    ],
+    "bbox_min": [
+      -0.651,
+      -0.1657,
+      0.0005
+    ],
+    "bbox_max": [
+      0.651,
+      0.2071,
+      1.7779
+    ],
+    "ground_offset_m": 0.0005
+  },
+  "recipe": {
+    "recipe_id": "character_identities",
+    "variant": "courier",
+    "params": {
+      "name": "courier",
+      "variant": "slim",
+      "height": 1.79,
+      "torso": 0.9,
+      "shoulder": 0.92,
+      "hip": 0.9,
+      "limb": 0.9,
+      "head": 0.98,
+      "note": "快递员，中景"
+    },
+    "level": "mid"
+  },
+  "nodes": [
+    "hero_hero_courier_slim_torso",
+    "hero_hero_courier_slim_pelvis",
+    "hero_hero_courier_slim_neck",
+    "hero_hero_courier_slim_head",
+    "hero_hero_courier_slim_shoulder_L",
+    "hero_hero_courier_slim_upperarm_L",
+    "hero_hero_courier_slim_elbow_L",
+    "hero_hero_courier_slim_forearm_L",
+    "hero_hero_courier_slim_hand_L",
+    "hero_hero_courier_slim_thigh_L",
+    "hero_hero_courier_slim_knee_L",
+    "hero_hero_courier_slim_shin_L",
+    "hero_hero_courier_slim_foot_L",
+    "hero_hero_courier_slim_shoulder_R",
+    "hero_hero_courier_slim_upperarm_R",
+    "hero_hero_courier_slim_elbow_R",
+    "hero_hero_courier_slim_forearm_R",
+    "hero_hero_courier_slim_hand_R",
+    "hero_hero_courier_slim_thigh_R",
+    "hero_hero_courier_slim_knee_R",
+    "hero_hero_courier_slim_shin_R",
+    "hero_hero_courier_slim_foot_R",
+    "jacket_hero_courier_slim_body",
+    "jacket_hero_courier_slim_sleeve_l",
+    "jacket_hero_courier_slim_sleeve_r",
+    "jacket_hero_courier_slim_collar"
+  ],
+  "part_count": 22,
+  "clothing_shell": "jacket_hero_courier_slim_body",
+  "clothing_parts": [
+    "jacket_hero_courier_slim_body",
+    "jacket_hero_courier_slim_sleeve_l",
+    "jacket_hero_courier_slim_sleeve_r",
+    "jacket_hero_courier_slim_collar"
+  ],
+  "note": "快递员，中景"
+}

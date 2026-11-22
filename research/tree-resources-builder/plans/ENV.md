@@ -66,6 +66,9 @@
 | `export_usd.py` | `.venv` | pxr；**库模块，无 `__main__`**，只能被 `run_pipeline.py` 调用 |
 | `run_pipeline.py` | `.venv` | generate_assets + validate + previews + export_usd 全栈 |
 | `conditions.py` | `.venv` | trimesh + geomlib + generate_assets |
+| `condition_contract.py` | `.venv` | numpy；条件通道契约常量 + sidecar 写出器 + 静态扫描器（conditions.py 依赖它） |
+| `condition_pack.py` | `.venv` | numpy + conditions + condition_contract；R0 验收：六通道 PNG + sidecar + 七字段扫描 |
+| `cross_render_compare.py` | `.venv` | numpy + trimesh + PIL + conditions；**只读** import resources3D 的 wmcore 做同相机同场景交叉渲染比对 |
 | `vehicle_parts.py` | `.venv` | trimesh + fast_simplification（仅 `.venv` 有） |
 | `vehicle_dynamics.py` | `.venv` | 只用 numpy（两环境皆可，约定 `.venv`） |
 | `shot_spec.py` | `.venv` | numpy + vehicle_dynamics |

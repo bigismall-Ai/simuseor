@@ -33,7 +33,7 @@
         0.1216,
         1.7757
       ],
-      "source": "assets/geometry/soma_anny_adult.glb"
+      "source": "geometry/soma_anny_adult"
     },
     {
       "name": "building_a",
@@ -63,7 +63,8 @@
         6.2,
         4.7,
         25.85
-      ]
+      ],
+      "source": "geometry/building_office"
     },
     {
       "name": "building_b",
@@ -93,7 +94,8 @@
         5.2,
         4.2,
         19.45
-      ]
+      ],
+      "source": "geometry/building_office"
     },
     {
       "name": "car_a",
@@ -123,7 +125,8 @@
         2.15,
         0.91,
         1.44
-      ]
+      ],
+      "source": "geometry/vehicle_car"
     },
     {
       "name": "car_b",
@@ -153,7 +156,8 @@
         2.15,
         0.91,
         1.44
-      ]
+      ],
+      "source": "geometry/vehicle_car"
     },
     {
       "name": "tree_a",
@@ -183,7 +187,8 @@
         2.2088,
         2.8537,
         5.4391
-      ]
+      ],
+      "source": "geometry/vegetation_tree"
     },
     {
       "name": "tree_b",
@@ -213,7 +218,8 @@
         2.2088,
         2.8537,
         5.4391
-      ]
+      ],
+      "source": "geometry/vegetation_tree"
     },
     {
       "name": "crowd_00",
@@ -243,7 +249,8 @@
         0.5517,
         0.1011,
         1.5714
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_01",
@@ -273,7 +280,8 @@
         0.5726,
         0.1324,
         1.6311
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_02",
@@ -303,7 +311,8 @@
         0.5935,
         0.1456,
         1.6908
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_03",
@@ -333,7 +342,8 @@
         0.6145,
         0.1126,
         1.7504
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_04",
@@ -363,7 +373,8 @@
         0.5517,
         0.1177,
         1.5714
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_05",
@@ -393,7 +404,8 @@
         0.5726,
         0.1465,
         1.6311
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_06",
@@ -423,7 +435,8 @@
         0.5935,
         0.1088,
         1.6908
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_07",
@@ -453,7 +466,8 @@
         0.6145,
         0.1182,
         1.7504
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_08",
@@ -483,7 +497,8 @@
         0.5517,
         0.1446,
         1.5714
-      ]
+      ],
+      "source": "geometry/crowd_block"
     },
     {
       "name": "crowd_09",
@@ -513,9 +528,11 @@
         0.5726,
         0.105,
         1.6311
-      ]
+      ],
+      "source": "geometry/crowd_block"
     }
   ],
   "camera_ref": "camera_path.json",
-  "fx_ref": "fx_proxy.json"
+  "fx_ref": "fx_proxy.json",
+  "source_convention": "objects[].source 是 assets/manifest.json 里的 asset_id 引用（v2 起不再是文件路径）；文件路径见 assets[].path"
 }

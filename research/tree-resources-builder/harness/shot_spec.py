@@ -16,6 +16,16 @@
 
   python shot_spec.py --demo     # 写出 assets/validation/shot_spec.json
 
+v2（ROADMAP §2.5.1）
+===================
+  spec 带 schema_version=2 时，validate_spec 额外强制 11 个字段：
+  resolution / up_axis / assets[] / camera.move / camera.near|far /
+  conditions 对象形态 / timeline.events[] / validation / license[] / status / kind。
+  没有 schema_version 的老 spec 仍按老规则校验——历史产物（camera_path 派生的
+  W01 等）不会因为「补字段」被一次性判死，但也不会被当成 v2 用。
+  资产引用一律用 assets/manifest.json 的 asset_id；conditions.channels 的闭集
+  仍是 SUPPORTED_CONDITIONS 六通道（depth/normal/seg/mask/lineart/pose）。
+
 设计理由：
   1) 公开接口 resolve_camera(spec, t, asset_transforms) 的返回值全部是世界坐标，
      下游渲染器不需要知道镜头是「世界相机」还是「车载相机」，也不需要自己懂挂载规则。
@@ -44,19 +54,53 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
 from vehicle_dynamics import (  # noqa: E402
+    DEMO_STOP_S,
+    DEMO_TURN0_S,
+    DEMO_TURN1_S,
     build_demo_trajectory,
     sample_track,
     track_to_matrix,
+)
+# 条件通道闭集与 condition_contract.py 同源（R0 契约），不另抄一份。
+from condition_contract import (  # noqa: E402
+    CHANNELS as CONTRACT_CHANNELS,
+    DEPTH_POLARITY,
+    MASK_SEMANTICS,
+    SEG_PALETTE_ID,
+    UP_AXIS as CONTRACT_UP_AXIS,
+)
+# 自产件的默认许可口径与资产台账同源（asset_manifest.py 是唯一事实源）。
+from asset_manifest import (  # noqa: E402
+    SELF_CREDIT as ASSET_DEFAULT_CREDIT,
+    SELF_SPDX as ASSET_DEFAULT_SPDX,
 )
 
 ROOT = os.path.dirname(_HERE)
 VAL = os.path.join(ROOT, "assets", "validation")
 
-# 受支持的渲染通道：条件渲染的输出位面，与 conditions 字段一一对应
-SUPPORTED_CONDITIONS = ("depth", "normal", "seg")
+# 受支持的渲染通道：条件渲染的输出位面，与 conditions 字段一一对应。
+# R0 契约扩到六通道（depth/normal/seg/mask/lineart/pose）；闭集取自
+# condition_contract.CHANNELS，契约改了这里自动跟着改。
+SUPPORTED_CONDITIONS = CONTRACT_CHANNELS
 # 车内眼点高度区间（米，相对车体原点即地面）
 EYE_HEIGHT_RANGE = (0.9, 1.4)
 CAMERA_MODES = ("world", "mounted")
+
+# ------------------------------------------------------------------ v2 schema
+# ROADMAP §2.5.1 的 shot spec 最小字段。v1 的 spec（没有 schema_version）继续按老
+# 规则校验，保证既有产物（camera_path 派生的 W01 等）不被判红；schema_version >= 2
+# 的 spec 才强制下面这些字段——这样「补字段」不会把历史 spec 一次性判死。
+SHOT_SPEC_SCHEMA_VERSION = 2
+SHOT_STATUSES = ("draft", "validated", "approved")
+# 运镜类型与缓动闭集：与 harness/camera_moves.py 的 MOVE_TYPES / EASINGS 对齐
+# （那边是运镜实现侧、本模块是描述侧，词表必须一致，改一处要改两处）。
+CAMERA_MOVE_TYPES = ("dolly_in", "dolly_out", "pan", "tilt", "truck",
+                     "follow", "orbit", "pedestal", "handheld")
+CAMERA_MOVE_EASINGS = ("linear", "smoothstep", "smoothstep_in", "smoothstep_out")
+# 渲染分辨率：与条件图 sidecar 同口径（R0 condition_pack 实测 512x512）。
+DEFAULT_RESOLUTION = (512, 512)
+# sidecar 的 f_px 是权威内参（契约 §1），focal_mm / sensor_width_mm 只作参考。
+DEFAULT_F_PX = 512.0
 
 
 # ------------------------------------------------------------------ 轨迹求值
@@ -199,6 +243,323 @@ def sample_shot(spec: dict):
     return out
 
 
+# ------------------------------------------------------------------ v2 辅助
+def _load_json(path, default=None):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return default
+
+
+def _scene_assets():
+    """scene_layout.json 的 objects[] -> shot spec 的 assets[]（asset_id 引用）。
+
+    单一事实源：objects[].source 就是 manifest 的 asset_id（v2 起不再是文件路径），
+    这里只搬运，不另建映射表——映射表一多就会和台账说各话。
+    """
+    doc = _load_json(os.path.join(ROOT, "assets", "nongeometry", "scene_layout.json"), {}) or {}
+    out = []
+    for o in doc.get("objects") or []:
+        asset_id = o.get("source")
+        if not asset_id:
+            continue
+        out.append({
+            "asset_id": asset_id,
+            "role": o.get("category") or "prop",
+            "instance": o.get("name"),
+            "transform": list(o.get("transform") or []),
+        })
+    return out
+
+
+def _manifest_license_map():
+    """assets/manifest.json（v2）里 id -> license 段；没有台账就退回默认口径。"""
+    doc = _load_json(os.path.join(ROOT, "assets", "manifest.json"), {}) or {}
+    out = {}
+    for a in doc.get("assets") or []:
+        lic = a.get("license") or {}
+        out[a.get("id")] = {
+            "license": lic.get("spdx") or ASSET_DEFAULT_SPDX,
+            "source_url": lic.get("source_url"),
+            "attribution": lic.get("credit") or ASSET_DEFAULT_CREDIT,
+        }
+    return out
+
+
+def _shot_licenses(asset_ids):
+    """shot 的 license[]：逐资产带出许可，来源是 manifest（不是手抄）。"""
+    lic_map = _manifest_license_map()
+    out, seen = [], set()
+    for aid in asset_ids:
+        if aid in seen:
+            continue
+        seen.add(aid)
+        info = lic_map.get(aid) or {}
+        out.append({
+            "asset_id": aid,
+            "license": info.get("license", ASSET_DEFAULT_SPDX),
+            "source_url": info.get("source_url"),
+            "attribution": info.get("attribution", ASSET_DEFAULT_CREDIT),
+        })
+    return out
+
+
+def _timeline_events(duration_s):
+    """时间轴事件：FX 代理的起止 + 载具轨迹上的可观测节点。"""
+    events = []
+    fx = _load_json(os.path.join(ROOT, "assets", "nongeometry", "fx_proxy.json"), {}) or {}
+    traj = fx.get("trajectory") or {}
+    t0, t1 = traj.get("t_start"), traj.get("t_end")
+    if isinstance(t0, (int, float)) and isinstance(t1, (int, float)):
+        events.append({"t": round(float(t0), 3), "type": "fx_volume.start",
+                       "target": "nongeometry/fx_proxy"})
+        events.append({"t": round(float(t1), 3), "type": "fx_volume.end",
+                       "target": "nongeometry/fx_proxy"})
+    events.append({"t": round(float(DEMO_TURN0_S), 3), "type": "vehicle.turn_begin",
+                   "target": "car_a"})
+    events.append({"t": round(float(DEMO_TURN1_S), 3), "type": "brake_light.on",
+                   "target": "car_a"})
+    events.append({"t": round(float(DEMO_STOP_S), 3), "type": "vehicle.stop",
+                   "target": "car_a"})
+    events = [e for e in events if -1e-9 <= e["t"] <= float(duration_s) + 1e-9]
+    events.sort(key=lambda e: e["t"])
+    return events
+
+
+def _scene_depth_range(spec):
+    """沿相机前向轴求场景深度包络（米），给 camera.near/far 与 conditions.depth。
+
+    口径：scene_layout 的实例包围盒（局部盒经实例变换到世界）沿前向轴投影的包络，
+    是**包围盒包络**而不是像素级前景实测，所以比条件图实测的 depth_range 略宽。
+    它的作用是给 near/far 一个有据可查、可复算的初值；真正渲染时以 sidecar 为准。
+    """
+    layout = _load_json(os.path.join(ROOT, "assets", "nongeometry", "scene_layout.json"), {}) or {}
+    chunks = []
+    for o in layout.get("objects") or []:
+        bb = o.get("bbox_m")
+        tr = o.get("transform")
+        if not (isinstance(bb, (list, tuple)) and len(bb) == 6):
+            continue
+        lo = np.asarray(bb[:3], float)
+        hi = np.asarray(bb[3:], float)
+        pts = np.array([[x, y, z] for x in (lo[0], hi[0])
+                        for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
+        if isinstance(tr, (list, tuple)) and len(tr) == 16:
+            m = _as_matrix(tr)
+            # 列向量约定 p_world = M @ p_local -> 行向量写法是 p_row @ M.T
+            pts = (np.hstack([pts, np.ones((len(pts), 1))]) @ m.T)[:, :3]
+        chunks.append(pts)
+    if not chunks:
+        return 0.05, 100.0
+    world = np.vstack(chunks)
+    fps = float(spec.get("fps", 24))
+    duration = float(spec.get("duration_s", 0.0))
+    n = max(2, int(round(fps * duration)))
+    spans = []
+    for i in range(n):
+        t = i / fps
+        cam = resolve_camera(spec, t, actor_transforms_at(spec, t))
+        eye = np.asarray(cam["eye"], float)
+        fwd = np.asarray(cam["target"], float) - eye
+        norm = float(np.linalg.norm(fwd))
+        if norm < 1e-9:
+            continue
+        d = (world - eye) @ (fwd / norm)
+        pos = d[d > 1e-3]
+        if pos.size:
+            spans.append((float(pos.min()), float(pos.max())))
+    if not spans:
+        return 0.05, 100.0
+    near = max(min(s[0] for s in spans), 0.05)
+    far = max(s[1] for s in spans)
+    if far <= near:
+        far = near * 100.0
+    return round(near, 6), round(far, 6)
+
+
+def _v2_field_status(spec):
+    """§2.5.1 的 11 个字段逐条判定 -> {code: (ok, message, hint)}。
+
+    校验器（validate_spec）与报告（_schema_checks）共用这一份判定，
+    免得「判红的地方」和「报出来的地方」两套口径。
+    """
+    cam = spec.get("camera") or {}
+    res = spec.get("resolution")
+    res_ok = (isinstance(res, (list, tuple)) and len(res) == 2
+              and all(isinstance(v, int) and v > 0 for v in res))
+    move = cam.get("move")
+    move_ok = (isinstance(move, dict)
+               and move.get("type") in CAMERA_MOVE_TYPES
+               and move.get("easing") in CAMERA_MOVE_EASINGS)
+    near, far = cam.get("near"), cam.get("far")
+    clip_ok = (isinstance(near, (int, float)) and isinstance(far, (int, float))
+               and 0 < near < far)
+    assets = spec.get("assets")
+    assets_ok = bool(assets) and all(
+        isinstance(a, dict) and a.get("asset_id") and a.get("role")
+        and isinstance(a.get("transform"), (list, tuple)) and len(a["transform"]) == 16
+        for a in assets)
+    conds = spec.get("conditions")
+    if isinstance(conds, dict):
+        ch = conds.get("channels")
+        conds_ok = (isinstance(ch, (list, tuple)) and bool(ch)
+                    and all(c in SUPPORTED_CONDITIONS for c in ch)
+                    and isinstance(conds.get("depth"), dict)
+                    and bool(conds.get("depth", {}).get("encoding"))
+                    and bool(conds.get("mask_semantics"))
+                    and bool(conds.get("palette_version")))
+    else:
+        conds_ok = False
+    tl = spec.get("timeline")
+    tl_ok = (isinstance(tl, dict) and isinstance(tl.get("events"), (list, tuple))
+             and all(isinstance(e, dict) and e.get("type") and e.get("target")
+                     and isinstance(e.get("t"), (int, float)) for e in tl["events"]))
+    val = spec.get("validation")
+    val_ok = (isinstance(val, dict) and bool(val.get("report_path"))
+              and "pass" in val and isinstance(val.get("checks"), (list, tuple)))
+    lic = spec.get("license")
+    lic_ok = bool(lic) and all(isinstance(l, dict) and l.get("asset_id")
+                                and l.get("license") for l in lic)
+    return {
+        "SHOT_KIND": (spec.get("kind") == "shot_spec",
+                      "kind=%r" % spec.get("kind"), "固定为 shot_spec"),
+        "SHOT_RESOLUTION": (res_ok, "resolution=%s" % (res,),
+                            "[w, h]：条件图 sidecar 要引用同一分辨率"),
+        "SHOT_UP_AXIS": (spec.get("up_axis") == CONTRACT_UP_AXIS,
+                         "up_axis=%r" % spec.get("up_axis"), "本项目固定 Z-up"),
+        "SHOT_ASSETS": (assets_ok, "assets[] 引用 %d 个 asset_id" % len(assets or []),
+                        "asset_id 必须在 assets/manifest.json 里存在"),
+        "SHOT_CAMERA_MOVE": (move_ok, "camera.move=%s" % (move,),
+                             "{type, easing, handheld?}；type 取 CAMERA_MOVE_TYPES"),
+        "SHOT_CAMERA_CLIP": (clip_ok, "camera.near=%s camera.far=%s" % (near, far),
+                             "近远裁剪面（米），与 conditions.depth 同值"),
+        "SHOT_CONDITIONS": (conds_ok, "conditions 形态=%s"
+                            % ("object" if isinstance(conds, dict) else type(conds).__name__),
+                            "v2 用对象形态 {channels[], depth{...}, mask_semantics, palette_version}"),
+        "SHOT_TIMELINE": (tl_ok, "timeline.events[] %d 条"
+                          % len((tl or {}).get("events") or []) if isinstance(tl, dict) else 0,
+                          "FX 才有时间轴归属"),
+        "SHOT_VALIDATION": (val_ok, "validation.report_path=%r"
+                            % (val.get("report_path") if isinstance(val, dict) else None),
+                            "shot 必须回链验证报告"),
+        "SHOT_LICENSE": (lic_ok, "license[] 带出 %d 个资产的许可" % len(lic or []),
+                         "shot 必须带出资产许可，否则交付不可用"),
+        "SHOT_STATUS": (spec.get("status") in SHOT_STATUSES,
+                        "status=%r" % spec.get("status"), "draft|validated|approved"),
+    }
+
+
+def _schema_checks(spec, problems):
+    """把 §2.5.1 的 11 个字段列成 {code, ok, message, hint} 检查表。
+
+    结构与仓库既有报告（validation_report.json / exports.json）一致。
+    """
+    checks = []
+    for code, (ok, message, hint) in _v2_field_status(spec).items():
+        checks.append({"code": code, "ok": bool(ok), "message": message, "hint": hint})
+    checks.append({"code": "SHOT_VALIDATE_SPEC", "ok": not problems,
+                   "message": "validate_spec 报出 %d 个问题" % len(problems),
+                   "hint": "问题清单见 problems 字段"})
+    return checks
+
+
+def _validate_v2(spec, problems):
+    """§2.5.1 的 11 个字段校验（只对 schema_version >= 2 的 spec 生效）。"""
+    duration = float(spec.get("duration_s") or 0.0)
+    status = _v2_field_status(spec)
+    for code in ("SHOT_KIND", "SHOT_RESOLUTION", "SHOT_UP_AXIS", "SHOT_ASSETS",
+                 "SHOT_CAMERA_MOVE", "SHOT_CAMERA_CLIP", "SHOT_CONDITIONS",
+                 "SHOT_TIMELINE", "SHOT_VALIDATION", "SHOT_LICENSE", "SHOT_STATUS"):
+        ok, message, hint = status[code]
+        if not ok:
+            problems.append(f"{code}: {message}（{hint}）")
+
+    # 逐条细说：让报错直接指向字段，而不是只说「这一组不合格」
+    cam = spec.get("camera") or {}
+    move = cam.get("move")
+    if isinstance(move, dict):
+        if move.get("type") not in CAMERA_MOVE_TYPES:
+            problems.append(f"camera.move.type 必须是 {CAMERA_MOVE_TYPES} 之一"
+                            f"（当前 {move.get('type')!r}）")
+        if move.get("easing") not in CAMERA_MOVE_EASINGS:
+            problems.append(f"camera.move.easing 必须是 {CAMERA_MOVE_EASINGS} 之一"
+                            f"（当前 {move.get('easing')!r}）")
+        if move.get("handheld") is not None and not isinstance(move.get("handheld"), dict):
+            problems.append("camera.move.handheld 必须是 dict 或省略")
+    near, far = cam.get("near"), cam.get("far")
+    for name, value in (("camera.near", near), ("camera.far", far)):
+        if not isinstance(value, (int, float)) or value <= 0:
+            problems.append(f"{name} 必须是正数（当前 {value!r}）")
+    if isinstance(near, (int, float)) and isinstance(far, (int, float)) and near >= far:
+        problems.append(f"camera.near({near}) 必须小于 camera.far({far})")
+
+    conds = spec.get("conditions")
+    if isinstance(conds, dict):
+        channels = conds.get("channels")
+        if not (isinstance(channels, (list, tuple)) and channels):
+            problems.append("conditions.channels 必须是非空列表")
+        else:
+            for c in channels:
+                if c not in SUPPORTED_CONDITIONS:
+                    problems.append(f"不支持的条件通道 '{c}'（支持 {SUPPORTED_CONDITIONS}）")
+        depth = conds.get("depth")
+        if not isinstance(depth, dict):
+            problems.append("conditions.depth 必须是 {near, far, encoding}")
+        else:
+            for name in ("near", "far"):
+                value = depth.get(name)
+                if not isinstance(value, (int, float)) or value <= 0:
+                    problems.append(f"conditions.depth.{name} 必须是正数（当前 {value!r}）")
+            if not depth.get("encoding"):
+                problems.append("conditions.depth.encoding 缺失")
+        if not conds.get("mask_semantics"):
+            problems.append("conditions.mask_semantics 缺失")
+        if not conds.get("palette_version"):
+            problems.append("conditions.palette_version 缺失")
+
+    tl = spec.get("timeline")
+    if isinstance(tl, dict):
+        for e in tl.get("events") or []:
+            if not isinstance(e, dict):
+                problems.append("timeline.events 的元素必须是 dict")
+                continue
+            if not isinstance(e.get("t"), (int, float)):
+                problems.append("timeline 事件缺少数值 t")
+            elif duration and not (-1e-9 <= float(e["t"]) <= duration + 1e-9):
+                problems.append(f"timeline 事件 t={e['t']} 超出 [0, {duration}]")
+            if not e.get("type"):
+                problems.append("timeline 事件缺少 type")
+            if not e.get("target"):
+                problems.append("timeline 事件缺少 target")
+
+    assets = spec.get("assets")
+    if isinstance(assets, (list, tuple)):
+        for a in assets:
+            if not isinstance(a, dict):
+                problems.append("assets 的元素必须是 dict")
+                continue
+            if not a.get("asset_id"):
+                problems.append("assets 条目缺少 asset_id（引用 manifest 的唯一句柄）")
+            if not a.get("role"):
+                problems.append(f"assets 条目 {a.get('asset_id')!r} 缺少 role")
+            tr = a.get("transform")
+            if not (isinstance(tr, (list, tuple)) and len(tr) == 16):
+                problems.append(f"assets 条目 {a.get('asset_id')!r} 的 transform "
+                                f"必须是 16 元行主序矩阵")
+
+    lic = spec.get("license")
+    if isinstance(lic, (list, tuple)):
+        for l in lic:
+            if not isinstance(l, dict):
+                problems.append("license 的元素必须是 dict")
+                continue
+            if not l.get("asset_id"):
+                problems.append("license 条目缺少 asset_id")
+            if not l.get("license"):
+                problems.append(f"license 条目 {l.get('asset_id')!r} 缺少 license")
+
+
 # ------------------------------------------------------------------ 校验
 def validate_spec(spec: dict, asset_names=None) -> list:
     """检查镜头描述是否自洽，返回问题描述列表（空列表 = 合法）。"""
@@ -315,12 +676,17 @@ def validate_spec(spec: dict, asset_names=None) -> list:
                             f"未覆盖 [0, {duration:.3f}]")
 
     conds = spec.get("conditions", [])
-    if not isinstance(conds, (list, tuple)):
-        problems.append("conditions 必须是列表")
+    if isinstance(conds, dict):
+        pass                      # v2 对象形态：逐字段校验交给 _validate_v2
+    elif not isinstance(conds, (list, tuple)):
+        problems.append("conditions 必须是列表或 {channels[], depth{...}} 对象")
     else:
         for c in conds:
             if c not in SUPPORTED_CONDITIONS:
                 problems.append(f"不支持的条件通道 '{c}'（支持 {SUPPORTED_CONDITIONS}）")
+
+    if int(spec.get("schema_version", 1) or 1) >= SHOT_SPEC_SCHEMA_VERSION:
+        _validate_v2(spec, problems)
     return problems
 
 
@@ -332,11 +698,18 @@ def build_demo_spec() -> dict:
     因此 shot_spec 与 vehicle_dynamics 共享同一条真相，不会各说各话。
     """
     traj = build_demo_trajectory()
-    return {
+    assets = _scene_assets()
+    asset_ids = [a["asset_id"] for a in assets]
+    spec = {
         "kind": "shot_spec",
+        "schema_version": SHOT_SPEC_SCHEMA_VERSION,
         "shot_id": "S03",
+        "status": "draft",
         "fps": traj["fps"],
         "duration_s": traj["duration_s"],
+        "resolution": list(DEFAULT_RESOLUTION),
+        "up_axis": CONTRACT_UP_AXIS,
+        "assets": assets,
         "sensor_width_mm": 36.0,
         "camera": {
             "mode": "mounted",
@@ -347,15 +720,44 @@ def build_demo_spec() -> dict:
                 "target_local": [8.0, 0.0, 1.05],
                 "up": [0.0, 0.0, 1.0],
             },
+            "move": {"type": "follow", "easing": "smoothstep"},
             "focal_mm": 35.0,
+            "sensor_width_mm": 36.0,
+            "f_px": DEFAULT_F_PX,
+            "near": 0.0,      # 下面按场景包络回填
+            "far": 0.0,
         },
         "actors": [
             {"asset": "car_a", "track": traj["track"]},
         ],
-        "conditions": ["depth", "normal", "seg"],
+        "conditions": {
+            "channels": list(SUPPORTED_CONDITIONS),
+            "depth": {"near": 0.0, "far": 0.0, "encoding": DEPTH_POLARITY},
+            "mask_semantics": dict(MASK_SEMANTICS),
+            "palette_version": SEG_PALETTE_ID,
+        },
+        "timeline": {"events": _timeline_events(float(traj["duration_s"]))},
+        "validation": {
+            "report_path": "assets/validation/shot_spec_report.json",
+            "pass": False,
+            "checks": [],
+        },
+        "license": _shot_licenses(asset_ids),
         "notes": "车载镜头：相机位姿由 car_a 的刚体变换 M(t) 推出；"
                  "轨迹覆盖 [0, 8.0] s，含直线、右转 90 度、减速停车、静止保持四段",
     }
+    near, far = _scene_depth_range(spec)
+    spec["camera"]["near"] = near
+    spec["camera"]["far"] = far
+    spec["camera"]["depth_range_source"] = {
+        "method": "scene_layout 实例包围盒沿相机前向轴的包络（逐帧求 min/max）",
+        "clamp_near_m": 0.05,
+        "note": "相机在 car_a 包围盒内部，最近几何由 clamp 下限给出；"
+                "渲染时以 sidecar 的 near/far 为准",
+    }
+    spec["conditions"]["depth"]["near"] = near
+    spec["conditions"]["depth"]["far"] = far
+    return spec
 
 
 # ------------------------------------------------------------------ CLI
@@ -368,9 +770,13 @@ def main(argv=None):
     spec = build_demo_spec()
     problems = validate_spec(spec)
     samples = sample_shot(spec)
+    report_path = "assets/validation/shot_spec_report.json"
     doc = dict(spec)
     doc["camera_samples"] = samples
-    doc["validation"] = {"problems": problems, "pass": not problems,
+    doc["status"] = "validated" if not problems else "draft"
+    checks = _schema_checks(doc, problems)
+    doc["validation"] = {"report_path": report_path, "pass": not problems,
+                         "checks": checks, "problems": problems,
                          "frames": len(samples)}
     doc["downstream_hint"] = ("resolve_camera(spec, t, actor_transforms_at(spec, t)) "
                               "直接得到世界坐标镜头；camera_samples 是预烘焙的逐帧结果")
@@ -378,6 +784,16 @@ def main(argv=None):
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, indent=2)
+
+    report = {"kind": "shot_spec_validation", "cpu_only": True,
+              "shot_id": spec.get("shot_id"),
+              "schema_version": spec.get("schema_version"),
+              "pass": not problems, "problems": problems, "checks": checks,
+              "frames": len(samples)}
+    report_abs = os.path.join(ROOT, report_path)
+    os.makedirs(os.path.dirname(report_abs), exist_ok=True)
+    with open(report_abs, "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
 
     print(json.dumps({k: v for k, v in spec.items() if k != "actors"}, ensure_ascii=False, indent=2))
     print("actors:", [(a["asset"], len(a["track"])) for a in spec["actors"]])

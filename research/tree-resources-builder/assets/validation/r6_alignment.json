@@ -1,0 +1,1477 @@
+{
+  "kind": "r6_alignment",
+  "status": "ok",
+  "generated_by": "harness/r6_alignment_check.py",
+  "contract": "conditions_contract",
+  "contract_version": "1.1.0",
+  "authority_of_this_report": "本文件是 **对齐矩阵的机器校验读数**；逐条裁定与依据见 plans/CONTRACT-alignment-resources3D.md",
+  "resources3d_dir": "/Users/moc/workspaces/SiMuseor/resources3D",
+  "resources3d_readonly": true,
+  "resources3d_bytecode_disabled": true,
+  "verdict_vocabulary": {
+    "pass": "两边一致，且本轮实跑验证过",
+    "conflict_resolved": "曾是冲突，本契约已裁定；当前两边实现一致或已按裁定对齐",
+    "n_a": "一侧不适用（该通道/该概念在另一边不存在），无冲突",
+    "fail": "未对齐，需要处理"
+  },
+  "summary": {
+    "pass": 25,
+    "conflict_resolved": 6,
+    "n_a": 6,
+    "fail": 0,
+    "total": 37
+  },
+  "checks": [
+    {
+      "id": "A01",
+      "group": "A_全局约定",
+      "item": "单位",
+      "question": "两边的长度单位是什么？一致吗？",
+      "authority": "本契约（plans/CONTRACT-conditions.md §1）",
+      "verdict": "pass",
+      "ours": "meter",
+      "theirs": "meter（wmcore 模块 docstring：单位米）",
+      "evidence": {
+        "ours": "meter",
+        "theirs_docstring_states_meter": true
+      },
+      "note": "两边都是米制，无冲突。"
+    },
+    {
+      "id": "A02",
+      "group": "A_全局约定",
+      "item": "手系",
+      "question": "两边的坐标系手性一致吗？",
+      "authority": "本契约 §1",
+      "verdict": "pass",
+      "ours": "right",
+      "theirs": "right-handed（wmcore docstring：右手系）",
+      "evidence": {
+        "ours": "right",
+        "theirs_docstring_states_right_handed": true,
+        "conversion_matrix_det": 1.0,
+        "conversion_matrix_orthogonality_err": 0.0
+      },
+      "note": "边界换算矩阵 det=+1（真旋转），不改变手性。"
+    },
+    {
+      "id": "A03",
+      "group": "A_全局约定",
+      "item": "上轴 up_axis",
+      "question": "两边世界坐标系的上轴一致吗？",
+      "authority": "本契约 §3（本项目 Z-up；resources3D 保持 Y-up；边界处一次换算）",
+      "verdict": "conflict_resolved",
+      "ours": "Z-up（Z）",
+      "theirs": "Y-up（wmcore.Y_UP = True）",
+      "evidence": {
+        "ours": "Z",
+        "ours_up_vector": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "theirs_y_up_flag": true,
+        "theirs_camera_default_up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "conversion": "p_yup = (x, z, −y)",
+        "conversion_det": 1.0
+      },
+      "note": "**曾是真冲突**。裁定：两边各保留内部上轴，不改 resources3D；跨边界时用 R=(x,z,−y) 换算一次，sidecar 的 up_axis 永远写 Z。"
+    },
+    {
+      "id": "A04",
+      "group": "A_全局约定",
+      "item": "上轴换算可逆",
+      "question": "边界换算是否严格可逆（不丢信息）？",
+      "authority": "本契约 §3.1",
+      "verdict": "pass",
+      "ours": "condition_contract.zup_to_yup / yup_to_zup",
+      "theirs": "resources3D 侧不需要（它就是 Y-up 本身）",
+      "evidence": {
+        "roundtrip_max_abs_err_m": 0.0,
+        "det": 1.0,
+        "orthogonality_max_err": 0.0
+      },
+      "note": "64 个随机点往返换算，最大误差 < 1e-12 m。"
+    },
+    {
+      "id": "A05",
+      "group": "A_全局约定",
+      "item": "深度度量",
+      "question": "深度是沿光轴的距离还是到相机的直线距离？",
+      "authority": "本契约 §1（沿光轴的前向轴距离）",
+      "verdict": "pass",
+      "ours": "沿光轴（camera-space forward axis）",
+      "theirs": "沿光轴（cam_z 取负）",
+      "evidence": {
+        "probe_plane_distance_m": 10.0,
+        "ours_reported_median_depth_m": 10.0,
+        "theirs_reported_median_depth_m": 10.0,
+        "euclidean_distance_to_corner_m": 10.099504938362077,
+        "both_equal_optical_axis_distance": true
+      },
+      "note": "探针：距机位 10 m 的 2×2 m 正方形。两边都报 10.000 m，而不是到角点的欧氏距离 10.0995 m —— 证明两边都是光轴深度。"
+    },
+    {
+      "id": "A06",
+      "group": "A_全局约定",
+      "item": "深度极性",
+      "question": "近处是 1 还是 0？",
+      "authority": "本契约 §2.1（R0 裁定：近=1 远=0）",
+      "verdict": "pass",
+      "ours": "near_1_far_0",
+      "theirs": "near_1_far_0（wmcore.depth_to_unit 实跑验证）",
+      "evidence": {
+        "ours_polarity_id": "near_1_far_0",
+        "ours_near_value": 1.0,
+        "ours_far_value": 0.0,
+        "theirs_probe_depth_1m": 1.0,
+        "theirs_probe_depth_10m": 10.0,
+        "theirs_probe_unit_1m": 1.0,
+        "theirs_probe_unit_10m": 0.0
+      },
+      "note": "**曾是真冲突**（本项目旧口径近=0/远=1）。R0 已改齐，本轮用 resources3D 的函数实跑复核：1 m → 1.0，10 m → 0.0。"
+    },
+    {
+      "id": "A07",
+      "group": "A_全局约定",
+      "item": "深度背景值",
+      "question": "无几何的像素在深度图里是什么值？",
+      "authority": "本契约 §2.1（背景 = 0.0，= 无穷远，与「远=0」自洽）",
+      "verdict": "pass",
+      "ours": 0.0,
+      "theirs": 0.0,
+      "evidence": {
+        "ours_background": 0.0,
+        "theirs_probe_background_pixel": 0.0,
+        "theirs_probe_foreground_near": 1.0,
+        "theirs_probe_foreground_far": 0.0
+      },
+      "note": "resources3D 的 depth_to_unit 先 zeros_like 再只写前景像素，背景天然是 0.0 —— 与本项目一致。"
+    },
+    {
+      "id": "A08",
+      "group": "A_全局约定",
+      "item": "深度归一化",
+      "question": "归一化用固定区间还是按帧前景 min/max？",
+      "authority": "本契约 §1/§2.1（按帧前景 min/max；sidecar 传 near/far）",
+      "verdict": "pass",
+      "ours": "per_frame_foreground_min_max",
+      "theirs": "near=None→前景 min，far=None→前景 max",
+      "evidence": {
+        "probe_metric_depths_m": [
+          2.0,
+          6.0,
+          10.0
+        ],
+        "theirs_depth_to_unit_output": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "contract_formula_output": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "max_abs_diff": 0.0,
+        "theirs_near_none_uses_foreground_min": true,
+        "theirs_far_none_uses_foreground_max": true
+      },
+      "note": "两边公式逐位相同：d = (hi − z)/(hi − lo)。resources3D 额外允许显式传 near/far —— 那是 sidecar 承载的同一件事。"
+    },
+    {
+      "id": "A09",
+      "group": "A_全局约定",
+      "item": "主点 principal point",
+      "question": "主点是不是图像中心？",
+      "authority": "本契约 §1（(W/2, H/2)）",
+      "verdict": "pass",
+      "ours": [
+        160.0,
+        160.0
+      ],
+      "theirs": [
+        160.0,
+        160.0
+      ],
+      "evidence": {
+        "ours": [
+          160.0,
+          160.0
+        ],
+        "theirs": [
+          160.0,
+          160.0
+        ]
+      },
+      "note": "两边主点都在图像中心，无冲突。"
+    },
+    {
+      "id": "A10",
+      "group": "A_全局约定",
+      "item": "焦距口径 f_px",
+      "question": "同一个 (focal, sensor) 在两边算出同一个 f_px 吗？",
+      "authority": "**sidecar 的 f_px**（本契约 §5.3；两边各按自己的口径反推）",
+      "verdict": "conflict_resolved",
+      "ours": "垂直 FOV 驱动：f_px = H/(2·tan(fov_y/2))",
+      "theirs": "水平 sensor-fit：f_px = focal_mm/sensor_width_mm·W",
+      "evidence": {
+        "reference_f_px": 320.0,
+        "ours_roundtrip_f_px": 319.99999999999994,
+        "theirs_roundtrip_f_px": 320.0,
+        "nonsquare_resolution": [
+          720,
+          404
+        ],
+        "nonsquare_ours_f_px_vertical_fov": 404.0000031214999,
+        "nonsquare_theirs_f_px_horizontal_sensorfit": 720.0,
+        "nonsquare_ratio": 0.5611111154465276
+      },
+      "note": "**曾是真冲突**：720×404 下同一个 (36 mm, 36 mm) 两边 f_px 差 0.5611 倍。裁定：以 f_px 为唯一权威，focal_mm/sensor_mm 只作参考。"
+    },
+    {
+      "id": "A11",
+      "group": "A_全局约定",
+      "item": "像素方向",
+      "question": "行 0 在上还是在下？y 轴朝哪个方向？",
+      "authority": "本契约 §1.1（row = H/2 − (y/z)·f_px，行 0 在上）",
+      "verdict": "pass",
+      "ours": "row 0 在上，y 向上为正",
+      "theirs": "row 0 在上，y 向上为正",
+      "evidence": {
+        "probe": "一块位于相机正上方 1 m、正前方 5 m 的面片，光栅后看命中行区间",
+        "ours_hit_row_range": [
+          82,
+          126
+        ],
+        "ours_principal_row": 160.0,
+        "theirs_hit_row_range": [
+          85,
+          127
+        ],
+        "theirs_principal_row": 160.0,
+        "both_above_principal_row": true
+      },
+      "note": "在**图像层**验的：面片在相机上方，光栅命中行必须小于主点行 —— 两边都成立。"
+    },
+    {
+      "id": "A11b",
+      "group": "A_全局约定",
+      "item": "resources3D 工具函数的 y 翻转口径",
+      "question": "resources3D 内部各函数对「行号」的约定一致吗？",
+      "authority": "**rasterize / eval.metrics 的图像口径**（行 0 在上）；wmcore.project_points 不作权威",
+      "verdict": "conflict_resolved",
+      "ours": "行 0 在上（内部一致）",
+      "theirs": "rasterize/metrics 一致；project_points 单独用数学口径（未翻转）",
+      "evidence": {
+        "wmcore_project_points_row": 213.33333333333334,
+        "rasterize_convention_row_if_flipped": 106.66666666666666,
+        "principal_row": 160.0,
+        "wmcore_source": "project_points 里 py = f_px·y/z + cy（**未**做 py = H − py 翻转）",
+        "wmcore_rasterize_source": "rasterize 里 py = H − (f_px·y/z + cy)（**有**翻转）",
+        "eval_metrics_source": "eval/metrics.py::ray_basis / ray_design_matrix 用 u_y = −(row − cy)/f（图像口径，与 rasterize 一致）",
+        "consequence": "同一个「相机上方」的点：project_points 给出行 213.33（落在主点之下），光栅口径应是 320 − 213.33 = 106.67（落在主点之上）",
+        "affected_theirs_callers": [
+          "research/harness/scene_pack.py:212",
+          "research/harness/tests/test_harness.py"
+        ]
+      },
+      "note": "**这是 resources3D 内部的一处口径不一致**（不改对方文件）。结论：行号一律以 rasterize / eval.metrics 的图像口径为准；跨仓库做像素定位时**不要用 wmcore.project_points**。本项目自己的实现无此问题（geomlib.Camera.project 与渲染同口径）。"
+    },
+    {
+      "id": "A12",
+      "group": "A_全局约定",
+      "item": "相机空间 z 符号",
+      "question": "两边相机空间的 z 正方向一致吗？",
+      "authority": "本契约 §1.1（本项目 z 前向为正；resources3D z 后向为正）",
+      "verdict": "conflict_resolved",
+      "ours": "z 前向为正",
+      "theirs": "z 后向为正（深度取负）",
+      "evidence": {
+        "ours": "camera z = d·fwd（前向为正），深度 = z",
+        "theirs": "camera z = −d·fwd（后向为正），深度 = −z",
+        "equivalence": "R = [s; u; −f]，投影 px = f_px·x/z + cx，row = H − (f_px·y/z + cy)",
+        "proof": "A11 像素方向探针 + 交叉渲染 depth 逐像素一致率"
+      },
+      "note": "内部符号约定不同，但两边都输出同一套像素与同一套光轴深度；由 A11 的探针与交叉渲染一致率共同证明等价。"
+    },
+    {
+      "id": "B01",
+      "group": "B_通道编码",
+      "item": "通道闭集",
+      "question": "两边各产哪些通道？闭集一致吗？",
+      "authority": "本契约 §2（闭集 = depth/normal/seg/mask/lineart/pose）",
+      "verdict": "pass",
+      "ours": [
+        "depth",
+        "lineart",
+        "mask",
+        "normal",
+        "pose",
+        "seg"
+      ],
+      "theirs": [
+        "depth",
+        "lineart",
+        "mask",
+        "shade"
+      ],
+      "evidence": {
+        "ours_channels": [
+          "depth",
+          "lineart",
+          "mask",
+          "normal",
+          "pose",
+          "seg"
+        ],
+        "ours_count": 6,
+        "theirs_rasterize_outputs": [
+          "depth",
+          "face_id",
+          "mask",
+          "n_tri",
+          "shade"
+        ],
+        "theirs_contract_channels": [
+          "depth",
+          "lineart",
+          "mask",
+          "shade"
+        ],
+        "common": [
+          "depth",
+          "lineart",
+          "mask"
+        ],
+        "ours_only": [
+          "normal",
+          "pose",
+          "seg"
+        ],
+        "theirs_only": [
+          "shade"
+        ]
+      },
+      "note": "共有 3 个（depth/mask/lineart）；本项目另有 normal/seg/pose 三个，resources3D 另有 shade 一个。差异是**覆盖面差异**，不是语义冲突。"
+    },
+    {
+      "id": "B02",
+      "group": "B_通道编码",
+      "item": "depth 位深",
+      "question": "depth 通道存几 bit？",
+      "authority": "本契约 §2.0（8bit 灰度）",
+      "verdict": "pass",
+      "ours": "8bit gray",
+      "theirs": "8bit gray",
+      "evidence": {
+        "ours": "8bit 灰度 PNG（save_png_gray 等价口径）",
+        "theirs": "8bit 灰度（wmcore.save_png_gray: (a*255).astype(uint8), mode=L）",
+        "theirs_writer": "wmcore.save_png_gray"
+      },
+      "note": "两边都是 8bit 归一化灰度，量化误差同量级（1/255≈3.9e-3）。"
+    },
+    {
+      "id": "B03",
+      "group": "B_通道编码",
+      "item": "mask 二值性",
+      "question": "mask 是不是硬二值（无抗锯齿）？",
+      "authority": "本契约 §2.4（{0,255}，无 AA / 无羽化 / 无膨胀）",
+      "verdict": "pass",
+      "ours": "0/255 硬二值",
+      "theirs": "0/255 硬二值（内部为 bool）",
+      "evidence": {
+        "ours_actual_pixel_values": [
+          0,
+          255
+        ],
+        "ours_antialiasing": "none",
+        "theirs": "bool 掩码 + save_png_mask → (arr.astype(uint8)*255) 的 0/255 灰度",
+        "theirs_writer": "wmcore.save_png_mask"
+      },
+      "note": "实测本项目 cond_mask.png 的全部像素取值 = [0, 255]。"
+    },
+    {
+      "id": "B04",
+      "group": "B_通道编码",
+      "item": "前景定义",
+      "question": "「前景」在两边是不是同一个意思？",
+      "authority": "本契约 §2.4（z-buffer 命中的任何可见几何）",
+      "verdict": "pass",
+      "ours": "z-buffer 命中即前景",
+      "theirs": "z-buffer 命中即前景",
+      "evidence": {
+        "ours": {
+          "definition": "前景 = z-buffer 命中的任何可见几何；hide=True 的几何完全不参与光栅",
+          "source": "conditions.render_conditions -> mask",
+          "foreground_value": 255,
+          "background_value": 0,
+          "anti_aliasing": "none",
+          "post_process": "none",
+          "note": "同一帧的六个通道共享同一个前景集合；mask 与 depth/normal/seg/lineart 的前景严格一致"
+        },
+        "theirs": "rasterize 里 mask |= sub_m（z-buffer 命中即前景）",
+        "theirs_hidden_geometry": "resources3D 无 hide 概念；本项目 hide=True 的几何不参与光栅"
+      },
+      "note": "语义一致；差别在「隐藏几何」只有本项目有这个概念，不构成契约冲突。"
+    },
+    {
+      "id": "B05",
+      "group": "B_通道编码",
+      "item": "lineart 算法",
+      "question": "两边的线稿算法是不是同一个？逐像素一样吗？",
+      "authority": "本契约 §2.5（face_id_boundary_v1，与 wmcore.line_art_from_face_id 逐行对齐）",
+      "verdict": "pass",
+      "ours": "face_id_boundary_v1",
+      "theirs": "face_id_boundary_v1",
+      "evidence": {
+        "algorithm_id": "face_id_boundary_v1",
+        "probe_face_id_shape": [
+          97,
+          131
+        ],
+        "probe_random_seed": 20261122,
+        "pixel_exact_equal": true,
+        "mismatch_px": 0,
+        "ours_fn": "harness/conditions.py::line_art_from_face_id",
+        "theirs_fn": "research/harness/wmcore.py::line_art_from_face_id"
+      },
+      "note": "随机 face_id 缓冲（97×131）上逐像素完全相同：4-邻域差异 ∧ 去背景 ∧ 用**原**边界做 1px 膨胀。"
+    },
+    {
+      "id": "B06",
+      "group": "B_通道编码",
+      "item": "lineart 线宽",
+      "question": "线稿是几像素宽？",
+      "authority": "本契约 §2.5（1 px）",
+      "verdict": "pass",
+      "ours": "1 px",
+      "theirs": "1 px",
+      "evidence": {
+        "ours_width_px": 1,
+        "ours_antialiasing": "none",
+        "theirs": "1px 膨胀（4 邻域移位并集），无抗锯齿"
+      },
+      "note": "两边都是 1px 硬线，无抗锯齿。"
+    },
+    {
+      "id": "B07",
+      "group": "B_通道编码",
+      "item": "normal 通道",
+      "question": "normal 的空间约定与位深两边都有吗？",
+      "authority": "本项目（resources3D 不产 normal）",
+      "verdict": "n_a",
+      "ours": "世界空间面法线 / 16bit 可逆 / 背景 (0,0,0)",
+      "theirs": "不产该通道",
+      "evidence": {
+        "ours_space": "world",
+        "ours_bit_depth": 16,
+        "ours_background": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "theirs": "wmcore.rasterize 无 normal 输出（keys = mask/depth/shade/face_id/n_tri）",
+        "theirs_has_normal": false
+      },
+      "note": "resources3D 没有对应实现 → 以**本项目**为准，无冲突。"
+    },
+    {
+      "id": "B08",
+      "group": "B_通道编码",
+      "item": "seg 通道",
+      "question": "seg 的调色板固定吗？类别可解析吗？",
+      "authority": "本项目（resources3D 不产 seg）",
+      "verdict": "n_a",
+      "ours": "固定调色板 tree_resources_builder_fixed_v1（35 类）",
+      "theirs": "不产该通道",
+      "evidence": {
+        "ours_palette_id": "tree_resources_builder_fixed_v1",
+        "ours_palette_size": 35,
+        "ours_palette_entries_pairwise_distinct": true,
+        "ours_background": [
+          0,
+          0,
+          0
+        ],
+        "theirs": "不产该通道"
+      },
+      "note": "无 label 的几何统一归 other（不是随便一个类）—— 以本项目为准。"
+    },
+    {
+      "id": "B09",
+      "group": "B_通道编码",
+      "item": "pose 通道",
+      "question": "pose 的关键点闭集两边一致吗？",
+      "authority": "本项目（resources3D 不产 pose）",
+      "verdict": "n_a",
+      "ours": "三视图闭集 ['coco18', 'human_rig_21', 'openpose25']",
+      "theirs": "不产该通道",
+      "evidence": {
+        "ours_views": [
+          "coco18",
+          "human_rig_21",
+          "openpose25"
+        ],
+        "ours_canonical": "coco18",
+        "ours_unavailable_reasons": [
+          "left_ear",
+          "left_eye",
+          "left_heel",
+          "left_small_toe",
+          "nose",
+          "right_ear",
+          "right_eye",
+          "right_heel",
+          "right_small_toe"
+        ],
+        "theirs": "不产该通道"
+      },
+      "note": "resources3D 无对应实现 → 以本项目为准。"
+    },
+    {
+      "id": "B10",
+      "group": "B_通道编码",
+      "item": "shade 通道",
+      "question": "resources3D 的 shade 通道在不在本项目契约闭集里？",
+      "authority": "本契约 §2 闭集（不含 shade）；ROADMAP R1「明确不做」已定",
+      "verdict": "n_a",
+      "ours": "契约闭集里没有 shade（不产）",
+      "theirs": "shade 是光栅器内部产物，非契约通道",
+      "evidence": {
+        "theirs_has_shade_output": true,
+        "theirs_shade_sample_values": [
+          0.0,
+          0.587079
+        ],
+        "theirs_shade_formula": "0.25 + 0.75·|n·L|, L = normalize(0.4,0.8,0.45)",
+        "ours_contract_channels": [
+          "depth",
+          "lineart",
+          "mask",
+          "normal",
+          "pose",
+          "seg"
+        ],
+        "ours_has_shade_channel": false,
+        "roadmap_basis": "ROADMAP R1「明确不做：不做 shade 通道（无标准下游接口，优先级最低）」"
+      },
+      "note": "**不是冲突**：shade 在 resources3D 里是 rasterize 的附带输出，从未进入它的条件图契约（metrics_spec 的 G4 组才把它当条件输入）。本项目按 ROADMAP R1 明确不做。R6 范围②的「shade 等价性比对」结论 = 不适用。"
+    },
+    {
+      "id": "B11",
+      "group": "B_通道编码",
+      "item": "resources3D 缺失通道",
+      "question": "本项目三通道在 resources3D 有没有对应实现？",
+      "authority": "本项目（normal/seg/pose 以本项目为准）",
+      "verdict": "n_a",
+      "ours": "normal / seg / pose",
+      "theirs": "均无",
+      "evidence": {
+        "missing_on_theirs_side": [
+          "normal",
+          "seg",
+          "pose"
+        ],
+        "theirs_rasterize_outputs": [
+          "depth",
+          "face_id",
+          "mask",
+          "n_tri",
+          "shade"
+        ]
+      },
+      "note": "缺的是覆盖面，不是语义；跨仓库比较时这三通道只在一边出现。"
+    },
+    {
+      "id": "C01",
+      "group": "C_sidecar",
+      "item": "sidecar 七字段",
+      "question": "随图 sidecar 是否必含契约七字段？",
+      "authority": "本契约 §4.1",
+      "verdict": "pass",
+      "ours": [
+        "resolution",
+        "f_px",
+        "near",
+        "far",
+        "encoding",
+        "up_axis",
+        "mask_semantics"
+      ],
+      "theirs": "resources3D 无 sidecar 概念",
+      "evidence": {
+        "dir": "/Users/moc/workspaces/projects/SiMuseor/research/tree-resources-builder/assets/conditions/r0_pack",
+        "required_fields": [
+          "resolution",
+          "f_px",
+          "near",
+          "far",
+          "encoding",
+          "up_axis",
+          "mask_semantics"
+        ],
+        "n_files": 7,
+        "n_ok": 6,
+        "n_skipped": 1,
+        "all_ok": true
+      },
+      "note": "扫描器与七字段清单共用同一份定义（condition_contract.SIDECAR_REQUIRED_FIELDS）。"
+    },
+    {
+      "id": "C02",
+      "group": "C_sidecar",
+      "item": "resources3D 要求的随图元数据",
+      "question": "resources3D metrics_spec §1.2 要求随图带的三样东西齐吗？",
+      "authority": "本契约 §4（sidecar 七字段覆盖了 resources3D 的三项要求）",
+      "verdict": "pass",
+      "ours": "sidecar 七字段",
+      "theirs": "metrics_spec §1.2（要求侧）",
+      "evidence": {
+        "required_by_resources3d": [
+          "画幅 + 焦距 f_px",
+          "near/far 深度区间",
+          "通道语义 + 主体投影口径"
+        ],
+        "ours_sidecar_files_checked": 6,
+        "per_file": [
+          {
+            "file": "cond_depth.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          },
+          {
+            "file": "cond_lineart.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          },
+          {
+            "file": "cond_mask.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          },
+          {
+            "file": "cond_normal.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          },
+          {
+            "file": "cond_pose.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          },
+          {
+            "file": "cond_seg.json",
+            "missing": [],
+            "has_mask_semantics": true,
+            "f_px": 512.0,
+            "near": 2.616464,
+            "far": 40.165005
+          }
+        ]
+      },
+      "note": "resources3D 原文说「这三样应当写进资产 sidecar（现有 wm_scene.json 可扩展）」—— 本项目的 sidecar 已全部满足，且比它的要求多四项。"
+    },
+    {
+      "id": "C03",
+      "group": "C_sidecar",
+      "item": "sidecar 的 up_axis",
+      "question": "sidecar 里写的上轴是哪个？",
+      "authority": "本契约 §3.3（sidecar 的 up_axis 永远写 Z，Y-up 只在边界换算的现场出现）",
+      "verdict": "pass",
+      "ours": "Z",
+      "theirs": "Y-up 只出现在边界换算",
+      "evidence": {
+        "observed_up_axis_values": [
+          "Z"
+        ],
+        "n_sidecars": 6
+      },
+      "note": "sidecar 里不出现 Y-up，避免下游把 Y-up 坐标直接喂进来。"
+    },
+    {
+      "id": "D01",
+      "group": "D_光栅语义",
+      "item": "深度插值",
+      "question": "两边的深度插值都是透视校正（1/z）还是屏幕线性？",
+      "authority": "本契约 §1.1（透视校正 d = 1/(w0/z0+w1/z1+w2/z2)）",
+      "verdict": "pass",
+      "ours": "透视校正 1/z",
+      "theirs": "透视校正 1/z（2026-11-19 已修）",
+      "evidence": {
+        "probe": "同一个「地面」大平面（z = 0），用解析射线-平面交点做真值",
+        "pixel_center_convention": "两侧光栅器都在像素中心 (i+0.5) 采样，解析解同口径",
+        "ours_max_abs_err_m": 0.0016548110201455302,
+        "ours_mean_abs_err_m": 5.529750065018432e-05,
+        "ours_px_checked": 97600,
+        "theirs_max_abs_err_m": 4.1673331452329876e-12,
+        "theirs_mean_abs_err_m": 1.9283615024374054e-13,
+        "theirs_px_checked": 95680,
+        "reference_failure_mode": "resources3D metrics_spec §7 实测：屏幕线性插值 RMS 14.27 m / 平均偏差 +13.90 m；透视校正 RMS 0.0305 m",
+        "ours_source": "harness/conditions.py::_raster_chunk（iz = w0/z0+w1/z1+w2/z2）",
+        "theirs_source": "research/harness/wmcore.py::rasterize（inv_z = w0/z[0]+…）"
+      },
+      "note": "两边对着**解析真值**的最大误差都在毫米级；若退回屏幕线性，误差会是米级（见 reference_failure_mode）。"
+    },
+    {
+      "id": "D02",
+      "group": "D_光栅语义",
+      "item": "近平面裁剪",
+      "question": "跨近平面的三角形会被正确裁剪吗？",
+      "authority": "两边各自实现（口径等价，证据是 D01 的逐像素深度）",
+      "verdict": "pass",
+      "ours": "裁剪成 1~2 三角形",
+      "theirs": "裁剪成凸多边形后扇形三角化",
+      "evidence": {
+        "ours_nonfinite_depth_px_in_mask": 0,
+        "theirs_nonfinite_depth_px_in_mask": 0,
+        "ours_strategy": "跨近平面的三角形先裁成 1~2 个三角形再投影",
+        "theirs_strategy": "Sutherland–Hodgman 裁成凸多边形，再扇形三角化（2026-11-19 修复）",
+        "near_plane_m": 0.05
+      },
+      "note": "实现不同但口径等价（都把近平面外的部分裁掉，且不产生伪小深度）。"
+    },
+    {
+      "id": "D03",
+      "group": "D_光栅语义",
+      "item": "背面剔除",
+      "question": "两边剔除背面吗？口径一致吗？",
+      "authority": "本契约未单列；跨仓库比对时**显式对齐**（ours 置 cull_backfaces=False）",
+      "verdict": "conflict_resolved",
+      "ours": "可选，默认剔除",
+      "theirs": "不剔除",
+      "evidence": {
+        "ours_render_conditions_has_cull_backfaces": true,
+        "ours_default_in_render_conditions": "cull_backfaces=True（缺省）",
+        "theirs_rasterize_signature": "(vertices, faces, camera: 'Camera', want_depth=True, want_normal=True)",
+        "theirs_has_cull_switch": false,
+        "alignment_action": "cross_render_compare.py 调用本项目侧时显式 cull_backfaces=False",
+        "note": "resources3D 的 rasterize 永远不剔除背面"
+      },
+      "note": "**口径差异**：闭合物体上剔除背面会让光栅量减半但结果相同；开放面片上会不同 —— 所以跨仓库比对必须显式对齐。"
+    },
+    {
+      "id": "D04",
+      "group": "D_光栅语义",
+      "item": "光栅数值精度",
+      "question": "两边的光栅精度一样吗？",
+      "authority": "本契约不裁定精度；残差由**容差**吸收",
+      "verdict": "conflict_resolved",
+      "ours": "float32",
+      "theirs": "float64",
+      "evidence": {
+        "ours_zbuf_dtype": "float32",
+        "theirs_depth_dtype": "float64",
+        "residual_observed": "交叉渲染实测最大归一化差 5.66e-6 / 最大度量差 0.209 mm",
+        "absorbed_by": "主容差 1e-4 归一化（比 8bit PNG 量化 1/255≈3.9e-3 细 25 倍）"
+      },
+      "note": "精度差异只产生浮点舍入残差，不是语义差异；容差档位在读数里一并报出。"
+    },
+    {
+      "id": "E01",
+      "group": "E_指标",
+      "item": "五类 CPU 指标",
+      "question": "resources3D 的五类指标齐吗？本项目能直接用吗？",
+      "authority": "resources3D eval/metrics.py（本项目只读引用，不另抄一份）",
+      "verdict": "pass",
+      "ours": "只读引用 resources3D 的实现",
+      "theirs": "eval/metrics.py",
+      "evidence": {
+        "five_metrics_present": {
+          "edge_consistency": true,
+          "depth_structure_consistency": true,
+          "composition_consistency": true,
+          "camera_consistency": true,
+          "composite_score": true
+        },
+        "theirs_module": "eval/metrics.py",
+        "spec": "eval/metrics_spec.md §2",
+        "ours_callsite": "harness/conditions.py::_condition_metrics"
+      },
+      "note": "a 边缘 / b 结构 / c 构图 / d 机位 / e 综合 —— 五类全部存在，本项目直接调用对方实现，不另抄（避免口径漂移）。"
+    },
+    {
+      "id": "E02",
+      "group": "E_指标",
+      "item": "b′ 单目深度",
+      "question": "单目深度指标在本项目可用吗？",
+      "authority": "resources3D 接口位（本轮无外部估计器）",
+      "verdict": "n_a",
+      "ours": "未接入",
+      "theirs": "接口位已留，实现抛明确异常、不静默降级",
+      "evidence": {
+        "theirs_has_provider_class": true,
+        "theirs_has_resolver": true,
+        "theirs_has_correlation": true,
+        "external_estimator_available": false,
+        "reason": "零 GPU / 零权重下载（本项目硬约束），没有外部深度估计器可接"
+      },
+      "note": "resources3D 自己也是空着的接口位；两边一致。"
+    },
+    {
+      "id": "E03",
+      "group": "E_指标",
+      "item": "本项目对五类指标的调用",
+      "question": "本项目代码真的调用了对方实现吗？",
+      "authority": "本项目 harness/conditions.py",
+      "verdict": "pass",
+      "ours": "直接调用",
+      "theirs": "被调用方",
+      "evidence": {
+        "callsite": "harness/conditions.py::_condition_metrics",
+        "call_sites_found": {
+          "edge_consistency": true,
+          "depth_structure_consistency": true,
+          "composition_consistency": true,
+          "camera_consistency": true,
+          "composite_score": true
+        },
+        "read_only_guarantee": "import 前 sys.dont_write_bytecode = True"
+      },
+      "note": "五类指标逐个在源码里确认了调用点。"
+    },
+    {
+      "id": "F01",
+      "group": "F_覆盖矩阵",
+      "item": "resources3D 13 行覆盖矩阵",
+      "question": "resources3D 的 13 行矩阵解析出来是 13 行、每格非空吗？",
+      "authority": "resources3D research/04-soma-x-taxonomy.md §14",
+      "verdict": "pass",
+      "ours": "—",
+      "theirs": "13 类资产表达层级 · 总矩阵",
+      "evidence": {
+        "matrix_file": "/Users/moc/workspaces/SiMuseor/resources3D/research/04-soma-x-taxonomy.md",
+        "n_rows_parsed": 13,
+        "expected_rows": 13,
+        "empty_cells": [],
+        "row_categories": [
+          "人物",
+          "服装",
+          "道具",
+          "载具",
+          "建筑",
+          "大型场景",
+          "生物/动物",
+          "植被与自然元素",
+          "人群系统",
+          "动作与表演数据",
+          "摄像机与空间参考",
+          "特效/破坏占位",
+          "验证闭环（横切）"
+        ]
+      },
+      "note": "13 行 = 12 类资产 + 1 行横切「验证闭环」（与 resources3D research/05-synthesis.md §1.2 同口径）。"
+    },
+    {
+      "id": "F02",
+      "group": "F_覆盖矩阵",
+      "item": "覆盖矩阵对齐表无空行",
+      "question": "13 行逐行对齐后有没有空行（无结论/无依据）？",
+      "authority": "本轮对齐矩阵（plans/CONTRACT-alignment-resources3D.md §4）",
+      "verdict": "pass",
+      "ours": "13/13 行有结论且有依据",
+      "theirs": "13/13 行有结论且有依据",
+      "evidence": {
+        "n_rows": 13,
+        "n_empty_rows": 0,
+        "status_counts": {
+          "covered": 8,
+          "partial": 5,
+          "none": 0
+        },
+        "rows": [
+          {
+            "row": 1,
+            "resources3d_category": "人物",
+            "ours_category": "人物",
+            "status": "covered",
+            "reason": "SOMA-X 骨架 + 10 个身份变体（R4 ⑤）；seg 里有 character 调色板类",
+            "ours_manifest_categories": [
+              "character",
+              "rig"
+            ],
+            "ours_manifest_counts": {
+              "character": 17,
+              "rig": 1
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 2,
+            "resources3d_category": "服装",
+            "ours_category": "服装",
+            "status": "partial",
+            "reason": "R4 ⑤ 的贴合服装壳已入台账，但只有 2 件，未成族",
+            "ours_manifest_categories": [
+              "clothing"
+            ],
+            "ours_manifest_counts": {
+              "clothing": 2
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 3,
+            "resources3d_category": "道具",
+            "ours_category": "道具",
+            "status": "covered",
+            "reason": "R4 ① 20+ 件 CC0 零件库，带 LOD 与许可台账",
+            "ours_manifest_categories": [
+              "prop"
+            ],
+            "ours_manifest_counts": {
+              "prop": 23
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 4,
+            "resources3d_category": "载具",
+            "ours_category": "载具",
+            "status": "covered",
+            "reason": "R4 ③ 四种同拓扑车身 + 语义零件库 + 动力学预设",
+            "ours_manifest_categories": [
+              "vehicle",
+              "part_library"
+            ],
+            "ours_manifest_counts": {
+              "vehicle": 10,
+              "part_library": 1
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 5,
+            "resources3d_category": "建筑",
+            "ours_category": "建筑",
+            "status": "partial",
+            "reason": "建筑体块在街景与场景块里，但独立台账条目只有 1 件，未成族",
+            "ours_manifest_categories": [
+              "building"
+            ],
+            "ours_manifest_counts": {
+              "building": 1
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 6,
+            "resources3d_category": "大型场景",
+            "ours_category": "大型场景",
+            "status": "covered",
+            "reason": "R4 ④ 三种街区 + 分块 LOD + 公共件混排 + 布局表",
+            "ours_manifest_categories": [
+              "scene",
+              "layout"
+            ],
+            "ours_manifest_counts": {
+              "scene": 4,
+              "layout": 3
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 7,
+            "resources3d_category": "生物/动物",
+            "ours_category": "生物/动物",
+            "status": "partial",
+            "reason": "台账有 2 件生物资产；未做骨架与比例体块工作流",
+            "ours_manifest_categories": [
+              "creature"
+            ],
+            "ours_manifest_counts": {
+              "creature": 2
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 8,
+            "resources3d_category": "植被与自然元素",
+            "ours_category": "植被与自然元素",
+            "status": "covered",
+            "reason": "R4 ② 六树种配方 + 三档 LOD + 实例化表",
+            "ours_manifest_categories": [
+              "vegetation",
+              "tree"
+            ],
+            "ours_manifest_counts": {
+              "vegetation": 5,
+              "tree": 18
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 9,
+            "resources3d_category": "人群系统",
+            "ours_category": "人群系统",
+            "status": "partial",
+            "reason": "人群实例与共享底座已有；实例化表未做 LOD 链与共享 Action",
+            "ours_manifest_categories": [
+              "crowd"
+            ],
+            "ours_manifest_counts": {
+              "crowd": 2
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 10,
+            "resources3d_category": "动作与表演数据",
+            "ours_category": "动作与表演数据",
+            "status": "covered",
+            "reason": "R0–R2 的关节序列（npz）+ 关键点闭集 + 运镜时序都是数据层产物",
+            "ours_manifest_categories": [
+              "motion",
+              "rig"
+            ],
+            "ours_manifest_counts": {
+              "motion": 1,
+              "rig": 1
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 11,
+            "resources3d_category": "摄像机与空间参考",
+            "ours_category": "摄像机与空间参考",
+            "status": "covered",
+            "reason": "R2 镜头库 + camera_intrinsics.json + 镜头包目录；sidecar 带 f_px",
+            "ours_manifest_categories": [
+              "camera",
+              "shot"
+            ],
+            "ours_manifest_counts": {
+              "camera": 1,
+              "shot": 1
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 12,
+            "resources3d_category": "特效/破坏占位",
+            "ours_category": "特效/破坏占位",
+            "status": "partial",
+            "reason": "有 FX 占位资产；没有事件表 + 轨迹曲线这套数据载体",
+            "ours_manifest_categories": [
+              "fx"
+            ],
+            "ours_manifest_counts": {
+              "fx": 2
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          },
+          {
+            "row": 13,
+            "resources3d_category": "验证闭环（横切）",
+            "ours_category": "验证闭环（横切）",
+            "status": "covered",
+            "reason": "R3 manifest v2 四项校验（id/fingerprint/license/validation）+ 本轮 R6 对齐矩阵的机器校验读数",
+            "ours_manifest_categories": [
+              "convention",
+              "recipe"
+            ],
+            "ours_manifest_counts": {
+              "convention": 1,
+              "recipe": 5
+            },
+            "ours_categories_missing_in_manifest": [],
+            "conclusion_non_empty": true
+          }
+        ]
+      },
+      "note": "每行的「本项目证据」都回查了 assets/manifest.json v2 的真实 category 计数，没有依据的行一律判空。"
+    },
+    {
+      "id": "F03",
+      "group": "F_覆盖矩阵",
+      "item": "类别命名对应",
+      "question": "两边的类别名怎么对应？命名以谁为准？",
+      "authority": "以本项目 manifest v2 的 category 为准（resources3D 不产资产台账）",
+      "verdict": "pass",
+      "ours": [
+        "building",
+        "camera",
+        "character",
+        "clothing",
+        "convention",
+        "creature",
+        "crowd",
+        "fx",
+        "layout",
+        "motion",
+        "part_library",
+        "prop",
+        "recipe",
+        "rig",
+        "scene",
+        "shot",
+        "tree",
+        "vegetation",
+        "vehicle"
+      ],
+      "theirs": "（无台账，仅文档矩阵）",
+      "evidence": {
+        "ours_manifest_version": 2,
+        "ours_categories": {
+          "character": 17,
+          "clothing": 2,
+          "prop": 23,
+          "vehicle": 10,
+          "building": 1,
+          "creature": 2,
+          "crowd": 2,
+          "vegetation": 5,
+          "fx": 2,
+          "scene": 4,
+          "tree": 18,
+          "camera": 1,
+          "rig": 1,
+          "motion": 1,
+          "layout": 3,
+          "shot": 1,
+          "recipe": 5,
+          "part_library": 1,
+          "convention": 1
+        },
+        "ours_n_categories": 19,
+        "theirs": "resources3D 无资产台账，类别名只存在于 04/05 两份研究文档的矩阵里",
+        "naming_basis": "本项目 manifest v2 category（小写下划线，如 vehicle / prop / crowd）"
+      },
+      "note": "资源3D 的 13 类是「研究分类」，本项目的 category 是「台账分类」；两者语义对齐但不是同一套命名空间 —— 跨仓库不按名字直接对齐，按 F02 的行号对齐。"
+    }
+  ],
+  "coverage_matrix_13": {
+    "source_matrix": "/Users/moc/workspaces/SiMuseor/resources3D/research/04-soma-x-taxonomy.md",
+    "source_matrix_section": "research/04-soma-x-taxonomy.md §14（13 类资产表达层级 · 总矩阵）",
+    "n_rows": 13,
+    "n_empty_rows": 0,
+    "all_rows_concluded": true,
+    "ours_manifest_version": 2,
+    "ours_manifest_category_counts": {
+      "character": 17,
+      "clothing": 2,
+      "prop": 23,
+      "vehicle": 10,
+      "building": 1,
+      "creature": 2,
+      "crowd": 2,
+      "vegetation": 5,
+      "fx": 2,
+      "scene": 4,
+      "tree": 18,
+      "camera": 1,
+      "rig": 1,
+      "motion": 1,
+      "layout": 3,
+      "shot": 1,
+      "recipe": 5,
+      "part_library": 1,
+      "convention": 1
+    },
+    "rows": [
+      {
+        "row": 1,
+        "resources3d_category": "人物",
+        "ours_category": "人物",
+        "status": "covered",
+        "reason": "SOMA-X 骨架 + 10 个身份变体（R4 ⑤）；seg 里有 character 调色板类",
+        "ours_manifest_categories": [
+          "character",
+          "rig"
+        ],
+        "ours_manifest_counts": {
+          "character": 17,
+          "rig": 1
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 2,
+        "resources3d_category": "服装",
+        "ours_category": "服装",
+        "status": "partial",
+        "reason": "R4 ⑤ 的贴合服装壳已入台账，但只有 2 件，未成族",
+        "ours_manifest_categories": [
+          "clothing"
+        ],
+        "ours_manifest_counts": {
+          "clothing": 2
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 3,
+        "resources3d_category": "道具",
+        "ours_category": "道具",
+        "status": "covered",
+        "reason": "R4 ① 20+ 件 CC0 零件库，带 LOD 与许可台账",
+        "ours_manifest_categories": [
+          "prop"
+        ],
+        "ours_manifest_counts": {
+          "prop": 23
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 4,
+        "resources3d_category": "载具",
+        "ours_category": "载具",
+        "status": "covered",
+        "reason": "R4 ③ 四种同拓扑车身 + 语义零件库 + 动力学预设",
+        "ours_manifest_categories": [
+          "vehicle",
+          "part_library"
+        ],
+        "ours_manifest_counts": {
+          "vehicle": 10,
+          "part_library": 1
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 5,
+        "resources3d_category": "建筑",
+        "ours_category": "建筑",
+        "status": "partial",
+        "reason": "建筑体块在街景与场景块里，但独立台账条目只有 1 件，未成族",
+        "ours_manifest_categories": [
+          "building"
+        ],
+        "ours_manifest_counts": {
+          "building": 1
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 6,
+        "resources3d_category": "大型场景",
+        "ours_category": "大型场景",
+        "status": "covered",
+        "reason": "R4 ④ 三种街区 + 分块 LOD + 公共件混排 + 布局表",
+        "ours_manifest_categories": [
+          "scene",
+          "layout"
+        ],
+        "ours_manifest_counts": {
+          "scene": 4,
+          "layout": 3
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 7,
+        "resources3d_category": "生物/动物",
+        "ours_category": "生物/动物",
+        "status": "partial",
+        "reason": "台账有 2 件生物资产；未做骨架与比例体块工作流",
+        "ours_manifest_categories": [
+          "creature"
+        ],
+        "ours_manifest_counts": {
+          "creature": 2
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 8,
+        "resources3d_category": "植被与自然元素",
+        "ours_category": "植被与自然元素",
+        "status": "covered",
+        "reason": "R4 ② 六树种配方 + 三档 LOD + 实例化表",
+        "ours_manifest_categories": [
+          "vegetation",
+          "tree"
+        ],
+        "ours_manifest_counts": {
+          "vegetation": 5,
+          "tree": 18
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 9,
+        "resources3d_category": "人群系统",
+        "ours_category": "人群系统",
+        "status": "partial",
+        "reason": "人群实例与共享底座已有；实例化表未做 LOD 链与共享 Action",
+        "ours_manifest_categories": [
+          "crowd"
+        ],
+        "ours_manifest_counts": {
+          "crowd": 2
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 10,
+        "resources3d_category": "动作与表演数据",
+        "ours_category": "动作与表演数据",
+        "status": "covered",
+        "reason": "R0–R2 的关节序列（npz）+ 关键点闭集 + 运镜时序都是数据层产物",
+        "ours_manifest_categories": [
+          "motion",
+          "rig"
+        ],
+        "ours_manifest_counts": {
+          "motion": 1,
+          "rig": 1
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 11,
+        "resources3d_category": "摄像机与空间参考",
+        "ours_category": "摄像机与空间参考",
+        "status": "covered",
+        "reason": "R2 镜头库 + camera_intrinsics.json + 镜头包目录；sidecar 带 f_px",
+        "ours_manifest_categories": [
+          "camera",
+          "shot"
+        ],
+        "ours_manifest_counts": {
+          "camera": 1,
+          "shot": 1
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 12,
+        "resources3d_category": "特效/破坏占位",
+        "ours_category": "特效/破坏占位",
+        "status": "partial",
+        "reason": "有 FX 占位资产；没有事件表 + 轨迹曲线这套数据载体",
+        "ours_manifest_categories": [
+          "fx"
+        ],
+        "ours_manifest_counts": {
+          "fx": 2
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      },
+      {
+        "row": 13,
+        "resources3d_category": "验证闭环（横切）",
+        "ours_category": "验证闭环（横切）",
+        "status": "covered",
+        "reason": "R3 manifest v2 四项校验（id/fingerprint/license/validation）+ 本轮 R6 对齐矩阵的机器校验读数",
+        "ours_manifest_categories": [
+          "convention",
+          "recipe"
+        ],
+        "ours_manifest_counts": {
+          "convention": 1,
+          "recipe": 5
+        },
+        "ours_categories_missing_in_manifest": [],
+        "conclusion_non_empty": true
+      }
+    ]
+  },
+  "disagreements": [
+    {
+      "id": "A03",
+      "item": "上轴 up_axis",
+      "verdict": "conflict_resolved",
+      "authority": "本契约 §3（本项目 Z-up；resources3D 保持 Y-up；边界处一次换算）",
+      "note": "**曾是真冲突**。裁定：两边各保留内部上轴，不改 resources3D；跨边界时用 R=(x,z,−y) 换算一次，sidecar 的 up_axis 永远写 Z。"
+    },
+    {
+      "id": "A10",
+      "item": "焦距口径 f_px",
+      "verdict": "conflict_resolved",
+      "authority": "**sidecar 的 f_px**（本契约 §5.3；两边各按自己的口径反推）",
+      "note": "**曾是真冲突**：720×404 下同一个 (36 mm, 36 mm) 两边 f_px 差 0.5611 倍。裁定：以 f_px 为唯一权威，focal_mm/sensor_mm 只作参考。"
+    },
+    {
+      "id": "A11b",
+      "item": "resources3D 工具函数的 y 翻转口径",
+      "verdict": "conflict_resolved",
+      "authority": "**rasterize / eval.metrics 的图像口径**（行 0 在上）；wmcore.project_points 不作权威",
+      "note": "**这是 resources3D 内部的一处口径不一致**（不改对方文件）。结论：行号一律以 rasterize / eval.metrics 的图像口径为准；跨仓库做像素定位时**不要用 wmcore.project_points**。本项目自己的实现无此问题（geomlib.Camera.project 与渲染同口径）。"
+    },
+    {
+      "id": "A12",
+      "item": "相机空间 z 符号",
+      "verdict": "conflict_resolved",
+      "authority": "本契约 §1.1（本项目 z 前向为正；resources3D z 后向为正）",
+      "note": "内部符号约定不同，但两边都输出同一套像素与同一套光轴深度；由 A11 的探针与交叉渲染一致率共同证明等价。"
+    },
+    {
+      "id": "D03",
+      "item": "背面剔除",
+      "verdict": "conflict_resolved",
+      "authority": "本契约未单列；跨仓库比对时**显式对齐**（ours 置 cull_backfaces=False）",
+      "note": "**口径差异**：闭合物体上剔除背面会让光栅量减半但结果相同；开放面片上会不同 —— 所以跨仓库比对必须显式对齐。"
+    },
+    {
+      "id": "D04",
+      "item": "光栅数值精度",
+      "verdict": "conflict_resolved",
+      "authority": "本契约不裁定精度；残差由**容差**吸收",
+      "note": "精度差异只产生浮点舍入残差，不是语义差异；容差档位在读数里一并报出。"
+    }
+  ],
+  "elapsed_s": 0.025,
+  "sources": {
+    "resources3d_wmcore": {
+      "path": "/Users/moc/workspaces/SiMuseor/resources3D/research/harness/wmcore.py",
+      "sha256": "190edacd0113c52bf382b7b19f8287a1bc8a51f6b92a5fc4605724bfe10944c3"
+    },
+    "resources3d_metrics": {
+      "path": "/Users/moc/workspaces/SiMuseor/resources3D/eval/metrics.py",
+      "sha256": "ea46a822b20b8ac3ebd85483d1160dac9608ca58b94f29ca5d01394489ef7bb2"
+    },
+    "resources3d_coverage_matrix": {
+      "path": "/Users/moc/workspaces/SiMuseor/resources3D/research/04-soma-x-taxonomy.md",
+      "sha256": "1767f5736bd02ba9b2772ed3aac5192691bef2c736fe4f9305457a6d16669f68"
+    },
+    "ours_contract_module": {
+      "path": "/Users/moc/workspaces/projects/SiMuseor/research/tree-resources-builder/harness/condition_contract.py",
+      "sha256": "7484a54a862474cb3a963ab1ea4808cb4bbe553cbb9287f914b89cc04d3838c1"
+    }
+  }
+}

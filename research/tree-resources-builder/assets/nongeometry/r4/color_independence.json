@@ -1,0 +1,12 @@
+{
+  "kind": "r4_convention",
+  "id": "color_independence",
+  "statement": "深度/线稿/法线与显示色彩无关：R4 资产一律纯几何 GLB（无 images / textures / materials），条件通道只能由几何算出，不存在显示色彩污染条件图的路径。",
+  "scope": "R4 新增资产（assets/geometry/**）",
+  "machine_check": {
+    "code": "COLOR_INDEPENDENT",
+    "where": "harness/r4_validate.py::_glb_has_color",
+    "rule": "GLB 的 JSON 块里不得出现 images / textures / materials"
+  },
+  "note": "本阶段不做影视色彩变换（ACES/AgX）——那是 R1 条件图阶段的事；这里只固定「通道与显示色彩解耦」这条约定，并给它一条可判定的检查。"
+}

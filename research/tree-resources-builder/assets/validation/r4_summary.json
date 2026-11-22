@@ -1,0 +1,48 @@
+{
+  "kind": "r4_validation_summary",
+  "cpu_only": true,
+  "total": 55,
+  "passed": 55,
+  "failed": 0,
+  "classes": {
+    "r4_prop_library": {
+      "total": 20,
+      "passed": 20,
+      "failed": 0,
+      "failed_assets": []
+    },
+    "r4_vegetation_lod": {
+      "total": 18,
+      "passed": 18,
+      "failed": 0,
+      "failed_assets": [],
+      "all_within_budget": true
+    },
+    "r4_vehicle_topology": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "failed_assets": [],
+      "all_variants_identical": true
+    },
+    "r4_character_variants": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "failed_assets": []
+    },
+    "r4_scene_mix": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "failed_assets": []
+    }
+  },
+  "reports": [
+    "assets/validation/prop_library.json",
+    "assets/validation/vegetation_lod.json",
+    "assets/validation/vehicle_topology.json",
+    "assets/validation/character_variants.json",
+    "assets/validation/scene_mix.json"
+  ]
+}

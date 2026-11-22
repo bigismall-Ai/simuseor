@@ -1,0 +1,2125 @@
+{
+  "kind": "r7_llm_calls",
+  "note": "云端调用账：模型名/协议/token 用量/耗时/HTTP 状态；不含任何凭据。",
+  "generated_at": "2026-11-22 02:47:50",
+  "model": "minimax-direct/MiniMax-M3.1-Flash",
+  "calls": [
+    {
+      "task_id": "r7-prop-prop_cone_traffic-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 244,
+        "total_tokens": 1001
+      },
+      "latency_ms": 1800,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "f0b586a15bdcd398",
+      "response_sha256": "5df590490ae568b8"
+    },
+    {
+      "task_id": "r7-prop-prop_barrier_construction-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 204,
+        "total_tokens": 962
+      },
+      "latency_ms": 2891,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "0d98177c0eb4cd93",
+      "response_sha256": "aeb8672af0cc3ed1"
+    },
+    {
+      "task_id": "r7-prop-prop_fence_construction-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 242,
+        "total_tokens": 999
+      },
+      "latency_ms": 1568,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9915f2838c76551a",
+      "response_sha256": "4ba7e64689634a36"
+    },
+    {
+      "task_id": "r7-prop-prop_sign_empty-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 749,
+        "completion_tokens": 159,
+        "total_tokens": 908
+      },
+      "latency_ms": 2151,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ed5863b3129b6209",
+      "response_sha256": "6f3253bb05657e48"
+    },
+    {
+      "task_id": "r7-prop-prop_tool_pickaxe-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 250,
+        "total_tokens": 1007
+      },
+      "latency_ms": 1952,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "395da235d1319136",
+      "response_sha256": "b014fc4f921446ba"
+    },
+    {
+      "task_id": "r7-prop-prop_pipe_metal-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 753,
+        "completion_tokens": 161,
+        "total_tokens": 914
+      },
+      "latency_ms": 1464,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9cae91ccbbb47b71",
+      "response_sha256": "6240d4465a4320fc"
+    },
+    {
+      "task_id": "r7-prop-prop_bridge_pillar-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 163,
+        "total_tokens": 920
+      },
+      "latency_ms": 1103,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "2384e7544e595653",
+      "response_sha256": "e5bd43c51060935e"
+    },
+    {
+      "task_id": "r7-prop-prop_awning_shop-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 247,
+        "total_tokens": 1004
+      },
+      "latency_ms": 1653,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "367ae92340bfd674",
+      "response_sha256": "7dbaa8112e54fbb4"
+    },
+    {
+      "task_id": "r7-prop-prop_fence_wood-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 757,
+        "completion_tokens": 349,
+        "total_tokens": 1106
+      },
+      "latency_ms": 3400,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "d638d32acc4b6456",
+      "response_sha256": "d39d10eb2cc95943"
+    },
+    {
+      "task_id": "r7-prop-prop_fence_fortified-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 761,
+        "completion_tokens": 234,
+        "total_tokens": 995
+      },
+      "latency_ms": 1354,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ff84325e5b49e9cc",
+      "response_sha256": "0851b27a7f179335"
+    },
+    {
+      "task_id": "r7-prop-prop_signpost_wood-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 770,
+        "completion_tokens": 163,
+        "total_tokens": 933
+      },
+      "latency_ms": 2579,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "bd6530a8ac331753",
+      "response_sha256": "3365bbf01cf0048e"
+    },
+    {
+      "task_id": "r7-prop-prop_tool_axe-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 753,
+        "completion_tokens": 115,
+        "total_tokens": 868
+      },
+      "latency_ms": 1170,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9420294f2cf8b8d9",
+      "response_sha256": "92e11bfbf1ffb9ae"
+    },
+    {
+      "task_id": "r7-prop-prop_tool_hammer-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 753,
+        "completion_tokens": 264,
+        "total_tokens": 1017
+      },
+      "latency_ms": 1485,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "cc718d329bdae0b0",
+      "response_sha256": "4bcc42af78cffa39"
+    },
+    {
+      "task_id": "r7-prop-prop_barrel_wood-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 220,
+        "total_tokens": 978
+      },
+      "latency_ms": 1458,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "352665629ae9e86a",
+      "response_sha256": "7135d8276d03569d"
+    },
+    {
+      "task_id": "r7-prop-prop_dumpster_street-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 436,
+        "total_tokens": 1194
+      },
+      "latency_ms": 1978,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5b4a889828a64bf7",
+      "response_sha256": "0653fa2bbcfbbfc7"
+    },
+    {
+      "task_id": "r7-prop-prop_pole_utility-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 356,
+        "total_tokens": 1114
+      },
+      "latency_ms": 2244,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "836d0c572f5cbeaf",
+      "response_sha256": "587b4ad17f4e40d8"
+    },
+    {
+      "task_id": "r7-prop-prop_ladder_wood-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 163,
+        "total_tokens": 921
+      },
+      "latency_ms": 1102,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "229f047eb5947d93",
+      "response_sha256": "30a0ee7130622051"
+    },
+    {
+      "task_id": "r7-prop-prop_crate_military-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 758,
+        "completion_tokens": 254,
+        "total_tokens": 1012
+      },
+      "latency_ms": 1532,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "441f4e0b11e43622",
+      "response_sha256": "35e713719727de17"
+    },
+    {
+      "task_id": "r7-prop-prop_armchair_lounge-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 759,
+        "completion_tokens": 343,
+        "total_tokens": 1102
+      },
+      "latency_ms": 3030,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "f44cfcd827428be6",
+      "response_sha256": "f8534efccb7f4032"
+    },
+    {
+      "task_id": "r7-prop-prop_crate_wooden-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 762,
+        "completion_tokens": 257,
+        "total_tokens": 1019
+      },
+      "latency_ms": 1618,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "8ac71e71b8dbdad2",
+      "response_sha256": "df990631ac60bf96"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1128,
+        "completion_tokens": 441,
+        "total_tokens": 1569
+      },
+      "latency_ms": 20176,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "24dc81f8e2ed5d2d",
+      "response_sha256": "5784d23083ea974b"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1128,
+        "completion_tokens": 748,
+        "total_tokens": 1876
+      },
+      "latency_ms": 6387,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "153b52c8feb9dbc5",
+      "response_sha256": "ff14cb0bdce1b2bd"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1125,
+        "completion_tokens": 664,
+        "total_tokens": 1789
+      },
+      "latency_ms": 3925,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "bb71019a4aaaaefc",
+      "response_sha256": "f092a462c01898f6"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-low-i02",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1480,
+        "completion_tokens": 364,
+        "total_tokens": 1844
+      },
+      "latency_ms": 2737,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "075a619e7cf73bce",
+      "response_sha256": "ff157af7c7ad9607"
+    },
+    {
+      "task_id": "r7-tree-pine_conical-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1130,
+        "completion_tokens": 767,
+        "total_tokens": 1897
+      },
+      "latency_ms": 3759,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "76ab77a03579bef6",
+      "response_sha256": "9851dadaa98328cf"
+    },
+    {
+      "task_id": "r7-tree-pine_conical-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1130,
+        "completion_tokens": 489,
+        "total_tokens": 1619
+      },
+      "latency_ms": 2540,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9509eeb721fcbd58",
+      "response_sha256": "0f168040455244a0"
+    },
+    {
+      "task_id": "r7-tree-pine_conical-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1127,
+        "completion_tokens": 523,
+        "total_tokens": 1650
+      },
+      "latency_ms": 2514,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "04b53e0d0f9e08d6",
+      "response_sha256": "b3a1721478fdfd4e"
+    },
+    {
+      "task_id": "r7-tree-birch_slim-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1132,
+        "completion_tokens": 849,
+        "total_tokens": 1981
+      },
+      "latency_ms": 4453,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "b44fd8f64cb2d946",
+      "response_sha256": "4dc403ee40ee021e"
+    },
+    {
+      "task_id": "r7-tree-birch_slim-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1133,
+        "completion_tokens": 770,
+        "total_tokens": 1903
+      },
+      "latency_ms": 4394,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9133d3d382d1da4a",
+      "response_sha256": "aa194005e8cd1a6f"
+    },
+    {
+      "task_id": "r7-tree-birch_slim-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1129,
+        "completion_tokens": 589,
+        "total_tokens": 1718
+      },
+      "latency_ms": 4290,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "78bd44f77417e2b4",
+      "response_sha256": "d94c620b02a0c9c2"
+    },
+    {
+      "task_id": "r7-tree-maple_wide-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1128,
+        "completion_tokens": 428,
+        "total_tokens": 1556
+      },
+      "latency_ms": 3710,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "8111907c943684c4",
+      "response_sha256": "3599b118717e2dbb"
+    },
+    {
+      "task_id": "r7-tree-maple_wide-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1128,
+        "completion_tokens": 412,
+        "total_tokens": 1540
+      },
+      "latency_ms": 4884,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "2893942573143689",
+      "response_sha256": "ea2fb3b993f63a8e"
+    },
+    {
+      "task_id": "r7-tree-maple_wide-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1125,
+        "completion_tokens": 705,
+        "total_tokens": 1830
+      },
+      "latency_ms": 3865,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "264594ff004df495",
+      "response_sha256": "668401aba457abef"
+    },
+    {
+      "task_id": "r7-tree-maple_wide-low-i02",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1465,
+        "completion_tokens": 6206,
+        "total_tokens": 7671
+      },
+      "latency_ms": 40758,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ea934470cc8e889a",
+      "response_sha256": "f701d6cd149605b2"
+    },
+    {
+      "task_id": "r7-tree-palm_tall-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1130,
+        "completion_tokens": 600,
+        "total_tokens": 1730
+      },
+      "latency_ms": 4618,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9b296a3241a6bb73",
+      "response_sha256": "0c4953abdec01133"
+    },
+    {
+      "task_id": "r7-tree-palm_tall-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1130,
+        "completion_tokens": 778,
+        "total_tokens": 1908
+      },
+      "latency_ms": 15962,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "6f08ddc3b81c4d50",
+      "response_sha256": "18b88a9057dcc04f"
+    },
+    {
+      "task_id": "r7-tree-palm_tall-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1127,
+        "completion_tokens": 418,
+        "total_tokens": 1545
+      },
+      "latency_ms": 2614,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "54178d97a6e07a5b",
+      "response_sha256": "155106e264cd2f8b"
+    },
+    {
+      "task_id": "r7-tree-dead_bare-hero-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1118,
+        "completion_tokens": 450,
+        "total_tokens": 1568
+      },
+      "latency_ms": 2393,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "e3ddd1230bb6cc38",
+      "response_sha256": "dd05da5738374ef5"
+    },
+    {
+      "task_id": "r7-tree-dead_bare-mid-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1118,
+        "completion_tokens": 460,
+        "total_tokens": 1578
+      },
+      "latency_ms": 3994,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "719c7d1ab1cb7fa8",
+      "response_sha256": "13c34d69db912300"
+    },
+    {
+      "task_id": "r7-tree-dead_bare-low-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1115,
+        "completion_tokens": 576,
+        "total_tokens": 1691
+      },
+      "latency_ms": 2928,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "6d4337dce880f539",
+      "response_sha256": "12bec6f6fc7d36fc"
+    },
+    {
+      "task_id": "r7-tree-dead_bare-low-i02",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1441,
+        "completion_tokens": 1392,
+        "total_tokens": 2833
+      },
+      "latency_ms": 7434,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "fb8f654fe8dfe1a9",
+      "response_sha256": "19e4dcd5b6c62eaf"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-retune-i18",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1126,
+        "completion_tokens": 918,
+        "total_tokens": 2044
+      },
+      "latency_ms": 5228,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "b52045cac8bd6051",
+      "response_sha256": "87a8514b86b0bf0a"
+    },
+    {
+      "task_id": "r7-tree-oak_broad-retune-i18",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1480,
+        "completion_tokens": 400,
+        "total_tokens": 1880
+      },
+      "latency_ms": 2415,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "51aeb6ae48eff6e3",
+      "response_sha256": "0826608fa6fed9f0"
+    },
+    {
+      "task_id": "r7-tree-pine_conical-retune-i19",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1126,
+        "completion_tokens": 526,
+        "total_tokens": 1652
+      },
+      "latency_ms": 2514,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "7024bec5ee3872b9",
+      "response_sha256": "a0fe30cc026f37be"
+    },
+    {
+      "task_id": "r7-tree-birch_slim-retune-i20",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1130,
+        "completion_tokens": 915,
+        "total_tokens": 2045
+      },
+      "latency_ms": 4605,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "f3c67279879c21a1",
+      "response_sha256": "e602750da6396995"
+    },
+    {
+      "task_id": "r7-tree-maple_wide-retune-i21",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1126,
+        "completion_tokens": 723,
+        "total_tokens": 1849
+      },
+      "latency_ms": 6717,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "4bb22f6ec5455aeb",
+      "response_sha256": "7d110f57f6550ad0"
+    },
+    {
+      "task_id": "r7-tree-palm_tall-retune-i22",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1126,
+        "completion_tokens": 561,
+        "total_tokens": 1687
+      },
+      "latency_ms": 3140,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "e00f67b86c22c507",
+      "response_sha256": "adb5e12ca2fa9e33"
+    },
+    {
+      "task_id": "r7-tree-dead_bare-retune-i23",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 462,
+        "total_tokens": 1578
+      },
+      "latency_ms": 2732,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "fc775450669bb1f6",
+      "response_sha256": "89cffd94eb9b84cd"
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 488,
+        "total_tokens": 1697
+      },
+      "latency_ms": 2411,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "b989677a174b4fc3",
+      "response_sha256": "c25281b0c332fd9e"
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 709,
+        "total_tokens": 1918
+      },
+      "latency_ms": 3395,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "e72d30c76e518603",
+      "response_sha256": "e410215d3e2ac009"
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 1599,
+        "total_tokens": 2808
+      },
+      "latency_ms": 7821,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5bd99b7024b30f54",
+      "response_sha256": "2910862276e15fc1"
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 966,
+        "total_tokens": 2175
+      },
+      "latency_ms": 4653,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "2d9da96a45e6b930",
+      "response_sha256": "2fe7536c7a6181cf"
+    },
+    {
+      "task_id": "r7-vehicle-sedan-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 778,
+        "total_tokens": 1987
+      },
+      "latency_ms": 4233,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "596de29bf2fad92c",
+      "response_sha256": "509addc9a886e153"
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1218,
+        "completion_tokens": 706,
+        "total_tokens": 1924
+      },
+      "latency_ms": 4169,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "947de5c04ccb6905",
+      "response_sha256": "ff2647b4941e0763"
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 976,
+        "total_tokens": 2181
+      },
+      "latency_ms": 3528,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "33009ebc8779e670",
+      "response_sha256": "3477874d9d0748a0"
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 1058,
+        "total_tokens": 2263
+      },
+      "latency_ms": 4367,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "25ef75624874fa82",
+      "response_sha256": "71cb725622f064c1"
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 663,
+        "total_tokens": 1868
+      },
+      "latency_ms": 3664,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ead67a1f4c7a49ef",
+      "response_sha256": "874bf116b1505f25"
+    },
+    {
+      "task_id": "r7-vehicle-hatch-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 976,
+        "total_tokens": 2181
+      },
+      "latency_ms": 4276,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "f0a035a7368909dd",
+      "response_sha256": "41f479c65765369a"
+    },
+    {
+      "task_id": "r7-vehicle-suv-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1206,
+        "completion_tokens": 667,
+        "total_tokens": 1873
+      },
+      "latency_ms": 4380,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "c3a19efcd90f1c41",
+      "response_sha256": "20ee84a6811ae688"
+    },
+    {
+      "task_id": "r7-vehicle-suv-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 1013,
+        "total_tokens": 2218
+      },
+      "latency_ms": 4059,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "90246c86bccfd3ba",
+      "response_sha256": "88ad3555e70c20a5"
+    },
+    {
+      "task_id": "r7-vehicle-suv-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 926,
+        "total_tokens": 2131
+      },
+      "latency_ms": 3647,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "9ce1a58fe9518b2b",
+      "response_sha256": "cc297223271d77cb"
+    },
+    {
+      "task_id": "r7-vehicle-suv-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 574,
+        "total_tokens": 1779
+      },
+      "latency_ms": 2699,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5cfc2a06ac0d7207",
+      "response_sha256": "0e690fb0b5ae56b7"
+    },
+    {
+      "task_id": "r7-vehicle-suv-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1205,
+        "completion_tokens": 2034,
+        "total_tokens": 3239
+      },
+      "latency_ms": 7253,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "8b34a5ef274ac277",
+      "response_sha256": "b2662c6d837e2ba4"
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 565,
+        "total_tokens": 1774
+      },
+      "latency_ms": 6563,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "97b00748a45321ec",
+      "response_sha256": "d97b8d7b155e3a85"
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 797,
+        "total_tokens": 2006
+      },
+      "latency_ms": 3217,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "0435701b0ffbcd0f",
+      "response_sha256": "94705fa46a198d56"
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 1024,
+        "total_tokens": 2233
+      },
+      "latency_ms": 4785,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "179badd7657732f1",
+      "response_sha256": "029df32413503fd4"
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 760,
+        "total_tokens": 1969
+      },
+      "latency_ms": 3679,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "260614918e5a6772",
+      "response_sha256": "5f77b48a646b048b"
+    },
+    {
+      "task_id": "r7-vehicle-pickup-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1209,
+        "completion_tokens": 753,
+        "total_tokens": 1962
+      },
+      "latency_ms": 3343,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "0d64639da4dd65a9",
+      "response_sha256": "341b7bdb4f87cb63"
+    },
+    {
+      "task_id": "r7-scene-downtown-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 926,
+        "completion_tokens": 401,
+        "total_tokens": 1327
+      },
+      "latency_ms": 5288,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "3bc524a328b789ef",
+      "response_sha256": "85db6e9782d3d089"
+    },
+    {
+      "task_id": "r7-scene-downtown-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 1187,
+        "total_tokens": 2112
+      },
+      "latency_ms": 10302,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "de1bc8ff4981409c",
+      "response_sha256": "2e2d8241812b89a1"
+    },
+    {
+      "task_id": "r7-scene-downtown-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 392,
+        "total_tokens": 1317
+      },
+      "latency_ms": 2062,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "64d77299aba1cac9",
+      "response_sha256": "60b0d8a6fa58d2bd"
+    },
+    {
+      "task_id": "r7-scene-downtown-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 404,
+        "total_tokens": 1329
+      },
+      "latency_ms": 2454,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ec25dd38372e654a",
+      "response_sha256": "50a55c44171e6798"
+    },
+    {
+      "task_id": "r7-scene-downtown-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 672,
+        "total_tokens": 1595
+      },
+      "latency_ms": 5254,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "e56d6707f7462575",
+      "response_sha256": "1e265663462ec793"
+    },
+    {
+      "task_id": "r7-scene-downtown-i05",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 354,
+        "total_tokens": 1279
+      },
+      "latency_ms": 1820,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "be831a3421aca031",
+      "response_sha256": "a790d3dc062a0c2e"
+    },
+    {
+      "task_id": "r7-scene-downtown-i06",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 364,
+        "total_tokens": 1289
+      },
+      "latency_ms": 2123,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "1bd297426eda4d0f",
+      "response_sha256": "e5e59b957792f6df"
+    },
+    {
+      "task_id": "r7-scene-residential-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 363,
+        "total_tokens": 1288
+      },
+      "latency_ms": 1857,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "891317a53781caff",
+      "response_sha256": "b548a9f68ee25e67"
+    },
+    {
+      "task_id": "r7-scene-residential-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 420,
+        "total_tokens": 1345
+      },
+      "latency_ms": 5047,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "b2a64eb0282373bf",
+      "response_sha256": "6bf4846c86cfe002"
+    },
+    {
+      "task_id": "r7-scene-residential-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 379,
+        "total_tokens": 1304
+      },
+      "latency_ms": 2313,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "6ad48933f782e62b",
+      "response_sha256": "56e22fcb4eb76193"
+    },
+    {
+      "task_id": "r7-scene-residential-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 462,
+        "total_tokens": 1387
+      },
+      "latency_ms": 2512,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5b7b37f207da1fcf",
+      "response_sha256": "c2e3318cc5023ce3"
+    },
+    {
+      "task_id": "r7-scene-residential-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 404,
+        "total_tokens": 1329
+      },
+      "latency_ms": 1863,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "1b9bce83467619de",
+      "response_sha256": "0c9cdff53764e1fc"
+    },
+    {
+      "task_id": "r7-scene-residential-i05",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 335,
+        "total_tokens": 1260
+      },
+      "latency_ms": 1645,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "1dfc52d48d219df9",
+      "response_sha256": "9fc97ac2a1b7f130"
+    },
+    {
+      "task_id": "r7-scene-residential-i06",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 338,
+        "total_tokens": 1263
+      },
+      "latency_ms": 2211,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "1ab5b1d19cf52774",
+      "response_sha256": "42f2a7a91ff0c77a"
+    },
+    {
+      "task_id": "r7-scene-industrial-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 602,
+        "total_tokens": 1525
+      },
+      "latency_ms": 3148,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "506877407e9a32f6",
+      "response_sha256": "1713549547137023"
+    },
+    {
+      "task_id": "r7-scene-industrial-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 924,
+        "completion_tokens": 371,
+        "total_tokens": 1295
+      },
+      "latency_ms": 2757,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "2c77df9c89e0d604",
+      "response_sha256": "523fe5e27e75b490"
+    },
+    {
+      "task_id": "r7-scene-industrial-i02",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 422,
+        "total_tokens": 1345
+      },
+      "latency_ms": 4829,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "953ae518d1f5222a",
+      "response_sha256": "e759593df43fa9fc"
+    },
+    {
+      "task_id": "r7-scene-industrial-i03",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 367,
+        "total_tokens": 1290
+      },
+      "latency_ms": 2775,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "4dff761be7233416",
+      "response_sha256": "02cfa92279634b7f"
+    },
+    {
+      "task_id": "r7-scene-industrial-i04",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 332,
+        "total_tokens": 1255
+      },
+      "latency_ms": 5543,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "cacf2baaf8100133",
+      "response_sha256": "72f35218487708ff"
+    },
+    {
+      "task_id": "r7-scene-industrial-i05",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 436,
+        "total_tokens": 1359
+      },
+      "latency_ms": 1989,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "a1ad810af7dbcd9d",
+      "response_sha256": "edfa75fcaccdac92"
+    },
+    {
+      "task_id": "r7-scene-industrial-i06",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 923,
+        "completion_tokens": 361,
+        "total_tokens": 1284
+      },
+      "latency_ms": 2216,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "d164e55452a1e2a9",
+      "response_sha256": "d1d60d1851f95cd6"
+    },
+    {
+      "task_id": "r7-character-worker-broad-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 921,
+        "completion_tokens": 340,
+        "total_tokens": 1261
+      },
+      "latency_ms": 1841,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "df2bba68db8073dd",
+      "response_sha256": "453bff756da197e2"
+    },
+    {
+      "task_id": "r7-character-worker-broad-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 921,
+        "completion_tokens": 1366,
+        "total_tokens": 2287
+      },
+      "latency_ms": 8346,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "4bdd6fcec54f856b",
+      "response_sha256": "15331be71e71671a"
+    },
+    {
+      "task_id": "r7-character-worker-lean-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 921,
+        "completion_tokens": 309,
+        "total_tokens": 1230
+      },
+      "latency_ms": 1780,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "b5cfe2a92cd5f0ef",
+      "response_sha256": "26875ade4074ffd3"
+    },
+    {
+      "task_id": "r7-character-worker-lean-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 921,
+        "completion_tokens": 432,
+        "total_tokens": 1353
+      },
+      "latency_ms": 2725,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "a094bcd0a763ff5c",
+      "response_sha256": "a4b3b8f7c03e3c5f"
+    },
+    {
+      "task_id": "r7-character-office-slim-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 403,
+        "total_tokens": 1328
+      },
+      "latency_ms": 2156,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "7d6dad19d2d1a1b2",
+      "response_sha256": "49944972c112a4bf"
+    },
+    {
+      "task_id": "r7-character-office-slim-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 363,
+        "total_tokens": 1288
+      },
+      "latency_ms": 2295,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "a9bd6ddacb508abd",
+      "response_sha256": "11fc5401932ceb5f"
+    },
+    {
+      "task_id": "r7-character-office-tall-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 323,
+        "total_tokens": 1248
+      },
+      "latency_ms": 2285,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "1684d86b07d4cc5a",
+      "response_sha256": "9f60d392f8910efc"
+    },
+    {
+      "task_id": "r7-character-office-tall-i00",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1193,
+        "completion_tokens": 315,
+        "total_tokens": 1508
+      },
+      "latency_ms": 4383,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5f509d6508373c98",
+      "response_sha256": "39aa8d887ebc5c9d"
+    },
+    {
+      "task_id": "r7-character-office-tall-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 312,
+        "total_tokens": 1237
+      },
+      "latency_ms": 2971,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "180c485d9b1fb078",
+      "response_sha256": "66278e82fc7ce56a"
+    },
+    {
+      "task_id": "r7-character-student-short-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 364,
+        "total_tokens": 1283
+      },
+      "latency_ms": 2149,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "7ee0d6dbf275aefb",
+      "response_sha256": "8cfc60c3723874f1"
+    },
+    {
+      "task_id": "r7-character-student-short-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 426,
+        "total_tokens": 1345
+      },
+      "latency_ms": 2473,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "fe7ecdce93c4b5b4",
+      "response_sha256": "5721e725f2bb2e2c"
+    },
+    {
+      "task_id": "r7-character-student-round-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 309,
+        "total_tokens": 1228
+      },
+      "latency_ms": 1429,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "0877a8edd9cbc398",
+      "response_sha256": "5105b727f1676aba"
+    },
+    {
+      "task_id": "r7-character-student-round-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 919,
+        "completion_tokens": 475,
+        "total_tokens": 1394
+      },
+      "latency_ms": 2644,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "20de3e284f8186ad",
+      "response_sha256": "c22338e2168ec9b2"
+    },
+    {
+      "task_id": "r7-character-vendor-lean-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 925,
+        "completion_tokens": 365,
+        "total_tokens": 1290
+      },
+      "latency_ms": 2572,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "ed1cf3596e13893f",
+      "response_sha256": "35333c05004fd4ab"
+    },
+    {
+      "task_id": "r7-character-vendor-lean-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 926,
+        "completion_tokens": 308,
+        "total_tokens": 1234
+      },
+      "latency_ms": 2870,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "41d33a07a07885db",
+      "response_sha256": "cca6e1cdf85c27a9"
+    },
+    {
+      "task_id": "r7-character-vendor-lean-i01",
+      "round": 1,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 1193,
+        "completion_tokens": 366,
+        "total_tokens": 1559
+      },
+      "latency_ms": 2061,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "626a2d71f73b036d",
+      "response_sha256": "91359fff01cdd74a"
+    },
+    {
+      "task_id": "r7-character-courier-slim-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 928,
+        "completion_tokens": 304,
+        "total_tokens": 1232
+      },
+      "latency_ms": 26607,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "cb813bbb3aba2b6a",
+      "response_sha256": "483b6634d3c892e5"
+    },
+    {
+      "task_id": "r7-character-courier-slim-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 927,
+        "completion_tokens": 319,
+        "total_tokens": 1246
+      },
+      "latency_ms": 1689,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "a346a02f7828f280",
+      "response_sha256": "52f9c57aea741012"
+    },
+    {
+      "task_id": "r7-character-elder-stout-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 927,
+        "completion_tokens": 337,
+        "total_tokens": 1264
+      },
+      "latency_ms": 2234,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "91bde0a17f2867f7",
+      "response_sha256": "433a374514c23b8a"
+    },
+    {
+      "task_id": "r7-character-elder-stout-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 927,
+        "completion_tokens": 329,
+        "total_tokens": 1256
+      },
+      "latency_ms": 1962,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "f4d313eda02d6cdd",
+      "response_sha256": "7cf4532a71c9f50b"
+    },
+    {
+      "task_id": "r7-character-child-small-i00",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 917,
+        "completion_tokens": 2755,
+        "total_tokens": 3672
+      },
+      "latency_ms": 14845,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "5764b2635b838500",
+      "response_sha256": "91b3d591a42924e9"
+    },
+    {
+      "task_id": "r7-character-child-small-i01",
+      "round": 0,
+      "model": "MiniMax-M3.1-Flash",
+      "provider": "minimax-direct",
+      "protocol": "chat-completions",
+      "usage": {
+        "prompt_tokens": 917,
+        "completion_tokens": 438,
+        "total_tokens": 1355
+      },
+      "latency_ms": 2816,
+      "http_status": 200,
+      "attempts": 1,
+      "ok": true,
+      "error": "",
+      "prompt_sha256": "e5a959a636b623a5",
+      "response_sha256": "08b452e17455aa5c"
+    }
+  ],
+  "summary": {
+    "calls": 111,
+    "ok": 111,
+    "failed": 0,
+    "prompt_tokens": 112452,
+    "completion_tokens": 66614,
+    "total_tokens": 179066
+  }
+}

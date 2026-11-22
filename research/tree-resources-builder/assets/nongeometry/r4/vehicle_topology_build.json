@@ -1,0 +1,72 @@
+{
+  "kind": "r4_vehicle_topology",
+  "items": [
+    {
+      "asset": "vehicle_car_sedan",
+      "variant": "sedan",
+      "faces": 1832,
+      "vertices": 974,
+      "budget_faces": 50000,
+      "within_budget": true,
+      "parts": 25,
+      "body_topology_hash": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+      "length_m": 4.3,
+      "width_m": 1.8,
+      "height_m": 1.46,
+      "file": "assets/geometry/vehicle_car_sedan.glb",
+      "bytes": 37328
+    },
+    {
+      "asset": "vehicle_car_hatch",
+      "variant": "hatch",
+      "faces": 1832,
+      "vertices": 974,
+      "budget_faces": 50000,
+      "within_budget": true,
+      "parts": 25,
+      "body_topology_hash": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+      "length_m": 3.95,
+      "width_m": 1.75,
+      "height_m": 1.5,
+      "file": "assets/geometry/vehicle_car_hatch.glb",
+      "bytes": 37420
+    },
+    {
+      "asset": "vehicle_car_suv",
+      "variant": "suv",
+      "faces": 1832,
+      "vertices": 974,
+      "budget_faces": 50000,
+      "within_budget": true,
+      "parts": 25,
+      "body_topology_hash": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+      "length_m": 4.7,
+      "width_m": 1.88,
+      "height_m": 1.74,
+      "file": "assets/geometry/vehicle_car_suv.glb",
+      "bytes": 37408
+    },
+    {
+      "asset": "vehicle_car_pickup",
+      "variant": "pickup",
+      "faces": 1832,
+      "vertices": 974,
+      "budget_faces": 50000,
+      "within_budget": true,
+      "parts": 25,
+      "body_topology_hash": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+      "length_m": 5.2,
+      "width_m": 1.95,
+      "height_m": 1.74,
+      "file": "assets/geometry/vehicle_car_pickup.glb",
+      "bytes": 37360
+    }
+  ],
+  "body_topology_hashes": {
+    "vehicle_car_sedan": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+    "vehicle_car_hatch": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+    "vehicle_car_suv": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3",
+    "vehicle_car_pickup": "1a5ed6d8159968d2c452b20f79fe5cab71c3484dc36bc2039d6852b1ee2680f3"
+  },
+  "all_variants_identical": true
+}
