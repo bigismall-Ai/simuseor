@@ -1,0 +1,694 @@
+:host {
+  /* 语义色全部由全局 token 混合得到，不新增十六进制 */
+  --fb-ok: color-mix(in srgb, var(--ink-moss) 85%, var(--ui-text));
+  --fb-warn: color-mix(in srgb, var(--ink-accent) 82%, var(--ui-text));
+  --fb-err: color-mix(in srgb, var(--ui-error) 82%, var(--ui-text));
+  /* 选中态文字：accent 直接压浅底对比不足，往正文方向压一档（AA） */
+  --fb-accent-ink: color-mix(in srgb, var(--ui-accent) 78%, var(--ui-text));
+
+  display: block;
+}
+
+:host-context(html[data-theme='dark']) {
+  --fb-ok: var(--aurora-mint);
+  --fb-warn: var(--ui-glow-peach);
+  --fb-err: color-mix(in srgb, var(--ui-error) 68%, var(--ui-text));
+}
+
+/* ---- 外壳：状态行 ＋ 筛选行 ---- */
+.ps-bar {
+  position: relative;
+  z-index: 20;
+  margin: 0 0 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-list);
+  background: var(--ui-panel-2);
+  box-shadow: var(--ui-shadow);
+  backdrop-filter: blur(var(--ui-glass-blur));
+}
+
+/* ---- 状态行：只读事实 · 刷新（主读数按定稿移到筛选条右端） ---- */
+.ps-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--ui-border-2);
+}
+
+/* 没有筛选行时，状态行就是整条，底边不画 */
+.ps-status:last-child {
+  border-bottom: 0;
+}
+
+/* 事实槽：只放只读聚合。可点的一律去筛选行，避免「看着能点」 */
+.ps-facts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.ps-facts li {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.ps-facts li + li {
+  padding-left: 12px;
+  border-left: 1px solid var(--ui-inner-border);
+}
+
+.ps-fact-label {
+  color: var(--ui-muted);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.ps-fact-value {
+  color: var(--ui-text-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-fact-value.is-ok {
+  color: var(--fb-ok);
+}
+
+.ps-fact-value.is-warn {
+  color: var(--fb-warn);
+}
+
+.ps-fact-value.is-err {
+  color: var(--fb-err);
+}
+
+.ps-status-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.ps-progress {
+  color: var(--ui-muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-muted);
+  cursor: pointer;
+}
+
+.ps-icon:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ps-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ps-icon svg.is-spin {
+  animation: filter-spin 0.9s linear infinite;
+}
+
+@keyframes filter-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-icon svg.is-spin {
+    animation: none;
+  }
+}
+
+/* ---- 筛选行：一行放得下就一行，窄屏折行，不横向溢出 ---- */
+.ps-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+}
+
+.sf-row {
+  gap: 5px;
+}
+
+/* 搜索框不抢宽（flex-grow: 0）—— 抢了会把行尾的读数挤到第二行 */
+.ps-search {
+  flex: 0 1 236px;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--ui-inner-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel);
+  color: var(--ui-muted);
+}
+
+.ps-search svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.ps-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text);
+  font-size: 12.5px;
+  outline: none;
+}
+
+.ps-search input::placeholder {
+  color: var(--ui-muted);
+}
+
+/* 搜索框里的清空按钮（有内容才出现） */
+.ps-clear {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: var(--ui-panel-3);
+  color: var(--ui-muted);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ps-clear:hover {
+  background: var(--ui-inner-border);
+  color: var(--ui-text);
+}
+
+/* ---- 站点筛选：chip 行 ---- */
+.ps-chips {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel-3);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ps-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: none;
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ps-chip:hover {
+  color: var(--ui-text);
+}
+
+.ps-chip.on {
+  background: var(--ui-panel);
+  color: var(--fb-accent-ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-accent) 30%, transparent);
+}
+
+.ps-chip b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: var(--ui-panel);
+  box-shadow: inset 0 0 0 1px var(--ui-inner-border);
+  color: var(--ui-text);
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-chip.on b {
+  background: color-mix(in srgb, var(--ui-accent) 22%, transparent);
+  color: var(--fb-accent-ink);
+  box-shadow: none;
+}
+
+/* 灰置的站点项：不可点（渲染成 span），原因不印在页面上 */
+.ps-chip.is-off {
+  background: var(--ui-panel-2);
+  box-shadow: inset 0 0 0 1px var(--ui-inner-border);
+  color: var(--ui-muted);
+  cursor: not-allowed;
+}
+
+.ps-chip.is-off:hover {
+  color: var(--ui-muted);
+}
+
+/* ---- 排序 / 视图 ---- */
+.ps-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 29px;
+  padding: 0 9px;
+  border: 1px solid var(--ui-inner-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel);
+  color: var(--ui-text-2);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ps-select select {
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+}
+
+.ps-select svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ps-select svg.caret {
+  opacity: 0.6;
+  width: 10px;
+  height: 10px;
+}
+
+.ps-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: color-mix(in srgb, var(--ui-accent) 22%, transparent);
+  color: var(--fb-accent-ink);
+  font-size: 9.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-view {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel-3);
+}
+
+.ps-view button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 23px;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: none;
+  color: var(--ui-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ps-view button.on {
+  background: var(--ui-panel);
+  color: var(--fb-accent-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-accent) 30%, transparent);
+}
+
+/* ---- 右端一组：排序 · 视图切换 · 结果读数与清除全部 ----
+   三者绑成一组，靠筛选条右端右对齐；窄屏时整组换行，仍贴右。 */
+.sf-right {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- 行尾：结果读数 + 清除全部筛选 ---- */
+.sf-tail {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ps-count {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ps-count b {
+  color: var(--ui-text);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.ps-count.is-loading {
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.ps-total {
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ps-unit {
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* 小尺寸按钮底子（旧全局 button + .btn-xs 的等价物） */
+.btn-xs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0 9px;
+  border: 1px solid var(--ui-inner-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel);
+  color: var(--ui-text-2);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn-xs:hover {
+  background: var(--ui-panel-3);
+  color: var(--ui-text);
+}
+
+.sf-clear {
+  flex: none;
+  border-color: transparent;
+  background: none;
+  color: var(--fb-accent-ink);
+}
+
+.sf-clear:hover {
+  background: var(--ui-panel-3);
+  color: var(--fb-accent-ink);
+}
+
+/* ---- 「筛选」按钮点开的浮层（其余类别维度都在里面） ---- */
+.sf-pop-wrap {
+  position: relative;
+  flex: none;
+}
+
+.sf-pop-trigger {
+  cursor: pointer;
+}
+
+.sf-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: 340px;
+  padding: 10px 11px 11px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-overlay);
+  box-shadow: var(--ui-shadow-md);
+}
+
+.sf-pop[hidden] {
+  display: none;
+}
+
+.sf-pop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 9px;
+  border-bottom: 1px solid var(--ui-border-2);
+}
+
+.sf-pop-head b {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sf-pop-sel {
+  color: var(--ui-muted);
+  font-size: 10.5px;
+}
+
+.sf-pop-x {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: none;
+  color: var(--ui-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sf-pop-x:hover {
+  background: var(--ui-panel-3);
+  color: var(--ui-text);
+}
+
+.sf-pop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.sf-pop-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--ui-border-2);
+}
+
+.sf-pop-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fb-accent-ink);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.sf-pop-clear:hover {
+  text-decoration: underline;
+}
+
+.sf-pop-foot .primary {
+  margin-left: auto;
+  border-color: transparent;
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+
+.sf-pop-foot .primary:hover {
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+
+/* ---- 浮层里的分组（选项沿用既有 chip 语汇，只加一层分组头） ---- */
+.sf-facet + .sf-facet {
+  padding-top: 9px;
+  border-top: 1px solid var(--ui-border-2);
+}
+
+.sf-facet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  color: var(--ui-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.sf-facet-head b {
+  color: var(--ui-muted);
+  font-weight: 500;
+}
+
+.sf-facet-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sf-facet-list .ps-chip {
+  height: 22px;
+  padding: 0 7px;
+  font-size: 11px;
+}
+
+/* ---- 提示气泡：hover 才出（原因不常驻，页面保持干净） ---- */
+.sf-tipbox {
+  position: fixed;
+  z-index: 200;
+  max-width: 280px;
+  padding: 6px 9px;
+  border-radius: calc(var(--ui-radius) / 2);
+  background: var(--ui-text);
+  color: var(--ui-bg);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  box-shadow: var(--ui-shadow-md);
+  pointer-events: none;
+}
+
+.sf-tipbox[hidden] {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .ps-facts li:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ps-status {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 10px 12px;
+  }
+
+  .ps-facts {
+    order: 3;
+    flex-basis: 100%;
+    overflow: visible;
+  }
+
+  .ps-facts li:nth-child(n + 3) {
+    display: flex;
+  }
+
+  .ps-search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+}
+
+/* ---- 复合输入壳：焦点画在整只壳上 ---- */
+.ps-search:focus-within,
+.ps-select:has(select):focus-within {
+  border-color: var(--ui-accent);
+  box-shadow: var(--ui-ring);
+}
+
+.ps-search:has(input:focus-visible),
+.ps-select:has(select:focus-visible) {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+}
+
+.ps-search input:focus,
+.ps-search input:focus-visible,
+.ps-select select:focus,
+.ps-select select:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
+}

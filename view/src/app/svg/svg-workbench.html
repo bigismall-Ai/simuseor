@@ -1,0 +1,774 @@
+<header class="wb-head">
+  <nav class="wb-crumb" aria-label="面包屑">
+    <a routerLink="/vis/overview">设计区</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">SVG 工作台</span>
+  </nav>
+
+  <div class="wb-head-main">
+    <div class="wb-title">
+      <p class="kicker">TOOLS · SVG</p>
+      <h1>SVG 工作台</h1>
+      <p class="hint">规范化、保守优化、语义标注与批量写回；所有编辑只改内存，落盘走下载或写回包。</p>
+    </div>
+
+    <div class="wb-actions">
+      <label class="precision" for="svg-precision">
+        精度
+        <select id="svg-precision" [value]="precision()" (change)="onPrecision($event)">
+          @for (p of precisions; track p) {
+            <option [value]="p" [selected]="p === precision()">{{ p }} 位</option>
+          }
+        </select>
+      </label>
+      <button matButton="tonal" class="dense" type="button" (click)="fileInput.click()">打开文件</button>
+      <input #fileInput type="file" accept=".svg,image/svg+xml" hidden (change)="onFile($event)" />
+      <button mat-button class="dense" type="button" (click)="pasteFromClipboard()">粘贴</button>
+      <button mat-button class="dense" type="button" (click)="toggleTheme()">
+        {{ theme.theme() === 'dark' ? '浅色' : '深色' }}
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wb-body">
+  <aside class="assets">
+    <div class="rail-brand">
+      <span class="rail-mark">SVG</span>
+      <span class="rail-name">资产<small>{{ index().assets.length }} 个 · 本地</small></span>
+    </div>
+
+    <div class="rail-tools">
+      <label class="rail-search">
+        <mat-icon class="rail-icon-sm" svgIcon="app:search" aria-hidden="true"></mat-icon>
+        <input
+          type="search"
+          placeholder="筛选资产 / viewBox…"
+          [value]="filter()"
+          (input)="onFilter($event)"
+          aria-label="筛选资产"
+        />
+      </label>
+
+    <details class="new-svg">
+      <summary><mat-icon class="rail-icon-sm" svgIcon="app:plus" aria-hidden="true"></mat-icon>新建 SVG</summary>
+      <div class="new-svg-body">
+        <label>
+          宽
+          <input type="number" min="1" max="8192" [value]="newWidth()" (change)="newWidth.set(clampSize($event))" />
+        </label>
+        <label>
+          高
+          <input type="number" min="1" max="8192" [value]="newHeight()" (change)="newHeight.set(clampSize($event))" />
+        </label>
+        <label class="check">
+          <input type="checkbox" [checked]="newBackground()" (change)="newBackground.set(!newBackground())" />
+          白底
+        </label>
+        <button type="button" mat-flat-button class="dense" (click)="createNewSvg()">新建画布</button>
+      </div>
+    </details>
+    </div>
+
+    <div class="asset-scroll ui-scrollbar">
+      @for (group of groupedAssets(); track group.id) {
+        <p class="rail-section">
+          {{ group.label }}
+          <span>{{ group.assets.length }}</span>
+        </p>
+        @for (asset of group.assets; track asset.path) {
+          <button
+            type="button"
+            class="asset"
+            [class.active]="current()?.path === asset.path"
+            (click)="loadAsset(asset)"
+            [title]="asset.path + ' · ' + asset.sha1"
+          >
+            <mat-icon class="rail-icon" svgIcon="app:image" aria-hidden="true"></mat-icon>
+            <span class="name">{{ asset.label }}</span>
+            @if (asset.variant) {
+              <em class="variant">{{ asset.variant }}</em>
+            }
+            <span class="size">{{ bytes(asset.bytes) }}</span>
+          </button>
+        }
+      } @empty {
+        <p class="empty">
+          没有读到资产索引。先运行 <code>npm run svg:index</code>，或用「打开文件」。
+        </p>
+      }
+    </div>
+
+    <div class="rail-foot">
+      <span class="status-dot" aria-hidden="true"></span>
+      {{ index().assets.length }} 个 SVG
+    </div>
+  </aside>
+
+  <div class="wb-main">
+    <div class="layout">
+      <section class="center">
+    <div class="compare">
+      <div class="seg">
+        <button type="button" [class.on]="viewMode() === 'working'" (click)="viewMode.set('working')">
+          当前
+        </button>
+        <button
+          type="button"
+          [class.on]="viewMode() === 'optimized'"
+          [disabled]="!optimizedText()"
+          (click)="viewMode.set('optimized')"
+        >
+          优化后
+        </button>
+      </div>
+
+      <div class="bars">
+        @for (row of sizeRows(); track row.label) {
+          <div class="bar-row">
+            <span class="bar-label">{{ row.label }}</span>
+            <span class="bar-track">
+              <span
+                class="bar-fill"
+                [class.is-optimized]="row.label === '优化后'"
+                [style.width.%]="row.ratio * 100"
+              ></span>
+            </span>
+            <span class="bar-bytes">{{ bytes(row.bytes) }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="snap">
+        @if (snapshots().length > 0) {
+          <button type="button" mat-button class="dense tiny" (click)="undo()">撤销 {{ snapshots().length }}</button>
+        }
+        <span class="saved" [class.neg]="savedRatio() < 0">
+          规范化 {{ savedRatio() > 0 ? '省 ' : savedRatio() < 0 ? '增 ' : '' }}{{ abs(savedRatio()) }}%
+        </span>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="seg">
+        <button type="button" [class.on]="tool() === 'select'" (click)="tool.set('select')">选择</button>
+        <button type="button" [class.on]="tool() === 'pen'" (click)="tool.set('pen')">钢笔</button>
+      </div>
+      @if (tool() === 'pen') {
+        <label class="pen-color">
+          <span>笔色</span>
+          <input type="color" [value]="colorValue(penColor())" (change)="penColor.set(colorFromEvent($event))" />
+        </label>
+      }
+      <button type="button" mat-button class="dense tiny" [disabled]="!doc()" (click)="insertShape('rect')">矩形</button>
+      <button type="button" mat-button class="dense tiny" [disabled]="!doc()" (click)="insertShape('circle')">圆形</button>
+      <button
+        type="button"
+        mat-button class="dense tiny"
+        (click)="extendCanvas()"
+        title="把 viewBox 扩到包含所有内容（拖到画布外的东西也能进成品）"
+      >
+        扩展画布
+      </button>
+      <span class="tools-hint">
+        {{ tool() === 'pen' ? '点击加点，拖动拉手柄，Enter 结束，点首点闭合' : '拖拽移动；选中后可拖锚点' }}
+      </span>
+    </div>
+
+    <div class="stage-wrap">
+      <app-svg-stage
+        [svgText]="previewText()"
+        [selection]="selection()"
+        [tool]="tool()"
+        [penColor]="penColor()"
+        (picked)="selection.set($event)"
+        (moved)="onMoved($event)"
+        (geometry)="onGeometryChanged($event)"
+        (pathCreated)="onPathCreated($event)"
+      />
+    </div>
+
+    <div class="stage-meta">
+      @if (stats(); as s) {
+        <span>{{ s.elements }} 元素</span>
+        <span>{{ s.paths }} path</span>
+        <span>{{ s.groups }} g</span>
+        <span>{{ s.ids }} id</span>
+        <span>小数 ≤ {{ s.maxDecimals }}</span>
+        <span>viewBox {{ s.viewBox ?? '无' }}</span>
+      }
+      @if (parseError(); as err) {
+        <span class="parse-error">{{ err }}</span>
+      }
+      <span class="spacer"></span>
+      <span class="file">{{ current()?.name ?? '未载入' }}</span>
+    </div>
+  </section>
+
+  <aside class="inspector list-card">
+    <div class="insp-sel" [class.is-empty]="!selection()">
+      @if (selection(); as sel) {
+        <span class="insp-sel-dot" aria-hidden="true"></span>
+        <code>&lt;{{ sel.tag }}&gt;</code>
+        @if (sel.id) {
+          <b>#{{ sel.id }}</b>
+        }
+        <button type="button" mat-button class="dense tiny" (click)="selection.set(null)">取消</button>
+      } @else {
+        <span class="insp-sel-hint">未选中 · 在画布或图层里点一个元素</span>
+      }
+    </div>
+
+    <nav class="modes" aria-label="右栏模式">
+      @for (m of modes; track m.id) {
+        <button type="button" [class.on]="mode() === m.id" (click)="setMode(m.id)">
+          {{ m.label }}
+          @if (m.id === 'inspect' && findings().length > 0) {
+            <b>{{ findings().length }}</b>
+          }
+        </button>
+      }
+    </nav>
+
+    <nav class="tabs">
+      @for (t of activeTabs(); track t.id) {
+        <button type="button" [class.on]="tab() === t.id" (click)="tab.set(t.id)">
+          {{ t.label }}
+        </button>
+      }
+    </nav>
+
+    <p class="mode-hint">{{ activeMode().hint }}</p>
+
+    <div class="panel">
+      @switch (tab()) {
+        @case ('diagnose') {
+          <div class="panel-actions">
+            <button type="button" mat-flat-button class="dense" [disabled]="!doc()" (click)="normalize()">
+              规范化
+            </button>
+            <button type="button" matButton="tonal" class="dense" [disabled]="!doc()" (click)="runOptimize()">
+              一键优化
+            </button>
+            @if (optimizedText()) {
+              <button type="button" mat-flat-button class="dense" (click)="adoptOptimized()">采用</button>
+              <button type="button" mat-button class="dense" (click)="discardOptimized()">丢弃</button>
+            }
+          </div>
+
+          <p class="panel-hint">按问题逐条修复，或先跑规范化 / 优化；细节见底部说明。</p>
+
+          @if (optimizedText()) {
+            <p class="panel-note">
+              上方数字是「优化后」预览，尚未写入当前文本；诊断与源码仍针对当前文本，点「采用」后重算。
+            </p>
+          }
+
+          @if (optimizedReports().length > 0) {
+            <div class="reports">
+              @for (r of optimizedReports(); track r.id) {
+                @if (r.changes > 0) {
+                  <div class="report">
+                    <span>{{ r.title }}</span>
+                    <b>{{ r.changes }}</b>
+                    @for (note of r.notes; track note) {
+                      <small>{{ note }}</small>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          @for (f of findings(); track f.key) {
+            <article class="finding" [attr.data-sev]="f.severity">
+              <header>
+                <span class="sev-dot"></span>
+                <h3>{{ f.title }}</h3>
+                <span class="sev-count">{{ f.count }}</span>
+              </header>
+              <p>{{ f.detail }}</p>
+              @if (f.fix) {
+                <button type="button" mat-button class="dense tiny" (click)="applyFinding(f)">
+                  修复：{{ fixLabel(f.fix) }}
+                </button>
+              }
+            </article>
+          } @empty {
+            <p class="clean">没有发现问题。</p>
+          }
+        }
+
+        @case ('batch') {
+          <div class="panel-actions">
+            <label class="mode-select">
+              <span>处理</span>
+              <select [value]="batchMode()" (change)="onBatchMode($event)">
+                <option value="canonical">仅规范化</option>
+                <option value="stable">仅稳定 id</option>
+                <option value="optimize">规范化 + 优化</option>
+                <option value="ids">优化 + 稳定 id</option>
+              </select>
+            </label>
+            <button type="button" mat-flat-button class="dense" [disabled]="batchRunning()" (click)="scanBatch()">
+              {{ batchRows().length > 0 ? '重新扫描' : '扫描全部资产' }}
+            </button>
+            @if (batchRunning()) {
+              <button type="button" mat-button class="dense" (click)="stopBatch()">停止</button>
+            }
+            @if (batchChangedCount() > 0 && !batchRunning()) {
+              <button type="button" matButton="tonal" class="dense" (click)="downloadBatchZip()">
+                下载 ZIP（{{ batchPackRows().length }}）
+              </button>
+              <button type="button" matButton="tonal" class="dense" (click)="downloadWriteback()">下载写回包</button>
+            }
+          </div>
+
+          <p class="panel-hint">
+            对索引内 {{ index().assets.length }} 个资产跑「{{ batchModeLabel() }}」，精度 {{ batchPrecision() }} 位。
+            只读仓库文件；结果通过 ZIP 或写回包落盘。
+          </p>
+
+          @if (batchRunning()) {
+            <div class="progress"><span [style.width.%]="batchPercent()"></span></div>
+            <p class="progress-text">{{ batchDone() }} / {{ batchTotal() }} · {{ batchCurrent() }}</p>
+          }
+
+          @if (batchRows().length > 0) {
+            <div class="batch-summary">
+              <div><b>{{ batchSummary().changed }}</b><span>有改动</span></div>
+              <div><b>{{ batchSummary().unchanged }}</b><span>无改动</span></div>
+              <div><b>{{ batchSummary().failed }}</b><span>失败</span></div>
+              <div>
+                <b>{{ bytes(abs(batchSummary().saved)) }}</b>
+                <span>共{{ batchSummary().saved >= 0 ? '省' : '增' }} {{ abs(batchSummary().savedPct) }}%</span>
+              </div>
+            </div>
+
+            <p class="batch-visual">
+              视觉校验：一致 {{ batchSummary().visualOk }} · 有差异 {{ batchSummary().visualDiff }} · 无法校验
+              {{ batchSummary().visualUnavailable }}
+            </p>
+
+            <div class="row">
+              <label class="check">
+                <input
+                  type="checkbox"
+                  [checked]="batchOnlyChanged()"
+                  (change)="batchOnlyChanged.set(!batchOnlyChanged())"
+                />
+                只看有改动
+              </label>
+              <label class="check">
+                <input
+                  type="checkbox"
+                  [checked]="batchSafeOnly()"
+                  (change)="batchSafeOnly.set(!batchSafeOnly())"
+                />
+                只打包视觉一致
+              </label>
+              <span class="spacer"></span>
+              <button type="button" mat-button class="dense tiny" (click)="copyBatchReport()">复制报告</button>
+              <button type="button" mat-button class="dense tiny" (click)="downloadBatchReport('md')">MD</button>
+              <button type="button" mat-button class="dense tiny" (click)="downloadBatchReport('json')">JSON</button>
+              <button type="button" mat-button class="dense tiny" (click)="downloadBatchReport('csv')">CSV</button>
+            </div>
+
+            <div class="batch-list">
+              @for (row of batchVisible(); track row.path) {
+                <article class="batch-row" [attr.data-status]="row.status">
+                  <header>
+                    <span class="batch-name" [title]="row.path">{{ row.name }}</span>
+                    @if (row.status === 'changed' && row.changes === 0) {
+                      <span class="chip">仅规范格式</span>
+                    }
+                    @if (row.status !== 'changed') {
+                      <span class="chip">{{ row.status === 'error' ? '失败' : '已最简' }}</span>
+                    }
+                    @if (row.render.status === 'different') {
+                      <span class="chip bad">画面差异 {{ renderLabelOf(row) }}</span>
+                    } @else if (row.render.status === 'unavailable') {
+                      <span class="chip">无法校验</span>
+                    } @else if (row.render.status === 'minor') {
+                      <span class="chip">抗锯齿 {{ row.render.percent }}%</span>
+                    }
+                    <span class="batch-delta" [class.neg]="row.saved < 0">
+                      {{ row.saved > 0 ? '−' : row.saved < 0 ? '+' : '' }}{{ bytes(abs(row.saved)) }}
+                    </span>
+                  </header>
+                  <p class="batch-bytes">
+                    {{ bytes(row.before) }} → {{ bytes(row.after) }}
+                    <span>{{ row.savedPct }}%</span>
+                  </p>
+                  <p class="batch-passes">
+                    @for (pass of row.reports; track pass.id) {
+                      <span>{{ passLabel(pass.id) }} {{ pass.changes }}</span>
+                    }
+                    @if (row.raster) {
+                      <span class="warn">位图</span>
+                    }
+                    @if (row.error) {
+                      <span class="err">{{ row.error }}</span>
+                    }
+                  </p>
+                  <div class="batch-actions">
+                    <button type="button" mat-button class="dense tiny" [disabled]="row.status === 'error'" (click)="inspectBatch(row)">
+                      查看
+                    </button>
+                    <button type="button" mat-button class="dense tiny" [disabled]="row.status === 'error'" (click)="downloadRow(row)">
+                      下载
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <p class="clean">没有符合条件的行。</p>
+              }
+            </div>
+
+            @if (batchPackRows().length > 0) {
+              <details class="writeback-json">
+                <summary>写回包 JSON（{{ batchPackRows().length }} 项）</summary>
+                <textarea readonly spellcheck="false" [value]="writebackJson()" aria-label="写回包 JSON"></textarea>
+              </details>
+            }
+          }
+        }
+
+        @case ('tree') {
+          <section class="layer-panel">
+            <div class="section-head">
+              <h2>图层</h2>
+              <span class="section-pill">{{ layerRows().length }}</span>
+              <button mat-button class="dense tiny" type="button" (click)="expandAllLayers()">展开</button>
+              <button mat-button class="dense tiny" type="button" (click)="collapseAllLayers()">收起</button>
+            </div>
+            <div class="layer-list">
+              @for (row of layerRows(); track row.key) {
+                <button
+                  type="button"
+                  class="layer-row"
+                  [class.active]="row.active"
+                  [style.padding-left.px]="8 + row.depth * 12"
+                  (click)="selectLayer(row)"
+                >
+                  @if (row.hasChildren) {
+                    <span
+                      class="layer-caret"
+                      (click)="toggleLayer(row, $event)"
+                      [attr.aria-label]="row.collapsed ? '展开图层' : '收起图层'"
+                    >{{ row.collapsed ? '▸' : '▾' }}</span>
+                  } @else {
+                    <span class="layer-caret"></span>
+                  }
+                  <code>{{ row.tag }}</code>
+                  @if (row.id) {
+                    <b>#{{ row.id }}</b>
+                  }
+                  @if (row.label) {
+                    <span class="layer-label">{{ row.label }}</span>
+                  }
+                  @if (row.role) {
+                    <span class="layer-role">{{ row.role }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </section>
+
+          @if (selection(); as sel) {
+            <div class="selection">
+              <p class="kicker">选中元素</p>
+              <p class="sel-title">
+                <code>&lt;{{ sel.tag }}&gt;</code>
+                @if (sel.id) {
+                  <b>#{{ sel.id }}</b>
+                }
+              </p>
+              <code class="selector">{{ sel.selector }}</code>
+              <dl class="attr-list">
+                @for (attr of selectedAttrs(); track attr[0]) {
+                  <dt>{{ attr[0] }}</dt>
+                  <dd>{{ attr[1] }}</dd>
+                }
+              </dl>
+              <div class="row">
+                <button type="button" mat-button class="dense tiny" (click)="copy(sel.selector)">复制选择器</button>
+                <button type="button" mat-button class="dense tiny" (click)="copyAttrs()">复制属性</button>
+                <button type="button" mat-button class="dense tiny" (click)="patchFromSelection(sel)">生成补丁</button>
+              </div>
+            </div>
+
+            @if (selectedElement()) {
+              <div class="fields">
+                <p class="kicker">编辑属性</p>
+                @if (selectedHasClass() && hasStyleBlock()) {
+                  <p class="panel-note">
+                    该元素用 <code>class</code> 承载样式，CSS 优先级高于同名属性，直接改色可能看不出变化。
+                    <button type="button" mat-button class="dense tiny" (click)="inlineSelectionCss()">先内联 CSS</button>
+                  </p>
+                }
+                <div class="field-grid">
+                  @for (field of editFields(); track field.name) {
+                    @if (field.name === 'fill' || field.name === 'stroke') {
+                      <div class="field">
+                        <span>{{ field.label }}</span>
+                        <div class="color-row">
+                          @if (isGradient(field.value)) {
+                            <span class="swatch-preview" [style.background]="gradientPreview(field.value)"></span>
+                          } @else {
+                            <input
+                              type="color"
+                              [value]="colorValue(field.value)"
+                              (change)="onFieldSet(field.name, colorFromEvent($event))"
+                              title="取色"
+                            />
+                          }
+                          <input
+                            class="color-text"
+                            [value]="field.value"
+                            (change)="onFieldChange(field.name, $event)"
+                            (keydown.enter)="onFieldChange(field.name, $event)"
+                          />
+                          <button type="button" mat-button class="dense tiny" (click)="onFieldSet(field.name, 'none')">无</button>
+                        </div>
+                      </div>
+                    } @else {
+                      <label class="field">
+                        <span>{{ field.label }}</span>
+                        <input
+                          [value]="field.value"
+                          [attr.inputmode]="field.numeric ? 'decimal' : null"
+                          (change)="onFieldChange(field.name, $event)"
+                          (keydown.enter)="onFieldChange(field.name, $event)"
+                        />
+                      </label>
+                    }
+                  }
+                </div>
+
+                <div class="swatches">
+                  <span>填充</span>
+                  @for (color of swatches; track color) {
+                    <button
+                      type="button"
+                      class="swatch"
+                      [style.background]="color"
+                      [title]="color"
+                      (click)="onFieldSet('fill', color)"
+                    ></button>
+                  }
+                </div>
+                <div class="field-row">
+                  <label class="field small">
+                    <span>位移 dx</span>
+                    <input type="number" [value]="nudgeX()" (change)="nudgeX.set(numberValue($event))" />
+                  </label>
+                  <label class="field small">
+                    <span>dy</span>
+                    <input type="number" [value]="nudgeY()" (change)="nudgeY.set(numberValue($event))" />
+                  </label>
+                  <button type="button" mat-button class="dense tiny" (click)="nudge()">应用位移</button>
+                </div>
+
+                <div class="gradients">
+                  <p class="kicker">渐变</p>
+                  @if (gradients().length > 0) {
+                    <div class="gradient-list">
+                      @for (g of gradients(); track g.id) {
+                        <div class="gradient-row">
+                          <span class="gradient-swatch" [style.background]="gradientCssOf(g)"></span>
+                          <code>#{{ g.id }}</code>
+                          <button type="button" mat-button class="dense tiny" (click)="applyGradient('fill', g.id)">填充</button>
+                          <button type="button" mat-button class="dense tiny" (click)="applyGradient('stroke', g.id)">描边</button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="panel-hint">还没有渐变。</p>
+                  }
+                  <div class="row">
+                    <button type="button" mat-button class="dense tiny" (click)="createGradientFor('fill')">+ 填充渐变</button>
+                    <button type="button" mat-button class="dense tiny" (click)="createGradientFor('stroke')">+ 描边渐变</button>
+                  </div>
+
+                  @if (activeGradient(); as active) {
+                    @if (active.info; as g) {
+                      <p class="kicker">#{{ g.id }} · {{ active.channel === 'fill' ? '填充' : '描边' }}</p>
+                      <div class="stop-list">
+                        @for (stop of g.stops; track $index) {
+                          <div class="stop-row">
+                            <input
+                              type="color"
+                              [value]="colorValue(stop.color)"
+                              (change)="updateGradientStop($index, 'color', $event)"
+                            />
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="1"
+                              [value]="offsetPercent(stop.offset)"
+                              (change)="updateGradientStop($index, 'offset', $event)"
+                            />
+                            <span>%</span>
+                            <button
+                              type="button"
+                              mat-button class="dense tiny"
+                              [disabled]="g.stops.length <= 2"
+                              (click)="removeGradientStop($index)"
+                            >×</button>
+                          </div>
+                        }
+                      </div>
+                      <div class="row">
+                        <button type="button" mat-button class="dense tiny" (click)="addGradientStop()">+ 停靠点</button>
+                        <select [value]="g.direction" (change)="onGradientDirection($event)">
+                          <option value="h">水平</option>
+                          <option value="v">垂直</option>
+                          <option value="d">对角</option>
+                        </select>
+                      </div>
+                    }
+                  }
+                </div>
+
+                <div class="row">
+                  <button type="button" mat-button class="dense tiny" (click)="copySelectionMarkup()">复制元素源码</button>
+                </div>
+                <p class="panel-hint">
+                  数值单位为 viewBox 用户单位；留空表示移除该属性。所有改动都会进入撤销栈。
+                </p>
+              </div>
+            }
+          } @else {
+            <p class="panel-hint">在画布上点选一个元素，可取得它的 id / 属性 / 选择器。</p>
+          }
+
+          <details class="digest-wrap">
+            <summary>digest · 元素树与统计</summary>
+            <div class="row">
+              <button type="button" mat-button class="dense tiny" (click)="copy(digest())">复制 digest</button>
+              <button type="button" mat-button class="dense tiny" (click)="copyDigestJson()">复制 JSON</button>
+            </div>
+            <pre class="digest">{{ digest() }}</pre>
+          </details>
+        }
+
+        @case ('code') {
+          <div class="row between">
+            <span class="panel-hint inline">
+              {{ bytes(codeBytes()) }} · 可编辑 canonical 文本
+            </span>
+            <span class="badge" [class.bad]="codeDirty()">{{ codeDirty() ? '未应用' : '已同步' }}</span>
+          </div>
+          <textarea
+            class="code"
+            spellcheck="false"
+            [value]="codeDraft()"
+            (input)="onCodeInput($event)"
+            aria-label="SVG 源码"
+          ></textarea>
+          <div class="row">
+            <button type="button" mat-flat-button class="dense" [disabled]="!codeDirty()" (click)="applyCode()">
+              应用源码
+            </button>
+            <button type="button" mat-button class="dense tiny" (click)="resetCode()">回到 canonical</button>
+            <button type="button" mat-button class="dense tiny" (click)="download('canonical')">下载</button>
+            <button type="button" mat-button class="dense tiny" (click)="copy(codeDraft())">复制</button>
+          </div>
+        }
+
+        @case ('patch') {
+          <p class="panel-hint">目标用 <code>#id</code>；失败逐条返回，不中断其它操作。</p>
+          <div class="row">
+            <button type="button" mat-button class="dense tiny" (click)="patchDraft.set(patchSpec)">语法</button>
+            <button type="button" mat-button class="dense tiny" (click)="patchDraft.set(patchExample)">示例</button>
+            <button type="button" mat-button class="dense tiny" (click)="formatPatch()">格式化</button>
+          </div>
+          <textarea
+            class="code small"
+            spellcheck="false"
+            [value]="patchDraft()"
+            (input)="onPatchInput($event)"
+            aria-label="补丁 JSON"
+          ></textarea>
+          <div class="row">
+            <button type="button" mat-flat-button class="dense" [disabled]="!doc()" (click)="applyPatchOps()">
+              应用补丁
+            </button>
+            <button type="button" mat-button class="dense tiny" (click)="copyPatchSpec()">复制语法</button>
+          </div>
+
+          @if (patchReport(); as report) {
+            <div class="patch-report">
+              <p>
+                已应用 <b>{{ report.applied }}</b> 个操作 → {{ bytes(report.bytes) }}
+                @if (report.issues.length) {
+                  · <b class="bad">{{ report.issues.length }} 条问题</b>
+                }
+              </p>
+              @for (issue of report.issues; track $index) {
+                <p class="issue">
+                  <code>{{ issue.code }}</code>
+                  @if (issue.target) {
+                    <b>{{ issue.target }}</b>
+                  }
+                  {{ issue.message }}
+                </p>
+              }
+            </div>
+          }
+        }
+
+        @case ('prompt') {
+          <div class="row between">
+            <label class="check">
+              <input
+                type="checkbox"
+                [checked]="includeSource()"
+                (change)="includeSource.set(!includeSource())"
+              />
+              包含完整源码
+            </label>
+            <button type="button" mat-flat-button class="dense" (click)="copy(prompt())">复制提示词</button>
+          </div>
+          <p class="panel-hint">复制后发给 LLM，收回 JSON 补丁再粘到「补丁」页。</p>
+          <pre class="prompt">{{ prompt() }}</pre>
+        }
+
+        @case ('semantic') {
+          <app-svg-semantics-panel
+            [parts]="semanticParts()"
+            [fingerprint]="semanticFp()"
+            [diff]="semanticDiff()"
+            [issues]="semanticIssues()"
+            (applyPlan)="applySemanticPlanText($event)"
+            (updatePart)="updateSemanticPart($event)"
+            (copy)="copy($event)"
+            (selectPart)="selectSemanticPart($event)"
+          />
+        }
+      }
+    </div>
+  </aside>
+    </div>
+
+    <footer class="wb-notes">
+  <details>
+    <summary>工作台说明</summary>
+    <div class="notes-grid">
+      <p><b>源码真值</b> canonical 是唯一可编辑文本；规范化只改排版/数值，优化只做语义等价清洗（内联 CSS、清元数据、去空容器），都不合并 path、不改 id。</p>
+      <p><b>语义部件</b> id 负责寻址，data-role / data-label / synonyms 负责阅读；点部件 id 后再画，形状会落进该组。</p>
+      <p><b>批量与校验</b> 四档模式：仅规范化 / 仅稳定 id / 规范化+优化 / 优化+稳定 id；每行做渲染差异校验，有强差异的不进 ZIP。</p>
+      <p><b>LLM 闭环</b> 提示词带部件、同义词与锁定项；补丁只接受定点 op（含 moveAnchor / setGradient / group），不整文件重写。</p>
+      <p><b>预览边界</b> 当前预览作用于本地可信资产；外部文件先 sanitize，未进 sandbox。</p>
+      <p><b>落盘</b> 页面不写磁盘；下载写回包后运行 scripts/svg_writeback.py（CRC 校验 + .bak / .bak.1）。</p>
+    </div>
+  </details>
+</footer>
+  </div>
+</div>
+
+@if (toastText(); as text) {
+  <div class="toast" role="status">{{ text }}</div>
+}

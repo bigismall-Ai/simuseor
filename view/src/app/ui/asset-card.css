@@ -1,0 +1,396 @@
+/* ============================================================================
+ * asset-card.css —— 资产卡统一骨架（产品侧唯一一份几何）
+ * ----------------------------------------------------------------------------
+ * 来源：`artifacts/vis/prototypes/cards.html`（VIS 原型页 · 资产卡片 · 统一骨架）。
+ * 原型是手写样张，这里是它的**产品侧落地**：模型卡 / 库卡 / 工作流卡 / 节点卡
+ * 四张卡共用这一套外壳与几何，只换槽位内容。
+ *
+ * 【为什么要单独一份】
+ * 四张卡此前各写各的：模型卡是「海报式」（封面铺满）、库卡是「145px 封面 + 页脚」、
+ * 工作流卡是「16:10 封面 + 下方正文」、节点行是「无封面 + 左侧 56px 方块」。
+ * 同一件事四套做法 —— 「一份标准」在自己的产品侧就落空了。
+ * 把几何收到**一个文件**里，四张卡各自 `styles: ['./asset-card.css', ...]` 引入，
+ * 「统一」就不是靠约定，而是**结构上做不到不统一**。
+ *
+ * 【骨架六层（对应原型 ①-⑥）】
+ *   ① 封面      .acard-media / .acard-plate   铺满整卡
+ *   ② 身份行    .acard-head / .acard-mark / .acard-ident
+ *   ③ 原站链接  .acard-origin                  右上角，本地库与发现页同一位置
+ *   ④ 状态槽    .acard-slot / .acard-rule / .acard-size   左状态 · 白线 · 右大小
+ *   ⑤ 分类标签  .acard-tags                    只放一枚
+ *   ⑥ 动作行    .acard-foot                    ⋯ 在左，主按钮在右
+ *
+ * 【类名约定】
+ *   .acard*    外壳与几何（本文件，共享）
+ *   卡片自有的内容类名（.mname / .wc-title / .nd-tile …）**保持原样**，
+ *   这样 E2E 已有的选择器（`.card-name` / `.wf-title` / `.nd-card` …）继续有效。
+ *   （`.nd-row` 已随 v2.15 的节点卡改造退役 —— 节点列表改出 `.nd-card`。）
+ *
+ * 【色值纪律】
+ *   遮罩用 VIS 登记的 scrim token（§3.8 `--grad-scrim-card` / `--grad-scrim-card-fade`），
+ *   其余一律走产品 token —— 不在本文件硬编码产品色。
+ * ========================================================================== */
+
+/* ---- 卡壳：描边只由 ::after 画，hover 不位移、不加外阴影 ---- */
+.acard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 235px;
+  overflow: hidden;
+  border-radius: var(--card-radius);
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.24s ease;
+}
+
+.acard:hover {
+  box-shadow: var(--ui-shadow-hover);
+}
+.acard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--border);
+  pointer-events: none;
+  transition: box-shadow 0.16s ease;
+}
+.acard.on-shot::after { box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18); }
+.acard:focus-within::after { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+
+.acard:focus-visible { outline: 2px solid var(--ui-primary); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  /* 过渡声明在 .acard::after 上（hover 描边），守卫也得落在同一个元素上 ——
+     写 .acard 是空操作，那条过渡照样跑（VIS §7.3 动效须在 reduced-motion 下被抑制）。 */
+  .acard::after { transition: none; }
+}
+
+/* ---- ① 封面：铺满整卡，不再分上下两段 ---- */
+.acard-media { position: absolute; inset: 0; overflow: hidden; }
+.acard-plate { position: absolute; inset: 0; }
+.acard-plate > * { position: absolute; inset: 0; }
+
+/* 卡片内的封面铭牌身份行统一收掉，由 .acard-head 承担 */
+:host ::ng-deep .acard-plate .head { display: none; }
+
+/* 卡片的动作行按钮：所有卡共用一套，禁止在组件里重写 */
+.acard-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--card-action-height, 28px);
+  padding: 0 var(--card-action-padding, 12px);
+  border: 0;
+  border-radius: var(--ui-radius-pill);
+  background: var(--card-scrim-action-bg, var(--ui-primary));
+  color: var(--card-scrim-action-ink, var(--ui-on-primary));
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+.acard-primary:hover { filter: brightness(1.06); }
+.acard-primary:disabled { opacity: 0.5; cursor: default; filter: none; }
+
+/* ---- ② 身份行：左上「32×32 标识块 + 厂名 / 作者两行」 ---- */
+.acard-head {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+/* 厂名在上、作者在下；两者都可截断，不把右上角链接挤出去 */
+.acard-ident {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.acard-ident b {
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.acard-ident span {
+  min-width: 0;
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.acard.on-shot .acard-ident b { color: #fff; text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
+.acard.on-shot .acard-ident span { color: rgb(255 255 255 / 0.8); text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
+
+/* ---- ③ 原站链接：右上角，本地库与发现页同一位置、同一种样式 ---- */
+.acard-origin {
+  margin-left: auto;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text);
+  font: 600 9px/1 'Cascadia Mono', Consolas, monospace;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.acard-origin svg {
+  width: 9px;
+  height: 9px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acard.on-shot .acard-origin { background: rgb(10 12 18 / 0.55); box-shadow: none; color: #fff; }
+
+/* ---- 底部信息区：压在封面上的半透明遮罩（VIS 登记的 scrim token） ---- */
+.acard-body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding: 9px 10px 10px;
+  background: none;
+}
+
+/* 遮罩做成带顶部渐隐的伪元素：内容边界不会在封面上切出一条硬线 */
+.acard-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--card-scrim-color) 98%, transparent) 0%,
+    color-mix(in oklab, var(--card-scrim-color) 90%, transparent) 55%,
+    color-mix(in oklab, var(--card-scrim-color) 64%, transparent) 82%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to top, #000 0 90%, transparent 100%);
+  backdrop-filter: blur(10px);
+}
+
+/* 名称 / 类别 */
+.acard-name {
+  margin: 0;
+  font-size: var(--card-title-size);
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.008em;
+  color: var(--card-scrim-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* 详情默认收起，只留标题；hover / focus 时遮罩向上展开 */
+.acard-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    max-height 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease,
+    transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acard:hover .acard-details,
+.acard:focus-within .acard-details {
+  max-height: 130px;
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acard,
+  .acard-details {
+    transition: none;
+  }
+
+}
+
+@media (hover: none) {
+  .acard-details {
+    max-height: none;
+    overflow: visible;
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+.acard-meta {
+  min-height: 1.4em;
+  margin: 0;
+  font-size: var(--card-meta-size);
+  color: var(--card-scrim-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- ④ 状态槽：左状态 · 半透明白线 · 右大小 ---- */
+.acard-slot {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: var(--card-slot-size);
+  font-weight: 600;
+  color: var(--card-scrim-ink);
+}
+.acard-slot .is-ok { color: var(--card-scrim-ok); }
+.acard-slot .is-warn { color: var(--card-scrim-warn); }
+.acard-slot .is-err { color: var(--card-scrim-err); }
+.acard-rule {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 1px;
+  background: var(--card-scrim-line);
+}
+.acard-size {
+  flex: none;
+  color: var(--card-scrim-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- ⑤ 分类标签：只放一枚，单行不换行 ---- */
+.acard-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  overflow: hidden;
+}
+.acard-tags .pill {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 42%;
+  height: 16px;
+  padding: 0 6px;
+  border: 0;
+  background: var(--card-scrim-tag-bg);
+  color: var(--card-scrim-ink);
+  font-size: var(--card-tag-size);
+  line-height: 14px;
+}
+/* 标识类标签（节点类名）：等宽小字，比分类胶囊长，单独放宽 */
+.acard-tags .pill.is-mono {
+  max-width: 68%;
+  font-family: 'Cascadia Mono', Consolas, monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.acard-tags .pill.is-more { flex: none; max-width: none; }
+
+/* ---- ⑥ 动作行：⋯ 在左，主按钮在右 ---- */
+.acard-foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+.acard-foot .acard-kebab { flex: none; }
+.acard-foot .acard-primary { margin-left: auto; }
+
+/* ⋯ 按钮：22×22（原型口径），压在封面遮罩上 —— 底色跟着遮罩走，
+   不能用 --panel 的浅底（浅底压深色遮罩会发灰）。 */
+.acard-kebab {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--card-scrim-ink) 24%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--card-scrim-ink) 10%, transparent);
+  color: var(--card-scrim-ink);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.acard-kebab:hover {
+  background: rgb(255 255 255 / 0.18);
+  border-color: rgb(255 255 255 / 0.4);
+}
+.acard:not(.on-shot) .acard-kebab {
+  border-color: var(--border-strong);
+  background: var(--panel);
+  color: var(--text);
+}
+.acard:not(.on-shot) .acard-kebab:hover { background: var(--hover); }
+
+/* 菜单浮层：贴在动作行上方、落在**卡内** ——
+   卡壳 overflow:hidden，浮到卡外会被裁掉。 */
+.acard-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 4px);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 132px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.28);
+}
+.acard-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: none;
+  height: 22px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.acard-menu-item:hover { background: var(--hover); }

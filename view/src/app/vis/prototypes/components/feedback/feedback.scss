@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toast-col {
+  display: grid;
+  gap: 10px;
+  max-width: 360px;
+}
+
+.hint {
+  margin: 12px 0 0;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.rules b {
+  color: var(--ui-text);
+}

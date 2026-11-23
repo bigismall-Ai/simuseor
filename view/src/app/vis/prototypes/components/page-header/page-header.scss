@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.set-label {
+  margin: 0 0 12px;
+  color: var(--ui-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -.01em;
+}
+
+.set-label:not(:first-child) {
+  margin-top: 28px;
+}
+
+.demo {
+  padding: 18px 20px 20px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-list);
+  background: color-mix(in srgb, var(--ui-surface) 58%, transparent);
+}
+
+.demo-body {
+  height: 74px;
+  border-radius: var(--ui-radius-list);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--ui-inset) 55%, transparent), transparent);
+}
+
+.ph-rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.ph-rules b {
+  color: var(--ui-text);
+}

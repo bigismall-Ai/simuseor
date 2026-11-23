@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="artboard" viewBox="0 0 24 24" role="img">
+  <title>Chroma（重绘近似）</title>
+  <defs>
+    <linearGradient id="chroma-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fcd34d"/>
+      <stop offset="0.5" stop-color="#f9a8d4"/>
+      <stop offset="1" stop-color="#c4b5fd"/>
+    </linearGradient>
+  </defs>
+  <path id="path-ac8225" d="M18.8 7.1A8.4 8.4 0 1 0 18.8 16.9" fill="none" stroke="url(#chroma-g)" stroke-width="3.6" stroke-linecap="round"/>
+</svg>

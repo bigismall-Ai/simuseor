@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.proto {
+  min-height: 100vh;
+}
+
+.proto-body {
+  width: 100%;
+  max-width: var(--layout-content-max);
+  margin: 0 auto;
+  padding: var(--layout-top) var(--layout-gutter) var(--layout-bottom);
+}
+
+.proto-page {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .proto-body {
+    padding: 18px 14px 32px;
+  }
+}

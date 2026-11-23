@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.cover-demo {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-card-solid);
+  box-shadow: var(--ui-shadow);
+}
+
+.cover-demo app-cover-plate {
+  display: block;
+  height: 176px;
+}
+
+.cover-demo figcaption {
+  padding: 8px 11px 9px;
+  color: var(--ui-muted);
+  font: 600 10px/1.4 var(--ui-font-mono);
+  letter-spacing: .04em;
+}
+
+

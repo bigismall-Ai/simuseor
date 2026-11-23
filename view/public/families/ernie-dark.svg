@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="artboard" viewBox="0 0 21.76 24.78" width="21.76" height="24.78" fill="none">
+  <g id="ernie-g">
+    <path id="ernie-v1" d="M21.23 5.81L11.42 0.15C11.25 0.06 11.06 0 10.88 0C10.7 0 10.51 0.04 10.34 0.15L0.54 5.81C0.21 6 0 6.36 0 6.73V18.05C0 18.44 0.21 18.78 0.54 18.98L10.34 24.63C10.51 24.72 10.7 24.78 10.88 24.78C11.06 24.78 11.25 24.74 11.42 24.63L21.22 18.98C21.55 18.78 21.76 18.42 21.76 18.05V6.73C21.76 6.35 21.55 6 21.22 5.81H21.23ZM3.62 15.97V8.83C3.62 8.44 3.83 8.1 4.16 7.9L10.34 4.34C10.51 4.25 10.7 4.19 10.88 4.19C11.06 4.19 11.25 4.23 11.42 4.34L15.08 6.46L8.69 10.13L7.72 11.79V18.96L4.16 16.91C3.83 16.72 3.62 16.36 3.62 15.98V15.97ZM17.6 16.9L11.43 20.46V12.84L18.14 8.96V15.95C18.14 16.34 17.93 16.69 17.6 16.88V16.9Z" fill="url(#ernie-grad)"/>
+    <path id="ernie-v2" d="M9.64 13.71C10.7 13.71 11.55 12.85 11.55 11.79C11.55 10.73 10.7 9.88 9.64 9.88C8.58 9.88 7.72 10.73 7.72 11.79C7.72 12.85 8.58 13.71 9.64 13.71Z" fill="white"/>
+  </g>
+  <defs>
+    <linearGradient id="ernie-grad" x1="4.67" y1="21.98" x2="16.73" y2="3.37" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0.4"/>
+      <stop offset="0.23" stop-color="white" stop-opacity="0.53"/>
+      <stop offset="0.76" stop-color="white" stop-opacity="0.83"/>
+      <stop offset="1" stop-color="white" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+</svg>

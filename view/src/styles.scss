@@ -1,0 +1,591 @@
+@use '@angular/material' as mat;
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  src: url('/fonts/BarlowCondensed-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ink-paper: #ece8de;
+  --ink-ink: #222c28;
+  --ink-moss: #68756c;
+  --ink-accent: #b95e4e;
+  --ink-stone: #c6c0b4;
+
+  --aurora-bg: #0e1026;
+  --aurora-panel: #0d1026;
+  --aurora-primary: #5658ff;
+  --aurora-magenta: #e45cff;
+  --aurora-mint: #54e8d1;
+  --aurora-text: #f6f4ff;
+  --aurora-border: rgb(255 255 255 / 0.18);
+
+  /*
+   * 背景层（晨雾朦胧 / Glassmorphism）
+   *   bg      薰衣草底   页面底
+   *   rail    玻璃白     侧栏 / 顶栏
+   *   surface 玻璃白     面板
+   *   raised  较实玻璃白 卡片 / 浮层内容
+   *   inset   墨紫 6%    表头 / 输入 / 代码
+   * 页面本身带桃 / 紫 / 薄荷三团柔光，面板用半透明白 + 模糊承托。
+   */
+  --ui-bg: #e5e1ff;
+  --ui-rail: rgb(255 255 255 / 0.42);
+  --ui-surface: rgb(255 255 255 / 0.42);
+  --ui-raised: rgb(255 255 255 / 0.62);
+  --ui-card-solid: #f7f5ff;
+  --ui-inner-border: color-mix(in srgb, var(--ui-text) 16%, transparent);
+  --ui-frame-bg: #ffffff;
+  --ui-inset: rgb(36 33 67 / 0.06);
+  --ui-overlay: #fbfaff;
+  --ui-panel: var(--ui-surface);
+  --ui-panel-2: var(--ui-raised);
+  --ui-panel-3: var(--ui-inset);
+  --ui-text: #242143;
+  --ui-text-2: #3b375f;
+  --ui-muted: #625f86;
+  --ui-line: rgb(255 255 255 / 0.68);
+  --ui-border: var(--ui-line);
+  --ui-border-2: rgb(255 255 255 / 0.45);
+  --ui-primary: #242143;
+  --ui-on-primary: #ffffff;
+  --ui-accent: #6b79ff;
+  --ui-error: var(--ink-accent);
+  --ui-radius: 14px;
+  --ui-radius-panel: 28px;
+  --ui-radius-card: 24px;
+  --ui-radius-list: 16px;
+  --ui-radius-button: 18px;
+  --ui-radius-lg: 16px;
+  --ui-radius-pill: 999px;
+  --ui-glass-blur: 16px;
+  --layout-nav: 224px;
+  --layout-nav-collapsed: 64px;
+  --layout-content-max: 1320px;
+  --layout-gutter: 30px;
+  --layout-top: 26px;
+  --layout-bottom: 48px;
+  --layout-split-left: 420px;
+  --layout-split-left-min: 360px;
+  --layout-split-right: 360px;
+  --layout-split-right-min: 300px;
+  --layout-split-gap: 32px;
+  --layout-three-left: 208px;
+  --layout-three-right: 262px;
+  --layout-grid-min: 250px;
+  --card-radius: var(--ui-radius-card);
+  --card-border: var(--ui-border);
+  --card-shadow: var(--ui-shadow);
+  --card-mark-size: 32px;
+  --card-mark-radius: 8px;
+  --card-title-size: 13px;
+  --card-meta-size: 11px;
+  --card-slot-size: 9.5px;
+  --card-tag-size: 9.5px;
+  --card-action-height: 28px;
+  --card-action-padding: 12px;
+  --card-kebab-size: 22px;
+  --ui-mark-card-width: 200px;
+  --ui-mark-card-height: 96px;
+  --ui-font-display: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  --ui-font-body: Inter, 'Microsoft YaHei', system-ui, sans-serif;
+  --ui-font-mono: 'Cascadia Mono', Consolas, monospace;
+  --ui-glow-peach: #ff9b8b;
+  --ui-glow-violet: #9f85ff;
+  --ui-glow-mint: #66e3cd;
+  --ui-glow:
+    radial-gradient(circle at 12% 12%, var(--ui-glow-peach) 0, transparent 448px),
+    radial-gradient(circle at 85% 18%, var(--ui-glow-violet) 0, transparent 512px),
+    radial-gradient(circle at 50% 85%, var(--ui-glow-mint) 0, transparent 480px);
+  --ui-shadow:
+    0 1px 0 rgb(255 255 255 / 0.7) inset,
+    0 2px 5px -2px rgb(36 33 67 / 0.14),
+    0 14px 32px -20px rgb(36 33 67 / 0.42),
+    0 28px 60px -36px rgb(36 33 67 / 0.3);
+  --ui-shadow-md:
+    0 2px 6px -3px rgb(36 33 67 / 0.16),
+    0 26px 52px -26px rgb(36 33 67 / 0.4),
+    0 48px 100px -48px rgb(36 33 67 / 0.34);
+  --ui-shadow-hover:
+    0 1px 0 rgb(255 255 255 / 0.7) inset,
+    0 4px 10px -4px rgb(36 33 67 / 0.22),
+    0 24px 48px -22px rgb(36 33 67 / 0.48),
+    0 0 0 4px rgb(36 33 67 / 0.08);
+  --ui-ring: 0 0 0 3px rgb(107 121 255 / 0.28);
+  --card-scrim-color: var(--ui-card-solid);
+  --card-scrim-ink: var(--ui-text);
+  --card-scrim-muted: var(--ui-muted);
+  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 45%, transparent);
+  --card-scrim-tag-bg: var(--ui-panel-3);
+  --card-scrim-action-bg: var(--ui-primary);
+  --card-scrim-action-ink: var(--ui-on-primary);
+  --card-scrim-ok: var(--ok);
+  --card-scrim-warn: var(--warn);
+  --card-scrim-err: var(--err);
+  --button-shadow:
+    0 1px 0 rgb(255 255 255 / 0.78) inset,
+    0 3px 8px -4px rgb(36 33 67 / 0.16),
+    0 10px 22px -18px rgb(36 33 67 / 0.42);
+  --button-shadow-hover:
+    0 1px 0 rgb(255 255 255 / 0.9) inset,
+    0 5px 12px -5px rgb(36 33 67 / 0.22),
+    0 18px 34px -22px rgb(36 33 67 / 0.5);
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  /*
+   * 背景层（极光视界）
+   *   bg      极光底     页面底
+   *   rail    深海军蓝   侧栏/顶栏（规范里的 panel 色）
+   *   surface 面板       抬升一档
+   *   raised  卡片/浮层  再抬升
+   *   inset   表头/输入  压暗
+   */
+  --ui-bg: #0e1026;
+  --ui-rail: color-mix(in srgb, #111432 66%, transparent);
+  --ui-surface: color-mix(in srgb, #111432 78%, transparent);
+  --ui-raised: color-mix(in srgb, #1a1e3a 88%, transparent);
+  --ui-card-solid: #1a1e3a;
+  --ui-frame-bg: #141832;
+  --ui-inset: color-mix(in srgb, #05071a 55%, transparent);
+  --ui-overlay: #171b36;
+  --ui-panel: var(--ui-surface);
+  --ui-panel-2: var(--ui-raised);
+  --ui-panel-3: var(--ui-inset);
+  --ui-text: var(--aurora-text);
+  --ui-text-2: #d8d5ef;
+  --ui-muted: #b9b7d6;
+  --ui-line: rgb(255 255 255 / 0.16);
+  --ui-border: var(--ui-line);
+  --ui-border-2: rgb(255 255 255 / 0.08);
+  --ui-primary: var(--aurora-primary);
+  --ui-on-primary: var(--aurora-text);
+  --ui-accent: var(--aurora-primary);
+  --ui-error: var(--ink-accent);
+  --ui-radius: 14px;
+  --ui-radius-panel: 28px;
+  --ui-radius-card: 24px;
+  --ui-radius-list: 16px;
+  --ui-radius-button: 18px;
+  --ui-radius-lg: 16px;
+  --ui-radius-pill: 999px;
+  --ui-glass-blur: 18px;
+  --ui-font-display: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
+  --ui-font-body: Inter, 'Microsoft YaHei', system-ui, sans-serif;
+  --ui-font-mono: 'Cascadia Mono', Consolas, monospace;
+  --ui-glow:
+    radial-gradient(60% 45% at 16% -8%, rgb(86 88 255 / 0.3), transparent 72%),
+    radial-gradient(42% 34% at 90% 2%, rgb(228 92 255 / 0.14), transparent 72%),
+    radial-gradient(38% 30% at 50% 102%, rgb(84 232 209 / 0.08), transparent 72%);
+  --ui-shadow:
+    0 1px 0 rgb(255 255 255 / 0.08) inset,
+    0 1px 0 rgb(255 255 255 / 0.04),
+    0 18px 40px -22px rgb(0 0 0 / 0.95),
+    0 0 32px -18px rgb(86 88 255 / 0.35);
+  --ui-shadow-md:
+    0 1px 0 rgb(255 255 255 / 0.1) inset,
+    0 30px 60px -24px rgb(0 0 0 / 0.95),
+    0 0 50px -20px rgb(86 88 255 / 0.4);
+  --ui-shadow-hover:
+    0 1px 0 rgb(255 255 255 / 0.12) inset,
+    0 34px 70px -24px rgb(0 0 0 / 0.98),
+    0 0 52px -16px rgb(86 88 255 / 0.55),
+    0 0 0 4px rgb(86 88 255 / 0.16);
+  --ui-ring: 0 0 0 3px rgb(86 88 255 / 0.28);
+  --card-scrim-color: var(--ui-card-solid);
+  --card-scrim-ink: var(--ui-text);
+  --card-scrim-muted: var(--ui-muted);
+  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 45%, transparent);
+  --card-scrim-tag-bg: var(--ui-panel-3);
+  --card-scrim-action-bg: var(--ui-primary);
+  --card-scrim-action-ink: var(--ui-on-primary);
+  --card-scrim-ok: var(--ok);
+  --card-scrim-warn: var(--warn);
+  --card-scrim-err: var(--err);
+  --button-shadow:
+    0 1px 0 rgb(255 255 255 / 0.08) inset,
+    0 4px 12px -6px rgb(0 0 0 / 0.9),
+    0 12px 26px -18px rgb(0 0 0 / 0.95);
+  --button-shadow-hover:
+    0 1px 0 rgb(255 255 255 / 0.12) inset,
+    0 6px 16px -6px rgb(0 0 0 / 0.95),
+    0 22px 44px -24px rgb(86 88 255 / 0.35);
+}
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: 'Inter, "Microsoft YaHei", system-ui, sans-serif',
+      density: -1,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--ui-primary),
+      on-primary: var(--ui-on-primary),
+      primary-container: var(--ui-raised),
+      on-primary-container: var(--ui-text),
+      secondary: var(--ui-muted),
+      on-secondary: var(--ui-on-primary),
+      secondary-container: var(--ui-inset),
+      on-secondary-container: var(--ui-text),
+      tertiary: var(--ui-accent),
+      on-tertiary: #ffffff,
+      surface: var(--ui-bg),
+      on-surface: var(--ui-text),
+      surface-variant: var(--ui-surface),
+      on-surface-variant: var(--ui-muted),
+      surface-container: var(--ui-surface),
+      surface-container-low: var(--ui-rail),
+      surface-container-high: var(--ui-raised),
+      outline: var(--ui-border),
+      outline-variant: var(--ui-border-2),
+      error: var(--ui-error),
+      on-error: #fff,
+      error-container: #f5ddda,
+      on-error-container: #7a2f24,
+    )
+  );
+
+  /* 按钮：纯色、无外边框、16px 圆角。主=flat，次=tonal，弱=text。 */
+  --mat-button-filled-container-shape: var(--ui-radius-button);
+  --mat-button-tonal-container-shape: var(--ui-radius-button);
+  --mat-button-outlined-container-shape: var(--ui-radius-button);
+  --mat-button-text-container-shape: var(--ui-radius-button);
+  --mat-button-protected-container-shape: var(--ui-radius-button);
+  --mat-button-filled-container-height: 36px;
+  --mat-button-tonal-container-height: 36px;
+  --mat-button-outlined-container-height: 36px;
+  --mat-button-text-container-height: 36px;
+  --mat-button-filled-touch-target-size: 36px;
+  --mat-button-tonal-touch-target-size: 36px;
+  --mat-button-text-touch-target-size: 36px;
+  --mat-button-filled-label-text-size: 12.5px;
+  --mat-button-tonal-label-text-size: 12.5px;
+  --mat-button-outlined-label-text-size: 12.5px;
+  --mat-button-text-label-text-size: 12.5px;
+  --mat-button-filled-label-text-weight: 500;
+  --mat-button-tonal-label-text-weight: 500;
+  --mat-button-text-label-text-weight: 500;
+  --mat-button-filled-horizontal-padding: 16px;
+  --mat-button-tonal-horizontal-padding: 16px;
+  --mat-button-text-horizontal-padding: 12px;
+  --mat-button-filled-container-color: var(--ui-primary);
+  --mat-button-filled-label-text-color: var(--ui-on-primary);
+  --mat-button-tonal-container-color: rgb(255 255 255 / 0.55);
+  --mat-button-tonal-label-text-color: var(--ui-text);
+  --mat-button-outlined-outline-color: var(--ui-border);
+  --mat-button-outlined-label-text-color: var(--ui-text);
+  --mat-button-text-label-text-color: var(--ui-text);
+  --mat-button-outlined-outline-width: 0;
+
+  --mat-form-field-outlined-container-shape: var(--ui-radius);
+  --mat-form-field-outlined-outline-color: color-mix(in srgb, var(--ui-text) 22%, transparent);
+  --mat-form-field-outlined-label-text-color: var(--ui-muted);
+  --mat-form-field-outlined-input-text-color: var(--ui-text);
+  --mat-form-field-outlined-focus-outline-color: var(--ui-accent);
+  --mat-form-field-outlined-focus-label-text-color: var(--ui-text);
+  --mat-form-field-outlined-outline-width: 1px;
+  --mat-form-field-container-height: 36px;
+  --mat-form-field-container-vertical-padding: 7px;
+  --mat-form-field-container-text-size: 12.5px;
+  --mat-form-field-container-text-line-height: 1.4;
+  --mat-form-field-outlined-label-text-size: 12.5px;
+  --mat-form-field-outlined-label-text-populated-size: 10px;
+  --mat-form-field-subscript-text-size: 10.5px;
+  --mat-checkbox-label-text-size: 12.5px;
+  --mat-checkbox-label-text-line-height: 1.4;
+  --mat-radio-label-text-size: 12.5px;
+  --mat-radio-label-text-line-height: 1.4;
+  --mat-slide-toggle-label-text-size: 12.5px;
+  --mat-slide-toggle-label-text-line-height: 1.4;
+
+  --mat-dialog-container-shape: var(--ui-radius-panel);
+  --mat-dialog-container-color: var(--ui-overlay);
+  --mat-dialog-subhead-color: var(--ui-text);
+  --mat-dialog-supporting-text-color: var(--ui-muted);
+  --mat-menu-container-shape: var(--ui-radius-card);
+  --mat-menu-container-color: var(--ui-overlay);
+  --mat-menu-item-label-text-color: var(--ui-text);
+  --mat-select-panel-background-color: var(--ui-overlay);
+  --mat-snack-bar-container-shape: var(--ui-radius-card);
+  --mat-snack-bar-container-color: var(--ui-text);
+  --mat-snack-bar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+  --mat-table-background-color: var(--ui-surface);
+  --mat-table-header-headline-color: var(--ui-muted);
+  --mat-table-row-item-label-text-color: var(--ui-text);
+  --mat-table-row-item-outline-color: transparent;
+  --mat-table-row-item-outline-width: 0;
+}
+
+html[data-theme='dark'] {
+  @include mat.theme-overrides(
+    (
+      primary: var(--aurora-primary),
+      on-primary: var(--aurora-text),
+      primary-container: var(--aurora-panel),
+      on-primary-container: var(--aurora-text),
+      secondary: var(--aurora-mint),
+      on-secondary: var(--aurora-bg),
+      secondary-container: #141832,
+      on-secondary-container: var(--aurora-text),
+      tertiary: var(--aurora-magenta),
+      on-tertiary: var(--aurora-bg),
+      surface: var(--aurora-bg),
+      on-surface: var(--aurora-text),
+      surface-variant: var(--aurora-panel),
+      on-surface-variant: #b9b7d6,
+      surface-container: var(--ui-surface),
+      surface-container-low: var(--ui-rail),
+      surface-container-high: var(--ui-raised),
+      outline: var(--aurora-border),
+      outline-variant: rgb(255 255 255 / 0.1),
+      error: var(--ink-accent),
+      on-error: var(--aurora-text),
+      error-container: #3a1d1a,
+      on-error-container: var(--aurora-text),
+    )
+  );
+
+  --mat-button-filled-container-color: var(--aurora-primary);
+  --mat-button-filled-label-text-color: var(--aurora-text);
+  --mat-button-tonal-container-color: #141832;
+  --mat-button-tonal-label-text-color: var(--aurora-text);
+  --mat-button-outlined-outline-color: var(--aurora-border);
+  --mat-button-outlined-label-text-color: var(--aurora-text);
+  --mat-button-text-label-text-color: var(--aurora-text);
+  --mat-form-field-outlined-outline-color: var(--aurora-border);
+  --mat-form-field-outlined-label-text-color: #b9b7d6;
+  --mat-form-field-outlined-input-text-color: var(--aurora-text);
+  --mat-form-field-outlined-focus-outline-color: var(--aurora-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--aurora-text);
+  --mat-dialog-container-color: var(--ui-overlay);
+  --mat-dialog-subhead-color: var(--aurora-text);
+  --mat-dialog-supporting-text-color: #b9b7d6;
+  --mat-menu-container-color: var(--ui-overlay);
+  --mat-menu-item-label-text-color: var(--aurora-text);
+  --mat-select-panel-background-color: var(--ui-overlay);
+  --mat-table-background-color: var(--ui-surface);
+  --mat-table-header-headline-color: #b9b7d6;
+  --mat-table-row-item-label-text-color: var(--aurora-text);
+  --mat-table-row-item-outline-color: var(--aurora-border);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--ui-bg);
+  background-image: var(--ui-glow);
+  background-attachment: fixed;
+  color: var(--ui-text);
+  font-family: var(--ui-font-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: var(--ui-accent);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: 'Cascadia Mono', Consolas, monospace;
+}
+
+/* 旧资产 token 别名：迁移过来的组件和原型页仍沿用旧命名 */
+:root {
+  --bg: var(--ui-bg);
+  --panel: var(--ui-card-solid);
+  --panel-2: var(--ui-panel-2);
+  --panel-3: var(--ui-panel-3);
+  --text: var(--ui-text);
+  --text-2: var(--ui-text-2);
+  --muted: var(--ui-muted);
+  --faint: color-mix(in srgb, var(--ui-muted) 62%, transparent);
+  --border: var(--ui-border);
+  --border-soft: var(--ui-border-2);
+  --border-strong: var(--ui-border-2);
+  --hover: var(--ui-raised);
+  --accent: var(--ui-primary);
+  --accent-line: color-mix(in srgb, var(--ui-primary) 45%, transparent);
+  --accent-soft: color-mix(in srgb, var(--ui-primary) 12%, transparent);
+  --radius: var(--ui-radius-card);
+  --radius-sm: var(--ui-radius-list);
+  --track: var(--ui-inset);
+  --ok: color-mix(in srgb, var(--ui-glow-mint) 45%, var(--ui-text));
+  --ok-soft: color-mix(in srgb, var(--ui-glow-mint) 16%, transparent);
+  --warn: color-mix(in srgb, var(--ui-glow-peach) 50%, var(--ui-text));
+  --warn-soft: color-mix(in srgb, var(--ui-glow-peach) 16%, transparent);
+  --err: var(--ui-error);
+  --err-soft: color-mix(in srgb, var(--ui-error) 14%, transparent);
+  --shadow-sm: var(--ui-shadow);
+  --shadow-md: var(--ui-shadow-md);
+  --grad-scrim-card: linear-gradient(162deg, rgb(10 12 18 / .45) 0%, rgb(10 12 18 / .38) 62%, rgb(10 12 18 / .28) 100%);
+  --grad-scrim-card-fade: linear-gradient(to top, rgb(10 12 18 / .28), transparent);
+}
+
+/* 统一滚动条：页面与导航共用一套尺寸 / 颜色，按需覆盖 --scrollbar-size */
+:root {
+  --scrollbar-size: 10px;
+  --scrollbar-thumb: color-mix(in srgb, var(--ui-muted) 34%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--ui-muted) 56%, transparent);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html,
+  .ui-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+html,
+.ui-scrollbar {
+  scrollbar-gutter: stable;
+}
+
+html::-webkit-scrollbar,
+.ui-scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+html::-webkit-scrollbar-track,
+.ui-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+.ui-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: var(--ui-radius-pill);
+  background: var(--scrollbar-thumb);
+}
+
+html::-webkit-scrollbar-thumb:hover,
+.ui-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.color-rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+
+.color-rules b { color: var(--ui-text); }
+
+/* 标识页：分区标题在卡片外，内容各自成卡 */
+.section-block {
+  margin-bottom: 28px;
+}
+
+.vis-page > .section-block:last-child,
+ui-section:last-child .section-block {
+  margin-bottom: 0;
+}
+
+.section-body {
+  padding: 22px 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-card-solid);
+  box-shadow: var(--ui-shadow);
+}
+
+/* 列表不套外层卡；文字区不套卡；标识页自己管理 section 卡 */
+.section-body:has(.table-wrap),
+.section-body:has(.list-card),
+.section-body:has(.color-rules),
+.section-body.plain {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* 卡片内层：透明底 + 描边 + 阴影 */
+.inner-card {
+  border: 1px solid var(--ui-inner-border);
+  border-radius: var(--ui-radius-card);
+  background: transparent;
+  box-shadow: var(--ui-shadow);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+.section-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border: 1px solid var(--ui-border-2);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-raised);
+  color: var(--ui-muted);
+  font: 600 9.5px/1 var(--ui-font-mono);
+  letter-spacing: .06em;
+}
+
+.section-card {
+  padding: 22px 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-card-solid);
+  box-shadow: var(--ui-shadow);
+}
+
+.section-card .table-wrap {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+

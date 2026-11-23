@@ -1,0 +1,114 @@
+<div class="shell" [class.bare-shell]="bare()">
+  <aside class="side" [class.collapsed]="collapsed()">
+    <div class="brand-row">
+      <a class="brand" routerLink="/vis/overview">
+        <span class="brand-mark">VIS</span>
+        <span class="brand-text">
+          设计区
+          <small>视觉与原型</small>
+        </span>
+      </a>
+      <button
+        type="button"
+        class="collapse"
+        [attr.aria-label]="collapsed() ? '展开左侧导航' : '收起左侧导航'"
+        [attr.aria-expanded]="!collapsed()"
+        (click)="toggleCollapsed()"
+      >
+        <span class="collapse-icon" aria-hidden="true">{{ collapsed() ? '»' : '«' }}</span>
+      </button>
+    </div>
+
+    <nav class="nav ui-scrollbar" aria-label="VIS 设计区导航">
+      <a class="item" routerLink="/vis/overview" routerLinkActive="active"><mat-icon class="item-icon" svgIcon="app:home" aria-hidden="true"></mat-icon>总览</a>
+
+      @for (section of navSections; track section.key) {
+        <div class="nav-section">
+          <button
+            type="button"
+            class="nav-section-head"
+            [attr.aria-expanded]="isSectionOpen(section.key)"
+            (click)="toggleSection(section.key)"
+          >
+            <span>{{ section.label }}</span>
+            <mat-icon
+              class="nav-caret"
+              [class.closed]="!isSectionOpen(section.key)"
+              svgIcon="app:chevron-down"
+              aria-hidden="true"
+            ></mat-icon>
+          </button>
+
+          @if (isSectionOpen(section.key)) {
+            @if (section.groups) {
+              @for (group of section.groups; track group.key) {
+                <button
+                  type="button"
+                  class="nav-group-head"
+                  [attr.aria-expanded]="isGroupOpen(section.key, group.key)"
+                  (click)="toggleGroup(section.key, group.key)"
+                >
+                  <span>{{ group.label }}</span>
+                  <mat-icon
+                    class="nav-caret"
+                    [class.closed]="!isGroupOpen(section.key, group.key)"
+                    svgIcon="app:chevron-down"
+                    aria-hidden="true"
+                  ></mat-icon>
+                </button>
+
+                @if (isGroupOpen(section.key, group.key)) {
+                  @for (link of group.links; track link.route) {
+                    <a class="item sub" [routerLink]="link.route" routerLinkActive="active">
+                      <mat-icon class="item-icon" [svgIcon]="'app:' + link.icon" aria-hidden="true"></mat-icon>{{ link.label }}
+                    </a>
+                  }
+                }
+              }
+            } @else {
+              @for (link of section.links; track link.route) {
+                <a class="item" [routerLink]="link.route" routerLinkActive="active">
+                  <mat-icon class="item-icon" [svgIcon]="'app:' + link.icon" aria-hidden="true"></mat-icon>{{ link.label }}
+                </a>
+              }
+            }
+          }
+        </div>
+      }
+
+      <p class="coming">其余内容迁移中</p>
+    </nav>
+
+    <div class="foot">
+      <button
+        type="button"
+        class="theme-toggle"
+        [attr.aria-label]="theme.theme() === 'dark' ? '切换到浅色主题' : '切换到深色主题'"
+        [attr.aria-pressed]="theme.theme() === 'dark'"
+        (click)="theme.toggle()"
+      >
+        <mat-icon
+          class="theme-icon"
+          [svgIcon]="theme.theme() === 'dark' ? 'app:sun' : 'app:moon'"
+          aria-hidden="true"
+        ></mat-icon>
+        <span class="theme-label">{{ theme.theme() === 'dark' ? '浅色模式' : '深色模式' }}</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-shell" [class.framed-page]="framed()" [class.bare-page]="bare()">
+      <div class="page-frame" [class.is-framed]="framed()">
+        @if (!bare()) {
+          <header class="page-frame-head">
+            <app-page-crumb [label]="crumb()" />
+          </header>
+        }
+        <div class="page-frame-body">
+          <router-outlet />
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
