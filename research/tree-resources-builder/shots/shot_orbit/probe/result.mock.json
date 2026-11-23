@@ -1,0 +1,17 @@
+{
+  "kind": "r8_probe_result",
+  "schema": "r8-result/1",
+  "shot_id": "shot_orbit",
+  "model": "mock",
+  "run_id": "mock-20261123170404",
+  "seed": 0,
+  "video": "clay/clay.mp4",
+  "duration_s": 5.0,
+  "fps": 24.0,
+  "resolution": [
+    720,
+    404
+  ],
+  "status": "mock",
+  "notes": "下游本地模型尚未接入；本结果只验证 request/result 接口，不代表生成质量。"
+}

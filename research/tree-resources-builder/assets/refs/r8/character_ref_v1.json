@@ -1,0 +1,18 @@
+{
+  "kind": "r8_reference",
+  "schema": "r8-reference/1",
+  "slot": "@图片1",
+  "role": "character_identity",
+  "file": "character_ref_v1.jpg",
+  "resolution": [
+    1333,
+    2000
+  ],
+  "style": "photoreal cinematic, natural daylight, neutral gray seamless background",
+  "notes": "Adult male, short dark hair, black jacket / black t-shirt / black trousers / black sneakers; full body, hands and feet visible, neutral A-pose, light-gray seamless background. Source: user-provided attachment.",
+  "source": "user attachment",
+  "prompt": "",
+  "negative": "",
+  "sha256": "41cde53ca47bcdfd011655482381590e346cb2b54fc2e2bb48ffe628ae18415a",
+  "created_at": "2026-11-23"
+}

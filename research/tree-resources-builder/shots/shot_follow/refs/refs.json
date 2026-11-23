@@ -1,0 +1,94 @@
+{
+  "kind": "r8_refs",
+  "schema": "r8-refs/1",
+  "shot_id": "shot_follow",
+  "refs": [
+    {
+      "token": "@白模1",
+      "aliases": [
+        "@视频1",
+        "@Clay Render 1"
+      ],
+      "kind": "clay_render",
+      "file": "clay/clay.mp4",
+      "required": true,
+      "status": "ready",
+      "inherit": [
+        "运镜",
+        "景别",
+        "主体走位",
+        "遮挡关系",
+        "时间节奏"
+      ],
+      "exclude": [
+        "材质",
+        "颜色",
+        "身份"
+      ]
+    },
+    {
+      "token": "@图片1",
+      "kind": "image",
+      "file": "refs/images/image1.jpg",
+      "required": false,
+      "status": "bound",
+      "role": "character_identity",
+      "slot": "角色身份 / 服装",
+      "original_name": "character_ref_v1.jpg",
+      "inherit": [
+        "身份",
+        "服装",
+        "长相"
+      ],
+      "exclude": [
+        "机位",
+        "构图"
+      ]
+    },
+    {
+      "token": "@图片2",
+      "kind": "image",
+      "file": "refs/images/image2.jpg",
+      "required": false,
+      "status": "bound",
+      "role": "scene_style",
+      "slot": "场景 / 材质 / 光线",
+      "original_name": "scene_ref_v1.jpg",
+      "inherit": [
+        "材质",
+        "光线",
+        "色调",
+        "氛围"
+      ],
+      "exclude": [
+        "机位",
+        "走位"
+      ]
+    }
+  ],
+  "bindings": {
+    "kind": "r8_ref_bindings",
+    "schema": "r8-bindings/1",
+    "shot_id": "shot_follow",
+    "slots": {
+      "@图片1": {
+        "role": "character_identity",
+        "slot": "角色身份 / 服装",
+        "path": "refs/images/image1.jpg",
+        "status": "bound",
+        "original_name": "character_ref_v1.jpg",
+        "note": "角色参考图；没有就先留 unbound，用 text-only prompt。"
+      },
+      "@图片2": {
+        "role": "scene_style",
+        "slot": "场景 / 材质 / 光线",
+        "path": "refs/images/image2.jpg",
+        "status": "bound",
+        "original_name": "scene_ref_v1.jpg",
+        "note": "场景/风格参考图；没有就先留 unbound，用 text-only prompt。"
+      }
+    }
+  },
+  "refs_status": "ready",
+  "note": "未绑定槽位在本地模型接入时补齐；@白模1 必须 ready。"
+}

@@ -1,0 +1,190 @@
+{
+  "kind": "r8_prompt",
+  "schema": "r8-prompt/1",
+  "shot_id": "shot_dolly_in",
+  "title": "推镜 · 主体迎面走来，机位沿视线恒速推近",
+  "move": {
+    "type": "dolly_in",
+    "label_zh": "推镜",
+    "easing": "linear"
+  },
+  "duration_s": 5.0,
+  "fps": 24.0,
+  "resolution": [
+    720,
+    404
+  ],
+  "measured": {
+    "lens_mm": {
+      "start": 42.0,
+      "end": 45.0,
+      "min": 42.0,
+      "max": 45.0,
+      "mean": 43.5
+    },
+    "distance_m": {
+      "start": 5.3378,
+      "end": 3.6722,
+      "min": 3.6722,
+      "max": 5.3378,
+      "mean": 4.5031
+    },
+    "camera_height_m": {
+      "start": 2.04,
+      "end": 1.422,
+      "min": 1.422,
+      "max": 2.04,
+      "mean": 1.731
+    },
+    "pitch_down_deg": {
+      "start": 12.3317,
+      "end": 8.1723,
+      "min": 8.1723,
+      "max": 12.3317,
+      "mean": 10.508
+    },
+    "subject_height_ratio_mean": 0.5498,
+    "subject_height_ratio_range": null,
+    "shot_size": "中景",
+    "centering_offset": 0.0656,
+    "subject_in_frame_ratio": 1.0,
+    "orbit_radius_m": null,
+    "orbit_angular_rate_deg_s": null,
+    "subject_motion": {
+      "speed_mps": {
+        "start": 0.471,
+        "end": 1.155,
+        "min": 0.0451,
+        "max": 1.2371,
+        "mean": 0.635
+      },
+      "path_length_m": 3.148,
+      "net_displacement_m": 2.162
+    }
+  },
+  "narrative": {
+    "subject": "一个成年男性，短深色头发，黑色夹克、黑色T恤、黑色长裤、黑色帆布鞋",
+    "scene": "城市街道，两侧红砖建筑、行道树和路边停放车辆，路面有标线，暖色日光，前景空旷无人",
+    "style": "写实电影感，暖色自然日光，低饱和",
+    "segments": [
+      {
+        "t": [
+          0.0,
+          5.0
+        ],
+        "action": "主体迎面朝镜头匀速走来，保持自然步态，不停顿、不回头；镜头沿视线同步推近。"
+      }
+    ]
+  },
+  "refs": [
+    {
+      "token": "@白模1",
+      "aliases": [
+        "@视频1",
+        "@Clay Render 1"
+      ],
+      "kind": "clay_render",
+      "file": "clay/clay.mp4",
+      "required": true,
+      "status": "ready",
+      "inherit": [
+        "运镜",
+        "景别",
+        "主体走位",
+        "遮挡关系",
+        "时间节奏"
+      ],
+      "exclude": [
+        "材质",
+        "颜色",
+        "身份"
+      ]
+    },
+    {
+      "token": "@图片1",
+      "kind": "image",
+      "file": "refs/images/image1.jpg",
+      "required": false,
+      "status": "bound",
+      "role": "character_identity",
+      "slot": "角色身份 / 服装",
+      "original_name": "character_ref_v1.jpg",
+      "inherit": [
+        "身份",
+        "服装",
+        "长相"
+      ],
+      "exclude": [
+        "机位",
+        "构图"
+      ]
+    },
+    {
+      "token": "@图片2",
+      "kind": "image",
+      "file": "refs/images/image2.jpg",
+      "required": false,
+      "status": "bound",
+      "role": "scene_style",
+      "slot": "场景 / 材质 / 光线",
+      "original_name": "scene_ref_v1.jpg",
+      "inherit": [
+        "材质",
+        "光线",
+        "色调",
+        "氛围"
+      ],
+      "exclude": [
+        "机位",
+        "走位"
+      ]
+    }
+  ],
+  "refs_status": "ready",
+  "prompt": "【参考声明】参考 @白模1 的运镜、景别、主体走位、遮挡关系和节奏；不从 @白模1 继承材质、颜色、身份。\n【替换关系】将 @白模1 中的灰色人形替换为 @图片1 的角色（已绑定）；场景材质、光线、色调参考 @图片2（已绑定）。\n【镜头事实】推镜，5.0s，24fps，720×404；焦段 42.0 mm → 45.0 mm；机位高度 2.04 m → 1.42 m；主体距离 5.34 m → 3.67 m；主体占画高 0.550（中景）；俯角 12.3° → 8.2°；主体速度均值 0.64 m/s（最大 1.24 m/s）；起幅→落幅距离 5.34 m → 3.67 m。\n【时间线】\n0.0–5.0s：主体迎面朝镜头匀速走来，保持自然步态，不停顿、不回头；镜头沿视线同步推近。\n【整体收束】保持 @白模1 的运镜、走位、切点和节奏不变；角色身份与服装严格参考 @图片1；场景材质与光线参考 @图片2；不穿模、不串脸、不改变动作。\n【负面约束】不要出现轨迹线、坐标轴、相机 cone；不要把白模的灰色或替身颜色带进成片；不要改变镜头时序；不要添加字幕、水印、箭头标签。",
+  "prompt_text_only": "【参考声明】参考 @白模1 的运镜、景别、主体走位、遮挡关系和节奏；不从 @白模1 继承材质、颜色、身份。\n【角色】一个成年男性，短深色头发，黑色夹克、黑色T恤、黑色长裤、黑色帆布鞋。\n【场景】城市街道，两侧红砖建筑、行道树和路边停放车辆，路面有标线，暖色日光，前景空旷无人；风格：写实电影感，暖色自然日光，低饱和。\n【镜头事实】推镜，5.0s，24fps，720×404；焦段 42.0 mm → 45.0 mm；机位高度 2.04 m → 1.42 m；主体距离 5.34 m → 3.67 m；主体占画高 0.550（中景）；俯角 12.3° → 8.2°；主体速度均值 0.64 m/s（最大 1.24 m/s）；起幅→落幅距离 5.34 m → 3.67 m。\n【时间线】\n0.0–5.0s：主体迎面朝镜头匀速走来，保持自然步态，不停顿、不回头；镜头沿视线同步推近。\n【整体收束】角色、场景、材质与光线按上面的文字生成；保持白模的运镜、走位、切点和节奏；不要改变动作，不穿模、不串脸。\n【负面约束】不要出现轨迹线、坐标轴、相机 cone；不要把白模的灰色或替身颜色带进成片；不要改变镜头时序；不要添加字幕、水印、箭头标签。",
+  "variants": {
+    "refs": "prompt/prompt.md",
+    "text_only": "prompt/prompt_textonly.md"
+  },
+  "negative": [
+    "不要出现轨迹线、坐标轴、相机 cone",
+    "不要把白模的灰色或替身颜色带进成片",
+    "不要改变镜头时序",
+    "不要添加字幕、水印、箭头标签",
+    "不要穿模、串脸、改变主体动作"
+  ],
+  "source": {
+    "shot_spec": "shot_spec.json",
+    "intrinsics": "camera/intrinsics.json",
+    "validation": "validation_report.json",
+    "narrative": "narrative.json",
+    "bindings": "refs/bindings.json",
+    "clay": "clay/clay.mp4",
+    "rule": "所有数字从几何量出，不手写"
+  },
+  "license": [
+    {
+      "asset_id": "scene_street",
+      "license": "项目程序化生成（PLAN.md C1：无生成式模型）",
+      "source_url": "harness/generate_assets.py（程序化生成）",
+      "attribution_required": false,
+      "note": "权威许可登记处：assets/manifest.json（R3 拥有）"
+    },
+    {
+      "asset_id": "character_hero",
+      "license": "项目程序化生成（PLAN.md C1：无生成式模型）",
+      "source_url": "harness/generate_assets.py（程序化生成）",
+      "attribution_required": false,
+      "note": "权威许可登记处：assets/manifest.json（R3 拥有）"
+    },
+    {
+      "asset_id": "shot001_hero_sequence",
+      "license": "项目程序化生成（PLAN.md C1：无生成式模型）",
+      "source_url": "harness/make_shot_soma.py（SOMA 序列）",
+      "attribution_required": false,
+      "note": "权威许可登记处：assets/manifest.json（R3 拥有）"
+    }
+  ],
+  "status": "ready"
+}

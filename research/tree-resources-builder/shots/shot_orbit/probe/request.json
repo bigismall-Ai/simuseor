@@ -1,0 +1,61 @@
+{
+  "kind": "r8_probe_request",
+  "schema": "r8-probe/1",
+  "shot_id": "shot_orbit",
+  "move_type": "orbit",
+  "inputs": {
+    "clay_video": "clay/clay.mp4",
+    "clay_video_fallback": null,
+    "clay_contact_sheet": "clay/contact_sheet.jpg",
+    "prompt_md": "prompt/prompt.md",
+    "prompt_json": "prompt/prompt.json",
+    "prompt_textonly_md": "prompt/prompt_textonly.md",
+    "prompt_textonly_json": "prompt/prompt_textonly.json",
+    "narrative": "narrative.json",
+    "refs": "refs/refs.json",
+    "bindings": "refs/bindings.json"
+  },
+  "expected": {
+    "duration_s": 5.0,
+    "fps": 24.0,
+    "resolution": [
+      720,
+      404
+    ],
+    "frames": 120,
+    "move_type": "orbit",
+    "shot_size": "中景",
+    "subject_height_ratio_mean": 0.5353,
+    "refs_status": "ready",
+    "checks": [
+      "运镜路径与起幅/落幅一致",
+      "主体在画、景别与占画高一致",
+      "切点/时长/节奏一致",
+      "无颜色泄漏、无轨迹线/坐标轴"
+    ]
+  },
+  "output_contract": {
+    "video": "probe/generated.mp4",
+    "metadata": "probe/result.json",
+    "required_fields": [
+      "kind",
+      "schema",
+      "shot_id",
+      "model",
+      "run_id",
+      "seed",
+      "video",
+      "duration_s",
+      "fps",
+      "resolution",
+      "status"
+    ],
+    "status_values": [
+      "ok",
+      "failed",
+      "mock"
+    ],
+    "note": "本地模型适配器读本文件，写 result.json + generated.mp4；不修改 clay/ 与 prompt/。"
+  },
+  "status": "ready"
+}

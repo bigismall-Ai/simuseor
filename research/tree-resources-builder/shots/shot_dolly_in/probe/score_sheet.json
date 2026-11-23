@@ -1,0 +1,45 @@
+{
+  "kind": "r8_score_sheet",
+  "schema": "r8-score/1",
+  "shot_id": "shot_dolly_in",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1=明显不符，3=基本一致，5=高度一致"
+  },
+  "criteria": [
+    {
+      "id": "camera_path",
+      "label": "运镜路径",
+      "hint": "起幅/落幅/方向/速度是否与白模一致"
+    },
+    {
+      "id": "blocking",
+      "label": "主体走位与遮挡",
+      "hint": "主体位置、前后关系、出入画是否一致"
+    },
+    {
+      "id": "framing",
+      "label": "景别与构图",
+      "hint": "占画高、居中、焦段感是否一致"
+    },
+    {
+      "id": "timing",
+      "label": "时间与节奏",
+      "hint": "时长、动作节点、切点是否一致"
+    },
+    {
+      "id": "identity_material",
+      "label": "身份与材质",
+      "hint": "角色/场景/材质是否按参考图或文字绑定"
+    },
+    {
+      "id": "artifacts",
+      "label": "伪影",
+      "hint": "有无颜色泄漏、轨迹线、坐标轴、穿模、字幕"
+    }
+  ],
+  "scores": null,
+  "notes": "",
+  "instructions": "人类或 VLM 逐项 1–5 分；不要用总分替代单项，运镜/走位不过关时先看 camera_path/blocking。"
+}

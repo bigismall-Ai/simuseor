@@ -1,0 +1,1101 @@
+{
+  "kind": "r8_probe_report",
+  "schema": "r8-probe/1",
+  "generated_at": "2026-11-23T17:04:04+08:00",
+  "decisions": {
+    "clay_material": "neutral_gray",
+    "downstream": "not_integrated_local_first",
+    "refs_policy": "bind images with --bind; text-only works without them",
+    "shots": [
+      "shot_dolly_in",
+      "shot_orbit",
+      "shot_follow"
+    ]
+  },
+  "shots": [
+    {
+      "shot_id": "shot_dolly_in",
+      "move_type": "dolly_in",
+      "clay": {
+        "video": "clay/clay.mp4",
+        "info": {
+          "duration_s": 5.0,
+          "resolution": [
+            720,
+            404
+          ],
+          "fps": 24.0,
+          "codec": "h264"
+        },
+        "index": "clay/index.json",
+        "checks": {
+          "frame_count_ok": true,
+          "foreground_min": 0.632443,
+          "foreground_max": 0.681996,
+          "subject_min": 0.013071,
+          "subject_max": 0.038975,
+          "subject_height_mean": 0.4885,
+          "subject_present": true,
+          "first_frame_settle_ratio": 0.756,
+          "first_frame_settled": true,
+          "all_gray": true
+        }
+      },
+      "prompt": {
+        "status": "ready",
+        "refs_status": "ready",
+        "measured": {
+          "lens_mm": {
+            "start": 42.0,
+            "end": 45.0,
+            "min": 42.0,
+            "max": 45.0,
+            "mean": 43.5
+          },
+          "distance_m": {
+            "start": 5.3378,
+            "end": 3.6722,
+            "min": 3.6722,
+            "max": 5.3378,
+            "mean": 4.5031
+          },
+          "camera_height_m": {
+            "start": 2.04,
+            "end": 1.422,
+            "min": 1.422,
+            "max": 2.04,
+            "mean": 1.731
+          },
+          "pitch_down_deg": {
+            "start": 12.3317,
+            "end": 8.1723,
+            "min": 8.1723,
+            "max": 12.3317,
+            "mean": 10.508
+          },
+          "subject_height_ratio_mean": 0.5498,
+          "subject_height_ratio_range": null,
+          "shot_size": "中景",
+          "centering_offset": 0.0656,
+          "subject_in_frame_ratio": 1.0,
+          "orbit_radius_m": null,
+          "orbit_angular_rate_deg_s": null,
+          "subject_motion": {
+            "speed_mps": {
+              "start": 0.471,
+              "end": 1.155,
+              "min": 0.0451,
+              "max": 1.2371,
+              "mean": 0.635
+            },
+            "path_length_m": 3.148,
+            "net_displacement_m": 2.162
+          }
+        },
+        "refs": [
+          {
+            "token": "@白模1",
+            "aliases": [
+              "@视频1",
+              "@Clay Render 1"
+            ],
+            "kind": "clay_render",
+            "file": "clay/clay.mp4",
+            "required": true,
+            "status": "ready",
+            "inherit": [
+              "运镜",
+              "景别",
+              "主体走位",
+              "遮挡关系",
+              "时间节奏"
+            ],
+            "exclude": [
+              "材质",
+              "颜色",
+              "身份"
+            ]
+          },
+          {
+            "token": "@图片1",
+            "kind": "image",
+            "file": "refs/images/image1.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "character_identity",
+            "slot": "角色身份 / 服装",
+            "original_name": "character_ref_v1.jpg",
+            "inherit": [
+              "身份",
+              "服装",
+              "长相"
+            ],
+            "exclude": [
+              "机位",
+              "构图"
+            ]
+          },
+          {
+            "token": "@图片2",
+            "kind": "image",
+            "file": "refs/images/image2.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "scene_style",
+            "slot": "场景 / 材质 / 光线",
+            "original_name": "scene_ref_v1.jpg",
+            "inherit": [
+              "材质",
+              "光线",
+              "色调",
+              "氛围"
+            ],
+            "exclude": [
+              "机位",
+              "走位"
+            ]
+          }
+        ],
+        "narrative": {
+          "subject": "一个成年男性，短深色头发，黑色夹克、黑色T恤、黑色长裤、黑色帆布鞋",
+          "scene": "城市街道，两侧红砖建筑、行道树和路边停放车辆，路面有标线，暖色日光，前景空旷无人",
+          "style": "写实电影感，暖色自然日光，低饱和",
+          "segments": [
+            {
+              "t": [
+                0.0,
+                5.0
+              ],
+              "action": "主体迎面朝镜头匀速走来，保持自然步态，不停顿、不回头；镜头沿视线同步推近。"
+            }
+          ]
+        },
+        "text_only": "prompt/prompt_textonly.md"
+      },
+      "request": {
+        "status": "ready",
+        "path": "probe/request.json"
+      },
+      "score_sheet": "probe/score_sheet.json",
+      "mock": "probe/result.mock.json",
+      "result": null,
+      "checks": [
+        {
+          "code": "SHOT_SPEC",
+          "ok": true,
+          "message": "shot_spec.json",
+          "hint": "镜头包缺 spec"
+        },
+        {
+          "code": "CLAY_INDEX",
+          "ok": true,
+          "message": "clay/index.json",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_VIDEO",
+          "ok": true,
+          "message": "clay.mp4",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_FRAMES",
+          "ok": true,
+          "message": "帧数 120/120",
+          "hint": "检查 conditions 是否完整"
+        },
+        {
+          "code": "CLAY_COUNT",
+          "ok": true,
+          "message": "frame_count_ok=True",
+          "hint": "帧数应与 duration×fps 一致"
+        },
+        {
+          "code": "CLAY_FOREGROUND",
+          "ok": true,
+          "message": "foreground_min=0.632443",
+          "hint": "白模可能全空"
+        },
+        {
+          "code": "CLAY_SUBJECT",
+          "ok": true,
+          "message": "subject_min=0.013071 height_mean=0.4885",
+          "hint": "主体可能在画外/过小；用 seg character 掩码复查"
+        },
+        {
+          "code": "CLAY_FIRST_FRAME",
+          "ok": true,
+          "message": "first_frame_settled=True ratio=0.756",
+          "hint": "首帧可能未结算；量 f0→f1 / f1→f2，必要时做帧手术"
+        },
+        {
+          "code": "CLAY_GRAY",
+          "ok": true,
+          "message": "全灰模式",
+          "hint": "视频参考不应带 seg 颜色"
+        },
+        {
+          "code": "CLAY_DURATION",
+          "ok": true,
+          "message": "时长 5.0 / 目标 5.0",
+          "hint": "检查视频帧数/编码"
+        },
+        {
+          "code": "CLAY_FPS",
+          "ok": true,
+          "message": "fps 24.0 / 目标 24.0",
+          "hint": "检查编码参数"
+        },
+        {
+          "code": "CLAY_RESOLUTION",
+          "ok": true,
+          "message": "分辨率 [720, 404] / 目标 [720, 404]",
+          "hint": "检查渲染尺寸"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.md",
+          "ok": true,
+          "message": "prompt/prompt.md",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.json",
+          "ok": true,
+          "message": "prompt/prompt.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/refs.json",
+          "ok": true,
+          "message": "refs/refs.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:narrative.json",
+          "ok": true,
+          "message": "narrative.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/bindings.json",
+          "ok": true,
+          "message": "refs/bindings.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/request.json",
+          "ok": true,
+          "message": "probe/request.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/score_sheet.json",
+          "ok": true,
+          "message": "probe/score_sheet.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "clay 就绪后再生成 prompt"
+        },
+        {
+          "code": "PROMPT_FACTS",
+          "ok": true,
+          "message": "镜头事实齐全",
+          "hint": "数字必须从 intrinsics/validation 量出"
+        },
+        {
+          "code": "PROMPT_MOVE",
+          "ok": true,
+          "message": "move=dolly_in",
+          "hint": "缺少运镜类型"
+        },
+        {
+          "code": "NARRATIVE",
+          "ok": true,
+          "message": "segments=1 placeholder=无",
+          "hint": "在 narrative.json 里补时间线动作，不要留 [待填]"
+        },
+        {
+          "code": "TEXTONLY_FILES",
+          "ok": true,
+          "message": "prompt_textonly.md/json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "TEXTONLY_CONTENT",
+          "ok": true,
+          "message": "len=1019 contains_facts=True",
+          "hint": "text-only 版本不应依赖参考图，且必须带镜头事实"
+        },
+        {
+          "code": "TEXTONLY_FACTS",
+          "ok": true,
+          "message": "text-only 与 refs 版 measured 一致",
+          "hint": "两版必须共用同一份几何事实"
+        },
+        {
+          "code": "REFS_STATUS",
+          "ok": true,
+          "message": "refs_status=ready",
+          "hint": "至少 @白模1 要 ready；@图片1/@图片2 可以 unbound"
+        },
+        {
+          "code": "REQUEST_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "prompt 就绪后再生成 request"
+        },
+        {
+          "code": "REQUEST_CONTRACT",
+          "ok": true,
+          "message": "output_contract 存在",
+          "hint": "本地模型适配器需要输出契约"
+        },
+        {
+          "code": "MOCK_RESULT",
+          "ok": true,
+          "message": "status=mock",
+          "hint": "mock 只验证接口，不代表模型质量"
+        },
+        {
+          "code": "RESULT_OPTIONAL",
+          "ok": true,
+          "message": "probe/result.json 尚未生成（下游本地模型未接入）",
+          "hint": "接入后由适配器写；本项不阻塞 R8.0"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "shot_id": "shot_orbit",
+      "move_type": "orbit",
+      "clay": {
+        "video": "clay/clay.mp4",
+        "info": {
+          "duration_s": 5.0,
+          "resolution": [
+            720,
+            404
+          ],
+          "fps": 24.0,
+          "codec": "h264"
+        },
+        "index": "clay/index.json",
+        "checks": {
+          "frame_count_ok": true,
+          "foreground_min": 0.609743,
+          "foreground_max": 0.650278,
+          "subject_min": 0.012524,
+          "subject_max": 0.020321,
+          "subject_height_mean": 0.4717,
+          "subject_present": true,
+          "first_frame_settle_ratio": 0.9198,
+          "first_frame_settled": true,
+          "all_gray": true
+        }
+      },
+      "prompt": {
+        "status": "ready",
+        "refs_status": "ready",
+        "measured": {
+          "lens_mm": {
+            "start": 40.0,
+            "end": 40.0,
+            "min": 40.0,
+            "max": 40.0,
+            "mean": 40.0
+          },
+          "distance_m": {
+            "start": 4.2426,
+            "end": 4.2426,
+            "min": 4.2426,
+            "max": 4.2426,
+            "mean": 4.2426
+          },
+          "camera_height_m": {
+            "start": 1.5,
+            "end": 1.5,
+            "min": 1.5,
+            "max": 1.5,
+            "mean": 1.5
+          },
+          "pitch_down_deg": {
+            "start": 8.1301,
+            "end": 8.1301,
+            "min": 8.1301,
+            "max": 8.1301,
+            "mean": 8.1301
+          },
+          "subject_height_ratio_mean": 0.5353,
+          "subject_height_ratio_range": [
+            0.523,
+            0.544
+          ],
+          "shot_size": "中景",
+          "centering_offset": 0.0534,
+          "subject_in_frame_ratio": 1.0,
+          "orbit_radius_m": 4.2,
+          "orbit_angular_rate_deg_s": 14.12,
+          "subject_motion": {
+            "speed_mps": {
+              "start": 0.471,
+              "end": 1.155,
+              "min": 0.0451,
+              "max": 1.2371,
+              "mean": 0.635
+            },
+            "path_length_m": 3.148,
+            "net_displacement_m": 2.162
+          }
+        },
+        "refs": [
+          {
+            "token": "@白模1",
+            "aliases": [
+              "@视频1",
+              "@Clay Render 1"
+            ],
+            "kind": "clay_render",
+            "file": "clay/clay.mp4",
+            "required": true,
+            "status": "ready",
+            "inherit": [
+              "运镜",
+              "景别",
+              "主体走位",
+              "遮挡关系",
+              "时间节奏"
+            ],
+            "exclude": [
+              "材质",
+              "颜色",
+              "身份"
+            ]
+          },
+          {
+            "token": "@图片1",
+            "kind": "image",
+            "file": "refs/images/image1.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "character_identity",
+            "slot": "角色身份 / 服装",
+            "original_name": "character_ref_v1.jpg",
+            "inherit": [
+              "身份",
+              "服装",
+              "长相"
+            ],
+            "exclude": [
+              "机位",
+              "构图"
+            ]
+          },
+          {
+            "token": "@图片2",
+            "kind": "image",
+            "file": "refs/images/image2.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "scene_style",
+            "slot": "场景 / 材质 / 光线",
+            "original_name": "scene_ref_v1.jpg",
+            "inherit": [
+              "材质",
+              "光线",
+              "色调",
+              "氛围"
+            ],
+            "exclude": [
+              "机位",
+              "走位"
+            ]
+          }
+        ],
+        "narrative": {
+          "subject": "一个成年男性，短深色头发，黑色夹克、黑色T恤、黑色长裤、黑色帆布鞋",
+          "scene": "城市街道，两侧红砖建筑、行道树和路边停放车辆，路面有标线，暖色日光，前景空旷无人",
+          "style": "写实电影感，暖色自然日光，低饱和",
+          "segments": [
+            {
+              "t": [
+                0.0,
+                5.0
+              ],
+              "action": "主体沿街道匀速行走；镜头绕主体转圈，主体始终在画内。"
+            }
+          ]
+        },
+        "text_only": "prompt/prompt_textonly.md"
+      },
+      "request": {
+        "status": "ready",
+        "path": "probe/request.json"
+      },
+      "score_sheet": "probe/score_sheet.json",
+      "mock": "probe/result.mock.json",
+      "result": null,
+      "checks": [
+        {
+          "code": "SHOT_SPEC",
+          "ok": true,
+          "message": "shot_spec.json",
+          "hint": "镜头包缺 spec"
+        },
+        {
+          "code": "CLAY_INDEX",
+          "ok": true,
+          "message": "clay/index.json",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_VIDEO",
+          "ok": true,
+          "message": "clay.mp4",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_FRAMES",
+          "ok": true,
+          "message": "帧数 120/120",
+          "hint": "检查 conditions 是否完整"
+        },
+        {
+          "code": "CLAY_COUNT",
+          "ok": true,
+          "message": "frame_count_ok=True",
+          "hint": "帧数应与 duration×fps 一致"
+        },
+        {
+          "code": "CLAY_FOREGROUND",
+          "ok": true,
+          "message": "foreground_min=0.609743",
+          "hint": "白模可能全空"
+        },
+        {
+          "code": "CLAY_SUBJECT",
+          "ok": true,
+          "message": "subject_min=0.012524 height_mean=0.4717",
+          "hint": "主体可能在画外/过小；用 seg character 掩码复查"
+        },
+        {
+          "code": "CLAY_FIRST_FRAME",
+          "ok": true,
+          "message": "first_frame_settled=True ratio=0.9198",
+          "hint": "首帧可能未结算；量 f0→f1 / f1→f2，必要时做帧手术"
+        },
+        {
+          "code": "CLAY_GRAY",
+          "ok": true,
+          "message": "全灰模式",
+          "hint": "视频参考不应带 seg 颜色"
+        },
+        {
+          "code": "CLAY_DURATION",
+          "ok": true,
+          "message": "时长 5.0 / 目标 5.0",
+          "hint": "检查视频帧数/编码"
+        },
+        {
+          "code": "CLAY_FPS",
+          "ok": true,
+          "message": "fps 24.0 / 目标 24.0",
+          "hint": "检查编码参数"
+        },
+        {
+          "code": "CLAY_RESOLUTION",
+          "ok": true,
+          "message": "分辨率 [720, 404] / 目标 [720, 404]",
+          "hint": "检查渲染尺寸"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.md",
+          "ok": true,
+          "message": "prompt/prompt.md",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.json",
+          "ok": true,
+          "message": "prompt/prompt.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/refs.json",
+          "ok": true,
+          "message": "refs/refs.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:narrative.json",
+          "ok": true,
+          "message": "narrative.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/bindings.json",
+          "ok": true,
+          "message": "refs/bindings.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/request.json",
+          "ok": true,
+          "message": "probe/request.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/score_sheet.json",
+          "ok": true,
+          "message": "probe/score_sheet.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "clay 就绪后再生成 prompt"
+        },
+        {
+          "code": "PROMPT_FACTS",
+          "ok": true,
+          "message": "镜头事实齐全",
+          "hint": "数字必须从 intrinsics/validation 量出"
+        },
+        {
+          "code": "PROMPT_MOVE",
+          "ok": true,
+          "message": "move=orbit",
+          "hint": "缺少运镜类型"
+        },
+        {
+          "code": "NARRATIVE",
+          "ok": true,
+          "message": "segments=1 placeholder=无",
+          "hint": "在 narrative.json 里补时间线动作，不要留 [待填]"
+        },
+        {
+          "code": "TEXTONLY_FILES",
+          "ok": true,
+          "message": "prompt_textonly.md/json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "TEXTONLY_CONTENT",
+          "ok": true,
+          "message": "len=1070 contains_facts=True",
+          "hint": "text-only 版本不应依赖参考图，且必须带镜头事实"
+        },
+        {
+          "code": "TEXTONLY_FACTS",
+          "ok": true,
+          "message": "text-only 与 refs 版 measured 一致",
+          "hint": "两版必须共用同一份几何事实"
+        },
+        {
+          "code": "REFS_STATUS",
+          "ok": true,
+          "message": "refs_status=ready",
+          "hint": "至少 @白模1 要 ready；@图片1/@图片2 可以 unbound"
+        },
+        {
+          "code": "REQUEST_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "prompt 就绪后再生成 request"
+        },
+        {
+          "code": "REQUEST_CONTRACT",
+          "ok": true,
+          "message": "output_contract 存在",
+          "hint": "本地模型适配器需要输出契约"
+        },
+        {
+          "code": "MOCK_RESULT",
+          "ok": true,
+          "message": "status=mock",
+          "hint": "mock 只验证接口，不代表模型质量"
+        },
+        {
+          "code": "RESULT_OPTIONAL",
+          "ok": true,
+          "message": "probe/result.json 尚未生成（下游本地模型未接入）",
+          "hint": "接入后由适配器写；本项不阻塞 R8.0"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "shot_id": "shot_follow",
+      "move_type": "follow",
+      "clay": {
+        "video": "clay/clay.mp4",
+        "info": {
+          "duration_s": 5.0,
+          "resolution": [
+            720,
+            404
+          ],
+          "fps": 24.0,
+          "codec": "h264"
+        },
+        "index": "clay/index.json",
+        "checks": {
+          "frame_count_ok": true,
+          "foreground_min": 0.683732,
+          "foreground_max": 0.687971,
+          "subject_min": 0.025966,
+          "subject_max": 0.034513,
+          "subject_height_mean": 0.5629,
+          "subject_present": true,
+          "first_frame_settle_ratio": 0.7682,
+          "first_frame_settled": true,
+          "all_gray": true
+        }
+      },
+      "prompt": {
+        "status": "ready",
+        "refs_status": "ready",
+        "measured": {
+          "lens_mm": {
+            "start": 35.0,
+            "end": 35.0,
+            "min": 35.0,
+            "max": 35.0,
+            "mean": 35.0
+          },
+          "distance_m": {
+            "start": 3.0939,
+            "end": 3.0939,
+            "min": 3.0939,
+            "max": 3.0939,
+            "mean": 3.0939
+          },
+          "camera_height_m": {
+            "start": 1.75,
+            "end": 1.75,
+            "min": 1.75,
+            "max": 1.75,
+            "mean": 1.75
+          },
+          "pitch_down_deg": {
+            "start": 14.0288,
+            "end": 14.0288,
+            "min": 14.0288,
+            "max": 14.0288,
+            "mean": 14.0288
+          },
+          "subject_height_ratio_mean": 0.6376,
+          "subject_height_ratio_range": null,
+          "shot_size": "中近景",
+          "centering_offset": 0.1517,
+          "subject_in_frame_ratio": 1.0,
+          "orbit_radius_m": null,
+          "orbit_angular_rate_deg_s": null,
+          "subject_motion": {
+            "speed_mps": {
+              "start": 0.471,
+              "end": 1.155,
+              "min": 0.0451,
+              "max": 1.2371,
+              "mean": 0.635
+            },
+            "path_length_m": 3.148,
+            "net_displacement_m": 2.162
+          }
+        },
+        "refs": [
+          {
+            "token": "@白模1",
+            "aliases": [
+              "@视频1",
+              "@Clay Render 1"
+            ],
+            "kind": "clay_render",
+            "file": "clay/clay.mp4",
+            "required": true,
+            "status": "ready",
+            "inherit": [
+              "运镜",
+              "景别",
+              "主体走位",
+              "遮挡关系",
+              "时间节奏"
+            ],
+            "exclude": [
+              "材质",
+              "颜色",
+              "身份"
+            ]
+          },
+          {
+            "token": "@图片1",
+            "kind": "image",
+            "file": "refs/images/image1.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "character_identity",
+            "slot": "角色身份 / 服装",
+            "original_name": "character_ref_v1.jpg",
+            "inherit": [
+              "身份",
+              "服装",
+              "长相"
+            ],
+            "exclude": [
+              "机位",
+              "构图"
+            ]
+          },
+          {
+            "token": "@图片2",
+            "kind": "image",
+            "file": "refs/images/image2.jpg",
+            "required": false,
+            "status": "bound",
+            "role": "scene_style",
+            "slot": "场景 / 材质 / 光线",
+            "original_name": "scene_ref_v1.jpg",
+            "inherit": [
+              "材质",
+              "光线",
+              "色调",
+              "氛围"
+            ],
+            "exclude": [
+              "机位",
+              "走位"
+            ]
+          }
+        ],
+        "narrative": {
+          "subject": "一个成年男性，短深色头发，黑色夹克、黑色T恤、黑色长裤、黑色帆布鞋",
+          "scene": "城市街道，两侧红砖建筑、行道树和路边停放车辆，路面有标线，暖色日光，前景空旷无人",
+          "style": "写实电影感，暖色自然日光，低饱和",
+          "segments": [
+            {
+              "t": [
+                0.0,
+                5.0
+              ],
+              "action": "主体背对镜头向前匀速行走；镜头与主体同速跟随，距离保持不变。"
+            }
+          ]
+        },
+        "text_only": "prompt/prompt_textonly.md"
+      },
+      "request": {
+        "status": "ready",
+        "path": "probe/request.json"
+      },
+      "score_sheet": "probe/score_sheet.json",
+      "mock": "probe/result.mock.json",
+      "result": null,
+      "checks": [
+        {
+          "code": "SHOT_SPEC",
+          "ok": true,
+          "message": "shot_spec.json",
+          "hint": "镜头包缺 spec"
+        },
+        {
+          "code": "CLAY_INDEX",
+          "ok": true,
+          "message": "clay/index.json",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_VIDEO",
+          "ok": true,
+          "message": "clay.mp4",
+          "hint": "先跑 --render"
+        },
+        {
+          "code": "CLAY_FRAMES",
+          "ok": true,
+          "message": "帧数 120/120",
+          "hint": "检查 conditions 是否完整"
+        },
+        {
+          "code": "CLAY_COUNT",
+          "ok": true,
+          "message": "frame_count_ok=True",
+          "hint": "帧数应与 duration×fps 一致"
+        },
+        {
+          "code": "CLAY_FOREGROUND",
+          "ok": true,
+          "message": "foreground_min=0.683732",
+          "hint": "白模可能全空"
+        },
+        {
+          "code": "CLAY_SUBJECT",
+          "ok": true,
+          "message": "subject_min=0.025966 height_mean=0.5629",
+          "hint": "主体可能在画外/过小；用 seg character 掩码复查"
+        },
+        {
+          "code": "CLAY_FIRST_FRAME",
+          "ok": true,
+          "message": "first_frame_settled=True ratio=0.7682",
+          "hint": "首帧可能未结算；量 f0→f1 / f1→f2，必要时做帧手术"
+        },
+        {
+          "code": "CLAY_GRAY",
+          "ok": true,
+          "message": "全灰模式",
+          "hint": "视频参考不应带 seg 颜色"
+        },
+        {
+          "code": "CLAY_DURATION",
+          "ok": true,
+          "message": "时长 5.0 / 目标 5.0",
+          "hint": "检查视频帧数/编码"
+        },
+        {
+          "code": "CLAY_FPS",
+          "ok": true,
+          "message": "fps 24.0 / 目标 24.0",
+          "hint": "检查编码参数"
+        },
+        {
+          "code": "CLAY_RESOLUTION",
+          "ok": true,
+          "message": "分辨率 [720, 404] / 目标 [720, 404]",
+          "hint": "检查渲染尺寸"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.md",
+          "ok": true,
+          "message": "prompt/prompt.md",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:prompt/prompt.json",
+          "ok": true,
+          "message": "prompt/prompt.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/refs.json",
+          "ok": true,
+          "message": "refs/refs.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:narrative.json",
+          "ok": true,
+          "message": "narrative.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:refs/bindings.json",
+          "ok": true,
+          "message": "refs/bindings.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/request.json",
+          "ok": true,
+          "message": "probe/request.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_FILE:probe/score_sheet.json",
+          "ok": true,
+          "message": "probe/score_sheet.json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "PROMPT_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "clay 就绪后再生成 prompt"
+        },
+        {
+          "code": "PROMPT_FACTS",
+          "ok": true,
+          "message": "镜头事实齐全",
+          "hint": "数字必须从 intrinsics/validation 量出"
+        },
+        {
+          "code": "PROMPT_MOVE",
+          "ok": true,
+          "message": "move=follow",
+          "hint": "缺少运镜类型"
+        },
+        {
+          "code": "NARRATIVE",
+          "ok": true,
+          "message": "segments=1 placeholder=无",
+          "hint": "在 narrative.json 里补时间线动作，不要留 [待填]"
+        },
+        {
+          "code": "TEXTONLY_FILES",
+          "ok": true,
+          "message": "prompt_textonly.md/json",
+          "hint": "先跑 --prompt"
+        },
+        {
+          "code": "TEXTONLY_CONTENT",
+          "ok": true,
+          "message": "len=991 contains_facts=True",
+          "hint": "text-only 版本不应依赖参考图，且必须带镜头事实"
+        },
+        {
+          "code": "TEXTONLY_FACTS",
+          "ok": true,
+          "message": "text-only 与 refs 版 measured 一致",
+          "hint": "两版必须共用同一份几何事实"
+        },
+        {
+          "code": "REFS_STATUS",
+          "ok": true,
+          "message": "refs_status=ready",
+          "hint": "至少 @白模1 要 ready；@图片1/@图片2 可以 unbound"
+        },
+        {
+          "code": "REQUEST_STATUS",
+          "ok": true,
+          "message": "status=ready",
+          "hint": "prompt 就绪后再生成 request"
+        },
+        {
+          "code": "REQUEST_CONTRACT",
+          "ok": true,
+          "message": "output_contract 存在",
+          "hint": "本地模型适配器需要输出契约"
+        },
+        {
+          "code": "MOCK_RESULT",
+          "ok": true,
+          "message": "status=mock",
+          "hint": "mock 只验证接口，不代表模型质量"
+        },
+        {
+          "code": "RESULT_OPTIONAL",
+          "ok": true,
+          "message": "probe/result.json 尚未生成（下游本地模型未接入）",
+          "hint": "接入后由适配器写；本项不阻塞 R8.0"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "summary": {
+    "n_shots": 3,
+    "passed": 3,
+    "failed": 0,
+    "all_pass": true,
+    "refs_status": {
+      "ready": 3,
+      "partial": 0,
+      "blocked": 0
+    },
+    "downstream_models": [],
+    "note": "下游本地模型尚未接入；本次只验证 clay/prompt/request 接口与机器可判项。"
+  }
+}

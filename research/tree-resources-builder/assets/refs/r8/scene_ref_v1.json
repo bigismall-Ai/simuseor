@@ -1,0 +1,18 @@
+{
+  "kind": "r8_reference",
+  "schema": "r8-reference/1",
+  "slot": "@图片2",
+  "role": "scene_style",
+  "file": "scene_ref_v1.jpg",
+  "resolution": [
+    2000,
+    1124
+  ],
+  "style": "photoreal cinematic, warm natural daylight, muted realistic palette",
+  "notes": "Daytime city street: red-brick buildings both sides, street trees, parked cars at curb, road markings, empty foreground, no main subject. Scene has more parked cars than the white model; use for material/light/color, verify blocking in the probe. Source: user-provided attachment.",
+  "source": "user attachment",
+  "prompt": "",
+  "negative": "",
+  "sha256": "06384d85ff48fbc459918cd8a15d30948880ebabe27b57126f84cd4ef9d32175",
+  "created_at": "2026-11-23"
+}
