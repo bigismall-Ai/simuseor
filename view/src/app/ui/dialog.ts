@@ -70,7 +70,7 @@ let seq = 0;
       width: min(440px, 100%);
       max-height: calc(100vh - 48px);
       overflow: auto;
-      padding: 18px;
+      padding: 20px;
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-lg);
       background: var(--ui-overlay);
@@ -102,7 +102,12 @@ let seq = 0;
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 16px;
+      margin-top: 18px;
+    }
+
+    /* 投影进来的 [dialog-actions] 包装层不参与布局，让按钮直接吃到 flex gap */
+    :host ::ng-deep .actions > * {
+      display: contents;
     }
 
     .actions:not(:has(*)) {
