@@ -1,6 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
 import { CardOriginComponent } from './card-origin';
+import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -59,6 +60,7 @@ const SOURCES: Record<string, SourceInfo> = {
   selector: 'md-hub-card',
   imports: [
     BadgeComponent,
+    CardBodyComponent,
     CardKebabComponent,
     CardOriginComponent,
     CardMarkComponent,
@@ -130,7 +132,7 @@ const SOURCES: Record<string, SourceInfo> = {
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
-      <div class="acard-body">
+      <ui-card-body>
         <!-- 类别行：一句说明。描述常常是空的，退到更新时间；
              行高固定 —— 不是每张卡都有这句，整墙卡片的节奏不能因此参差。 -->
         <p class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
@@ -153,12 +155,7 @@ const SOURCES: Record<string, SourceInfo> = {
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
-          @if (item().url) {
-            <ui-card-origin
-              [href]="item().url"
-              [label]="'打开 ' + source().name + ' 上的原始页面'"
-            />
-          }
+          <ui-card-origin [href]="item().url" [label]="source().name" />
 
           <button
             class="acard-primary primary btn-xs"
@@ -171,7 +168,7 @@ const SOURCES: Record<string, SourceInfo> = {
             {{ busy() ? '正在创建…' : '下载到工作流库' }}
           </button>
         </div>
-      </div>
+      </ui-card-body>
     </article>
   `,
   styleUrls: ['./asset-card.css'],

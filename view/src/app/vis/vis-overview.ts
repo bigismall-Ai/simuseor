@@ -47,7 +47,6 @@ export class VisOverviewComponent {
     { kicker: 'PROTOTYPE · 内容', label: '行内提示', desc: '四层反馈里的 L1 提示条', route: '/vis/prototypes/components/notice' },
     { kicker: 'PROTOTYPE · 内容', label: '提示与来源', desc: 'Toast 表面与来源胶囊', route: '/vis/prototypes/components/feedback' },
     { kicker: 'PROTOTYPE · 外壳', label: '滚动条', desc: '导航 6px / 页面 10px 的统一滚动条', route: '/vis/prototypes/components/scrollbar' },
-    { kicker: 'PROTOTYPE · 内容', label: '卡片', desc: '六层卡片结构与尺寸约束', route: '/vis/prototypes/components/card-design' },
     { kicker: 'PROTOTYPE · 内容', label: '资产卡片', desc: '模型 / 发现 / 工作流共用的真实组件', route: '/vis/prototypes/components/cards' },
     { kicker: 'PROTOTYPE · 内容', label: '厂牌', desc: '官方 logo、家族码与兜底缩写', route: '/vis/prototypes/components/families' },
     { kicker: 'PAGE', label: '模型库', desc: '本地库 / 发现共用一套筛选与卡片', route: '/vis/prototypes/pages/models' },

@@ -1,6 +1,8 @@
 import { Component, HostListener, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
+import { CardOriginComponent } from './card-origin';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -38,6 +40,8 @@ interface StateView {
   selector: 'app-workflow-card',
   imports: [
     BadgeComponent,
+    CardBodyComponent,
+    CardOriginComponent,
     CardKebabComponent,
     CardMarkComponent,
     CardMenuComponent,
@@ -115,9 +119,7 @@ interface StateView {
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
-      <div class="acard-body">
-        <h3 class="wc-name acard-name" [title]="it().path">{{ it().title || it().name }}</h3>
-        <div class="acard-details">
+      <ui-card-body [title]="it().title || it().name" titleClass="wc-name">
 
         <!-- 类别行：只留文件格式（UI / API）。时间已按原型撤掉 ——
              它不是「这条资产是什么」，而且每张卡都不同，扫视时只会变成噪声。 -->
@@ -182,6 +184,8 @@ interface StateView {
         <!-- ⑥ 动作行：⋯ 在左，主按钮在右。⋯ 的下拉菜单仍由页面层接管，
              卡片只负责报出点击坐标（菜单才会贴着按钮弹，而不是回页面顶上去找）。 -->
         <div class="acard-foot">
+          <ui-card-origin label="本地" />
+
           <div class="wc-acts">
           </div>
           <button
@@ -221,8 +225,7 @@ interface StateView {
             <span>{{ view().label }}</span>
           </button>
         </div>
-        </div>
-      </div>
+      </ui-card-body>
     </article>
   `,
   styles: [

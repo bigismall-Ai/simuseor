@@ -6,6 +6,7 @@ import { ThemeService } from '../core/theme.service';
 import { fmtInt } from '../core/types';
 import { BadgeComponent } from './badge';
 import { CardOriginComponent } from './card-origin';
+import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
@@ -63,6 +64,7 @@ const FILE_TYPES = new Set([
   selector: 'md-model-card',
   imports: [
     BadgeComponent,
+    CardBodyComponent,
     CardKebabComponent,
     CardOriginComponent,
     CardMarkComponent,
@@ -107,9 +109,7 @@ const FILE_TYPES = new Set([
         }
       </div>
 
-      <div class="card-body acard-body">
-        <h2 class="card-name acard-name" [title]="primary()?.id">{{ primary()?.name }}</h2>
-        <div class="acard-details">
+      <ui-card-body [title]="primary()?.name || ''" titleClass="card-name">
 
         <!-- 类别行：参数 / 量化（原先在铭牌顶行上，那块地归了身份行）。
              高度固定 —— 规格不是每张卡都有，行高不一致整墙卡片就会参差。 -->
@@ -134,9 +134,7 @@ const FILE_TYPES = new Set([
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="card-actions acard-foot">
-          @if (origin().href) {
-            <ui-card-origin [href]="origin().href" [label]="origin().title" />
-          }
+          <ui-card-origin [href]="origin().href" [label]="origin().name || '本地'" />
 
           <!-- 发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
                其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：
@@ -149,8 +147,7 @@ const FILE_TYPES = new Set([
             下载
           </button>
         </div>
-        </div>
-      </div>
+      </ui-card-body>
     </article>
   `,
   styleUrls: ['./asset-card.css'],
@@ -284,10 +281,11 @@ export class ModelCardComponent {
    */
   readonly origin = computed(() => {
     const p = this.primary();
-    if (!p) return { href: '', label: '', title: '' };
+    if (!p) return { href: '', label: '', name: '', title: '' };
     return {
       href: p.url || '',
       label: sourceShort(p.source),
+      name: sourceLabel(p.source),
       title: `打开 ${sourceLabel(p.source)} 上的原始页面`,
     };
   });

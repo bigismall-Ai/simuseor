@@ -74,7 +74,6 @@ export const NAV_SECTIONS: NavSection[] = [
         key: 'content',
         label: '内容',
         links: [
-          { label: '卡片', route: '/vis/prototypes/components/card-design', icon: 'card' },
           { label: '资产卡片', route: '/vis/prototypes/components/cards', icon: 'library' },
           { label: '厂牌', route: '/vis/prototypes/components/families', icon: 'brand' },
           { label: '行内提示', route: '/vis/prototypes/components/notice', icon: 'alert' },

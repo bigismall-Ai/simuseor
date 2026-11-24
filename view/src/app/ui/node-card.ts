@@ -1,6 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
 import { CardOriginComponent } from './card-origin';
+import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -62,6 +63,7 @@ export interface NodeCardItem {
   selector: 'md-node-card',
   imports: [
     BadgeComponent,
+    CardBodyComponent,
     CardKebabComponent,
     CardOriginComponent,
     CardMarkComponent,
@@ -150,9 +152,7 @@ export interface NodeCardItem {
       }
       </div>
 
-      <div class="acard-body">
-        <h3 class="acard-name" [title]="displayName()">{{ displayName() }}</h3>
-        <div class="acard-details">
+      <ui-card-body [title]="displayName()">
         <p class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
 
         <!-- ④ 状态槽：左状态 · 白线 · 右节点类数 -->
@@ -184,9 +184,10 @@ export interface NodeCardItem {
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
-          @if (item().repo) {
-            <ui-card-origin [href]="item().repo ?? ''" label="打开仓库" />
-          }
+          <ui-card-origin
+            [href]="item().repo ?? ''"
+            [label]="item().repo ? 'GitHub' : '本地'"
+          />
 
           @if (mode() === 'library') {
             <button
@@ -234,9 +235,7 @@ export interface NodeCardItem {
             <button class="acard-primary primary btn-xs" type="button" disabled>已安装</button>
           }
         </div>
-        </div>
-      </div>
-
+      </ui-card-body>
     </article>
   `,
   styleUrls: ['./asset-card.css'],

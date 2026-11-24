@@ -14,7 +14,6 @@ import { VisPillsComponent } from './vis-pills';
 import { VisRadiusComponent } from './vis-radius';
 import { VisShellComponent } from './vis-shell';
 import { VisTablesComponent } from './vis-tables';
-import { ProtoCardDesignComponent } from './prototypes/components/card-design/card-design';
 import { ProtoCardsComponent } from './prototypes/cards';
 import { ProtoFamiliesComponent } from './prototypes/components/families/families';
 import { ProtoFeedbackComponent } from './prototypes/components/feedback/feedback';
@@ -65,8 +64,7 @@ export const VIS_ROUTES: Routes = [
       },
       {
         path: 'prototypes/components/card-design',
-        component: ProtoCardDesignComponent,
-        title: 'VIS 原型组件 · 卡片',
+        redirectTo: 'prototypes/components/cards',
       },
       {
         path: 'prototypes/components/sidebar',

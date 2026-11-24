@@ -6,6 +6,7 @@ import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
 import { BadgeComponent } from './badge';
 import { CardOriginComponent } from './card-origin';
+import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
@@ -38,6 +39,7 @@ import { CoverPlateComponent } from './cover-plate';
   selector: 'md-library-card',
   imports: [
     BadgeComponent,
+    CardBodyComponent,
     CardKebabComponent,
     CardOriginComponent,
     CardMarkComponent,
@@ -112,9 +114,7 @@ import { CoverPlateComponent } from './cover-plate';
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩 -->
-      <div class="acard-body">
-        <h3 class="mname acard-name" [title]="model().name">{{ model().name }}</h3>
-        <div class="acard-details">
+      <ui-card-body [title]="model().name" titleClass="mname">
         <!-- 类别行：任务 + 规格。文件类型已经在标签位，只有回落成任务时才需要在这里说一次 -->
         <p class="acard-meta" [title]="metaLine()">{{ metaLine() }}</p>
 
@@ -136,9 +136,7 @@ import { CoverPlateComponent } from './cover-plate';
 
         <!-- ⑥ 动作行：原站图标在左，主按钮在右；⋯ 在右上角 -->
         <div class="acard-foot">
-          @if (sourceHref()) {
-            <ui-card-origin [href]="sourceHref()" [label]="sourceTitle()" />
-          }
+          <ui-card-origin [href]="sourceHref()" [label]="model().source || '本地'" />
 
           <button
             type="button"
@@ -150,8 +148,7 @@ import { CoverPlateComponent } from './cover-plate';
             {{ primaryLabel() }}
           </button>
         </div>
-        </div>
-      </div>
+      </ui-card-body>
     </article>
   `,
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写

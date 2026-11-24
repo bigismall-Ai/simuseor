@@ -27,32 +27,6 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
   ],
   styleUrl: './card-design.scss',
   template: `
-    <p class="set-label">三种卡片 · 同一套骨架</p>
-    <p class="set-lead">
-      本地库卡 / 发现卡 / 工作流卡共用同一份外壳与动作行；⋯ 固定在右上角，
-      菜单是独立的 <code>ui-card-menu</code>，在下面单独展示。
-    </p>
-
-    <div class="card-row">
-      <div class="card-cell">
-        <p class="cell-label">本地库卡</p>
-        <md-library-card [model]="library" cover="/samples/shot-2.jpg" />
-        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
-      </div>
-
-      <div class="card-cell">
-        <p class="cell-label">发现卡</p>
-        <md-model-card [items]="[discover]" cover="/samples/shot-4.jpg" />
-        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
-      </div>
-
-      <div class="card-cell">
-        <p class="cell-label">工作流卡</p>
-        <app-workflow-card [it]="workflow" />
-        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
-      </div>
-    </div>
-
     <p class="set-label">展开态 · hover / focus</p>
     <p class="set-lead">
       hover 或键盘 focus 后，acard-body 向上展开：类别、状态槽、分类标签、动作行（原站图标 + 主按钮）。
@@ -110,7 +84,7 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
       <li><b>③ 原站</b><span>动作行左侧的小图标；右上角只留给 ⋯。没有原站时留空。</span></li>
       <li><b>④ 状态槽</b><span>左状态 · 细线 · 右大小；本地库看磁盘，发现看下载，工作流看文件体积。</span></li>
       <li><b>⑤ 分类标签</b><span>恰好一枚，用 ui-badge（sm）表达文件类型 / 分组 / 节点类。</span></li>
-      <li><b>⑥ 动作行</b><span>右上角 ⋯ 弹出菜单；动作行只留唯一主按钮，危险动作收进菜单。</span></li>
+      <li><b>⑥ 动作行</b><span>原站标签在左、唯一主按钮在右；右上角 ⋯ 的菜单承载次要与危险动作。</span></li>
     </ol>
 
     <p class="set-label">尺寸与 token</p>

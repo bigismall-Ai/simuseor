@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { ProtoCardDesignComponent } from './components/card-design/card-design';
 import { HubCardComponent } from '../../ui/hub-card';
 import { LibraryCardComponent } from '../../ui/library-card';
 import { ModelCardComponent } from '../../ui/model-card';
 import { NodeCardComponent } from '../../ui/node-card';
+import { TableComponent } from '../../ui/table';
 import type { NodeCardItem } from '../../ui/node-card';
 import { WorkflowCardComponent } from '../../ui/workflow-card';
 import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../visual-data';
@@ -18,57 +20,88 @@ import type { WorkflowItem } from '../../core/types';
   selector: 'app-proto-cards',
   imports: [
     HubCardComponent,
+    ProtoCardDesignComponent,
     LibraryCardComponent,
     ModelCardComponent,
     NodeCardComponent,
+    TableComponent,
     WorkflowCardComponent,
   ],
   styleUrl: './cards.scss',
   template: `
-    <div class="card-set">
-      <p class="set-label">本地库</p>
-      <div class="card-grid">
-        @for (model of libraryModels; track model.id) {
-          <md-library-card [model]="model" [cover]="coverFor($index)" />
-        }
+    <p class="set-label">资产矩阵</p>
+    <p class="set-lead">
+      2 个状态 × 3 种资产。每格直接渲染产品组件，组件名标在卡下；共用层与差异层拆在下面。
+    </p>
+
+    <div class="matrix-wrap">
+      <div class="matrix">
+        <span class="m-corner" aria-hidden="true"></span>
+        <span class="m-col">模型</span>
+        <span class="m-col">工作流</span>
+        <span class="m-col">节点</span>
+
+        <span class="m-row">本地</span>
+        <div class="m-cell">
+          <md-library-card [model]="libraryModels[0]" cover="/samples/shot-2.jpg" />
+          <code>md-library-card</code>
+        </div>
+        <div class="m-cell">
+          <app-workflow-card [it]="workflows[0]" />
+          <code>app-workflow-card</code>
+        </div>
+        <div class="m-cell">
+          <md-node-card [item]="localNode" mode="library" />
+          <code>md-node-card · mode=library</code>
+        </div>
+
+        <span class="m-row">发现</span>
+        <div class="m-cell">
+          <md-model-card [items]="[searchItems[0]]" cover="/samples/shot-4.jpg" />
+          <code>md-model-card</code>
+        </div>
+        <div class="m-cell">
+          <md-hub-card [item]="hubWorkflows[0]" />
+          <code>md-hub-card</code>
+        </div>
+        <div class="m-cell">
+          <md-node-card [item]="nodePacks[1]" mode="discover" />
+          <code>md-node-card · mode=discover</code>
+        </div>
       </div>
     </div>
 
-    <div class="card-set">
-      <p class="set-label">发现</p>
-      <div class="card-grid">
-        @for (item of searchItems; track item.id) {
-          <md-model-card [items]="[item]" [cover]="$index === 0 ? '/samples/shot-4.jpg' : ''" />
-        }
-      </div>
-    </div>
+    <p class="set-label">共用与差异</p>
+    <ui-table>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">层</th>
+            <th scope="col">共用</th>
+            <th scope="col">按资产变</th>
+            <th scope="col">按状态变</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of layers; track row.layer) {
+            <tr>
+              <td>{{ row.layer }}</td>
+              <td>{{ row.shared }}</td>
+              <td>{{ row.byKind }}</td>
+              <td>{{ row.byState }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </ui-table>
 
-    <div class="card-set">
-      <p class="set-label">工作流 · 本地</p>
-      <div class="card-grid">
-        @for (workflow of workflows; track workflow.name) {
-          <app-workflow-card [it]="workflow" />
-        }
-      </div>
-    </div>
+    <p class="matrix-note">
+      模型与工作流当前是「本地 / 发现各一个组件」，节点已收敛成「一个组件 + mode」。
+      建议后续把前两者也并成 mode，少维护一份外壳；这轮先不动数据契约。
+    </p>
 
-    <div class="card-set">
-      <p class="set-label">工作流 · 发现</p>
-      <div class="card-grid">
-        @for (hub of hubWorkflows; track hub.id) {
-          <md-hub-card [item]="hub" />
-        }
-      </div>
-    </div>
-
-    <div class="card-set">
-      <p class="set-label">节点包</p>
-      <div class="card-grid">
-        @for (node of nodePacks; track node.id) {
-          <md-node-card [item]="node" />
-        }
-      </div>
-    </div>
+    <!-- 结构与状态：从原「卡片」页并进来，保持一处维护 -->
+    <app-proto-card-design />
   `,
 })
 export class ProtoCardsComponent {
@@ -168,6 +201,26 @@ export class ProtoCardsComponent {
       install_type: 'git',
       installed: true,
     },
+  ];
+
+  readonly localNode: NodeCardItem = {
+    ...this.nodePacks[0],
+    installed: true,
+    tracked: true,
+    dir: '/extensions/ComfyUI-Manager',
+    requirements: true,
+    commit: 'a1b2c3d',
+  };
+
+  readonly layers = [
+    { layer: '外壳', shared: '圆角 / 阴影 / 描边 / 网格位置', byKind: '—', byState: '—' },
+    { layer: '封面', shared: 'app-cover-plate', byKind: '纹样 / 家族色 / 节点铭牌', byState: '有图 / 无图' },
+    { layer: '身份行', shared: 'ui-card-mark + 两行 + ui-card-kebab', byKind: '第一行内容', byState: '—' },
+    { layer: '标题 / 详情', shared: 'ui-card-body', byKind: '标题与 meta', byState: '—' },
+    { layer: '状态槽', shared: '.acard-slot 几何', byKind: '左右字段', byState: '磁盘 vs 下载' },
+    { layer: '标签', shared: 'ui-badge（sm）', byKind: '文件类型 / 分组 / 节点类', byState: '—' },
+    { layer: '动作行', shared: 'ui-card-origin + .acard-primary', byKind: '主按钮文案', byState: '打开 / 下载 / 安装' },
+    { layer: '菜单', shared: 'ui-card-kebab + ui-card-menu', byKind: '条目内容', byState: '删除 / 运行 / 卸载' },
   ];
 
   coverFor(index: number): string {
