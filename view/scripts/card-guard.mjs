@@ -29,7 +29,7 @@ const allowedHints = ['data-tone', '.acard-menu', '.pill-demo', 'is-mono', 'is-m
 
 const files = fs
   .readdirSync(uiDir)
-  .filter((name) => name.endsWith('-card.ts'))
+  .filter((name) => name.endsWith('-card.ts') && name !== 'list-card.ts')
   .map((name) => path.join(uiDir, name));
 
 const violations = [];
@@ -65,7 +65,11 @@ function walk(dir) {
 const rawSection = /class="section-(?:block|head|pill|body)/;
 const localButton = /class="(?:btn|toggle-chip)[\s"]/;
 const materialButton = /(?:mat-flat-button|matButton=|mat-button\b|mat-stroked-button)/;
-const localSurface = /^\.(?:toast|source)\s*\{/;
+const localSurface = /^\.(?:toast|source|notice|table-wrap|list-card|modal)\s*\{/;
+const localTable = /class="(?:table-wrap|list-card)"/;
+const localChip = /class="(?:filter-chip|segmented)"/;
+const localEmpty = /class="empty[\s"]/;
+const localBadge = /class="badge[\s"]/;
 
 for (const file of walk(visDir)) {
   const rel = path.relative(root, file);
@@ -85,6 +89,21 @@ for (const file of walk(visDir)) {
       if (localButton.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  本地按钮类，请改用 <ui-button>  ${trimmed}`);
       }
+      if (localTable.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  手写表格/列表外壳，请改用 <ui-table> / <ui-list-card>  ${trimmed}`);
+      }
+      if (localChip.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  本地胶囊/分段控件，请改用 <ui-chip> / <ui-segmented>  ${trimmed}`);
+      }
+      if (localEmpty.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  手写空状态，请改用 <ui-empty>  ${trimmed}`);
+      }
+      if (localBadge.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  本地状态徽标，请改用 <ui-badge>  ${trimmed}`);
+      }
+      if (/class="notice/.test(trimmed) && !trimmed.includes('mock-notice')) {
+        violations.push(`${rel}:${index + 1}  本地提示条，请改用 <ui-notice>  ${trimmed}`);
+      }
       if (materialButton.test(trimmed)) {
         const allowed =
           trimmed.includes('mat-dialog-close') ||
@@ -93,6 +112,16 @@ for (const file of walk(visDir)) {
           trimmed.includes('mat-icon');
         if (!allowed) {
           violations.push(`${rel}:${index + 1}  Material 按钮，请改用 <ui-button>  ${trimmed}`);
+        }
+      }
+    }
+
+    if (isTemplate) {
+      const inputs = trimmed.match(/<input[^>]*>/g) ?? [];
+      for (const tag of inputs) {
+        const allowed = /type="(?:checkbox|radio|file|range|color|date|time)"/.test(tag) || tag.includes('matInput');
+        if (!allowed) {
+          violations.push(`${rel}:${index + 1}  原生文本输入，请改用 <ui-input>  ${tag.slice(0, 80)}`);
         }
       }
     }

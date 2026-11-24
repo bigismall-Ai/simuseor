@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '../../../../ui/page-header';
 import { SourceChipComponent } from '../../../../ui/source-chip';
 import { ToastComponent } from '../../../../ui/toast';
 import { UiButtonComponent } from '../../../../ui/button';
+import { InputComponent } from '../../../../ui/input';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
 
@@ -64,6 +65,7 @@ interface TaskItem {
     SourceChipComponent,
     ToastComponent,
     UiButtonComponent,
+    InputComponent,
     UiMaterialModule,
   ],
   styleUrl: './downloads.scss',
@@ -82,7 +84,7 @@ interface TaskItem {
         </ui-page-header>
 
         @if (notice()) {
-          <div class="notice-dock">
+          <div class="toast-dock">
             <ui-toast [dismissible]="true" (dismiss)="notice.set('')">
               {{ notice() }}
             </ui-toast>
@@ -109,19 +111,18 @@ interface TaskItem {
           </div>
           <div class="composer">
             <div class="composer-row">
-              <label class="field">
-                <svg viewBox="0 0 16 16" aria-hidden="true">
+              <ui-input
+                class="composer-input"
+                ariaLabel="模型 ID"
+                [value]="repoId()"
+                (valueChange)="onRepoInput($event)"
+                placeholder="组织/仓库，如 Comfy-Org/MiniMax-H3-Image"
+              >
+                <svg input-leading viewBox="0 0 16 16" aria-hidden="true">
                   <circle cx="7" cy="7" r="4.4" />
                   <path d="M10.3 10.3 13.6 13.6" />
                 </svg>
-                <input
-                  type="text"
-                  [value]="repoId()"
-                  (input)="onRepoInput($event)"
-                  aria-label="模型 ID"
-                  placeholder="组织/仓库，如 Comfy-Org/MiniMax-H3-Image"
-                />
-              </label>
+              </ui-input>
               <ui-button variant="primary" type="button" [disabled]="resolving() || !repoId().trim()" (click)="resolveRepo()">
                 {{ resolving() ? '解析中…' : '解析' }}
               </ui-button>
@@ -256,19 +257,19 @@ interface TaskItem {
               </button>
             </div>
 
-            <label class="field task-search">
-              <svg viewBox="0 0 16 16" aria-hidden="true">
+            <ui-input
+              class="task-search"
+              size="sm"
+              ariaLabel="搜索任务"
+              [value]="taskQuery()"
+              (valueChange)="onTaskQuery($event)"
+              placeholder="搜索任务"
+            >
+              <svg input-leading viewBox="0 0 16 16" aria-hidden="true">
                 <circle cx="7" cy="7" r="4.4" />
                 <path d="M10.3 10.3 13.6 13.6" />
               </svg>
-              <input
-                type="search"
-                [value]="taskQuery()"
-                (input)="onTaskQuery($event)"
-                placeholder="搜索任务"
-                aria-label="搜索任务"
-              />
-            </label>
+            </ui-input>
           </div>
 
           <div class="task-list">
@@ -676,8 +677,8 @@ export class ProtoDownloadsComponent {
     );
   }
 
-  onRepoInput(event: Event): void {
-    this.repoId.set((event.target as HTMLInputElement).value);
+  onRepoInput(value: string): void {
+    this.repoId.set(value);
     this.repoError.set('');
   }
 
@@ -777,8 +778,8 @@ export class ProtoDownloadsComponent {
     this.notice.set('已在文件管理器中打开 workspace/downloads/。');
   }
 
-  onTaskQuery(event: Event): void {
-    this.taskQuery.set((event.target as HTMLInputElement).value);
+  onTaskQuery(value: string): void {
+    this.taskQuery.set(value);
   }
 
   pct(task: TaskItem): number {

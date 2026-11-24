@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { InputComponent } from '../ui/input';
 import { UiMaterialModule } from '../ui/material';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
@@ -8,15 +9,46 @@ import { VisualPageComponent } from './visual-page';
 @Component({
   selector: 'app-vis-inputs',
   standalone: true,
-  imports: [SectionBlockComponent, ReactiveFormsModule, UiMaterialModule, VisualPageComponent],
+  imports: [
+    InputComponent,
+    ReactiveFormsModule,
+    SectionBlockComponent,
+    UiMaterialModule,
+    VisualPageComponent,
+  ],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
       title="输入框"
-      hint="表单控件统一走 Material；标签是浮动标签，不再另起一行 label。"
+      hint="文本输入走 ui-input（标签在上、错误在下）；选择、多行与勾选仍用 Material。"
     >
-      <ui-section title="文本输入" pill="Form field">
-          <p class="hint">默认高度 36px，14px 圆角，1px 细描边；标签是浮动标签。</p>
+      <ui-section title="共享输入" pill="ui-input">
+        <div class="field-grid">
+          <ui-input label="模型 ID" placeholder="如 microsoft/Phi-3-mini-4k-instruct" />
+          <ui-input label="Revision" value="main" />
+          <ui-input label="仓库地址" [mono]="true" value="Comfy-Org/MiniMax-H3-Image" hint="支持粘贴完整仓库 URL。" />
+          <ui-input label="代理端口" [mono]="true" inputmode="numeric" value="7890" />
+          <ui-input
+            label="仓库 ID"
+            value="MiniMaxAI/MiniMax-H3"
+            error="这个仓库不存在，检查拼写。"
+          />
+          <ui-input label="由系统托管" value="models/flux" [disabled]="true" />
+        </div>
+        <div class="field-grid field-grid-wide">
+          <ui-input label="搜索模型" placeholder="搜索名称、来源或路径">
+            <svg input-leading viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4" />
+              <path d="M10.3 10.3 13.6 13.6" />
+            </svg>
+          </ui-input>
+          <ui-input label="保存目录" [mono]="true" value="models/flux">
+            <span input-trailing>.safetensors</span>
+          </ui-input>
+        </div>
+      </ui-section>
+      <ui-section title="Material 补充" pill="Form field">
+          <p class="hint">仅在选择、多行、勾选这类 Material 原生控件上使用；文本输入不要再走这里。</p>
 
           <div class="field-grid">
             <mat-form-field appearance="outline" subscriptSizing="dynamic">

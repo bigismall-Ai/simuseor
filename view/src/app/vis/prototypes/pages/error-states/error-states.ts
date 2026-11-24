@@ -1,16 +1,15 @@
+import { NoticeComponent } from '../../../../ui/notice';
+import { TableComponent } from '../../../../ui/table';
+import { DialogComponent } from '../../../../ui/dialog';
+import { InputComponent } from '../../../../ui/input';
 import { UiButtonComponent } from '../../../../ui/button';
 import { ToastComponent } from '../../../../ui/toast';
 import { SourceChipComponent } from '../../../../ui/source-chip';
 import {
   Component,
   DestroyRef,
-  ElementRef,
-  HostListener,
-  Injector,
-  afterNextRender,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
 import { EmptyComponent } from '../../../../ui/empty';
@@ -58,6 +57,10 @@ interface SpecRow {
       UiButtonComponent,
     ToastComponent,
     SourceChipComponent,
+    TableComponent,
+    NoticeComponent,
+    DialogComponent,
+    InputComponent,
   ],
   styleUrl: './error-states.scss',
   template: `
@@ -83,16 +86,9 @@ interface SpecRow {
                 <span class="tag">downloads / discover</span>
               </div>
               <div class="card-body">
-                <div class="notice error">
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <circle cx="8" cy="8" r="6" />
-                    <path d="M8 5v3.6M8 11.2v.2" />
-                  </svg>
-                  <div class="body">
-                    <strong>Hugging Face 搜索失败：Client error '401 Unauthorized' for url …</strong>
-                    <p>没有任何下一步；原始英文异常直接进页面。</p>
-                  </div>
-                </div>
+                <ui-notice tone="error" icon="!" title="Hugging Face 搜索失败：Client error '401 Unauthorized' for url …">
+                  没有任何下一步；原始英文异常直接进页面。
+                </ui-notice>
               </div>
             </div>
 
@@ -102,22 +98,15 @@ interface SpecRow {
                 <span class="tag">resolve</span>
               </div>
               <div class="card-body">
-                <div class="notice warn">
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M8 2 15 14H1z" />
-                    <path d="M8 6v4M8 12.2v.2" />
-                  </svg>
-                  <div class="body">
-                    <strong>解析失败，请检查模型 ID / 网络 / token</strong>
-                    <p>三个可能原因并列，用户不知道先查哪一个。</p>
-                  </div>
-                </div>
+                <ui-notice tone="warn" icon="!" title="解析失败，请检查模型 ID / 网络 / token">
+                  三个可能原因并列，用户不知道先查哪一个。
+                </ui-notice>
               </div>
             </div>
           </div>
 
-          <div class="table-wrap">
-            <table class="spec-table">
+          <ui-table>
+<table class="spec-table">
               <thead>
                 <tr>
                   <th>位置</th>
@@ -158,7 +147,7 @@ interface SpecRow {
                 </tr>
               </tbody>
             </table>
-          </div>
+</ui-table>
         </section>
 
         <!-- 02 定稿 -->
@@ -177,35 +166,17 @@ interface SpecRow {
               </div>
               <div class="card-body">
                 @if (authInfo()) {
-                  <div class="notice info" role="status">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 7.4v3.2M8 4.9v.2" />
-                    </svg>
-                    <div class="body">
-                      <strong>{{ authInfo() }}</strong>
-                      <p>当前页面状态没有丢失，可以继续操作。</p>
-                    </div>
-                  </div>
+                  <ui-notice tone="info" icon="i" title="{{ authInfo() }}">
+                    当前页面状态没有丢失，可以继续操作。
+                  </ui-notice>
                 } @else {
-                  <div class="notice error" role="alert">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 5v3.6M8 11.2v.2" />
-                    </svg>
-                    <div class="body">
-                      <strong>Hugging Face 需要登录</strong>
-                      <p>Token 无效或已过期。更新 Token 后重试，当前页面不会丢失。</p>
-                      <div class="acts">
-                        <ui-button variant="secondary" size="sm" type="button" (click)="resolveAuth('settings')">
-                          去设置
-                        </ui-button>
-                        <ui-button variant="secondary" size="sm" type="button" (click)="resolveAuth('retry')">
-                          重试
-                        </ui-button>
-                      </div>
+                  <ui-notice tone="error" icon="!" title="Hugging Face 需要登录">
+                    Token 无效或已过期。更新 Token 后重试，当前页面不会丢失。
+                    <div notice-actions>
+                      <ui-button variant="secondary" size="sm" type="button" (click)="resolveAuth('settings')">去设置</ui-button>
+                      <ui-button variant="secondary" size="sm" type="button" (click)="resolveAuth('retry')">重试</ui-button>
                     </div>
-                  </div>
+                  </ui-notice>
                 }
               </div>
             </div>
@@ -217,33 +188,17 @@ interface SpecRow {
               </div>
               <div class="card-body">
                 @if (warnInfo()) {
-                  <div class="notice info" role="status">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 7.4v3.2M8 4.9v.2" />
-                    </svg>
-                    <div class="body">
-                      <strong>{{ warnInfo() }}</strong>
-                      <p>这是可继续的提示，不需要用户停下手上的事。</p>
-                    </div>
-                  </div>
+                  <ui-notice tone="info" icon="i" title="{{ warnInfo() }}">
+                    这是可继续的提示，不需要用户停下手上的事。
+                  </ui-notice>
                 } @else {
-                  <div class="notice warn" role="status">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <path d="M8 2 15 14H1z" />
-                      <path d="M8 6v4M8 12.2v.2" />
-                    </svg>
-                    <div class="body">
-                      <strong>本机显存可能不足</strong>
-                      <p>推荐组合预计 28.9 GB，显卡 16 GB。可继续下载，运行时需要分层加载。</p>
-                      <div class="acts">
-                        <ui-button variant="secondary" size="sm" type="button" (click)="acceptWarn()">仍要下载</ui-button>
-                        <ui-button variant="ghost" size="sm" type="button" (click)="switchSmaller()">
-                          换更小版本
-                        </ui-button>
-                      </div>
+                  <ui-notice tone="warn" icon="!" title="本机显存可能不足">
+                    推荐组合预计 28.9 GB，显卡 16 GB。可继续下载，运行时需要分层加载。
+                    <div notice-actions>
+                      <ui-button variant="secondary" size="sm" type="button" (click)="acceptWarn()">仍要下载</ui-button>
+                      <ui-button variant="ghost" size="sm" type="button" (click)="switchSmaller()">换更小版本</ui-button>
                     </div>
-                  </div>
+                  </ui-notice>
                 }
               </div>
             </div>
@@ -254,16 +209,9 @@ interface SpecRow {
                 <ui-badge tone="blue">role=status</ui-badge>
               </div>
               <div class="card-body">
-                <div class="notice info" role="status">
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <circle cx="8" cy="8" r="6" />
-                    <path d="M8 7.4v3.2M8 4.9v.2" />
-                  </svg>
-                  <div class="body">
-                    <strong>已切换到镜像</strong>
-                    <p>直连超时，下载自动走 hf-mirror，速度 3.2 MB/s。</p>
-                  </div>
-                </div>
+                <ui-notice tone="info" icon="i" title="已切换到镜像">
+                  直连超时，下载自动走 hf-mirror，速度 3.2 MB/s。
+                </ui-notice>
               </div>
             </div>
 
@@ -274,31 +222,16 @@ interface SpecRow {
               </div>
               <div class="card-body">
                 @if (undoDone()) {
-                  <div class="notice info" role="status">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 7.4v3.2M8 4.9v.2" />
-                    </svg>
-                    <div class="body">
-                      <strong>已恢复 3 个文件 · 14.9 GB</strong>
-                      <p>回到原目录，模型库与工作流引用未受影响。</p>
-                    </div>
-                  </div>
+                  <ui-notice tone="info" icon="i" title="已恢复 3 个文件 · 14.9 GB">
+                    回到原目录，模型库与工作流引用未受影响。
+                  </ui-notice>
                 } @else {
-                  <div class="notice ok" role="status">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <path d="M3 8.4 6.2 11.6 13 4.8" />
-                    </svg>
-                    <div class="body">
-                      <strong>已移入回收站</strong>
-                      <p>3 个文件 · 14.9 GB。可在资源管理器中恢复。</p>
-                      <div class="acts">
-                        <ui-button variant="secondary" size="sm" type="button" (click)="undoDone.set(true)">
-                          撤销
-                        </ui-button>
-                      </div>
+                  <ui-notice tone="ok" icon="✓" title="已移入回收站">
+                    3 个文件 · 14.9 GB。可在资源管理器中恢复。
+                    <div notice-actions>
+                      <ui-button variant="secondary" size="sm" type="button" (click)="undoDone.set(true)">撤销</ui-button>
                     </div>
-                  </div>
+                  </ui-notice>
                 }
               </div>
             </div>
@@ -311,30 +244,14 @@ interface SpecRow {
           <h3>L2 字段错误 · 只影响一个输入框</h3>
           <div class="card">
             <div class="card-body">
-              <div class="field-demo">
-                <label for="es-repo">模型 ID</label>
-                <div class="input" [class.bad]="!!repoError()">
-                  <input
-                    id="es-repo"
-                    type="text"
-                    [value]="repoValue()"
-                    [attr.aria-invalid]="!!repoError()"
-                    [attr.aria-describedby]="repoError() ? 'es-repo-err' : 'es-repo-ok'"
-                    (input)="onRepoInput($event)"
-                  />
-                </div>
-                @if (repoError()) {
-                  <span class="field-msg" id="es-repo-err" role="alert">
-                    <svg viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 5v3.6M8 11.2v.2" />
-                    </svg>
-                    {{ repoError() }}
-                  </span>
-                } @else {
-                  <span class="field-msg ok" id="es-repo-ok">格式正确，可以解析。</span>
-                }
-              </div>
+              <ui-input
+                label="模型 ID"
+                [mono]="true"
+                [value]="repoValue()"
+                (valueChange)="onRepoInput($event)"
+                [error]="repoError()"
+                hint="格式正确，可以解析。"
+              />
               <ui-button variant="secondary" type="button" (click)="useValidRepo()">
                 改用 Comfy-Org/MiniMax-H3-Image
               </ui-button>
@@ -393,19 +310,10 @@ interface SpecRow {
           <h3>L4 阻断弹层 · 必须由用户做决定</h3>
           <div class="card">
             <div class="card-body dialog-body">
-              <div class="dialog-demo">
-                <div class="dialog">
-                  <h3>删除这个模型？</h3>
-                  <p>将从磁盘移除 3 个文件，模型库条目也会消失。工作流引用会变成缺失状态。</p>
-                  <div class="do">不可撤销的操作只在这里出现；普通失败不要用弹层。</div>
-                  <div class="row">
-                    <ui-button variant="secondary" type="button" (click)="cancelPreview()">取消</ui-button>
-                    <ui-button variant="danger" type="button" (click)="openDialog()">
-                      删除 3 个文件
-                    </ui-button>
-                  </div>
-                </div>
-              </div>
+              <p class="hint">
+                弹层统一用 <code>ui-dialog</code>：Esc / 点遮罩关闭，打开时焦点进弹层，关闭后还给触发按钮。
+                不可撤销的操作只在这里出现；普通失败不要用弹层。
+              </p>
               @if (dialogNote()) {
                 <p class="hint" role="status">{{ dialogNote() }}</p>
               }
@@ -469,8 +377,8 @@ interface SpecRow {
           <p class="lead">
             标题回答「发生了什么」，说明回答「为什么 + 下一步」，按钮只放一个主操作。原因不确定时不要并列三个猜测。
           </p>
-          <div class="table-wrap">
-            <table class="spec-table">
+          <ui-table>
+<table class="spec-table">
               <thead>
                 <tr>
                   <th>场景</th>
@@ -492,14 +400,14 @@ interface SpecRow {
                 }
               </tbody>
             </table>
-          </div>
+</ui-table>
         </section>
 
         <!-- 04 规格 -->
         <section class="section">
           <h2><span class="num">04</span>组件规格</h2>
-          <div class="table-wrap">
-            <table class="spec-table">
+          <ui-table>
+<table class="spec-table">
               <thead>
                 <tr>
                   <th>层级</th>
@@ -530,7 +438,7 @@ interface SpecRow {
                 }
               </tbody>
             </table>
-          </div>
+</ui-table>
           <p class="hint forbid">
             <strong>禁止：</strong>把原始异常 / 堆栈 / URL 直接印在页面上；同一错误在顶部和弹层各出现一次；用
             Toast 承载需要用户决策的错误；用红色表达「没有结果」；同时给两个主按钮。
@@ -554,41 +462,24 @@ interface SpecRow {
           </div>
         }
 
-        <!-- 真实阻断弹层 -->
-        @if (dialogOpen()) {
-          <div class="overlay" (click)="closeDialog()">
-            <div
-              class="dialog modal"
-              role="alertdialog"
-              aria-modal="true"
-              aria-labelledby="es-dlg-title"
-              aria-describedby="es-dlg-desc"
-              (click)="$event.stopPropagation()"
-            >
-              <h3 id="es-dlg-title">删除这个模型？</h3>
-              <p id="es-dlg-desc">
-                将从磁盘移除 3 个文件，模型库条目也会消失。工作流引用会变成缺失状态。
-              </p>
-              <div class="do">这个操作不可撤销。Esc 或点遮罩可以取消。</div>
-              <div class="row">
-                <ui-button #cancelBtn variant="secondary" type="button" (click)="closeDialog()">
-                  取消
-                </ui-button>
-                <ui-button variant="danger" type="button" (click)="confirmDelete()">
-                  删除 3 个文件
-                </ui-button>
-              </div>
-            </div>
+        <!-- 真实阻断弹层：统一走 ui-dialog -->
+        <ui-dialog [(open)]="dialogOpen" title="删除这个模型？" [destructive]="true">
+          将从磁盘移除 3 个文件，模型库条目也会消失。工作流引用会变成缺失状态。
+          <div dialog-actions>
+            <ui-button variant="secondary" type="button" data-autofocus (click)="closeDialog()">
+              取消
+            </ui-button>
+            <ui-button variant="danger" type="button" (click)="confirmDelete()">
+              删除 3 个文件
+            </ui-button>
           </div>
-        }
+        </ui-dialog>
       </div>
     </app-proto-shell>
   `,
 })
 export class ProtoErrorStatesComponent {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly injector = inject(Injector);
-  private readonly cancelBtn = viewChild<UiButtonComponent>('cancelBtn');
 
   readonly authInfo = signal('');
   readonly warnInfo = signal('');
@@ -738,8 +629,7 @@ export class ProtoErrorStatesComponent {
     this.warnInfo.set('已切换到 W4A8 单文件组合 · 预计 28.9 GB');
   }
 
-  onRepoInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  onRepoInput(value: string): void {
     this.repoValue.set(value);
     this.repoError.set(this.validateRepo(value));
   }
@@ -790,7 +680,6 @@ export class ProtoErrorStatesComponent {
   openDialog(): void {
     this.dialogOpen.set(true);
     this.dialogNote.set('');
-    afterNextRender(() => this.cancelBtn()?.focus(), { injector: this.injector });
   }
 
   closeDialog(): void {
@@ -803,8 +692,4 @@ export class ProtoErrorStatesComponent {
     this.showToast('ok', '已删除 3 个文件', '模型库条目已移除，可在回收站恢复。');
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.dialogOpen()) this.closeDialog();
-  }
 }

@@ -67,9 +67,12 @@
 ## 共享组件（`src/app/ui/`）
 
 - 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-card-mark`、`app-cover-plate`
-- 动作：`ui-button`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`、`ui-field`
+- 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`
+- 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
+- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`
 - 卡片：`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
-- 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`；`npm run cards:guard` 会拦下这些漂移
+- 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移
+- 原生 `<input type="text">` 一律用 `ui-input`；checkbox / radio / file / Material `matInput` 例外
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致
 
 ## VIS 目录

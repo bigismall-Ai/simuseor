@@ -26,7 +26,7 @@
   font-size: 18px;
 }
 
-.notice-dock {
+.toast-dock {
   position: fixed;
   left: 50%;
   bottom: 24px;
@@ -49,7 +49,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .notice-dock {
+  .toast-dock {
     animation: none;
   }
 }
@@ -104,44 +104,6 @@
   display: flex;
   gap: 9px;
   align-items: center;
-}
-
-.field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 10px;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  background: var(--ui-inset);
-}
-
-.field svg {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: var(--faint);
-  stroke-width: 1.5;
-}
-
-.field input {
-  min-width: 0;
-  width: 100%;
-  height: auto;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  outline: 0;
-  color: var(--ui-text);
-  font-size: 12.5px;
-  box-shadow: none;
-}
-
-.field input::placeholder {
-  color: var(--faint);
 }
 
 .composer-row .field {
@@ -406,7 +368,11 @@
 .task-search {
   margin-left: auto;
   width: 210px;
-  height: 30px;
+}
+
+.composer-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .task-list {

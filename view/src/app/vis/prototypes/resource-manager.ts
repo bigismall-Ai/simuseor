@@ -1,3 +1,5 @@
+import type { BadgeTone } from '../../ui/badge';
+import { BadgeComponent } from '../../ui/badge';
 import { UiButtonComponent } from '../../ui/button';
 import { Component, signal } from '@angular/core';
 import { UiMaterialModule } from '../../ui/material';
@@ -19,7 +21,7 @@ interface AssetRow {
   size: string;
   modified: string;
   link: string;
-  tone: 'green' | 'blue' | 'orange' | 'gray';
+  tone: BadgeTone;
   checksum: string;
   refs: string[];
 }
@@ -28,7 +30,13 @@ interface AssetRow {
 @Component({
   selector: 'app-proto-resource-manager',
   standalone: true,
-  imports: [PageHeaderComponent, ProtoShellComponent, UiButtonComponent, UiMaterialModule],
+  imports: [
+    BadgeComponent,
+    PageHeaderComponent,
+    ProtoShellComponent,
+    UiButtonComponent,
+    UiMaterialModule,
+  ],
   styleUrl: './resource-manager.scss',
   template: `
     <app-proto-shell active="resources" title="资源 / 本机" hint="按目录浏览模型、工作流与节点">
@@ -106,7 +114,7 @@ interface AssetRow {
                     <td>{{ row.type }}</td>
                     <td class="num mono">{{ row.size }}</td>
                     <td class="muted">{{ row.modified }}</td>
-                    <td><span class="badge" [class]="'badge ' + row.tone">{{ row.link }}</span></td>
+                    <td><ui-badge [tone]="row.tone">{{ row.link }}</ui-badge></td>
                   </tr>
                 }
               </tbody>

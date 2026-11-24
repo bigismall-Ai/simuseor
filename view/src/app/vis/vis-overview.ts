@@ -44,6 +44,7 @@ export class VisOverviewComponent {
     { kicker: 'COMPONENT', label: '模态框', desc: '16px 圆角、焦点圈闭、MatDialog 样张', route: '/vis/modals' },
     { kicker: 'PROTOTYPE · 外壳', label: '侧边导航', desc: '展开 224 / 收起 64 与分组折叠', route: '/vis/prototypes/components/sidebar' },
     { kicker: 'PROTOTYPE · 外壳', label: '页头', desc: 'kicker / 标题 / hint / 操作的分层页头', route: '/vis/prototypes/components/page-header' },
+    { kicker: 'PROTOTYPE · 内容', label: '行内提示', desc: '四层反馈里的 L1 提示条', route: '/vis/prototypes/components/notice' },
     { kicker: 'PROTOTYPE · 内容', label: '提示与来源', desc: 'Toast 表面与来源胶囊', route: '/vis/prototypes/components/feedback' },
     { kicker: 'PROTOTYPE · 外壳', label: '滚动条', desc: '导航 6px / 页面 10px 的统一滚动条', route: '/vis/prototypes/components/scrollbar' },
     { kicker: 'PROTOTYPE · 内容', label: '卡片', desc: '六层卡片结构与尺寸约束', route: '/vis/prototypes/components/card-design' },

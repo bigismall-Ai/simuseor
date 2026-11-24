@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { SegmentedComponent } from './segmented';
 
 /** 视图切换里的一项（本地库 / 发现）。 */
 export interface PageViewOption {
@@ -19,6 +20,7 @@ export interface PageViewOption {
  */
 @Component({
   selector: 'ui-page-header',
+  imports: [SegmentedComponent],
   template: `
     <header class="ui-page-header">
       <div class="ui-page-heading">
@@ -28,18 +30,12 @@ export interface PageViewOption {
         <div class="ph-title-row">
           <h1>{{ title() }}</h1>
           @if (viewOptions().length) {
-            <div class="segmented" role="group" aria-label="视图切换">
-              @for (o of viewOptions(); track o.key) {
-                <button
-                  type="button"
-                  [class.active]="o.key === view()"
-                  [attr.aria-pressed]="o.key === view()"
-                  (click)="viewChange.emit(o.key)"
-                >
-                  {{ o.label }}
-                </button>
-              }
-            </div>
+            <ui-segmented
+              [options]="viewOptions()"
+              [value]="view()"
+              (valueChange)="viewChange.emit($event)"
+              label="视图切换"
+            />
           }
         </div>
         @if (hint()) {
@@ -108,48 +104,6 @@ export interface PageViewOption {
     }
 
     /* 视图切换 */
-    .segmented {
-      display: inline-flex;
-      gap: 2px;
-      padding: 3px;
-      border: 1px solid var(--ui-border-2);
-      border-radius: var(--ui-radius-pill);
-      background: var(--ui-panel-3);
-    }
-
-    .segmented button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 24px;
-      padding: 0 11px;
-      border: none;
-      border-radius: var(--ui-radius-pill);
-      background: none;
-      color: var(--ui-muted);
-      font-size: 11.5px;
-      font-weight: 500;
-      box-shadow: none;
-      cursor: pointer;
-    }
-
-    .segmented button:hover {
-      background: color-mix(in oklab, var(--ui-panel) 60%, transparent);
-      color: var(--ui-text);
-    }
-
-    .segmented button.active {
-      background: var(--ui-primary);
-      color: var(--ui-on-primary);
-      font-weight: 500;
-    }
-
-    .segmented button.active:hover {
-      background: var(--ui-primary);
-      color: var(--ui-on-primary);
-    }
-
-    /* ④ 动作区：本页没有动作时整区留空，不留占位 */
     .ui-page-actions:empty {
       display: none;
     }

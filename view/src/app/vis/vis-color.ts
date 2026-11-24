@@ -1,3 +1,4 @@
+import { TableComponent } from '../ui/table';
 import { Component, computed, inject } from '@angular/core';
 import { ThemeService } from '../core/theme.service';
 import { AURORA_COLORS, COLOR_ROLES, INK_COLORS } from './visual-data';
@@ -7,7 +8,7 @@ import { VisualPageComponent } from './visual-page';
 @Component({
   selector: 'app-vis-color',
   standalone: true,
-  imports: [SectionBlockComponent, VisualPageComponent],
+  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="色彩">
@@ -37,9 +38,8 @@ import { VisualPageComponent } from './visual-page';
           </ui-section>
 
         <ui-section title="角色" pill="Roles">
-            <div class="list-card">
-              <div class="table-wrap">
-                <table class="color-roles">
+            <ui-table>
+<table class="color-roles">
                   <thead>
                     <tr>
                       <th>角色</th>
@@ -52,8 +52,7 @@ import { VisualPageComponent } from './visual-page';
                     }
                   </tbody>
                 </table>
-              </div>
-            </div>
+</ui-table>
 
             <div class="color-rules-block">
               <h3 class="rules-title">规则 <span>Rules</span></h3>

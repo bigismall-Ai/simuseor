@@ -18,6 +18,7 @@ import { ProtoCardDesignComponent } from './prototypes/components/card-design/ca
 import { ProtoCardsComponent } from './prototypes/cards';
 import { ProtoFamiliesComponent } from './prototypes/components/families/families';
 import { ProtoFeedbackComponent } from './prototypes/components/feedback/feedback';
+import { ProtoNoticeComponent } from './prototypes/components/notice/notice';
 import { ProtoPageHeaderComponent } from './prototypes/components/page-header/page-header';
 import { ProtoScrollbarComponent } from './prototypes/components/scrollbar/scrollbar';
 import { ProtoSidebarComponent } from './prototypes/components/sidebar/sidebar';
@@ -78,6 +79,11 @@ export const VIS_ROUTES: Routes = [
         path: 'prototypes/components/page-header',
         component: ProtoPageHeaderComponent,
         title: 'VIS 原型组件 · 页头',
+      },
+      {
+        path: 'prototypes/components/notice',
+        component: ProtoNoticeComponent,
+        title: 'VIS 原型组件 · 行内提示',
       },
       {
         path: 'prototypes/components/feedback',

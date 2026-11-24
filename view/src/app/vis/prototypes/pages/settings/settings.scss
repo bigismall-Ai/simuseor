@@ -529,36 +529,6 @@
   font-size: 12px;
 }
 
-.notice {
-  border-radius: var(--ui-radius);
-  padding: 8px 12px;
-  font-size: 12px;
-  margin-top: 12px;
-  border: 1px solid transparent;
-}
-
-.notice.ok {
-  background: var(--ok-soft);
-  color: var(--ok);
-  border-color: color-mix(in oklab, var(--ok) 18%, transparent);
-}
-
-.notice.err {
-  background: var(--err-soft);
-  color: var(--err);
-  border-color: color-mix(in oklab, var(--err) 18%, transparent);
-}
-
-.notice.info {
-  background: var(--accent-soft);
-  color: var(--ui-accent);
-  border-color: color-mix(in oklab, var(--ui-accent) 18%, transparent);
-}
-
-.notice.is-inline {
-  margin: 0;
-}
-
 .save-bar {
   position: sticky;
   bottom: 16px;

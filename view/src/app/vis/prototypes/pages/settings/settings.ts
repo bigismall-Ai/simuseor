@@ -1,4 +1,6 @@
 import { UiButtonComponent } from '../../../../ui/button';
+import { InputComponent } from '../../../../ui/input';
+import { NoticeComponent } from '../../../../ui/notice';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
 import { FieldComponent } from '../../../../ui/field';
@@ -112,6 +114,8 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
     BadgeComponent,
     UiMaterialModule,
       UiButtonComponent,
+    InputComponent,
+    NoticeComponent,
   ],
   styleUrl: './settings.scss',
   template: `
@@ -233,30 +237,28 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
                 @if (editKey() === card.key) {
                   <div class="edit-panel">
                     <div class="edit-grid">
-                      <ui-field label="Token">
-                        <input
-                          type="password"
-                          [placeholder]="tokenPlaceholder(card.key)"
-                          [value]="draft().token"
-                          (input)="setDraftToken($event)"
-                        />
-                        <span class="tiny">只对 {{ card.title }} 生效。</span>
-                      </ui-field>
+                      <ui-input
+                        label="Token"
+                        type="password"
+                        [placeholder]="tokenPlaceholder(card.key)"
+                        [value]="draft().token"
+                        (valueChange)="setDraftToken($event)"
+                        hint="只对 {{ card.title }} 生效。"
+                      />
 
                       @if (card.key === 'huggingface' || card.key === 'github') {
-                        <ui-field [label]="card.key === 'huggingface' ? '镜像站点' : '加速前缀'">
-                          <input
-                            class="mono"
-                            [placeholder]="
-                              card.key === 'huggingface'
-                                ? 'https://hf-mirror.com'
-                                : 'https://gh-proxy.com/'
-                            "
-                            [value]="draft().mirror"
-                            (input)="setDraftMirror($event)"
-                          />
-                          <span class="tiny">{{ mirrorHint(card.key) }}</span>
-                        </ui-field>
+                        <ui-input
+                          [label]="card.key === 'huggingface' ? '镜像站点' : '加速前缀'"
+                          [mono]="true"
+                          [placeholder]="
+                            card.key === 'huggingface'
+                              ? 'https://hf-mirror.com'
+                              : 'https://gh-proxy.com/'
+                          "
+                          [value]="draft().mirror"
+                          (valueChange)="setDraftMirror($event)"
+                          [hint]="mirrorHint(card.key)"
+                        />
                       }
 
                       @if (card.key === 'civitai') {
@@ -299,23 +301,21 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
               hint="全局一份。探针判定直连不通时，下载链路自动改走这里。"
             >
               <div class="form-grid">
-                <ui-field label="IP 或 网址">
-                  <input
-                    class="mono"
-                    [value]="proxyHost()"
-                    placeholder="127.0.0.1"
-                    (input)="setProxyHost($event)"
-                  />
-                </ui-field>
-                <ui-field label="端口">
-                  <input
-                    class="mono"
-                    type="number"
-                    [value]="proxyPort()"
-                    placeholder="7890"
-                    (input)="setProxyPort($event)"
-                  />
-                </ui-field>
+                <ui-input
+                  label="IP 或 网址"
+                  [mono]="true"
+                  [value]="proxyHost()"
+                  placeholder="127.0.0.1"
+                  (valueChange)="setProxyHost($event)"
+                />
+                <ui-input
+                  label="端口"
+                  [mono]="true"
+                  type="number"
+                  [value]="proxyPort()"
+                  placeholder="7890"
+                  (valueChange)="setProxyPort($event)"
+                />
               </div>
 
               <div class="toolbar panel-row">
@@ -326,12 +326,12 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
               </div>
 
               @if (proxyResult(); as res) {
-                <div
-                  [class]="'notice is-inline ' + res.tone"
-                  [attr.role]="res.tone === 'err' ? 'alert' : null"
+                <ui-notice
+                  [tone]="res.tone === 'err' ? 'error' : 'ok'"
+                  [icon]="res.tone === 'err' ? '!' : '✓'"
                 >
                   {{ res.text }}
-                </div>
+                </ui-notice>
               }
             </ui-panel>
 
@@ -369,7 +369,7 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
         <div class="save-bar">
           <ui-button variant="primary" type="button" (click)="save()">保存设置</ui-button>
           @if (saveNote()) {
-            <span class="notice is-inline ok">{{ saveNote() }}</span>
+            <ui-notice tone="ok" icon="✓">{{ saveNote() }}</ui-notice>
           } @else {
             <span class="muted save-hint">改动不会自动保存，确认后再点一次。</span>
           }
@@ -646,13 +646,11 @@ export class ProtoSettingsComponent {
     return '只改这两个字段，不动别的站。';
   }
 
-  setDraftToken(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  setDraftToken(value: string): void {
     this.draft.update((draft) => ({ ...draft, token: value }));
   }
 
-  setDraftMirror(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  setDraftMirror(value: string): void {
     this.draft.update((draft) => ({ ...draft, mirror: value }));
   }
 
@@ -663,12 +661,12 @@ export class ProtoSettingsComponent {
 
   // ---------------- 代理配置 ----------------
 
-  setProxyHost(event: Event): void {
-    this.proxyHost.set((event.target as HTMLInputElement).value);
+  setProxyHost(value: string): void {
+    this.proxyHost.set(value);
   }
 
-  setProxyPort(event: Event): void {
-    this.proxyPort.set((event.target as HTMLInputElement).value);
+  setProxyPort(value: string): void {
+    this.proxyPort.set(value);
   }
 
   testProxy(): void {

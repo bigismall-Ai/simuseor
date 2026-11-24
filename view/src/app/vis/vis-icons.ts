@@ -3,12 +3,13 @@ import { APP_ICONS, ICON_GROUPS } from '../ui/icons';
 import { UiMaterialModule } from '../ui/material';
 import { VisualPageComponent } from './visual-page';
 import { SectionBlockComponent } from '../ui/section-block';
+import { TableComponent } from '../ui/table';
 
 /** 图标：项目自有 24px 描边图标集与 MatIcon 使用方式。 */
 @Component({
   selector: 'app-vis-icons',
   standalone: true,
-  imports: [UiMaterialModule, SectionBlockComponent, VisualPageComponent],
+  imports: [UiMaterialModule, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="图标">
@@ -64,8 +65,8 @@ import { SectionBlockComponent } from '../ui/section-block';
 
       <ui-section title="规范与用法" pill="Usage" [plain]="true">
           <div class="notes-stack">
-            <div class="table-wrap">
-              <table>
+            <ui-table>
+<table>
                 <thead>
                   <tr>
                     <th scope="col">项目</th>
@@ -81,7 +82,7 @@ import { SectionBlockComponent } from '../ui/section-block';
                   }
                 </tbody>
               </table>
-            </div>
+</ui-table>
             <pre class="code-block"><code>{{ usage }}</code></pre>
             <p class="hint">
               装饰性图标加 <code>aria-hidden="true"</code>；有语义的图标放进可访问名明确的按钮，

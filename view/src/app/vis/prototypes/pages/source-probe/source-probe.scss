@@ -38,40 +38,21 @@
   margin: 0 0 24px;
 }
 
-.notice {
+/* wireframe 里的示意提示：只在本页 mock 内使用 */
+.mock-notice {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in oklab, var(--warn) 18%, transparent);
   border-radius: var(--ui-radius);
-  padding: 8px 12px;
-  font-size: 12px;
-  margin-top: 12px;
-  border: 1px solid transparent;
-}
-
-.notice.ok {
-  background: var(--ok-soft);
-  color: var(--ok);
-  border-color: color-mix(in oklab, var(--ok) 18%, transparent);
-}
-
-.notice.err {
-  background: var(--err-soft);
-  color: var(--err);
-  border-color: color-mix(in oklab, var(--err) 18%, transparent);
-}
-
-.notice.info {
-  background: var(--accent-soft);
-  color: var(--ui-accent);
-  border-color: color-mix(in oklab, var(--ui-accent) 18%, transparent);
-}
-
-.notice.warn {
   background: var(--warn-soft);
   color: var(--warn);
-  border-color: color-mix(in oklab, var(--warn) 18%, transparent);
+  font-size: 11px;
 }
 
-.notice.is-inline {
-  margin: 0;
+.mock-notice a {
+  display: block;
+  margin-top: 2px;
+  color: var(--ui-accent);
 }
 
 .proto-section {
@@ -670,10 +651,6 @@ ui-panel {
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-card);
   background: var(--ui-surface);
-}
-
-.table-wrap {
-  overflow-x: auto;
 }
 
 .table-card table {

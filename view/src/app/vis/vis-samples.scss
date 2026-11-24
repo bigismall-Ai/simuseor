@@ -146,51 +146,6 @@
   margin: 0;
 }
 
-/* 表格 */
-.table-wrap {
-  overflow: auto;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-list);
-  background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
-  box-shadow: var(--ui-shadow);
-  backdrop-filter: blur(14px);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11.5px;
-}
-
-th, td {
-  padding: 9px 10px;
-  border: 0;
-  text-align: left;
-}
-
-th:first-child,
-td:first-child {
-  padding-left: 24px;
-}
-
-th:last-child,
-td:last-child {
-  padding-right: 24px;
-}
-
-th {
-  background: var(--ui-panel-2);
-  color: var(--ui-muted);
-  font-size: 10.5px;
-  font-weight: 500;
-}
-
-tbody tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--ui-inset) 45%, transparent);
-}
-
-tbody tr:hover td { background: var(--ui-raised); }
-
 /* 卡片 */
 .card-grid {
   display: grid;
@@ -214,41 +169,6 @@ tbody tr:hover td { background: var(--ui-raised); }
 .sample-card b { font-size: 14px; }
 .sample-card span { color: var(--ui-muted); font-size: 11.5px; }
 
-/* 空状态 */
-.empty {
-  padding: 44px 20px;
-  text-align: center;
-}
-
-.empty-mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  margin: 0 auto 10px;
-  border-radius: 14px;
-  background: var(--ui-panel-2);
-  color: var(--ui-muted);
-  font-size: 18px;
-}
-
-.empty b { display: block; font-size: 14px; }
-.empty p { margin: 4px auto 0; max-width: 46ch; color: var(--ui-muted); font-size: 11.5px; }
-
-/* 胶囊 */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 10px;
-  border-radius: var(--ui-radius-pill);
-  background: var(--ui-panel-2);
-  color: var(--ui-text-2);
-  font-size: 11.5px;
-}
-
-.chip.active { background: var(--ui-primary); color: var(--ui-on-primary); }
-
 /* 模态框 */
 .modal-stage {
   display: grid;
@@ -258,18 +178,6 @@ tbody tr:hover td { background: var(--ui-raised); }
   border-radius: var(--ui-radius);
   background: color-mix(in oklab, var(--ui-text) 22%, transparent);
 }
-
-.modal {
-  width: min(440px, 100%);
-  padding: 18px;
-  border-radius: var(--ui-radius-lg);
-  background: var(--ui-panel);
-  box-shadow: var(--ui-shadow-md);
-}
-
-.modal h3 { margin: 0 0 6px; font-size: 15px; }
-.modal p { margin: 0; color: var(--ui-muted); font-size: 12px; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 
 /* 圆角 */
 .radius-grid {
@@ -384,6 +292,14 @@ tbody tr:hover td { background: var(--ui-raised); }
   max-width: 520px;
 }
 
+.field-grid-wide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  max-width: 760px;
+  margin-top: 12px;
+}
+
 .field-suffix {
   padding-right: 8px;
   color: var(--ui-muted);
@@ -441,31 +357,6 @@ tbody tr:hover td { background: var(--ui-raised); }
 }
 
 /* ---- 新增：胶囊 ---- */
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: var(--ui-radius-pill);
-  background: var(--ui-panel-2);
-  color: var(--ui-text-2);
-  font-size: 11.5px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.filter-chip:hover { background: var(--ui-panel-3); }
-.filter-chip.active { background: var(--ui-primary); color: var(--ui-on-primary); }
-
-.chip-count {
-  color: var(--ui-muted);
-  font: 10px/1 'Cascadia Mono', Consolas, monospace;
-}
-
-.filter-chip.active .chip-count { color: inherit; opacity: .7; }
-
 .pill {
   display: inline-flex;
   align-items: center;
@@ -488,52 +379,6 @@ tbody tr:hover td { background: var(--ui-raised); }
   font-size: 10.5px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  height: 21px;
-  padding: 0 7px;
-  border-radius: var(--ui-radius-pill);
-  font-size: 10.5px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.badge.gray { background: var(--ui-panel-3); color: var(--ui-muted); }
-.badge.blue { background: #dfe6ef; color: #2f4a66; }
-.badge.green { background: #dde9df; color: #315c3c; }
-.badge.orange { background: #f0e2cd; color: #7a5423; }
-.badge.red { background: #f2dcd8; color: #7a2f24; }
-
-:host-context(html[data-theme='dark']) .badge.blue { background: #1c2a44; color: #a9c6ff; }
-:host-context(html[data-theme='dark']) .badge.green { background: #16342c; color: #8fe3c0; }
-:host-context(html[data-theme='dark']) .badge.orange { background: #3a2c18; color: #f0c88a; }
-:host-context(html[data-theme='dark']) .badge.red { background: #3a1d1a; color: #ffb4a6; }
-
-.segmented {
-  display: inline-flex;
-  padding: 2px;
-  border-radius: var(--ui-radius);
-  background: var(--ui-panel-2);
-}
-
-.segmented button {
-  height: 26px;
-  padding: 0 11px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  cursor: pointer;
-}
-
-.segmented button.active {
-  background: var(--ui-panel);
-  color: var(--ui-text);
-  box-shadow: 0 1px 2px rgb(0 0 0 / .08);
-}
-
 /* ---- 新增：空状态补充 ---- */
 .empty-actions {
   display: flex;
@@ -541,8 +386,6 @@ tbody tr:hover td { background: var(--ui-raised); }
   gap: 8px;
   margin-top: 14px;
 }
-
-.empty.compact { padding: 30px 20px; }
 
 .stack {
   display: flex;
@@ -582,22 +425,6 @@ tbody tr:hover td { background: var(--ui-raised); }
   background: var(--ui-primary);
 }
 
-.notice {
-  padding: 9px 12px;
-  border-radius: var(--ui-radius);
-  font-size: 11.5px;
-}
-
-.notice.err { background: #f5ddda; color: #7a2f24; }
-.notice.ok { background: #dde9df; color: #315c3c; }
-.notice.info { background: var(--ui-panel-2); color: var(--ui-muted); }
-
-:host-context(html[data-theme='dark']) .notice.err { background: #3a1d1a; color: #ffb4a6; }
-:host-context(html[data-theme='dark']) .notice.ok { background: #16342c; color: #8fe3c0; }
-
-/* ---- 新增：表格补充 ---- */
-.table-note { margin: 10px 0 0; }
-.col-size { text-align: right; }
 /* ---- 新增：资产卡 ---- */
 .asset-grid {
   display: grid;
@@ -769,15 +596,6 @@ html[data-theme='dark'] .bg-swatch {
 .bg-layer code { font: 10px/1 'Cascadia Mono', Consolas, monospace; opacity: .72; }
 
 /* ---- 通用列表卡片 ---- */
-.list-card {
-  overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-list);
-  background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
-  box-shadow: var(--ui-shadow);
-  backdrop-filter: blur(14px);
-}
-
 /* ---- 标识：三种展翅 / 线稿 ---- */
 .brand-variant-grid {
   display: grid;
@@ -1397,3 +1215,33 @@ html[data-theme='dark'] .bg-swatch {
 .color-rules-block .color-rules {
   margin-top: 2px;
 }
+
+/* 表格页：数字列右对齐、表下说明 */
+.col-size { text-align: right; }
+.table-note { margin: 10px 0 0; }
+
+/* 列表卡示例行 */
+.demo-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 11px 24px;
+  border-top: 1px solid var(--ui-border-2);
+  font-size: 11.5px;
+}
+
+.demo-row:first-child { border-top: 0; }
+.demo-row b { color: var(--ui-text); font-weight: 600; }
+.demo-row span { color: var(--ui-muted); }
+
+/* 视觉页最后一块的规则清单 */
+.rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.rules b { color: var(--ui-text); }

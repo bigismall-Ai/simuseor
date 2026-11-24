@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { SectionBlockComponent } from '../ui/section-block';
+import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
 
 /** 布局：页面骨架、两栏拆分与全局 layout token。 */
 @Component({
   selector: 'app-vis-layout',
   standalone: true,
-  imports: [SectionBlockComponent, VisualPageComponent],
+  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="布局">
@@ -157,8 +158,8 @@ import { VisualPageComponent } from './visual-page';
         </ui-section>
 
       <ui-section title="变量" pill="Tokens">
-          <div class="table-wrap">
-            <table>
+          <ui-table>
+<table>
               <thead>
                 <tr>
                   <th scope="col">Token</th>
@@ -176,7 +177,7 @@ import { VisualPageComponent } from './visual-page';
                 }
               </tbody>
             </table>
-          </div>
+</ui-table>
         </ui-section>
 
       <ui-section title="说明" pill="Notes" [plain]="true">

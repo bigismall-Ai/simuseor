@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { ThemeService } from '../core/theme.service';
 import { SectionBlockComponent } from '../ui/section-block';
+import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
 
 interface MarkVariant {
@@ -15,7 +16,7 @@ interface MarkVariant {
 @Component({
   selector: 'app-vis-brand',
   standalone: true,
-  imports: [SectionBlockComponent, VisualPageComponent],
+  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -73,8 +74,8 @@ interface MarkVariant {
             </div>
           </ui-section>
 
-        <ui-section title="尺寸与用途" pill="Usage"><div class="table-wrap">
-            <table>
+        <ui-section title="尺寸与用途" pill="Usage"><ui-table>
+<table>
               <thead>
                 <tr>
                   <th scope="col">资产</th>
@@ -94,7 +95,7 @@ interface MarkVariant {
                 }
               </tbody>
             </table>
-          </div>
+</ui-table>
         </ui-section>
       </div>
     </app-visual-page>

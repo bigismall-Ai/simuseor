@@ -1,39 +1,70 @@
-import { UiButtonComponent } from '../ui/button';
-import { Component, TemplateRef, inject, viewChild } from '@angular/core';
+import { Component, TemplateRef, inject, signal, viewChild } from '@angular/core';
 import { MatDialog, UiMaterialModule } from '../ui/material';
+import { UiButtonComponent } from '../ui/button';
+import { DialogComponent } from '../ui/dialog';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
 
-/** 模态框：16px 圆角、焦点圈闭；静态样张 + 真实 MatDialog。 */
+/**
+ * 模态框：一个 VIS 页面统一三种形态。
+ *
+ *   ui-dialog  —— 页面内弹层，负责 Esc / 焦点 / 锁滚动（原型与轻量确认）
+ *   MatDialog  —— 生产环境需要完整焦点圈闭时
+ *   静态表面    —— 只用于展示规格，不做交互
+ */
 @Component({
   selector: 'app-vis-modals',
-  standalone: true,
-  imports: [SectionBlockComponent, UiButtonComponent, UiMaterialModule, VisualPageComponent],
+  imports: [
+    DialogComponent,
+    SectionBlockComponent,
+    UiButtonComponent,
+    UiMaterialModule,
+    VisualPageComponent,
+  ],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
       title="模态框"
-      hint="确认类弹层用 16px 圆角与 440px 上限；破坏性操作把危险按钮放右侧。"
+      hint="一个表面规格，两种承载：页面内 ui-dialog 与生产用 MatDialog；破坏性动作永远在右侧。"
     >
-      <ui-section title="静态样张" pill="Overlay">
-          <div class="modal-stage">
-            <div class="modal">
-              <h3>删除下载任务？</h3>
-              <p>已下载的分片会保留，任务记录从列表中移除。</p>
-              <div class="modal-actions">
-                <ui-button variant="secondary" type="button">取消</ui-button>
-                <ui-button variant="danger" type="button">删除任务</ui-button>
-              </div>
-            </div>
-          </div>
-        </ui-section>
+      <ui-section title="页面内弹层" pill="ui-dialog">
+        <div class="modal-stage">
+          <ui-button variant="danger" type="button" (click)="confirmOpen.set(true)">
+            打开删除确认
+          </ui-button>
+        </div>
+        <p class="hint table-note">
+          负责 Esc / 点遮罩关闭、打开时把焦点送进弹层、关闭时还给触发按钮、锁页面滚动。
+        </p>
+      </ui-section>
 
-      <ui-section title="MatDialog" pill="Material 版本">
-          <p class="hint">
-            MatDialog 负责焦点圈闭、Esc 关闭与滚动锁定；内容表面仍用本项目的面板令牌。
-          </p>
-          <ui-button variant="primary" type="button" (click)="open()">打开对话框</ui-button>
-        </ui-section>
+      <ui-section title="生产用 MatDialog" pill="Material">
+        <p class="hint">
+          MatDialog 负责完整焦点圈闭与滚动锁定；内容表面仍用同一套面板令牌，两边的外观应一致。
+        </p>
+        <ui-button variant="primary" type="button" (click)="open()">打开安装对话框</ui-button>
+      </ui-section>
+
+      <ui-section title="规格与规则" pill="Rules" [plain]="true">
+        <ul class="rules">
+          <li><b>宽度</b>：440px 上限，内容再长就分步，不把弹层拖成全屏。</li>
+          <li><b>动作</b>：最多一主一次，右对齐；破坏性操作放最右，用 danger。</li>
+          <li><b>关闭</b>：Esc 与点遮罩都关；不可逆确认可以把 <code>dismissible</code> 设 false。</li>
+          <li><b>选择</b>：原型 / 轻量确认用 <code>ui-dialog</code>，需要完整焦点圈闭用 MatDialog。</li>
+        </ul>
+      </ui-section>
+
+      <ui-dialog [(open)]="confirmOpen" title="删除下载任务？" [destructive]="true">
+        已下载的分片会保留，任务记录从列表中移除。
+        <div dialog-actions>
+          <ui-button variant="secondary" type="button" data-autofocus (click)="confirmOpen.set(false)">
+            取消
+          </ui-button>
+          <ui-button variant="danger" type="button" (click)="confirmOpen.set(false)">
+            删除任务
+          </ui-button>
+        </div>
+      </ui-dialog>
 
       <ng-template #dialogTpl>
         <h2 mat-dialog-title>安装环境</h2>
@@ -50,6 +81,8 @@ import { VisualPageComponent } from './visual-page';
   `,
 })
 export class VisModalsComponent {
+  readonly confirmOpen = signal(false);
+
   private readonly dialog = inject(MatDialog);
   private readonly dialogTpl = viewChild.required<TemplateRef<unknown>>('dialogTpl');
 

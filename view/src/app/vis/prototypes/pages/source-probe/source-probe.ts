@@ -1,3 +1,5 @@
+import { NoticeComponent } from '../../../../ui/notice';
+import { TableComponent } from '../../../../ui/table';
 import { UiButtonComponent } from '../../../../ui/button';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
@@ -39,7 +41,9 @@ interface ProbeSource {
     PanelComponent,
     BadgeComponent,
     UiMaterialModule,
-      UiButtonComponent,
+    UiButtonComponent,
+    TableComponent,
+    NoticeComponent,
   ],
   styleUrl: './source-probe.scss',
   template: `
@@ -51,9 +55,9 @@ interface ProbeSource {
           hint="这一页回答三件事：一次探测怎么覆盖所有对外源、探针结论长什么样、结论怎么作用到发现页与下载页。"
         />
 
-        <p class="notice warn is-inline page-notice">
+        <ui-notice tone="warn" icon="!">
           页内所有延迟、耗时与时间点都是<b>示意值</b>，不是实测结果；灰色源是拿来说明「不可达」长什么样的示例。
-        </p>
+        </ui-notice>
 
         <!-- ══════════════ 00 ══════════════ -->
         <section class="proto-section">
@@ -260,13 +264,13 @@ interface ProbeSource {
                     <div class="mock-card"></div>
                   </div>
                 </div>
-                <div class="notice err is-inline">
+                <ui-notice tone="error" icon="!">
                   <b>代价：</b>CivitAI 的入口整个不见了，用户会以为「这个产品不支持 CivitAI」，
                   而不是「现在这台机器连不上 CivitAI」。网络一换，界面自己变了，用户无从察觉。
-                </div>
-                <div class="notice ok is-inline">
+                </ui-notice>
+                <ui-notice tone="ok" icon="✓">
                   <b>好处：</b>最干净，不给任何可能失败的点击。
-                </div>
+                </ui-notice>
               </div>
             </div>
 
@@ -291,7 +295,7 @@ interface ProbeSource {
                     <span class="chip off" title="直连超时，已停用">CivitAI</span>
                     <span class="tiny mock-tail">来源筛选</span>
                   </div>
-                  <p class="notice warn is-inline mock-notice">
+                  <p class="mock-notice">
                     CivitAI 当前不可达（直连超时），已停用该源的搜索与下载。
                     <a href="#source-probe-decisions">代理通路可用 → 去设置</a>
                   </p>
@@ -301,13 +305,13 @@ interface ProbeSource {
                     <div class="mock-card"></div>
                   </div>
                 </div>
-                <div class="notice ok is-inline">
+                <ui-notice tone="ok" icon="✓">
                   <b>好处：</b>灰置的 chip <b>不是可选入口</b>（点不动、不发请求），满足了「不提供该源的可选入口」；
                   同时把原因说清楚，并给一个能修的动作。源还在，只是现在到不了。
-                </div>
-                <div class="notice err is-inline">
+                </ui-notice>
+                <ui-notice tone="error" icon="!">
                   <b>代价：</b>界面上多了一行状态说明；筛选条里会留一个不可点的灰 chip。
-                </div>
+                </ui-notice>
               </div>
             </div>
           </div>
@@ -350,7 +354,7 @@ interface ProbeSource {
                     <option>ModelScope（可达）</option>
                     <option>CivitAI — 不可达（直连超时）</option>
                   </select>
-                  <p class="notice warn is-inline mock-notice">CivitAI 不可达，已从可选项中停用。</p>
+                  <p class="mock-notice">CivitAI 不可达，已从可选项中停用。</p>
                 </div>
               </div>
             </div>
@@ -358,8 +362,8 @@ interface ProbeSource {
 
           <h3 class="proto-h3">四种状态在界面上要能分开</h3>
           <div class="table-card">
-            <div class="table-wrap">
-              <table>
+            <ui-table>
+<table>
                 <thead>
                   <tr>
                     <th>状态</th>
@@ -404,7 +408,7 @@ interface ProbeSource {
                   </tr>
                 </tbody>
               </table>
-            </div>
+</ui-table>
             <p class="tiny table-foot">
               <b>关键一条：</b>「不可用」才门控，「未知」不门控。否则第一次打开应用、还没探测过，
               所有源都不出现 —— 那不叫门控，那叫把产品藏起来。
@@ -421,8 +425,8 @@ interface ProbeSource {
           </p>
 
           <div class="table-card">
-            <div class="table-wrap">
-              <table>
+            <ui-table>
+<table>
                 <thead>
                   <tr>
                     <th>源</th>
@@ -474,7 +478,7 @@ interface ProbeSource {
                   </tr>
                 </tbody>
               </table>
-            </div>
+</ui-table>
             <p class="hint">
               <b>一句话口径：</b>默认走代理的两个源，是「失败代价最高」的那两个；默认直连的，是「直连本来就通」的那些。
               默认不是猜的，是按<b>失败代价</b>排的。
@@ -580,8 +584,8 @@ interface ProbeSource {
           <h2 class="proto-h2"><span class="num">06</span>需要拍板的点</h2>
           <p class="lead">这一页已经把选项摆开了，下面四条是真正需要拍板的。</p>
           <div class="table-card">
-            <div class="table-wrap">
-              <table>
+            <ui-table>
+<table>
                 <thead>
                   <tr>
                     <th>#</th>
@@ -617,7 +621,7 @@ interface ProbeSource {
                   </tr>
                 </tbody>
               </table>
-            </div>
+</ui-table>
           </div>
         </section>
       </div>

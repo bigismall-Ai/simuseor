@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { UiButtonComponent } from '../ui/button';
 import { SectionBlockComponent } from '../ui/section-block';
+import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
 
 /** 按钮：主 / 次 / 弱 / 危险四层语义，玻璃表面 + 1px 描边 + 轻投影。 */
 @Component({
   selector: 'app-vis-buttons',
   standalone: true,
-  imports: [UiButtonComponent, SectionBlockComponent, VisualPageComponent],
+  imports: [UiButtonComponent, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -83,8 +84,8 @@ import { VisualPageComponent } from './visual-page';
 
       <ui-section title="色彩语义" pill="Semantics" [plain]="true">
         <div class="notes-stack">
-          <div class="table-wrap">
-            <table>
+          <ui-table>
+<table>
               <thead>
                 <tr>
                   <th scope="col">语义</th>
@@ -106,7 +107,7 @@ import { VisualPageComponent } from './visual-page';
                 }
               </tbody>
             </table>
-          </div>
+</ui-table>
           <ul class="color-rules">
             <li><b>统一表面</b>：所有按钮都是 1px 描边 + 内高光 + 轻投影 + 胶囊圆角；深浅色只换 token，不换结构。</li>
             <li><b>层级</b>：主操作实心渐变，次操作玻璃面，弱操作无底；危险操作才用赭石。</li>
