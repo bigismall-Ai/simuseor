@@ -5,6 +5,8 @@ import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { ThemeService } from '../core/theme.service';
 import { fmtInt } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardMenuComponent } from './card-menu';
+import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import type { CoverInput } from '../core/cover';
@@ -57,9 +59,9 @@ const FILE_TYPES = new Set([
  */
 @Component({
   selector: 'md-model-card',
-  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
   template: `
-    <article class="card acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
+    <article class="card acard" [class.on-shot]="photoOk()">
       <!-- ① 封面：铺满整卡。ratio="fill" 不声明比例，宽高由外层给 ——
            本卡封面是 position:absolute; inset:0 铺满整卡，正是 fill 的语义。
            铭牌自带的顶行（厂标 + 家族码 + 规格 + 原站链接）在这里是重复的：
@@ -103,6 +105,22 @@ const FILE_TYPES = new Set([
             </svg>
           </a>
         }
+
+        <button
+          class="card-kebab acard-kebab"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="更多操作"
+          title="更多操作"
+          (click)="toggleMenu($event)"
+        >
+          ⋯
+        </button>
+
+        @if (menuOpen()) {
+          <ui-card-menu [items]="menuItems()" (picked)="onMenuPick()" />
+        }
       </div>
 
       <div class="card-body acard-body">
@@ -130,37 +148,9 @@ const FILE_TYPES = new Set([
           <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
         </div>
 
-        <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
+        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="card-actions acard-foot">
-          <button
-            class="card-kebab acard-kebab"
-            type="button"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen() || menuPinned()"
-            aria-label="更多操作"
-            title="更多操作"
-            (click)="toggleMenu($event)"
-          >
-            ⋯
-          </button>
-
-          @if (menuOpen() || menuPinned()) {
-            <div class="acard-menu" role="menu">
-              @for (s of sourceLinks(); track s.key) {
-                <a
-                  class="acard-menu-item"
-                  role="menuitem"
-                  [href]="s.href"
-                  target="_blank"
-                  rel="noreferrer"
-                  [title]="s.title"
-                  >{{ s.text }}</a
-                >
-              }
-            </div>
-          }
-
-          <!-- ⑥ 动作行：⋯ 在左，主按钮在右。发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
+          <!-- 发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
                其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：
                「已在库」由状态条事实槽「已入库 N」与列表视图的徽章报。 -->
           <button
@@ -210,8 +200,9 @@ export class ModelCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
-  /** 设计页静态展示用：把菜单定格为展开 */
-  readonly menuPinned = input(false);
+  readonly menuItems = computed<CardMenuItem[]>(() =>
+    this.sourceLinks().map((s) => ({ key: s.key, label: s.text, href: s.href })),
+  );
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly theme = inject(ThemeService);
@@ -402,6 +393,10 @@ export class ModelCardComponent {
   readonly maxLikes = computed(() => Math.max(...this.items().map((i) => i.likes || 0), 0));
 
   /** ⋯ 菜单开关。点外面 / Esc 收起。 */
+  onMenuPick(): void {
+    this.menuOpen.set(false);
+  }
+
   toggleMenu(event: MouseEvent): void {
     // 别让「点外面收菜单」的监听器跟着这次点击一起跑
     event.stopPropagation();

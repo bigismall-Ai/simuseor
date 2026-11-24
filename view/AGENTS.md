@@ -91,8 +91,8 @@
 - 动作按钮只用共享 `.acard-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
 - 卡片圆角跟随列表：`--card-radius` = `--ui-radius-list`（16px），不要再单独设 24px
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill
-- ⋯ 菜单几何只在 `asset-card.css`（`.acard-menu` / `.acard-menu-item`），卡片组件不得覆盖；危险项加 `.is-danger`
-- `menuPinned` 只给设计页做静态展示，产品页面不要传
+- ⋯ 固定在卡片右上角（`.acard-head` 内、原站链接之后），菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
+- 卡片最大宽度 `--card-max`（300px），网格用 `minmax(…, var(--card-max))`，不要让卡在宽屏上拉伸
 - 新增卡片组件必须同时出现在 `/vis/prototypes/components/cards`（当前 5 类：本地库 / 发现 / 工作流本地 / 工作流发现 / 节点包），并跑 `npm run cards:guard`
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 

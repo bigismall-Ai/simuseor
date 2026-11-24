@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { CardMarkComponent } from '../../../../ui/card-mark';
+import { CardMenuComponent } from '../../../../ui/card-menu';
+import type { CardMenuItem } from '../../../../ui/card-menu';
 import { LibraryCardComponent } from '../../../../ui/library-card';
 import { ModelCardComponent } from '../../../../ui/model-card';
 import { TableComponent } from '../../../../ui/table';
@@ -10,13 +12,14 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
 /**
  * 原型组件：卡片设计。
  *
- * 三张真实资产卡并排，⋯ 菜单用 `menuPinned` 定格展开 ——
+ * 三张真实资产卡并排，菜单用独立的 `ui-card-menu` 样张展示 ——
  * 大小、布局、按钮、菜单都来自同一套 `asset-card.css`，这里只加标注。
  */
 @Component({
   selector: 'app-proto-card-design',
   imports: [
     CardMarkComponent,
+    CardMenuComponent,
     LibraryCardComponent,
     ModelCardComponent,
     TableComponent,
@@ -26,36 +29,45 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
   template: `
     <p class="set-label">三种卡片 · 同一套骨架</p>
     <p class="set-lead">
-      本地库卡 / 发现卡 / 工作流卡共用同一份外壳与动作行；这里把三张卡的 ⋯ 菜单定格展开，
-      便于逐个对齐按钮、菜单与信息层级。
+      本地库卡 / 发现卡 / 工作流卡共用同一份外壳与动作行；⋯ 固定在右上角，
+      菜单是独立的 <code>ui-card-menu</code>，在下面单独展示。
     </p>
 
     <div class="card-row">
       <div class="card-cell">
         <p class="cell-label">本地库卡</p>
-        <md-library-card
-          [model]="library"
-          cover="/samples/shot-2.jpg"
-          [menuPinned]="true"
-        />
-        <p class="cell-menu"><b>⋯ 菜单</b>删除模型</p>
+        <md-library-card [model]="library" cover="/samples/shot-2.jpg" />
+        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
       </div>
 
       <div class="card-cell">
         <p class="cell-label">发现卡</p>
-        <md-model-card
-          [items]="[discover]"
-          cover="/samples/shot-4.jpg"
-          [menuPinned]="true"
-        />
-        <p class="cell-menu"><b>⋯ 菜单</b>原站链接（Hugging Face / Civitai）</p>
+        <md-model-card [items]="[discover]" cover="/samples/shot-4.jpg" />
+        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
       </div>
 
       <div class="card-cell">
         <p class="cell-label">工作流卡</p>
-        <app-workflow-card [it]="workflow" [menuPinned]="true" />
-        <p class="cell-menu"><b>⋯ 菜单</b>运行 / 在编辑器中打开 / 删除工作流</p>
+        <app-workflow-card [it]="workflow" />
+        <p class="cell-menu">右上角 ⋯ 打开菜单</p>
       </div>
+    </div>
+
+    <p class="set-label">⋯ 弹出菜单 · 独立组件</p>
+    <p class="set-lead">
+      三种卡片的菜单都渲染同一个 <code>ui-card-menu</code>，只是条目不同；
+      下面是去掉定位后的静态样张。
+    </p>
+    <div class="menu-row">
+      @for (menu of menus; track menu.title) {
+        <div class="menu-cell">
+          <p class="cell-label">{{ menu.title }}</p>
+          <div class="menu-stage">
+            <ui-card-menu [items]="menu.items" [static]="true" />
+          </div>
+          <p class="cell-menu">{{ menu.note }}</p>
+        </div>
+      }
     </div>
 
     <p class="set-label">身份行 · 厂牌位</p>
@@ -75,7 +87,7 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
       <li><b>③ 原站</b><span>右上角固定出口；本地导入与本地工作流没有原站时留空。</span></li>
       <li><b>④ 状态槽</b><span>左状态 · 细线 · 右大小；本地库看磁盘，发现看下载，工作流看文件体积。</span></li>
       <li><b>⑤ 分类标签</b><span>恰好一枚，用 ui-badge（sm）表达文件类型 / 分组 / 节点类。</span></li>
-      <li><b>⑥ 动作行</b><span>⋯ 在左并弹出菜单，唯一主按钮在右；危险动作收进菜单。</span></li>
+      <li><b>⑥ 动作行</b><span>右上角 ⋯ 弹出菜单；动作行只留唯一主按钮，危险动作收进菜单。</span></li>
     </ol>
 
     <p class="set-label">尺寸与 token</p>
@@ -109,6 +121,28 @@ export class ProtoCardDesignComponent {
     url: 'https://huggingface.co/black-forest-labs/FLUX.1-dev',
   };
   readonly workflow = WORKFLOWS[0];
+
+  readonly menus: { title: string; note: string; items: CardMenuItem[] }[] = [
+    {
+      title: '本地库卡',
+      note: '破坏性操作单独一档，用 danger 标色。',
+      items: [{ key: 'remove', label: '删除模型', danger: true }],
+    },
+    {
+      title: '发现卡',
+      note: '每个来源一条外链，原站入口不只放在右上角。',
+      items: [{ key: 'hf', label: 'Hugging Face', href: 'https://huggingface.co/black-forest-labs/FLUX.1-dev' }],
+    },
+    {
+      title: '工作流卡',
+      note: '运行在最上，删除在最下并标红。',
+      items: [
+        { key: 'run', label: '运行' },
+        { key: 'edit', label: '在编辑器中打开' },
+        { key: 'delete', label: '删除工作流', danger: true },
+      ],
+    },
+  ];
 
   readonly tokens = [
     { token: '--card-radius', value: '16px', use: '卡片与列表一致' },

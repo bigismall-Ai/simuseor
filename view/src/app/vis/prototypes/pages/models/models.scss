@@ -9,7 +9,8 @@
 /* —— 卡片网格：本地库与发现同一套密度 —— */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(230px, var(--layout-grid-min)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(230px, var(--layout-grid-min)), var(--card-max)));
+  justify-content: start;
   gap: 14px;
 }
 

@@ -104,7 +104,8 @@
 /* —— 卡片网格 —— */
 .wf-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(240px, var(--layout-grid-min)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(240px, var(--layout-grid-min)), var(--card-max)));
+  justify-content: start;
   gap: 18px;
 }
 

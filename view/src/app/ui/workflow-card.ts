@@ -1,5 +1,7 @@
 import { Component, HostListener, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardMenuComponent } from './card-menu';
+import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import type { LocalWorkflow } from '../core/types';
@@ -33,7 +35,7 @@ interface StateView {
  */
 @Component({
   selector: 'app-workflow-card',
-  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
      （Emulated 封装），四张卡引用的是同一份源，改一处四张卡一起变。
      外部样式只能走 styleUrls；styleUrls 与 styles 并存：两者打在同一套作用域属性上，
@@ -44,7 +46,7 @@ interface StateView {
       class="wc acard"
       [class.broken]="state() === 'broken'"
       [class.on-shot]="photoOk()"
-      [class.is-pinned]="menuPinned()"
+     
       [attr.data-name]="it().name"
     >
       <!-- ① 封面：铺满整卡。外壳几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
@@ -97,6 +99,22 @@ interface StateView {
           <b [title]="it().path">{{ it().name }}</b>
           <span [title]="it().main_model || ''">{{ it().main_model || '本地工作流' }}</span>
         </span>
+
+        <button
+          class="wc-kebab acard-kebab"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="更多操作"
+          title="更多操作"
+          (click)="toggleMenu($event)"
+        >
+          ⋯
+        </button>
+
+        @if (menuOpen()) {
+          <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />
+        }
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
@@ -168,36 +186,6 @@ interface StateView {
              卡片只负责报出点击坐标（菜单才会贴着按钮弹，而不是回页面顶上去找）。 -->
         <div class="acard-foot">
           <div class="wc-acts">
-            <button
-              class="wc-kebab acard-kebab"
-              type="button"
-              aria-haspopup="menu"
-              [attr.aria-expanded]="menuOpen() || menuPinned()"
-              aria-label="更多操作"
-              title="更多操作"
-              (click)="toggleMenu($event)"
-            >
-              ⋯
-            </button>
-
-            @if (menuOpen() || menuPinned()) {
-              <div class="acard-menu" role="menu">
-                <button type="button" role="menuitem" class="acard-menu-item" (click)="pick('run')">
-                  运行
-                </button>
-                <button type="button" role="menuitem" class="acard-menu-item" (click)="pick('edit')">
-                  在编辑器中打开
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="acard-menu-item is-danger"
-                  (click)="pick('delete')"
-                >
-                  删除工作流
-                </button>
-              </div>
-            }
           </div>
           <button
             class="wc-primary acard-primary"
@@ -438,9 +426,13 @@ export class WorkflowCardComponent {
   readonly primary = output<{ item: LocalWorkflow; act: 'fix' | 'use' | 'edit' }>();
   readonly action = output<{ item: LocalWorkflow; act: 'run' | 'edit' | 'delete' }>();
 
-  /** ⋯ 菜单：默认收起；设计页可以用 menuPinned 定格展示 */
+  /** ⋯ 菜单：默认收起；设计页用独立的 ui-card-menu 样张展示 */
   readonly menuOpen = signal(false);
-  readonly menuPinned = input(false);
+  readonly menuItems: CardMenuItem[] = [
+    { key: 'run', label: '运行' },
+    { key: 'edit', label: '在编辑器中打开' },
+    { key: 'delete', label: '删除工作流', danger: true },
+  ];
 
   /** 封面图是否真的画出来了（远程图会 401 / 超时）。决定状态层用深字还是白字 */
   readonly photoOk = signal(false);
@@ -536,9 +528,9 @@ export class WorkflowCardComponent {
     this.menuOpen.update((open) => !open);
   }
 
-  pick(act: 'run' | 'edit' | 'delete'): void {
+  onMenuPick(key: string): void {
     this.menuOpen.set(false);
-    this.action.emit({ item: this.it(), act });
+    this.action.emit({ item: this.it(), act: key as 'run' | 'edit' | 'delete' });
   }
 
   @HostListener('document:click')

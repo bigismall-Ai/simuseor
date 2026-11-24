@@ -428,7 +428,8 @@
 /* ---- 新增：资产卡 ---- */
 .asset-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, var(--card-max)));
+  justify-content: start;
   gap: 14px;
 }
 

@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtInt } from '../core/types';
@@ -54,12 +55,12 @@ const SOURCES: Record<string, SourceInfo> = {
  */
 @Component({
   selector: 'md-hub-card',
-  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
   template: `
     <!-- 卡不是行：类名只留 .hub + 共享骨架的 .acard。
          旧列表行用的 .wf-row 类名不带到卡上 —— 「行」「卡」在代码里要分得开，
          列表视图那一行仍然是 .wf-row。 -->
-    <article class="hub acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
+    <article class="hub acard" [class.on-shot]="photoOk()">
       <!-- ① 封面：铺满整卡。几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
            家族色底 / 几何纹样 / 铺满图 / 蒙版都在共享铭牌里。
            ratio="fill"：不声明比例，宽高跟着卡片走 —— 封面就是铺满整卡。 -->
@@ -98,6 +99,50 @@ const SOURCES: Record<string, SourceInfo> = {
             </svg>
           </a>
         }
+
+        <button
+          class="acard-kebab"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="更多操作"
+          title="更多操作"
+          (click)="toggleMenu($event)"
+        >
+          ⋯
+        </button>
+
+        @if (menuOpen()) {
+          <ui-card-menu>
+            @for (r of requires(); track r) {
+              <div class="hub-row">
+                <span class="hub-k">依赖</span>
+                <span class="hub-v" [title]="r">{{ r }}</span>
+              </div>
+            }
+            @if (!requires().length) {
+              <div class="hub-row">
+                <span class="hub-k">依赖</span>
+                <span class="hub-v">无</span>
+              </div>
+            }
+            <div class="hub-row">
+              <span class="hub-k">文件</span>
+              <span class="hub-v" [title]="filesTitle()">{{ filePreview() }}</span>
+            </div>
+            @if (item().url) {
+              <a
+                class="acard-menu-item"
+                role="menuitem"
+                [href]="item().url"
+                target="_blank"
+                rel="noreferrer"
+              >
+                在 {{ source().short }} 打开 ↗
+              </a>
+            }
+          </ui-card-menu>
+        }
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
@@ -122,52 +167,8 @@ const SOURCES: Record<string, SourceInfo> = {
           <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
         </div>
 
-        <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
+        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
-          <button
-            class="acard-kebab"
-            type="button"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen() || menuPinned()"
-            aria-label="更多操作"
-            title="更多操作"
-            (click)="toggleMenu($event)"
-          >
-            ⋯
-          </button>
-
-          @if (menuOpen() || menuPinned()) {
-            <div class="acard-menu" role="menu">
-              @for (r of requires(); track r) {
-                <div class="hub-row">
-                  <span class="hub-k">依赖</span>
-                  <span class="hub-v" [title]="r">{{ r }}</span>
-                </div>
-              }
-              @if (!requires().length) {
-                <div class="hub-row">
-                  <span class="hub-k">依赖</span>
-                  <span class="hub-v">无</span>
-                </div>
-              }
-              <div class="hub-row">
-                <span class="hub-k">文件</span>
-                <span class="hub-v" [title]="filesTitle()">{{ filePreview() }}</span>
-              </div>
-              @if (item().url) {
-                <a
-                  class="acard-menu-item"
-                  role="menuitem"
-                  [href]="item().url"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  在 {{ source().short }} 打开 ↗
-                </a>
-              }
-            </div>
-          }
-
           <button
             class="acard-primary primary btn-xs"
             type="button"
@@ -254,9 +255,6 @@ export class HubCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
-  /** 设计页静态展示用：把菜单定格为展开 */
-  readonly menuPinned = input(false);
-
   /** 来源信息：认不出来的源退到短码 + 灰调，不猜它是谁 */
   readonly source = computed<SourceInfo>(() => {
     const key = this.item().source || '';

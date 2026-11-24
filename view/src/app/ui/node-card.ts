@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtSize } from '../core/types';
@@ -57,9 +58,9 @@ export interface NodeCardItem {
  */
 @Component({
   selector: 'md-node-card',
-  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
   template: `
-    <article class="nd-card acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
+    <article class="nd-card acard" [class.on-shot]="photoOk()">
       <!-- ① 封面：铺满整卡 -->
       <div class="acard-media">
         <div class="acard-plate">
@@ -101,6 +102,68 @@ export interface NodeCardItem {
             </svg>
           </a>
         }
+
+        <button
+          class="acard-kebab"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="更多操作"
+          title="更多操作"
+          (click)="toggleMenu()"
+        >
+          ⋯
+        </button>
+
+      <!-- 次要信息与次要操作收进这个菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
+      @if (menuOpen()) {
+        <ui-card-menu>
+          @if (classList().length) {
+            <div class="nd-menu-row">
+              <span class="nd-menu-k">节点类</span>
+              <span class="nd-menu-v" [title]="classList().join('、')">{{
+                classList().join('、')
+              }}</span>
+            </div>
+          }
+          @if (needs().length) {
+            <div class="nd-menu-row">
+              <span class="nd-menu-k">额外依赖</span>
+              <span class="nd-menu-v">{{ needs().join('、') }}</span>
+            </div>
+          }
+          @if (preemptions().length) {
+            <div class="nd-menu-row is-warn">
+              <span class="nd-menu-k">重名冲突</span>
+              <span class="nd-menu-v">{{ preemptions().join('、') }}</span>
+            </div>
+          }
+          @if (mode() === 'library') {
+            <div class="nd-menu-row">
+              <span class="nd-menu-k">版本 / 大小</span>
+              <span class="nd-menu-v">{{ versionText() }} · {{ sizeText2() }}</span>
+            </div>
+            @if (item().tracked === false) {
+              <div class="nd-menu-row">
+                <span class="nd-menu-k">来源</span>
+                <span class="nd-menu-v">清单未收录</span>
+              </div>
+            }
+            @if (item().requirements) {
+              <div class="nd-menu-row">
+                <span class="nd-menu-k">依赖</span>
+                <span class="nd-menu-v">带 requirements.txt</span>
+              </div>
+            }
+            <button class="nd-menu-act is-danger" type="button" (click)="onRemove()">卸载</button>
+          }
+          @if (item().repo) {
+            <a class="acard-menu-item" [href]="item().repo" target="_blank" rel="noreferrer"
+              >在 GitHub 打开 ↗</a
+            >
+          }
+        </ui-card-menu>
+      }
       </div>
 
       <div class="acard-body">
@@ -135,20 +198,8 @@ export interface NodeCardItem {
           }
         </div>
 
-        <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
+        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
-          <button
-            class="acard-kebab"
-            type="button"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen() || menuPinned()"
-            aria-label="更多操作"
-            title="更多操作"
-            (click)="toggleMenu()"
-          >
-            ⋯
-          </button>
-
           @if (mode() === 'library') {
             <button
               class="acard-primary primary btn-xs"
@@ -198,55 +249,6 @@ export interface NodeCardItem {
         </div>
       </div>
 
-      <!-- 次要信息与次要操作收进这个菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
-      @if (menuOpen() || menuPinned()) {
-        <div class="nd-menu" role="menu">
-          @if (classList().length) {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">节点类</span>
-              <span class="nd-menu-v" [title]="classList().join('、')">{{
-                classList().join('、')
-              }}</span>
-            </div>
-          }
-          @if (needs().length) {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">额外依赖</span>
-              <span class="nd-menu-v">{{ needs().join('、') }}</span>
-            </div>
-          }
-          @if (preemptions().length) {
-            <div class="nd-menu-row is-warn">
-              <span class="nd-menu-k">重名冲突</span>
-              <span class="nd-menu-v">{{ preemptions().join('、') }}</span>
-            </div>
-          }
-          @if (mode() === 'library') {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">版本 / 大小</span>
-              <span class="nd-menu-v">{{ versionText() }} · {{ sizeText2() }}</span>
-            </div>
-            @if (item().tracked === false) {
-              <div class="nd-menu-row">
-                <span class="nd-menu-k">来源</span>
-                <span class="nd-menu-v">清单未收录</span>
-              </div>
-            }
-            @if (item().requirements) {
-              <div class="nd-menu-row">
-                <span class="nd-menu-k">依赖</span>
-                <span class="nd-menu-v">带 requirements.txt</span>
-              </div>
-            }
-            <button class="nd-menu-act is-danger" type="button" (click)="onRemove()">卸载</button>
-          }
-          @if (item().repo) {
-            <a class="nd-menu-act" [href]="item().repo" target="_blank" rel="noreferrer"
-              >在 GitHub 打开 ↗</a
-            >
-          }
-        </div>
-      }
     </article>
   `,
   styleUrls: ['./asset-card.css'],
@@ -328,24 +330,6 @@ export interface NodeCardItem {
       /* ---- ⋯ 菜单：次要信息与次要操作 -------------------------------
          挂在卡内（卡有 overflow:hidden），所以高度封顶 + 可滚动，
          免得菜单比卡还高被裁掉。z-index 要高过卡壳的描边（5）与身份行（4）。 */
-      .nd-menu {
-        position: absolute;
-        left: 10px;
-        bottom: 40px;
-        z-index: 6;
-        width: min(290px, calc(100% - 20px));
-        max-height: 168px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        padding: 6px;
-        border-radius: var(--ui-radius);
-        background: var(--ui-overlay);
-        box-shadow:
-          inset 0 0 0 1px var(--ui-inner-border),
-          var(--ui-shadow-md);
-      }
       .nd-menu-row {
         display: flex;
         align-items: baseline;
@@ -413,9 +397,6 @@ export class NodeCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
-  /** 设计页静态展示用：把菜单定格为展开 */
-  readonly menuPinned = input(false);
-
   readonly displayName = computed(() => this.item().title || this.item().name || '');
 
   /** 身份行第二行：清单条目是作者；已装条目没有作者，用目录名顶上 */

@@ -5,6 +5,8 @@ import { folderFileTypeLabel } from '../core/task-labels';
 import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardMenuComponent } from './card-menu';
+import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 
@@ -32,13 +34,13 @@ import { CoverPlateComponent } from './cover-plate';
  */
 @Component({
   selector: 'md-library-card',
-  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
   template: `
     <article
       class="mcard acard"
       [class.on-shot]="shotOk() && !broken()"
       [class.is-broken]="broken()"
-      [class.is-pinned]="menuPinned()"
+     
     >
       <!-- ① 封面：铺满整卡。壳的几何在 asset-card.css，这里只放封面自己的内容 -->
       <div class="acard-media">
@@ -107,6 +109,23 @@ import { CoverPlateComponent } from './cover-plate';
             </svg>
           </a>
         }
+
+        <button
+          type="button"
+          class="acard-kebab"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="更多操作"
+          title="更多操作"
+          data-testid="lib-card-kebab"
+          (click)="toggleMenu($event)"
+        >
+          ⋯
+        </button>
+
+        @if (menuOpen()) {
+          <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />
+        }
       </div>
 
       <!-- 底部信息区：压在封面上的遮罩 -->
@@ -132,35 +151,8 @@ import { CoverPlateComponent } from './cover-plate';
           }}</ui-badge>
         </div>
 
-        <!-- ⑥ 动作行：⋯ 在左（破坏性操作收进去），主按钮在右 -->
+        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
-          <button
-            type="button"
-            class="acard-kebab"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen() || menuPinned()"
-            aria-label="更多操作"
-            title="更多操作"
-            data-testid="lib-card-kebab"
-            (click)="toggleMenu($event)"
-          >
-            ⋯
-          </button>
-
-          @if (menuOpen() || menuPinned()) {
-            <div class="acard-menu" role="menu">
-              <button
-                type="button"
-                role="menuitem"
-                class="acard-menu-item is-danger"
-                data-testid="lib-card-remove"
-                (click)="onRemove()"
-              >
-                删除模型
-              </button>
-            </div>
-          }
-
           <button
             type="button"
             class="acard-primary primary btn-xs"
@@ -263,8 +255,9 @@ export class LibraryCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
-  /** 设计页静态展示用：把菜单定格为展开 */
-  readonly menuPinned = input(false);
+  readonly menuItems: CardMenuItem[] = [
+    { key: 'remove', label: '删除模型', danger: true, testId: 'lib-card-remove' },
+  ];
 
   /** 照片是否真的画出来了（由共享封面 app-cover-plate 回传） */
   readonly shotOk = signal(false);
@@ -427,6 +420,11 @@ export class LibraryCardComponent {
 
 
   /** ⋯ 菜单：破坏性操作（删除模型）收在这里，主按钮位只放正事 */
+  onMenuPick(key: string): void {
+    this.menuOpen.set(false);
+    if (key === 'remove') this.onRemove();
+  }
+
   toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
     this.menuOpen.update((open) => !open);
