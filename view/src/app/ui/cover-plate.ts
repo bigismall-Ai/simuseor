@@ -357,15 +357,14 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
         color: var(--plate-ink);
       }
       .plate.on-shot .scrim {
-        /* 中性黑，不拿主题底色去染照片；上下各一道，够撑住身份行与正文 */
-        background:
-          linear-gradient(to bottom, rgb(6 7 12 / 46%) 0%, transparent 32%),
-          linear-gradient(
-            to top,
-            rgb(6 7 12 / 82%) 0%,
-            rgb(6 7 12 / 52%) 30%,
-            transparent 70%
-          );
+        /* 只压正文所在的底部；上半张图不动。
+           身份行靠文字投影、厂牌投影和原站/⋯ 的玻璃底撑对比度。 */
+        background: linear-gradient(
+          to top,
+          rgb(6 7 12 / 82%) 0%,
+          rgb(6 7 12 / 52%) 30%,
+          transparent 70%
+        );
       }
 
       /* 内容层：只有一行。厂牌名与规格同基线，形态角标推到最右。 */
