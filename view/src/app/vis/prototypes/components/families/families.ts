@@ -19,7 +19,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
     <p class="set-label">身份行 · 卡内表现</p>
     <p class="set-lead">
       厂牌位固定 32 × 32，右侧两行：名称在上、作者 / 来源在下。三种卡面各取一次样，
-      组件、尺寸、对齐都相同，只换底色与文字色。
+      组件、尺寸、对齐都相同，厂牌底始终是同一块 80% 底色。
     </p>
 
     <div class="ident-row">
@@ -33,7 +33,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
       </div>
 
       <div class="ident-strip on-photo">
-        <ui-card-mark model="flux1-dev.safetensors" [onShot]="true" />
+        <ui-card-mark model="flux1-dev.safetensors" />
         <span class="ident-text">
           <b>FLUX</b>
           <span>black-forest-labs</span>
@@ -116,14 +116,14 @@ import { SEARCH_ITEMS } from '../../../visual-data';
         <span>厂牌位圆角</span>
       </div>
       <div class="spec-cell">
-        <b>logoDark</b>
-        <span>照片封面与深色主题用反白版</span>
+        <b>80%</b>
+        <span>厂牌底固定透明度的底色，照片上也不换</span>
       </div>
     </div>
 
     <ul class="mark-rules">
       <li>所有厂牌位统一 32 × 32；官方资产 24 × 24，不裁切、不改色。</li>
-      <li>有反白资产时深色主题与照片封面自动换；没有反白资产保留原色，不用 CSS 反转。</li>
+      <li>深色主题自动换反白资产；照片上不特殊处理，仍用同一块 80% 底色，避免厂牌在图上「消失」。</li>
       <li>没有资产时退家族码；认不出家族才退发布方缩写或工作流图标。</li>
       <li>同一张卡上只出现一次厂牌位，身份行不再重复。</li>
     </ul>

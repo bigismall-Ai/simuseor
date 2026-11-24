@@ -15,7 +15,7 @@
  * 【骨架六层（对应原型 ①-⑥）】
  *   ① 封面      .acard-media / .acard-plate   铺满整卡
  *   ② 身份行    .acard-head / .acard-mark / .acard-ident
- *   ③ 原站链接  .acard-origin                  右上角，本地库与发现页同一位置
+ *   ③ 原站入口  ui-card-origin                动作行左侧图标，右上角留给 ⋯
  *   ④ 状态槽    .acard-slot / .acard-rule / .acard-size   左状态 · 白线 · 右大小
  *   ⑤ 分类标签  .acard-tags                    只放一枚
  *   ⑥ 动作行    .acard-foot                    ⋯ 在左，主按钮在右
@@ -141,38 +141,8 @@
 .acard.on-shot .acard-ident b { color: #fff; text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
 .acard.on-shot .acard-ident span { color: rgb(255 255 255 / 0.8); text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
 
-.acard-head > .acard-kebab {
-  flex: none;
-}
-
 /* ---- ③ 原站链接：右上角，本地库与发现页同一位置、同一种样式 ---- */
-.acard-origin {
-  margin-left: auto;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  height: 16px;
-  padding: 0 5px;
-  border-radius: 4px;
-  background: var(--panel);
-  box-shadow: inset 0 0 0 1px var(--border-strong);
-  color: var(--text);
-  font: 600 9px/1 'Cascadia Mono', Consolas, monospace;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.acard-origin svg {
-  width: 9px;
-  height: 9px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.acard.on-shot .acard-origin { background: rgb(10 12 18 / 0.55); box-shadow: none; color: #fff; }
+
 
 /* 照片卡：文字翻白，只用封面自带的那一道中性黑蒙版，不再叠第二层浅色雾 */
 .acard.on-shot {
@@ -346,49 +316,9 @@
   gap: 5px;
   margin-top: 1px;
 }
-.acard-foot .acard-kebab { flex: none; }
 .acard-foot .acard-primary { margin-left: auto; }
 
-/* ⋯ 按钮：22×22（原型口径），压在封面遮罩上 —— 底色跟着遮罩走，
-   不能用 --panel 的浅底（浅底压深色遮罩会发灰）。 */
-.acard-kebab {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 1px solid color-mix(in srgb, var(--card-scrim-ink) 24%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--card-scrim-ink) 10%, transparent);
-  color: var(--card-scrim-ink);
-  font: inherit;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-}
-.acard-kebab:hover {
-  background: rgb(255 255 255 / 0.18);
-  border-color: rgb(255 255 255 / 0.4);
-}
-.acard.on-shot .acard-kebab {
-  border-color: rgb(255 255 255 / 0.4);
-  background: rgb(255 255 255 / 0.16);
-  color: #fff;
-  backdrop-filter: blur(6px);
-}
 
-.acard.on-shot .acard-kebab:hover {
-  background: rgb(255 255 255 / 0.26);
-  border-color: rgb(255 255 255 / 0.56);
-}
-
-.acard:not(.on-shot) .acard-kebab {
-  border-color: var(--border-strong);
-  background: var(--panel);
-  color: var(--text);
-}
-.acard:not(.on-shot) .acard-kebab:hover { background: var(--hover); }
 
 
 

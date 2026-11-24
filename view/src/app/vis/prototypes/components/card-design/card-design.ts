@@ -84,7 +84,7 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
     <ol class="spec-list">
       <li><b>① 封面</b><span>家族色 + 点阵 + 家族码水印；有真实照片时铺图并隐藏纹样。</span></li>
       <li><b>② 身份行</b><span>32 × 32 厂牌位（ui-card-mark）+ 右侧两行：名称在上、作者/来源在下。</span></li>
-      <li><b>③ 原站</b><span>右上角固定出口；本地导入与本地工作流没有原站时留空。</span></li>
+      <li><b>③ 原站</b><span>动作行左侧的小图标；右上角只留给 ⋯。没有原站时留空。</span></li>
       <li><b>④ 状态槽</b><span>左状态 · 细线 · 右大小；本地库看磁盘，发现看下载，工作流看文件体积。</span></li>
       <li><b>⑤ 分类标签</b><span>恰好一枚，用 ui-badge（sm）表达文件类型 / 分组 / 节点类。</span></li>
       <li><b>⑥ 动作行</b><span>右上角 ⋯ 弹出菜单；动作行只留唯一主按钮，危险动作收进菜单。</span></li>

@@ -88,13 +88,14 @@
 - 所有资产卡共用 `src/app/ui/asset-card.css` 的 `.acard` 外壳，不在组件内重写 `.acard-*` 外壳类
 - 卡片尺寸、字号、按钮高度走 `--card-*` token；改规格先改 token
 - 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印都在该组件内维护
-- 动作按钮只用共享 `.acard-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
+- 动作按钮只用共享 `ui-card-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
 - 卡片圆角跟随列表：`--card-radius` = `--ui-radius-list`（16px），不要再单独设 24px
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill
-- ⋯ 固定在卡片右上角（`.acard-head` 内、原站链接之后），菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
+- ⋯ 固定在卡片右上角（`.acard-head` 末尾），用 `ui-card-kebab`；原站入口是动作行左侧的 `ui-card-origin`，右上角不再放链接
+- 菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
 - 卡片最大宽度 `--card-max`（300px），网格用 `minmax(…, var(--card-max))`，不要让卡在宽屏上拉伸
 - 蒙版只留一道：有封面图时用封面自带的中性黑渐变（不拿主题色染照片），文字翻白；没有照片时不叠蒙版，家族色直接做底
-- 照片卡上的厂牌位不压底色（白 logo + 投影），不要做成深色小方块
+- 厂牌位底色固定为 `card-solid` 80%，不随照片/主题切换；照片上也不做深色方块
 - 新增卡片组件必须同时出现在 `/vis/prototypes/components/cards`（当前 5 类：本地库 / 发现 / 工作流本地 / 工作流发现 / 节点包），并跑 `npm run cards:guard`
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 

@@ -42,20 +42,13 @@ import { ThemeService } from '../core/theme.service';
       height: var(--card-mark-size, 32px);
       overflow: hidden;
       border-radius: var(--card-mark-radius, 8px);
-      background: color-mix(in oklab, var(--ui-card-solid) 94%, transparent);
+      background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
       box-shadow: inset 0 0 0 1px var(--ui-inner-border);
       color: var(--ui-text);
       font-size: 10px;
       font-weight: 600;
       letter-spacing: .02em;
       line-height: 1;
-    }
-
-    :host-context(.acard.on-shot) {
-      background: none;
-      box-shadow: none;
-      color: #fff;
-      filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.55));
     }
 
     :host-context(.acard.is-broken) {
@@ -109,8 +102,6 @@ export class CardMarkComponent {
   readonly tone = input('');
   readonly icon = input<'workflow' | ''>('');
   readonly scale = input(1);
-  /** 压在真实照片上时置 true：有反白资产就换反白版 */
-  readonly onShot = input(false);
 
   private readonly theme = inject(ThemeService);
 
@@ -120,9 +111,7 @@ export class CardMarkComponent {
   readonly resolvedLogoDark = computed(() => this.logoDark() || this.spec()?.logoDark || '');
   readonly hasDark = computed(() => !!this.resolvedLogoDark());
 
-  readonly useDarkLogo = computed(
-    () => this.hasDark() && (this.onShot() || this.theme.theme() === 'dark'),
-  );
+  readonly useDarkLogo = computed(() => this.hasDark() && this.theme.theme() === 'dark');
 
   readonly resolvedCode = computed(() => {
     const code = this.code() || this.spec()?.code || '';

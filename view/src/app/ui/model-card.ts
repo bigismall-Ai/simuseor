@@ -5,6 +5,8 @@ import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { ThemeService } from '../core/theme.service';
 import { fmtInt } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardOriginComponent } from './card-origin';
+import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -59,7 +61,14 @@ const FILE_TYPES = new Set([
  */
 @Component({
   selector: 'md-model-card',
-  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
+  imports: [
+    BadgeComponent,
+    CardKebabComponent,
+    CardOriginComponent,
+    CardMarkComponent,
+    CardMenuComponent,
+    CoverPlateComponent,
+  ],
   template: `
     <article class="card acard" [class.on-shot]="photoOk()">
       <!-- ① 封面：铺满整卡。ratio="fill" 不声明比例，宽高由外层给 ——
@@ -90,33 +99,8 @@ const FILE_TYPES = new Set([
           <span [title]="authorText()">{{ authorText() || '—' }}</span>
         </span>
 
-        @if (origin().href) {
-          <a
-            class="origin acard-origin"
-            [href]="origin().href"
-            target="_blank"
-            rel="noreferrer"
-            [title]="origin().title"
-          >
-            {{ origin().label }}
-            <svg viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M4.5 2.5H2.5v7h7v-2" />
-              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
-            </svg>
-          </a>
-        }
 
-        <button
-          class="card-kebab acard-kebab"
-          type="button"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen()"
-          aria-label="更多操作"
-          title="更多操作"
-          (click)="toggleMenu($event)"
-        >
-          ⋯
-        </button>
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
 
         @if (menuOpen()) {
           <ui-card-menu [items]="menuItems()" (picked)="onMenuPick()" />
@@ -150,6 +134,10 @@ const FILE_TYPES = new Set([
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="card-actions acard-foot">
+          @if (origin().href) {
+            <ui-card-origin [href]="origin().href" [label]="origin().title" />
+          }
+
           <!-- 发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
                其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：
                「已在库」由状态条事实槽「已入库 N」与列表视图的徽章报。 -->

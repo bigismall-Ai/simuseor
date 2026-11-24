@@ -1,5 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardOriginComponent } from './card-origin';
+import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
@@ -55,7 +57,14 @@ const SOURCES: Record<string, SourceInfo> = {
  */
 @Component({
   selector: 'md-hub-card',
-  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
+  imports: [
+    BadgeComponent,
+    CardKebabComponent,
+    CardOriginComponent,
+    CardMarkComponent,
+    CardMenuComponent,
+    CoverPlateComponent,
+  ],
   template: `
     <!-- 卡不是行：类名只留 .hub + 共享骨架的 .acard。
          旧列表行用的 .wf-row 类名不带到卡上 —— 「行」「卡」在代码里要分得开，
@@ -77,40 +86,15 @@ const SOURCES: Record<string, SourceInfo> = {
 
       <!-- ② 身份行：来源徽章 + 工作流名 / 作者。③ 原站链接在右上角。 -->
       <div class="acard-head">
-        <ui-card-mark [code]="source().code" [tone]="source().tone" [title]="source().name" [onShot]="photoOk()" />
+        <ui-card-mark [code]="source().code" [tone]="source().tone" [title]="source().name" />
 
         <span class="acard-ident">
           <b class="wf-title" [title]="item().name">{{ item().name }}</b>
           <span [title]="authorText()">{{ authorText() }}</span>
         </span>
 
-        @if (item().url) {
-          <a
-            class="acard-origin"
-            [href]="item().url"
-            target="_blank"
-            rel="noreferrer"
-            [title]="'打开 ' + source().name + ' 上的原始页面'"
-          >
-            {{ source().short }}
-            <svg viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M4.5 2.5H2.5v7h7v-2" />
-              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
-            </svg>
-          </a>
-        }
 
-        <button
-          class="acard-kebab"
-          type="button"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen()"
-          aria-label="更多操作"
-          title="更多操作"
-          (click)="toggleMenu($event)"
-        >
-          ⋯
-        </button>
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
 
         @if (menuOpen()) {
           <ui-card-menu>
@@ -169,6 +153,13 @@ const SOURCES: Record<string, SourceInfo> = {
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
+          @if (item().url) {
+            <ui-card-origin
+              [href]="item().url"
+              [label]="'打开 ' + source().name + ' 上的原始页面'"
+            />
+          }
+
           <button
             class="acard-primary primary btn-xs"
             type="button"

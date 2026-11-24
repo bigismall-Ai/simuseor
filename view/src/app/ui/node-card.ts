@@ -1,5 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardOriginComponent } from './card-origin';
+import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
@@ -58,7 +60,14 @@ export interface NodeCardItem {
  */
 @Component({
   selector: 'md-node-card',
-  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
+  imports: [
+    BadgeComponent,
+    CardKebabComponent,
+    CardOriginComponent,
+    CardMarkComponent,
+    CardMenuComponent,
+    CoverPlateComponent,
+  ],
   template: `
     <article class="nd-card acard" [class.on-shot]="photoOk()">
       <!-- ① 封面：铺满整卡 -->
@@ -79,7 +88,7 @@ export interface NodeCardItem {
 
       <!-- ② 身份行 + ③ 原站链接 -->
       <div class="acard-head">
-        <ui-card-mark [code]="mark()" [title]="displayName()" [onShot]="photoOk()" />
+        <ui-card-mark [code]="mark()" [title]="displayName()" />
         <span class="acard-ident">
           <!-- ② 身份行：短名 + 作者。全名留给下面的卡片标题 ——
                两处都写全名，同一张卡上同一个名字出现两次（原型口径：
@@ -87,33 +96,8 @@ export interface NodeCardItem {
           <b [title]="displayName()">{{ coverName() }}</b>
           <span [title]="subLine()">{{ subLine() }}</span>
         </span>
-        @if (item().repo) {
-          <a
-            class="acard-origin"
-            [href]="item().repo"
-            target="_blank"
-            rel="noreferrer"
-            title="打开仓库"
-          >
-            GitHub
-            <svg viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M4.5 2.5H2.5v7h7v-2" />
-              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
-            </svg>
-          </a>
-        }
 
-        <button
-          class="acard-kebab"
-          type="button"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen()"
-          aria-label="更多操作"
-          title="更多操作"
-          (click)="toggleMenu()"
-        >
-          ⋯
-        </button>
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
 
       <!-- 次要信息与次要操作收进这个菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
       @if (menuOpen()) {
@@ -200,6 +184,10 @@ export interface NodeCardItem {
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="acard-foot">
+          @if (item().repo) {
+            <ui-card-origin [href]="item().repo ?? ''" label="打开仓库" />
+          }
+
           @if (mode() === 'library') {
             <button
               class="acard-primary primary btn-xs"
@@ -511,7 +499,7 @@ export class NodeCardComponent {
     return { name, image };
   });
 
-  toggleMenu(): void {
+  toggleMenu(_event?: MouseEvent): void {
     this.menuOpen.update((open) => !open);
   }
 

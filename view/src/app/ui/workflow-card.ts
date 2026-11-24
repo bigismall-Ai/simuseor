@@ -1,5 +1,6 @@
 import { Component, HostListener, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -35,7 +36,13 @@ interface StateView {
  */
 @Component({
   selector: 'app-workflow-card',
-  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
+  imports: [
+    BadgeComponent,
+    CardKebabComponent,
+    CardMarkComponent,
+    CardMenuComponent,
+    CoverPlateComponent,
+  ],
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
      （Emulated 封装），四张卡引用的是同一份源，改一处四张卡一起变。
      外部样式只能走 styleUrls；styleUrls 与 styles 并存：两者打在同一套作用域属性上，
@@ -94,23 +101,13 @@ interface StateView {
       <!-- ② 身份行：左上「标识块 + 工作流名 / 底模」两行。
            ③ 原站：本地工作流没有来源站（文件就在共享目录里），这一槽留空。 -->
       <div class="acard-head">
-        <ui-card-mark [model]="it().main_model || ''" icon="workflow" [onShot]="photoOk()" />
+        <ui-card-mark [model]="it().main_model || ''" icon="workflow" />
         <span class="acard-ident">
           <b [title]="it().path">{{ it().name }}</b>
           <span [title]="it().main_model || ''">{{ it().main_model || '本地工作流' }}</span>
         </span>
 
-        <button
-          class="wc-kebab acard-kebab"
-          type="button"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen()"
-          aria-label="更多操作"
-          title="更多操作"
-          (click)="toggleMenu($event)"
-        >
-          ⋯
-        </button>
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
 
         @if (menuOpen()) {
           <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />

@@ -5,6 +5,8 @@ import { folderFileTypeLabel } from '../core/task-labels';
 import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardOriginComponent } from './card-origin';
+import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
@@ -16,7 +18,7 @@ import { CoverPlateComponent } from './cover-plate';
  * 外壳与几何全部来自 `asset-card.css`（产品侧唯一一份），本组件只填槽位：
  *   ① 封面     .acard-media / .acard-plate —— 铺满整卡
  *   ② 身份行   .acard-head —— 32×32 标识块 + 厂名 / 作者两行
- *   ③ 原站     .acard-origin —— 右上角
+ *   ③ 原站     ui-card-origin —— 动作行左侧
  *   ④ 状态槽   .acard-slot —— 左状态 · 一根白线 · 右磁盘大小
  *   ⑤ 标签     .acard-tags —— 恰好一枚（模型文件类型）
  *   ⑥ 动作行   .acard-foot —— ⋯ 在左，主按钮在右
@@ -34,7 +36,14 @@ import { CoverPlateComponent } from './cover-plate';
  */
 @Component({
   selector: 'md-library-card',
-  imports: [BadgeComponent, CardMarkComponent, CardMenuComponent, CoverPlateComponent],
+  imports: [
+    BadgeComponent,
+    CardKebabComponent,
+    CardOriginComponent,
+    CardMarkComponent,
+    CardMenuComponent,
+    CoverPlateComponent,
+  ],
   template: `
     <article
       class="mcard acard"
@@ -94,34 +103,8 @@ import { CoverPlateComponent } from './cover-plate';
           }
         </span>
 
-        @if (sourceHref()) {
-          <a
-            class="origin acard-origin"
-            [href]="sourceHref()"
-            target="_blank"
-            rel="noreferrer"
-            [title]="sourceTitle()"
-          >
-            {{ sourceShortLabel() }}
-            <svg viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M4.5 2.5H2.5v7h7v-2" />
-              <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
-            </svg>
-          </a>
-        }
 
-        <button
-          type="button"
-          class="acard-kebab"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="menuOpen()"
-          aria-label="更多操作"
-          title="更多操作"
-          data-testid="lib-card-kebab"
-          (click)="toggleMenu($event)"
-        >
-          ⋯
-        </button>
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
 
         @if (menuOpen()) {
           <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />
@@ -151,8 +134,12 @@ import { CoverPlateComponent } from './cover-plate';
           }}</ui-badge>
         </div>
 
-        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
+        <!-- ⑥ 动作行：原站图标在左，主按钮在右；⋯ 在右上角 -->
         <div class="acard-foot">
+          @if (sourceHref()) {
+            <ui-card-origin [href]="sourceHref()" [label]="sourceTitle()" />
+          }
+
           <button
             type="button"
             class="acard-primary primary btn-xs"
