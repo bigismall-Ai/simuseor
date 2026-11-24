@@ -34,10 +34,10 @@ import { Component, input, output } from '@angular/core';
       width: 22px;
       height: 22px;
       padding: 0;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--ui-inner-border);
       border-radius: var(--radius-sm);
-      background: var(--panel);
-      color: var(--text);
+      background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
+      color: var(--ui-text);
       font: inherit;
       font-size: 11px;
       line-height: 1;
@@ -46,18 +46,7 @@ import { Component, input, output } from '@angular/core';
     }
 
     .acard-kebab:hover {
-      background: var(--hover);
-    }
-
-    :host-context(.acard.on-shot) .acard-kebab {
-      border-color: rgb(255 255 255 / 0.4);
-      background: rgb(255 255 255 / 0.16);
-      color: #fff;
-    }
-
-    :host-context(.acard.on-shot) .acard-kebab:hover {
-      background: rgb(255 255 255 / 0.26);
-      border-color: rgb(255 255 255 / 0.56);
+      background: color-mix(in srgb, var(--ui-card-solid) 92%, transparent);
     }
 
     :host-context(.acard) .acard-kebab:focus-visible {

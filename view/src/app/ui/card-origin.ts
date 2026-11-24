@@ -36,17 +36,17 @@ import { Component, input } from '@angular/core';
       flex: none;
       width: 22px;
       height: 22px;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--ui-inner-border);
       border-radius: var(--radius-sm);
-      background: var(--panel);
-      color: var(--text);
+      background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
+      color: var(--ui-text);
       text-decoration: none;
       cursor: pointer;
       backdrop-filter: blur(6px);
     }
 
     .acard-origin-link:hover {
-      background: var(--hover);
+      background: color-mix(in srgb, var(--ui-card-solid) 92%, transparent);
     }
 
     svg {
@@ -57,17 +57,6 @@ import { Component, input } from '@angular/core';
       stroke-width: 1.3;
       stroke-linecap: round;
       stroke-linejoin: round;
-    }
-
-    :host-context(.acard.on-shot) .acard-origin-link {
-      border-color: rgb(255 255 255 / 0.4);
-      background: rgb(255 255 255 / 0.16);
-      color: #fff;
-    }
-
-    :host-context(.acard.on-shot) .acard-origin-link:hover {
-      background: rgb(255 255 255 / 0.26);
-      border-color: rgb(255 255 255 / 0.56);
     }
   `,
 })

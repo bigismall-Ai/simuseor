@@ -95,7 +95,8 @@
 - 菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
 - 卡片最大宽度 `--card-max`（300px），网格用 `minmax(…, var(--card-max))`，不要让卡在宽屏上拉伸
 - 蒙版只留一道：有封面图时用封面自带的中性黑渐变（不拿主题色染照片），文字翻白；没有照片时不叠蒙版，家族色直接做底
-- 厂牌位底色固定为 `card-solid` 80%，不随照片/主题切换；照片上也不做深色方块
+- 厂牌位、⋯、原站图标都固定 `card-solid` 80% 底，不随照片切换皮肤；照片上也不做深色方块
+- `ui-card-kebab` / `ui-card-origin` / `ui-card-menu` 是卡片动作的固定组合，卡片内不许手写 `.acard-kebab` / `.acard-origin`
 - 新增卡片组件必须同时出现在 `/vis/prototypes/components/cards`（当前 5 类：本地库 / 发现 / 工作流本地 / 工作流发现 / 节点包），并跑 `npm run cards:guard`
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 

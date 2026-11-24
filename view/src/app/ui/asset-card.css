@@ -217,6 +217,14 @@
 
 }
 
+/* 设计页 / 截图用的展开态：与 hover、focus-within 同一套展开结果 */
+:host-context(.card-expanded) .acard-details {
+  max-height: none;
+  overflow: visible;
+  opacity: 1;
+  transform: none;
+}
+
 @media (hover: none) {
   .acard-details {
     max-height: none;

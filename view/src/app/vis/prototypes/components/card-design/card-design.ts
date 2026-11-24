@@ -53,6 +53,29 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
       </div>
     </div>
 
+    <p class="set-label">展开态 · hover / focus</p>
+    <p class="set-lead">
+      hover 或键盘 focus 后，acard-body 向上展开：类别、状态槽、分类标签、动作行（原站图标 + 主按钮）。
+      下面是同一套展开结果的静态样张，不依赖鼠标。
+    </p>
+    <div class="card-row card-expanded">
+      <div class="card-cell">
+        <p class="cell-label">本地库卡</p>
+        <md-library-card [model]="library" cover="/samples/shot-2.jpg" />
+        <p class="cell-menu">类别 · 在库 · 大小 · 文件类型 · 原站图标</p>
+      </div>
+      <div class="card-cell">
+        <p class="cell-label">发现卡</p>
+        <md-model-card [items]="[discover]" cover="/samples/shot-4.jpg" />
+        <p class="cell-menu">类别 · 下载/点赞 · 分类 · 原站图标</p>
+      </div>
+      <div class="card-cell">
+        <p class="cell-label">工作流卡</p>
+        <app-workflow-card [it]="workflow" />
+        <p class="cell-menu">格式 · 状态 · 分组 · 主按钮</p>
+      </div>
+    </div>
+
     <p class="set-label">⋯ 弹出菜单 · 独立组件</p>
     <p class="set-lead">
       三种卡片的菜单都渲染同一个 <code>ui-card-menu</code>，只是条目不同；
