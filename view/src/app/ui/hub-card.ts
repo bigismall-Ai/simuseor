@@ -1,4 +1,5 @@
 import { Component, computed, input, output, signal } from '@angular/core';
+import { BadgeComponent } from './badge';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtInt } from '../core/types';
@@ -53,12 +54,12 @@ const SOURCES: Record<string, SourceInfo> = {
  */
 @Component({
   selector: 'md-hub-card',
-  imports: [CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
   template: `
     <!-- 卡不是行：类名只留 .hub + 共享骨架的 .acard。
          旧列表行用的 .wf-row 类名不带到卡上 —— 「行」「卡」在代码里要分得开，
          列表视图那一行仍然是 .wf-row。 -->
-    <article class="hub acard" [class.on-shot]="photoOk()">
+    <article class="hub acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
       <!-- ① 封面：铺满整卡。几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
            家族色底 / 几何纹样 / 铺满图 / 蒙版都在共享铭牌里。
            ratio="fill"：不声明比例，宽高跟着卡片走 —— 封面就是铺满整卡。 -->
@@ -118,7 +119,7 @@ const SOURCES: Record<string, SourceInfo> = {
         <!-- ⑤ 分类标签：恰好一枚 —— 自定义分组。
              依赖（底模 / 节点）不是分类，收进 ⋯ 菜单，不占这一格。 -->
         <div class="acard-tags">
-          <span class="pill" [title]="tagTitle()">{{ tagText() }}</span>
+          <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
         </div>
 
         <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
@@ -127,7 +128,7 @@ const SOURCES: Record<string, SourceInfo> = {
             class="acard-kebab"
             type="button"
             aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen()"
+            [attr.aria-expanded]="menuOpen() || menuPinned()"
             aria-label="更多操作"
             title="更多操作"
             (click)="toggleMenu($event)"
@@ -135,7 +136,7 @@ const SOURCES: Record<string, SourceInfo> = {
             ⋯
           </button>
 
-          @if (menuOpen()) {
+          @if (menuOpen() || menuPinned()) {
             <div class="acard-menu" role="menu">
               @for (r of requires(); track r) {
                 <div class="hub-row">
@@ -214,15 +215,6 @@ const SOURCES: Record<string, SourceInfo> = {
          外壳几何（贴边、浮起、描边、圆角）在共享文件里，
          这里只补这张卡特有的：条目用「标签 + 值」两栏，
          值可能很长（文件路径），所以允许折行并封顶高度，免得菜单比卡还高被裁掉。 */
-      .acard-menu {
-        max-width: calc(100% - 4px);
-        max-height: 150px;
-        overflow-y: auto;
-        padding: 5px;
-        box-shadow:
-          inset 0 0 0 1px var(--ui-inner-border),
-          var(--ui-shadow-md);
-      }
       .hub-row {
         display: flex;
         align-items: baseline;
@@ -262,6 +254,8 @@ export class HubCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
+  /** 设计页静态展示用：把菜单定格为展开 */
+  readonly menuPinned = input(false);
 
   /** 来源信息：认不出来的源退到短码 + 灰调，不猜它是谁 */
   readonly source = computed<SourceInfo>(() => {

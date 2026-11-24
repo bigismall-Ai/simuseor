@@ -1,4 +1,5 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, HostListener, computed, input, output, signal } from '@angular/core';
+import { BadgeComponent } from './badge';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import type { LocalWorkflow } from '../core/types';
@@ -32,7 +33,7 @@ interface StateView {
  */
 @Component({
   selector: 'app-workflow-card',
-  imports: [CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
      （Emulated 封装），四张卡引用的是同一份源，改一处四张卡一起变。
      外部样式只能走 styleUrls；styleUrls 与 styles 并存：两者打在同一套作用域属性上，
@@ -43,6 +44,7 @@ interface StateView {
       class="wc acard"
       [class.broken]="state() === 'broken'"
       [class.on-shot]="photoOk()"
+      [class.is-pinned]="menuPinned()"
       [attr.data-name]="it().name"
     >
       <!-- ① 封面：铺满整卡。外壳几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
@@ -157,9 +159,9 @@ interface StateView {
 
         <!-- ⑤ 分类标签：只放一枚 —— 工作流的自定义分组（没分组就写「未分组」） -->
         <div class="acard-tags">
-          <span class="pill wc-tag" [class.is-none]="!it().group" [title]="it().group || '未分组'">
+          <ui-badge size="sm" class="wc-tag" [class.is-none]="!it().group" [attr.title]="it().group || '未分组'">
             {{ it().group || '未分组' }}
-          </span>
+          </ui-badge>
         </div>
 
         <!-- ⑥ 动作行：⋯ 在左，主按钮在右。⋯ 的下拉菜单仍由页面层接管，
@@ -170,12 +172,32 @@ interface StateView {
               class="wc-kebab acard-kebab"
               type="button"
               aria-haspopup="menu"
+              [attr.aria-expanded]="menuOpen() || menuPinned()"
               aria-label="更多操作"
               title="更多操作"
-              (click)="openMore($event)"
+              (click)="toggleMenu($event)"
             >
               ⋯
             </button>
+
+            @if (menuOpen() || menuPinned()) {
+              <div class="acard-menu" role="menu">
+                <button type="button" role="menuitem" class="acard-menu-item" (click)="pick('run')">
+                  运行
+                </button>
+                <button type="button" role="menuitem" class="acard-menu-item" (click)="pick('edit')">
+                  在编辑器中打开
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  class="acard-menu-item is-danger"
+                  (click)="pick('delete')"
+                >
+                  删除工作流
+                </button>
+              </div>
+            }
           </div>
           <button
             class="wc-primary acard-primary"
@@ -349,9 +371,7 @@ interface StateView {
       /* ---- ⑤ 分类标签 -----------------------------------------------------
        分组片的几何（16px 胶囊、底色、字号）由 .acard-tags .pill 给，
        这里只补一枚描边：分组片要靠描边跟底色分层。 */
-      .wc-tag {
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--aurora-text) 22%, transparent);
-      }
+
 
       /* UI | API 双段：文件格式标识（可载入画布 / 只有节点连线）。
        跟更新时间是同一行，所以用 vertical-align 对齐，不占行高。 */
@@ -416,8 +436,11 @@ interface StateView {
 export class WorkflowCardComponent {
   readonly it = input.required<LocalWorkflow>();
   readonly primary = output<{ item: LocalWorkflow; act: 'fix' | 'use' | 'edit' }>();
-  /** 带上点击坐标，菜单才能贴着按钮弹出来而不是回页面顶上去找 */
-  readonly more = output<{ item: LocalWorkflow; x: number; y: number }>();
+  readonly action = output<{ item: LocalWorkflow; act: 'run' | 'edit' | 'delete' }>();
+
+  /** ⋯ 菜单：默认收起；设计页可以用 menuPinned 定格展示 */
+  readonly menuOpen = signal(false);
+  readonly menuPinned = input(false);
 
   /** 封面图是否真的画出来了（远程图会 401 / 超时）。决定状态层用深字还是白字 */
   readonly photoOk = signal(false);
@@ -508,9 +531,18 @@ export class WorkflowCardComponent {
     return (b / 1000 / 1000).toFixed(1) + ' MB';
   });
 
-  openMore(event: MouseEvent): void {
+  toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    this.more.emit({ item: this.it(), x: rect.right, y: rect.bottom });
+    this.menuOpen.update((open) => !open);
+  }
+
+  pick(act: 'run' | 'edit' | 'delete'): void {
+    this.menuOpen.set(false);
+    this.action.emit({ item: this.it(), act });
+  }
+
+  @HostListener('document:click')
+  closeMenu(): void {
+    this.menuOpen.set(false);
   }
 }

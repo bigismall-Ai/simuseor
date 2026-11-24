@@ -4,6 +4,7 @@ import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/sourc
 import { folderFileTypeLabel } from '../core/task-labels';
 import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
+import { BadgeComponent } from './badge';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 
@@ -31,12 +32,13 @@ import { CoverPlateComponent } from './cover-plate';
  */
 @Component({
   selector: 'md-library-card',
-  imports: [CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
   template: `
     <article
       class="mcard acard"
       [class.on-shot]="shotOk() && !broken()"
       [class.is-broken]="broken()"
+      [class.is-pinned]="menuPinned()"
     >
       <!-- ① 封面：铺满整卡。壳的几何在 asset-card.css，这里只放封面自己的内容 -->
       <div class="acard-media">
@@ -125,9 +127,9 @@ import { CoverPlateComponent } from './cover-plate';
 
         <!-- ⑤ 分类标签：恰好一枚 —— 模型文件类型（作者由身份行承担，不再重复） -->
         <div class="plate-meta acard-tags">
-          <span class="pill" [class.pill-demo]="!!model().isDemo" [title]="fileTypeTip()">{{
+          <ui-badge size="sm" [class.pill-demo]="!!model().isDemo" [attr.title]="fileTypeTip()">{{
             fileTypeLabel()
-          }}</span>
+          }}</ui-badge>
         </div>
 
         <!-- ⑥ 动作行：⋯ 在左（破坏性操作收进去），主按钮在右 -->
@@ -136,7 +138,7 @@ import { CoverPlateComponent } from './cover-plate';
             type="button"
             class="acard-kebab"
             aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen()"
+            [attr.aria-expanded]="menuOpen() || menuPinned()"
             aria-label="更多操作"
             title="更多操作"
             data-testid="lib-card-kebab"
@@ -145,7 +147,7 @@ import { CoverPlateComponent } from './cover-plate';
             ⋯
           </button>
 
-          @if (menuOpen()) {
+          @if (menuOpen() || menuPinned()) {
             <div class="acard-menu" role="menu">
               <button
                 type="button"
@@ -234,18 +236,10 @@ import { CoverPlateComponent } from './cover-plate';
       /* ---- ⑥ 动作行 ----
          ⋯ 按钮与菜单浮层的几何都在 asset-card.css，这里只补一处：
          删除是破坏性操作，菜单项要说得出 danger。 */
-      .acard-menu-item.is-danger {
-        color: var(--ui-error);
-      }
-      .acard-menu-item.is-danger:hover {
-        background: color-mix(in srgb, var(--ui-error) 14%, transparent);
-        color: var(--ui-error);
-      }
-
       /* DEMO 是离线占位文件，标红才不会被当成真模型 */
-      .acard .acard-tags .pill.pill-demo {
-        background: color-mix(in srgb, var(--ui-error) 14%, transparent);
-        color: var(--ui-error);
+      .acard .acard-tags ui-badge.pill-demo {
+        --badge-gray-bg: color-mix(in srgb, var(--ui-error) 14%, transparent);
+        --badge-gray-ink: var(--ui-error);
       }
 
     `,
@@ -269,6 +263,8 @@ export class LibraryCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
+  /** 设计页静态展示用：把菜单定格为展开 */
+  readonly menuPinned = input(false);
 
   /** 照片是否真的画出来了（由共享封面 app-cover-plate 回传） */
   readonly shotOk = signal(false);

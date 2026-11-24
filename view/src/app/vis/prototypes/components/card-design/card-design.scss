@@ -8,102 +8,132 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  letter-spacing: -.01em;
+  letter-spacing: -0.01em;
 }
 
 .set-label:not(:first-child) {
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
-.spec-grid {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 28px;
-  align-items: start;
-}
-
-.spec-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  justify-self: start;
-  width: 280px;
-}
-
-.spec-hint {
+.set-lead {
+  max-width: 72ch;
+  margin: -4px 0 16px;
   color: var(--ui-muted);
-  font-size: 10px;
-}
-
-.spec-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.spec-list li {
-  display: grid;
-  grid-template-columns: 90px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--ui-border-2);
   font-size: 11.5px;
   line-height: 1.6;
 }
 
-.spec-list b {
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.card-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cell-label {
+  margin: 0;
   color: var(--ui-text);
+  font-size: 11.5px;
   font-weight: 600;
 }
 
-.spec-list span {
+.cell-menu {
+  margin: 0;
   color: var(--ui-muted);
+  font-size: 10.5px;
+  line-height: 1.5;
 }
 
-.spec-table {
-  overflow: auto;
+.cell-menu b {
+  margin-right: 6px;
+  color: var(--ui-text-2);
+  font-weight: 600;
+}
+
+/* 身份行标本：与卡内 .acard-ident 同一套字号 */
+.ident-demo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-list);
   background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
-  box-shadow: var(--ui-shadow);
 }
 
-.spec-table table {
-  width: 100%;
-  border-collapse: collapse;
+.ident-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ident-text b {
+  overflow: hidden;
+  color: var(--ui-text);
   font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.spec-table th,
-.spec-table td {
-  padding: 9px 11px;
-  border: 0;
-  text-align: left;
-}
-
-.spec-table th {
-  background: var(--ui-panel-2);
+.ident-text span {
+  overflow: hidden;
   color: var(--ui-muted);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.spec-table tbody tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--ui-inset) 45%, transparent);
-}
-
-.mono {
+.ident-tip {
+  margin-left: auto;
+  color: var(--ui-muted);
   font-family: var(--ui-font-mono);
   font-size: 10px;
 }
 
-@media (max-width: 800px) {
-  .spec-grid {
+.spec-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+
+.spec-list b {
+  margin-right: 8px;
+  color: var(--ui-text);
+  font-weight: 600;
+}
+
+.set-note {
+  max-width: 78ch;
+  margin: 14px 0 0;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .card-row {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .card-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }

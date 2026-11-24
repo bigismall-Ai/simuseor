@@ -1,19 +1,65 @@
 import { Component } from '@angular/core';
 import { FAMILIES } from '../../../../core/cover';
 import { CardMarkComponent } from '../../../../ui/card-mark';
+import { ModelCardComponent } from '../../../../ui/model-card';
+import { SEARCH_ITEMS } from '../../../visual-data';
 
 /**
  * 原型组件：厂牌资产。
  *
  * 所有厂牌位都走同一个 ui-card-mark：官方 logo / 反白 logo / 家族码 /
  * 发布方缩写 / 工作流图标，不再让每张卡自己拼标识块。
+ * 这一页同时给出「在卡内」的完整形态，避免只在白底上看图标。
  */
 @Component({
   selector: 'app-proto-families',
-  standalone: true,
-  imports: [CardMarkComponent],
+  imports: [CardMarkComponent, ModelCardComponent],
   styleUrl: './families.scss',
   template: `
+    <p class="set-label">身份行 · 卡内表现</p>
+    <p class="set-lead">
+      厂牌位固定 32 × 32，右侧两行：名称在上、作者 / 来源在下。三种卡面各取一次样，
+      组件、尺寸、对齐都相同，只换底色与文字色。
+    </p>
+
+    <div class="ident-row">
+      <div class="ident-strip on-paper">
+        <ui-card-mark model="flux1-dev.safetensors" />
+        <span class="ident-text">
+          <b>FLUX</b>
+          <span>black-forest-labs</span>
+        </span>
+        <span class="ident-note">浅色卡面</span>
+      </div>
+
+      <div class="ident-strip on-photo">
+        <ui-card-mark model="flux1-dev.safetensors" [onShot]="true" />
+        <span class="ident-text">
+          <b>FLUX</b>
+          <span>black-forest-labs</span>
+        </span>
+        <span class="ident-note">照片封面</span>
+      </div>
+
+      <div class="ident-strip on-dark">
+        <ui-card-mark model="flux1-dev.safetensors" />
+        <span class="ident-text">
+          <b>FLUX</b>
+          <span>black-forest-labs</span>
+        </span>
+        <span class="ident-note">深色主题</span>
+      </div>
+    </div>
+
+    <p class="set-label">真实卡片刻</p>
+    <div class="card-slice">
+      <md-model-card [items]="[flux]" cover="/samples/shot-4.jpg" />
+      <div class="slice-note">
+        <b>同一个组件</b>
+        <span>卡里的厂牌位与上面三块都来自 <code>ui-card-mark</code>，没有第二份标识块实现。</span>
+      </div>
+    </div>
+
     <p class="set-label">官方厂牌</p>
     <div class="mark-grid">
       @for (family of families; track family.id) {
@@ -55,10 +101,29 @@ import { CardMarkComponent } from '../../../../ui/card-mark';
       </div>
     </div>
 
-    <p class="set-label">约束</p>
+    <p class="set-label">尺寸与约束</p>
+    <div class="spec">
+      <div class="spec-cell">
+        <b>32 × 32</b>
+        <span>厂牌位</span>
+      </div>
+      <div class="spec-cell">
+        <b>24 × 24</b>
+        <span>官方资产，不裁切、不改色</span>
+      </div>
+      <div class="spec-cell">
+        <b>8px</b>
+        <span>厂牌位圆角</span>
+      </div>
+      <div class="spec-cell">
+        <b>logoDark</b>
+        <span>照片封面与深色主题用反白版</span>
+      </div>
+    </div>
+
     <ul class="mark-rules">
       <li>所有厂牌位统一 32 × 32；官方资产 24 × 24，不裁切、不改色。</li>
-      <li>有反白资产时深色主题自动换；没有反白资产保留原色，不用 CSS 反转。</li>
+      <li>有反白资产时深色主题与照片封面自动换；没有反白资产保留原色，不用 CSS 反转。</li>
       <li>没有资产时退家族码；认不出家族才退发布方缩写或工作流图标。</li>
       <li>同一张卡上只出现一次厂牌位，身份行不再重复。</li>
     </ul>
@@ -66,4 +131,5 @@ import { CardMarkComponent } from '../../../../ui/card-mark';
 })
 export class ProtoFamiliesComponent {
   readonly families = FAMILIES.filter((family) => family.logo || family.code !== '—');
+  readonly flux = SEARCH_ITEMS[0];
 }

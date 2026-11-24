@@ -7,6 +7,7 @@ export type BadgeTone = 'gray' | 'blue' | 'green' | 'orange' | 'red';
   template: `
     <span
       class="ui-badge"
+      [class.sm]="size() === 'sm'"
       [class.gray]="tone() === 'gray'"
       [class.blue]="tone() === 'blue'"
       [class.green]="tone() === 'green'"
@@ -47,6 +48,13 @@ export type BadgeTone = 'gray' | 'blue' | 'green' | 'orange' | 'red';
       white-space: nowrap;
     }
 
+    .ui-badge.sm {
+      gap: 3px;
+      padding: 0 6px;
+      font-size: 9.5px;
+      line-height: 14px;
+    }
+
     .ui-badge.gray {
       background: var(--badge-gray-bg);
       color: var(--badge-gray-ink);
@@ -75,4 +83,5 @@ export type BadgeTone = 'gray' | 'blue' | 'green' | 'orange' | 'red';
 })
 export class BadgeComponent {
   readonly tone = input<BadgeTone>('gray');
+  readonly size = input<'md' | 'sm'>('md');
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
 
-/** 圆角与阴影：面板 28 / 卡片 24 / 列表 16 / 按钮 18 / 胶囊 999。 */
+/** 圆角与阴影：面板 28 / 区块 24 / 卡片与列表 16 / 按钮 18 / 胶囊 999。 */
 @Component({
   selector: 'app-vis-radius',
   standalone: true,
@@ -11,7 +11,7 @@ import { VisualPageComponent } from './visual-page';
   template: `
     <app-visual-page
       title="圆角"
-      hint="面板 28px，卡片 24px，列表 16px，按钮 18px，胶囊 999px。"
+      hint="面板 28px，区块 24px，卡片与列表同为 16px，按钮 18px，胶囊 999px。"
     >
       <ui-section title="圆角五档" pill="Radius">
           <div class="radius-grid">
@@ -22,13 +22,13 @@ import { VisualPageComponent } from './visual-page';
             </div>
             <div class="radius-item">
               <div class="radius-box" style="border-radius: var(--ui-radius-card)">24px</div>
-              <b>卡片</b>
-              <span>资产卡 / 浮层内容</span>
+              <b>区块</b>
+              <span>section 内容卡 / 浮层内容</span>
             </div>
             <div class="radius-item">
-              <div class="radius-box" style="border-radius: var(--ui-radius-list)">16px</div>
-              <b>列表</b>
-              <span>表格 / 列表卡片</span>
+              <div class="radius-box" style="border-radius: var(--card-radius)">16px</div>
+              <b>卡片 · 列表</b>
+              <span>资产卡 / 表格 / 列表卡</span>
             </div>
             <div class="radius-item">
               <div class="radius-box" style="border-radius: var(--ui-radius-button)">18px</div>

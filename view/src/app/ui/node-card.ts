@@ -1,4 +1,5 @@
 import { Component, computed, input, output, signal } from '@angular/core';
+import { BadgeComponent } from './badge';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtSize } from '../core/types';
@@ -56,9 +57,9 @@ export interface NodeCardItem {
  */
 @Component({
   selector: 'md-node-card',
-  imports: [CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
   template: `
-    <article class="nd-card acard" [class.on-shot]="photoOk()">
+    <article class="nd-card acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
       <!-- ① 封面：铺满整卡 -->
       <div class="acard-media">
         <div class="acard-plate">
@@ -126,11 +127,11 @@ export interface NodeCardItem {
 
         <!-- ⑤ 分类标签：它提供什么 -->
         <div class="acard-tags">
-          <span class="pill" [class.is-mono]="nodeTag().mono" [title]="nodeTagTitle()">{{
+          <ui-badge size="sm" [class.is-mono]="nodeTag().mono" [attr.title]="nodeTagTitle()">{{
             nodeTag().text
-          }}</span>
+          }}</ui-badge>
           @if (nodeTag().more > 0) {
-            <span class="pill is-more" [title]="nodeTagTitle()">+{{ nodeTag().more }}</span>
+            <ui-badge size="sm" class="is-more" [attr.title]="nodeTagTitle()">+{{ nodeTag().more }}</ui-badge>
           }
         </div>
 
@@ -140,7 +141,7 @@ export interface NodeCardItem {
             class="acard-kebab"
             type="button"
             aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen()"
+            [attr.aria-expanded]="menuOpen() || menuPinned()"
             aria-label="更多操作"
             title="更多操作"
             (click)="toggleMenu()"
@@ -198,7 +199,7 @@ export interface NodeCardItem {
       </div>
 
       <!-- 次要信息与次要操作收进这个菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
-      @if (menuOpen()) {
+      @if (menuOpen() || menuPinned()) {
         <div class="nd-menu" role="menu">
           @if (classList().length) {
             <div class="nd-menu-row">
@@ -412,6 +413,8 @@ export class NodeCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
+  /** 设计页静态展示用：把菜单定格为展开 */
+  readonly menuPinned = input(false);
 
   readonly displayName = computed(() => this.item().title || this.item().name || '');
 

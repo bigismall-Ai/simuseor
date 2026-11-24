@@ -21,6 +21,7 @@ const shellClasses = [
   'primary',
   'kebab',
   'media',
+  'menu',
   'plate',
   'body',
 ];

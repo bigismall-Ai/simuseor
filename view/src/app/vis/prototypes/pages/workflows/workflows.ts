@@ -158,7 +158,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
                         <app-workflow-card
                           [it]="wf"
                           (primary)="onPrimary($event)"
-                          (more)="onMore()"
+                          (action)="onCardAction($event)"
                         />
 
                         <div class="wf-strip">
@@ -848,8 +848,15 @@ export class ProtoWorkflowsComponent {
     this.feedback.set(`打开编辑器：${event.item.name}（原型不跳转）。`);
   }
 
-  onMore(): void {
-    this.feedback.set('更多操作菜单在正式版接入，这里只演示入口。');
+  onCardAction(event: { item: LocalWorkflow; act: 'run' | 'edit' | 'delete' }): void {
+    const name = event.item.title || event.item.name;
+    this.feedback.set(
+      event.act === 'run'
+        ? `已把「${name}」加入队列（原型不发真实任务）。`
+        : event.act === 'edit'
+          ? `打开编辑器：${name}（原型不跳转）。`
+          : `删除工作流「${name}」（原型不删除文件）。`,
+    );
   }
 
   importWorkflow(): void {

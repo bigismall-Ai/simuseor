@@ -4,6 +4,7 @@ import { sourceLabel, sourceShort } from '../core/source-links';
 import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { ThemeService } from '../core/theme.service';
 import { fmtInt } from '../core/types';
+import { BadgeComponent } from './badge';
 import { CardMarkComponent } from './card-mark';
 import { CoverPlateComponent } from './cover-plate';
 import type { CoverInput } from '../core/cover';
@@ -56,9 +57,9 @@ const FILE_TYPES = new Set([
  */
 @Component({
   selector: 'md-model-card',
-  imports: [CardMarkComponent, CoverPlateComponent],
+  imports: [BadgeComponent, CardMarkComponent, CoverPlateComponent],
   template: `
-    <article class="card acard" [class.on-shot]="photoOk()">
+    <article class="card acard" [class.on-shot]="photoOk()" [class.is-pinned]="menuPinned()">
       <!-- ① 封面：铺满整卡。ratio="fill" 不声明比例，宽高由外层给 ——
            本卡封面是 position:absolute; inset:0 铺满整卡，正是 fill 的语义。
            铭牌自带的顶行（厂标 + 家族码 + 规格 + 原站链接）在这里是重复的：
@@ -126,7 +127,7 @@ const FILE_TYPES = new Set([
 
         <!-- ⑤ 分类标签：恰好一枚。站点入口归右上角与 ⋯ 菜单，不再占标签位。 -->
         <div class="card-tags acard-tags">
-          <span class="pill" [title]="tagTitle()">{{ tagText() }}</span>
+          <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
         </div>
 
         <!-- ⑥ 动作行：⋯ 在左，主按钮在右 -->
@@ -135,7 +136,7 @@ const FILE_TYPES = new Set([
             class="card-kebab acard-kebab"
             type="button"
             aria-haspopup="menu"
-            [attr.aria-expanded]="menuOpen()"
+            [attr.aria-expanded]="menuOpen() || menuPinned()"
             aria-label="更多操作"
             title="更多操作"
             (click)="toggleMenu($event)"
@@ -143,11 +144,11 @@ const FILE_TYPES = new Set([
             ⋯
           </button>
 
-          @if (menuOpen()) {
+          @if (menuOpen() || menuPinned()) {
             <div class="acard-menu" role="menu">
               @for (s of sourceLinks(); track s.key) {
                 <a
-                  class="pill pill-link acard-menu-item"
+                  class="acard-menu-item"
                   role="menuitem"
                   [href]="s.href"
                   target="_blank"
@@ -190,17 +191,6 @@ const FILE_TYPES = new Set([
          平手时谁赢看样式注入顺序。 */
 /* ⋯ 按钮与菜单浮层的外壳几何都在共享文件里（asset-card.css）；
          这里只补这张卡特有的：菜单项用胶囊外观、菜单底用双层描边。 */
-      .acard-menu {
-        align-items: flex-start;
-        gap: 4px;
-        max-height: 104px;
-        overflow-y: auto;
-        padding: 6px;
-        box-shadow:
-          inset 0 0 0 1px var(--ui-inner-border),
-          var(--ui-shadow-md);
-      }
-
     `,
   ],
   host: {
@@ -220,6 +210,8 @@ export class ModelCardComponent {
 
   /** ⋯ 菜单是否展开 */
   readonly menuOpen = signal(false);
+  /** 设计页静态展示用：把菜单定格为展开 */
+  readonly menuPinned = input(false);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly theme = inject(ThemeService);
