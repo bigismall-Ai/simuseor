@@ -109,8 +109,8 @@ import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../../../visual-data';
     </ui-table>
 
     <p class="set-note">
-      遮罩比上一版更透（86% → 72% → 34%），并在顶部多铺 2px，避免在照片上切出硬边。
-      卡片圆角跟随列表，统一 16px。
+      遮罩只留一道：有封面图时用封面自带的中性黑渐变，文字翻白；没有照片时不叠任何蒙版，
+      家族色直接做底色，不再被洗成白色。卡片圆角跟随列表，统一 16px。
     </p>
   `,
 })

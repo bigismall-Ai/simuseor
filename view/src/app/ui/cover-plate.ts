@@ -328,6 +328,12 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
         display: none;
       }
 
+      /* 卡片尺寸没有照片时不需要蒙版：家族色渐变本身就是底色，
+         再盖一层 card-solid 会把下半张卡洗成白色。 */
+      .plate.sz-card:not(.on-shot) .scrim {
+        display: none;
+      }
+
       /* 蒙版：上浅下深。上方只要压住照片的高光，下方要能把正文整块压下去，
          所以下沿直接给到近乎实色的底，正文永远落在稳定底色上，不赌照片内容。 */
       .scrim {
@@ -351,17 +357,14 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
         color: var(--plate-ink);
       }
       .plate.on-shot .scrim {
+        /* 中性黑，不拿主题底色去染照片；上下各一道，够撑住身份行与正文 */
         background:
-          linear-gradient(
-            to bottom,
-            color-mix(in oklab, var(--aurora-bg) 52%, transparent) 0%,
-            transparent 34%
-          ),
+          linear-gradient(to bottom, rgb(6 7 12 / 46%) 0%, transparent 32%),
           linear-gradient(
             to top,
-            color-mix(in oklab, var(--aurora-bg) 94%, transparent) 0%,
-            color-mix(in oklab, var(--aurora-bg) 66%, transparent) 32%,
-            transparent 72%
+            rgb(6 7 12 / 82%) 0%,
+            rgb(6 7 12 / 52%) 30%,
+            transparent 70%
           );
       }
 

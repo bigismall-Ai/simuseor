@@ -52,9 +52,10 @@ import { ThemeService } from '../core/theme.service';
     }
 
     :host-context(.acard.on-shot) {
-      background: rgb(10 12 18 / .42);
+      background: none;
       box-shadow: none;
       color: #fff;
+      filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.55));
     }
 
     :host-context(.acard.is-broken) {

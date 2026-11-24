@@ -174,6 +174,14 @@
 }
 .acard.on-shot .acard-origin { background: rgb(10 12 18 / 0.55); box-shadow: none; color: #fff; }
 
+/* 照片卡：文字翻白，只用封面自带的那一道中性黑蒙版，不再叠第二层浅色雾 */
+.acard.on-shot {
+  --card-scrim-ink: #fff;
+  --card-scrim-muted: rgb(255 255 255 / 0.76);
+  --card-scrim-line: rgb(255 255 255 / 0.26);
+  --card-scrim-tag-bg: rgb(255 255 255 / 0.18);
+}
+
 /* ---- 底部信息区：压在封面上的半透明遮罩（VIS 登记的 scrim token） ---- */
 .acard-body {
   position: relative;
@@ -186,23 +194,12 @@
   background: none;
 }
 
-/* 遮罩做成带顶部渐隐的伪元素：内容边界不会在封面上切出一条硬线 */
-.acard-body::before {
-  content: '';
-  position: absolute;
-  /* 顶部多铺 2px：遮罩边缘不会在封面上切出硬线 */
-  inset: -2px 0 0;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    color-mix(in oklab, var(--card-scrim-color) 86%, transparent) 0%,
-    color-mix(in oklab, var(--card-scrim-color) 72%, transparent) 55%,
-    color-mix(in oklab, var(--card-scrim-color) 34%, transparent) 82%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(to top, #000 0 90%, transparent 100%);
-  backdrop-filter: blur(8px);
+/* 非照片卡不再叠雾：正文直接落在家族色底上，颜色不被洗白。
+   照片卡由封面自带的中性黑蒙版撑住文字对比度。 */
+.acard.on-shot .acard-body::before {
+  background: none;
+  backdrop-filter: none;
+  mask-image: none;
 }
 
 /* 名称 / 类别 */
@@ -375,14 +372,15 @@
   border-color: rgb(255 255 255 / 0.4);
 }
 .acard.on-shot .acard-kebab {
-  border-color: rgb(255 255 255 / 0.32);
-  background: rgb(10 12 18 / 0.42);
+  border-color: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.16);
   color: #fff;
+  backdrop-filter: blur(6px);
 }
 
 .acard.on-shot .acard-kebab:hover {
-  background: rgb(10 12 18 / 0.58);
-  border-color: rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.26);
+  border-color: rgb(255 255 255 / 0.56);
 }
 
 .acard:not(.on-shot) .acard-kebab {
