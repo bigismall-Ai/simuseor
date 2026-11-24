@@ -31,15 +31,15 @@ import { Component, input, output } from '@angular/core';
     .chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      height: 28px;
-      padding: 0 12px;
+      gap: var(--ui-space-2);
+      height: var(--ui-h-sm);
+      padding: 0 var(--ui-space-3);
       border: 1px solid transparent;
       border-radius: var(--ui-radius-pill);
       background: var(--ui-panel-2);
       color: var(--ui-text-2);
       font-family: var(--ui-font-body);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       font-weight: 500;
       line-height: 1;
       white-space: nowrap;
@@ -73,7 +73,7 @@ import { Component, input, output } from '@angular/core';
     .count {
       color: var(--ui-muted);
       font-family: var(--ui-font-mono);
-      font-size: 10px;
+      font-size: var(--ui-text-xs);
     }
 
     .chip.on .count {

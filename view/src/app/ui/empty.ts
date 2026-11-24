@@ -21,7 +21,7 @@ import { Component, input } from '@angular/core';
     }
 
     .ui-empty {
-      padding: 44px 20px;
+      padding: var(--ui-space-8) var(--ui-space-5);
       color: var(--ui-muted);
       text-align: center;
     }
@@ -36,13 +36,13 @@ import { Component, input } from '@angular/core';
     .ui-empty-title {
       margin: 0 0 4px;
       color: var(--ui-text);
-      font-size: 13px;
+      font-size: var(--ui-text-lg);
       font-weight: 600;
     }
 
     .ui-empty-hint {
       margin: 0;
-      font-size: 12px;
+      font-size: var(--ui-text-md);
     }
   `,
 })

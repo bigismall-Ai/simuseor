@@ -532,7 +532,7 @@
 .save-bar {
   position: sticky;
   bottom: 16px;
-  z-index: 5;
+  z-index: var(--ui-z-sticky);
   display: flex;
   align-items: center;
   gap: 12px;

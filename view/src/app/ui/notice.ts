@@ -45,14 +45,14 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
 
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      padding: 11px 12px;
+      gap: var(--ui-space-3);
+      padding: var(--ui-space-3);
       border: 1px solid color-mix(in srgb, var(--tone) 26%, var(--ui-border));
       border-left: 3px solid var(--tone);
       border-radius: var(--ui-radius);
       background: var(--tone-soft);
       color: var(--ui-text-2);
-      font-size: 12px;
+      font-size: var(--ui-text-md);
     }
 
     .notice[data-tone='ok'] {
@@ -92,7 +92,7 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
     b {
       display: block;
       color: var(--ui-text);
-      font-size: 12.5px;
+      font-size: var(--ui-text-md);
       font-weight: 600;
     }
 

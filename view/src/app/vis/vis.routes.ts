@@ -26,6 +26,9 @@ import { ProtoDownloadsComponent } from './prototypes/pages/downloads/downloads'
 import { ProtoErrorStatesComponent } from './prototypes/pages/error-states/error-states';
 import { ProtoSettingsComponent } from './prototypes/pages/settings/settings';
 import { ProtoSourceProbeComponent } from './prototypes/pages/source-probe/source-probe';
+import { ProtoModelsComponent } from './prototypes/pages/models/models';
+import { ProtoWorkflowsComponent } from './prototypes/pages/workflows/workflows';
+import { ProtoNodesComponent } from './prototypes/pages/nodes/nodes';
 import { ProtoResourceManagerComponent } from './prototypes/resource-manager';
 
 export const VIS_ROUTES: Routes = [
@@ -94,6 +97,24 @@ export const VIS_ROUTES: Routes = [
         path: 'prototypes/components/families',
         component: ProtoFamiliesComponent,
         title: 'VIS 原型组件 · 厂牌',
+      },
+      {
+        path: 'prototypes/pages/models',
+        data: { bare: true },
+        component: ProtoModelsComponent,
+        title: 'VIS 原型页面 · 模型库',
+      },
+      {
+        path: 'prototypes/pages/workflows',
+        data: { bare: true },
+        component: ProtoWorkflowsComponent,
+        title: 'VIS 原型页面 · 工作流',
+      },
+      {
+        path: 'prototypes/pages/nodes',
+        data: { bare: true },
+        component: ProtoNodesComponent,
+        title: 'VIS 原型页面 · 自定义节点',
       },
       {
         path: 'prototypes/pages/resource-manager',

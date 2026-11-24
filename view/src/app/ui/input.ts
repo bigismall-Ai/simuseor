@@ -52,15 +52,15 @@ import { Component, input, model } from '@angular/core';
     }
 
     .sm .control {
-      height: 30px;
-      padding: 0 9px;
+      height: var(--ui-h-sm);
+      padding: 0 var(--ui-space-2);
     }
 
     .lbl {
       display: block;
       margin-bottom: 6px;
       color: var(--ui-muted);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       font-weight: 500;
       letter-spacing: 0.01em;
     }
@@ -68,9 +68,9 @@ import { Component, input, model } from '@angular/core';
     .control {
       display: flex;
       align-items: center;
-      gap: 8px;
-      height: 36px;
-      padding: 0 10px;
+      gap: var(--ui-space-2);
+      height: var(--ui-h-md);
+      padding: 0 var(--ui-space-2);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius);
       background: var(--ui-inset);
@@ -101,7 +101,7 @@ import { Component, input, model } from '@angular/core';
       background: none;
       color: var(--ui-text);
       font-family: var(--ui-font-body);
-      font-size: 12.5px;
+      font-size: var(--ui-text-md);
       outline: none;
     }
 
@@ -148,7 +148,7 @@ import { Component, input, model } from '@angular/core';
       display: block;
       margin-top: 5px;
       color: var(--ui-muted);
-      font-size: 11px;
+      font-size: var(--ui-text-xs);
       line-height: 1.5;
     }
 

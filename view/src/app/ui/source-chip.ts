@@ -37,9 +37,9 @@ export type SourceChipState = 'ok' | 'degraded' | 'down';
     .chip {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      height: 34px;
-      padding: 0 14px;
+      gap: var(--ui-space-2);
+      height: var(--ui-h-md);
+      padding: 0 var(--ui-space-3);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-pill);
       background: linear-gradient(
@@ -51,7 +51,7 @@ export type SourceChipState = 'ok' | 'degraded' | 'down';
       box-shadow: var(--button-shadow);
       backdrop-filter: blur(12px) saturate(1.04);
       font-family: var(--ui-font-body);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       font-weight: 600;
       line-height: 1;
       white-space: nowrap;

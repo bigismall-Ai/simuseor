@@ -68,7 +68,7 @@ export interface PageViewOption {
     .ui-page-kicker {
       margin: 0 0 5px;
       color: var(--ui-muted);
-      font-size: 10px;
+      font-size: var(--ui-text-xs);
       font-weight: 600;
       letter-spacing: 0.11em;
       text-transform: uppercase;
@@ -76,7 +76,7 @@ export interface PageViewOption {
 
     .ui-page-heading h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: var(--ui-text-xl);
       font-weight: 600;
       letter-spacing: -0.022em;
       line-height: 1.2;
@@ -86,12 +86,12 @@ export interface PageViewOption {
       max-width: 74ch;
       margin: 6px 0 0;
       color: var(--ui-muted);
-      font-size: 12.5px;
+      font-size: var(--ui-text-md);
     }
 
     .ui-page-actions {
       display: flex;
-      gap: 8px;
+      gap: var(--ui-space-2);
       align-items: center;
     }
 

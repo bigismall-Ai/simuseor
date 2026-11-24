@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 
 export type ToastTone = 'neutral' | 'ok' | 'error';
 
@@ -39,15 +39,15 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
     .toast {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      padding: 11px 12px;
+      gap: var(--ui-space-3);
+      padding: var(--ui-space-3);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius);
       background: color-mix(in srgb, var(--ui-overlay) 94%, transparent);
       box-shadow: var(--ui-shadow-md);
       backdrop-filter: blur(14px);
       color: var(--ui-text-2);
-      font-size: 12px;
+      font-size: var(--ui-text-md);
       text-align: left;
     }
 
@@ -94,7 +94,7 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
 
     b {
       display: block;
-      font-size: 12px;
+      font-size: var(--ui-text-md);
       font-weight: 600;
       color: var(--ui-text);
     }
@@ -102,7 +102,7 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
     p {
       margin: 2px 0 0;
       color: var(--ui-text-2);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       line-height: 1.5;
     }
 
@@ -130,5 +130,16 @@ export class ToastComponent {
   readonly tone = input<ToastTone>('neutral');
   readonly title = input('');
   readonly dismissible = input(false);
+  /** 自动收起时间（毫秒）；0 表示不自动关闭。 */
+  readonly duration = input(0);
   readonly dismiss = output<void>();
+
+  constructor() {
+    effect((onCleanup) => {
+      const ms = this.duration();
+      if (!ms) return;
+      const timer = setTimeout(() => this.dismiss.emit(), ms);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
 }

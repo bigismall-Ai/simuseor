@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
 import { EmptyComponent } from '../../../../ui/empty';
 import { PageHeaderComponent } from '../../../../ui/page-header';
@@ -85,7 +85,7 @@ interface TaskItem {
 
         @if (notice()) {
           <div class="toast-dock">
-            <ui-toast [dismissible]="true" (dismiss)="notice.set('')">
+            <ui-toast [dismissible]="true" [duration]="4200" (dismiss)="notice.set('')">
               {{ notice() }}
             </ui-toast>
           </div>
@@ -589,13 +589,6 @@ export class ProtoDownloadsComponent {
   readonly tab = signal<TaskTab>('all');
   readonly taskQuery = signal('');
   readonly notice = signal('');
-
-  /** 悬浮提示自动收起；重新选择来源会重新计时。 */
-  private readonly autoDismissNotice = effect((onCleanup) => {
-    if (!this.notice()) return;
-    const timer = setTimeout(() => this.notice.set(''), 4200);
-    onCleanup(() => clearTimeout(timer));
-  });
 
   private resolveTimer: ReturnType<typeof setTimeout> | null = null;
 

@@ -34,7 +34,7 @@ export interface SegmentedOption {
     .segmented {
       display: inline-flex;
       gap: 2px;
-      padding: 3px;
+      padding: var(--ui-space-1);
       border: 1px solid var(--ui-border-2);
       border-radius: var(--ui-radius-pill);
       background: var(--ui-panel-3);
@@ -44,14 +44,14 @@ export interface SegmentedOption {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 24px;
-      padding: 0 11px;
+      height: var(--ui-h-compact);
+      padding: 0 var(--ui-space-3);
       border: 0;
       border-radius: var(--ui-radius-pill);
       background: none;
       color: var(--ui-muted);
       font-family: var(--ui-font-body);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       font-weight: 500;
       white-space: nowrap;
       cursor: pointer;

@@ -87,6 +87,9 @@ export const NAV_SECTIONS: NavSection[] = [
     key: 'pages',
     label: '页面',
     links: [
+      { label: '模型库', route: '/vis/prototypes/pages/models', icon: 'library' },
+      { label: '工作流', route: '/vis/prototypes/pages/workflows', icon: 'workflows' },
+      { label: '自定义节点', route: '/vis/prototypes/pages/nodes', icon: 'nodes' },
       { label: '资源管理器', route: '/vis/prototypes/pages/resource-manager', icon: 'resources' },
       { label: '下载', route: '/vis/prototypes/pages/downloads', icon: 'download' },
       { label: '错误与反馈', route: '/vis/prototypes/pages/error-states', icon: 'alert' },

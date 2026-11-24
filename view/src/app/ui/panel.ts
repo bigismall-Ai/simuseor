@@ -37,8 +37,8 @@ import { Component, input } from '@angular/core';
     }
 
     .ui-panel {
-      margin-bottom: 14px;
-      padding: 18px 20px 20px;
+      margin-bottom: var(--ui-space-4);
+      padding: var(--ui-space-5);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-panel);
       background: var(--ui-panel);

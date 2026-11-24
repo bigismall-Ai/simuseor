@@ -5,12 +5,7 @@ import { InputComponent } from '../../../../ui/input';
 import { UiButtonComponent } from '../../../../ui/button';
 import { ToastComponent } from '../../../../ui/toast';
 import { SourceChipComponent } from '../../../../ui/source-chip';
-import {
-  Component,
-  DestroyRef,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
 import { EmptyComponent } from '../../../../ui/empty';
 import { PageHeaderComponent } from '../../../../ui/page-header';
@@ -454,6 +449,7 @@ interface SpecRow {
                 [tone]="toast.tone"
                 [title]="toast.title"
                 [dismissible]="true"
+                [duration]="toast.tone === 'error' ? 6000 : 3000"
                 (dismiss)="dismissToast(toast.id)"
               >
                 {{ toast.body }}
@@ -479,7 +475,6 @@ interface SpecRow {
   `,
 })
 export class ProtoErrorStatesComponent {
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly authInfo = signal('');
   readonly warnInfo = signal('');
@@ -494,7 +489,6 @@ export class ProtoErrorStatesComponent {
   readonly toasts = signal<ToastItem[]>([]);
 
   private toastSeq = 0;
-  private readonly toastTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
   readonly copyRows: CopyRow[] = [
     {
@@ -600,13 +594,6 @@ export class ProtoErrorStatesComponent {
     },
   ];
 
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      for (const timer of this.toastTimers.values()) clearTimeout(timer);
-      this.toastTimers.clear();
-    });
-  }
-
   resolveAuth(mode: 'settings' | 'retry'): void {
     this.authInfo.set(
       mode === 'settings'
@@ -662,14 +649,9 @@ export class ProtoErrorStatesComponent {
   private showToast(tone: 'error' | 'ok', title: string, body: string): void {
     const id = ++this.toastSeq;
     this.toasts.update((list) => [...list, { id, tone, title, body }]);
-    const timer = setTimeout(() => this.dismissToast(id), tone === 'error' ? 6000 : 3000);
-    this.toastTimers.set(id, timer);
   }
 
   dismissToast(id: number): void {
-    const timer = this.toastTimers.get(id);
-    if (timer) clearTimeout(timer);
-    this.toastTimers.delete(id);
     this.toasts.update((list) => list.filter((t) => t.id !== id));
   }
 

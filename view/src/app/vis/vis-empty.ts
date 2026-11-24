@@ -3,12 +3,20 @@ import { UiButtonComponent } from '../ui/button';
 import { EmptyComponent } from '../ui/empty';
 import { NoticeComponent } from '../ui/notice';
 import { SectionBlockComponent } from '../ui/section-block';
+import { SkeletonComponent } from '../ui/skeleton';
 import { VisualPageComponent } from './visual-page';
 
 /** 空状态与行内反馈：ui-empty / ui-notice 的实际表现。 */
 @Component({
   selector: 'app-vis-empty',
-  imports: [EmptyComponent, NoticeComponent, SectionBlockComponent, UiButtonComponent, VisualPageComponent],
+  imports: [
+    EmptyComponent,
+    NoticeComponent,
+    SectionBlockComponent,
+    SkeletonComponent,
+    UiButtonComponent,
+    VisualPageComponent,
+  ],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="空状态" hint="空态、加载、错误与成功都用共享组件表达，不再每页拼一套。">
@@ -31,6 +39,16 @@ import { VisualPageComponent } from './visual-page';
           <ui-notice tone="ok" icon="✓" title="已安装">已安装到实例 A。</ui-notice>
           <ui-notice tone="info" icon="i">下载源已切换到 Hugging Face。</ui-notice>
         </div>
+      </ui-section>
+
+      <ui-section title="加载骨架" pill="ui-skeleton">
+        <div class="stack">
+          <ui-skeleton [lines]="3" label="正在读取模型列表" />
+          <div class="progress"><div style="width: 34%"></div></div>
+        </div>
+        <p class="hint">
+          首屏首次加载用骨架；已经有内容时只做局部刷新，用进度条或行内提示，不要整块重画。
+        </p>
       </ui-section>
 
       <ui-section title="搜索无匹配" pill="No result">

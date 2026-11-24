@@ -1,0 +1,98 @@
+:host {
+  display: block;
+}
+
+.page {
+  display: block;
+}
+
+/* —— 卡片网格：本地库与发现同一套密度 —— */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(230px, var(--layout-grid-min)), 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* —— 列表视图：五列固定，名称列吃剩余宽度 —— */
+.models-table {
+  width: 100%;
+  min-width: 640px;
+  table-layout: fixed;
+}
+
+.models-table th {
+  font-weight: 600;
+  color: var(--ui-muted);
+}
+
+.models-table td {
+  vertical-align: middle;
+}
+
+.models-table .t-name {
+  width: 42%;
+}
+
+.models-table .t-source {
+  width: 14%;
+}
+
+.models-table .t-size {
+  width: 12%;
+}
+
+.models-table .t-status {
+  width: 13%;
+}
+
+.models-table .t-time {
+  width: 19%;
+}
+
+.models-table .t-name b {
+  display: block;
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.models-table .t-size,
+.models-table .t-time {
+  color: var(--ui-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.models-table .t-time {
+  font-family: var(--ui-font-mono);
+  font-size: 10.5px;
+}
+
+/* —— 空结果 —— */
+.grid-empty {
+  padding: 4px 0 8px;
+}
+
+.empty-clear {
+  margin-top: 12px;
+}
+
+/* —— 页尾规则（与 vis-samples 的 .rules 同一写法，仅本页生效） —— */
+.rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.rules b {
+  color: var(--ui-text);
+}

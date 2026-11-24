@@ -126,6 +126,10 @@ for (const file of walk(visDir)) {
       }
     }
 
+    if (isStyle && /outline:\s*(?:none|0)/.test(trimmed)) {
+      violations.push(`${rel}:${index + 1}  可见焦点被抹掉，请改用 :focus-visible + --ui-ring  ${trimmed}`);
+    }
+
     if (isStyle && localSurface.test(trimmed)) {
       violations.push(`${rel}:${index + 1}  本地 ${trimmed.split(/\s/)[0]} 表面，请改用 ui-toast / ui-source-chip`);
     }

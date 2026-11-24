@@ -58,7 +58,7 @@ let seq = 0;
     .overlay {
       position: fixed;
       inset: 0;
-      z-index: 90;
+      z-index: var(--ui-z-dialog);
       display: grid;
       place-items: center;
       padding: 24px;
@@ -70,7 +70,7 @@ let seq = 0;
       width: min(440px, 100%);
       max-height: calc(100vh - 48px);
       overflow: auto;
-      padding: 20px;
+      padding: var(--ui-space-5);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-lg);
       background: var(--ui-overlay);
@@ -80,13 +80,13 @@ let seq = 0;
     h2 {
       margin: 0 0 6px;
       color: var(--ui-text);
-      font-size: 15px;
+      font-size: var(--ui-text-lg);
       font-weight: 600;
     }
 
     .body {
       color: var(--ui-muted);
-      font-size: 12px;
+      font-size: var(--ui-text-md);
       line-height: 1.6;
     }
 
@@ -101,8 +101,8 @@ let seq = 0;
     .actions {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      margin-top: 18px;
+      gap: var(--ui-space-2);
+      margin-top: var(--ui-space-5);
     }
 
     /* 投影进来的 [dialog-actions] 包装层不参与布局，让按钮直接吃到 flex gap */

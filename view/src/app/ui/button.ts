@@ -55,16 +55,16 @@ export type ButtonSize = 'md' | 'sm' | 'xs' | 'icon';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      height: 38px;
-      padding: 0 18px;
+      gap: var(--ui-space-2);
+      height: var(--ui-h-lg);
+      padding: 0 var(--ui-space-4);
       border: 1px solid var(--btn-border);
       border-radius: var(--ui-radius-pill);
       background: var(--btn-bg);
       color: var(--btn-ink);
       box-shadow: var(--btn-shadow);
       font-family: var(--ui-font-body);
-      font-size: 12.5px;
+      font-size: var(--ui-text-md);
       font-weight: 600;
       line-height: 1;
       white-space: nowrap;
@@ -104,21 +104,21 @@ export type ButtonSize = 'md' | 'sm' | 'xs' | 'icon';
     }
 
     .sm {
-      height: 30px;
-      padding: 0 12px;
-      font-size: 11.5px;
+      height: var(--ui-h-sm);
+      padding: 0 var(--ui-space-3);
+      font-size: var(--ui-text-sm);
     }
 
     .xs {
-      gap: 5px;
-      height: 25px;
-      padding: 0 10px;
-      font-size: 11px;
+      gap: var(--ui-space-1);
+      height: var(--ui-h-compact);
+      padding: 0 var(--ui-space-2);
+      font-size: var(--ui-text-sm);
     }
 
     .icon {
-      width: 36px;
-      height: 36px;
+      width: var(--ui-h-lg);
+      height: var(--ui-h-lg);
       padding: 0;
     }
 

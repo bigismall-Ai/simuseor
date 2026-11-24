@@ -41,12 +41,40 @@
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
 - 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；面板 28px，卡片 24px，列表 16px
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
+- 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
+- 字号只用 `--ui-text-xs/sm/md/lg/xl`（10.5/11.5/12.5/14/22），不再自造 13/15/9.5
+- 控件高度只用 `--ui-h-compact/sm/md/lg`（24/28/34/38）：表格内 24、筛选 28、常规 34、主操作 38
+- 图标只用 `--icon-inline/control/action/nav`（14/16/18/20）
+- 层级只用 `--ui-z-nav/sticky/toast/overlay/dialog/material`（10/20/60/80/90/1000），不在页面里写魔数
 - 页面结构：面包屑在最外层；不放大标题；每个区块用 `<ui-section title pill>`，标题在内容外，右侧标签用 `pill`
 - 反馈表面：Toast 用 `ui-toast`（位置由页面容器决定），来源通路用 `ui-source-chip`
 - 说明性文字集中在页面最后一块，不在各区块之间分散
 - 区块内容直接铺在页面；表格/列表用 `.list-card`，圆角用 `--ui-radius-list`
 - 文字说明用普通段落，不要用卡片包；卡片最多两层
 - VIS 页面背景、侧栏、主题切换、收起/展开保持现有实现
+
+## 尺寸与断点
+
+- 默认内容宽 `--layout-content-max` 1320px；大屏逐级放大：≥1600 → 1480，≥1920 → 1680，≥2560 → 1880，≥3440 → 2040
+- 卡片网格最小列宽 `--layout-grid-min` 随大屏从 250 → 270 → 290 → 310
+- 媒体查询只允许这几档：**768 / 1024 / 1440 / 1920 / 2560 / 3440**（CSS 变量不能用于 `@media`，写字面值）
+- 目标屏幕包含 3440×1440 带鱼屏与 4K/5K：不要把内容固定死在 1320 居中，宽屏要真的多放列、放并列面板
+- 窄窗只在 ≤1024 做降级（表格横滚、双栏改单栏），不要把卡片强行变窄
+
+## 焦点与可访问性
+
+- 弹层（`ui-dialog` / MatDialog）打开把焦点送进去，关闭必须还给触发元素
+- 路由切换后焦点回到页面 `h1`
+- Toast / notice 不抢焦点，只用 `role="status"` / `role="alert"` 播报
+- 交互元素必须有可访问名：可见文本、`aria-label`（图标按钮）或外层标签
+- 可见焦点不许用 `outline: none` 抹掉；需要自定义时用 `:focus-visible` + `--ui-ring`
+
+## 表单文案
+
+- 错误 ≤ 30 字，以字段名开头（例：「仓库 ID 不存在，检查拼写」）
+- `hint` 与 `error` 互斥：同一字段同一时刻只显示一条
+- 错误里不重复按钮文案；具体动作放按钮，不写进句子
+- 校验规则只写「哪里错、怎么改」，不写堆栈、URL、英文异常原文
 
 ## 图标
 
@@ -61,7 +89,7 @@
 - 卡片尺寸、字号、按钮高度走 `--card-*` token；改规格先改 token
 - 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印都在该组件内维护
 - 动作按钮只用共享 `.acard-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
-- 新增卡片组件必须同时出现在 `/vis/prototypes/components/cards`，并跑 `npm run cards:guard`
+- 新增卡片组件必须同时出现在 `/vis/prototypes/components/cards`（当前 5 类：本地库 / 发现 / 工作流本地 / 工作流发现 / 节点包），并跑 `npm run cards:guard`
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 
 ## 共享组件（`src/app/ui/`）
@@ -69,11 +97,13 @@
 - 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
-- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`
+- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-skeleton`
 - 卡片：`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移
 - 原生 `<input type="text">` 一律用 `ui-input`；checkbox / radio / file / Material `matInput` 例外
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致
+- Toast 的自动收起走 `ui-toast` 的 `duration`（默认 0 = 不关；常规 3000、错误 6000），页面不再自己 `setTimeout`
+- 三态规则：首屏首次加载用 `ui-skeleton`；已有内容局部刷新用进度条 / 行内提示；无数据用 `ui-empty`；失败用 `ui-notice error`
 
 ## VIS 目录
 
