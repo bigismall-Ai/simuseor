@@ -4,7 +4,8 @@
 
 .cover-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, var(--card-max)));
+  justify-content: start;
   gap: 14px;
 }
 
@@ -12,7 +13,7 @@
   margin: 0;
   overflow: hidden;
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-card);
+  border-radius: var(--card-radius);
   background: var(--ui-card-solid);
   box-shadow: var(--ui-shadow);
 }
