@@ -1,0 +1,62 @@
+:host {
+  display: block;
+}
+
+/* 右栏目录要占满整行高度，sticky 才有行程；卡片按自身内容高度对齐 */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--layout-toc);
+  gap: var(--ui-space-5);
+  align-items: stretch;
+}
+
+.article-shell,
+.excerpt-shell {
+  align-self: start;
+}
+
+@media (max-width: 1024px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.article-shell {
+  padding: var(--ui-space-5) var(--ui-space-6);
+}
+
+.article {
+  max-height: 600px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: var(--ui-space-3);
+  --scrollbar-size: 6px;
+}
+
+/* 目录与文章共用同一套阅读偏移：标题滚进容器顶部时留出呼吸位 */
+.article ui-label {
+  scroll-margin-top: var(--ui-space-3);
+}
+
+.excerpt-shell {
+  padding: var(--ui-space-5) var(--ui-space-6);
+}
+
+.excerpt {
+  display: grid;
+  gap: var(--ui-space-2);
+  max-width: var(--layout-prose-measure);
+}
+
+.pins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2) 0;
+}
+
+.mini-slot {
+  display: flex;
+  align-items: flex-start;
+  min-height: 220px;
+}

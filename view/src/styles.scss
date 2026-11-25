@@ -119,6 +119,10 @@
   --layout-content-max: 1320px;
   --layout-prose-measure: 72ch;
   --layout-toc: 242px;
+  /* 目录层级缩进：一级 12 / 二级 24 / 三级 36（MUI 文档目录） */
+  --layout-toc-indent-1: var(--ui-space-3);
+  --layout-toc-indent-2: var(--ui-space-6);
+  --layout-toc-indent-3: calc(var(--ui-space-6) + var(--ui-space-3));
   --ui-scroll-offset: calc(var(--layout-header, 56px) + var(--ui-space-4));
   --layout-gutter: 30px;
   --layout-top: 26px;

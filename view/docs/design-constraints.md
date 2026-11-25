@@ -43,6 +43,7 @@
 | `ui-notice` | 12px 内边距、8px 图标井、语义色 | MUI `Alert/Callout` 参考 |
 | `ui-card-shell` | 16px 圆角、`.acard` 骨架；状态槽 / 标签 / 动作行只走槽位 | 自有 |
 | `ui-nav-tree` | 递归树、分组展开、`subheader`、状态 chip；展开 224 / 收起 64 | MUI 文档导航结构参考 |
+| `ui-toc` | 右栏 242px、链接 12.5px/500、左侧 1px 描边；缩进 12/24/36；点击锁 1s、节流 166ms；mini 3px 条 8–24px、仅 768–1024 | MUI 文档目录参考，断点按自有档位 |
 | `ui-text` / `ui-label` / `ui-rules` | 引言 11.5 / 小标题 14 / 规则 11.5；72ch | 自有 + MUI Markdown 参考 |
 | `ui-progress` | 6px / 3px 两档；aria 与 reduced-motion | 自有 |
 | `ui-state-card` | 标题 + 标签/徽标 + 内容投影；bad 变体红描边 | 自有 |
@@ -55,11 +56,11 @@
 | 标题 `scroll-margin-top` | `--ui-scroll-offset`，所有标题统一 |
 | 正文阅读宽度用 `ch` | `--layout-prose-measure: 72ch` |
 | 表格 docs 密度：行底线、无斑马、14px 级别 | `ui-table density="docs"`，字号按我们刻度收窄到 12.5 |
-| TOC 242px、缩进 12/24/36 | `--layout-toc`（组件待做） |
+| TOC 242px、缩进 12/24/36 | `--layout-toc` + `--layout-toc-indent-1..3`；`ui-toc` |
 | 代码面板：深色底、最高 400px | `--ui-code-*`（组件待做） |
 | Callout：12px、图标井 26×26 | `--ui-callout-*`（组件待做） |
 | 导航树：分组 / `subheader` / 状态 chip | `NAV_TREE` + `ui-nav-tree` |
-| 标题锚点、滚动监听节流 166ms | `ui-toc`（组件待做） |
+| 标题锚点、滚动监听节流 166ms | `ui-toc`（顶部 200 内认第一节、阅读线 = 容器高 1/8、距底 50 认末节、点击锁 1s） |
 | reduced-motion 抑制动效 | 组件内部统一处理 |
 
 ## 有意差异
@@ -89,7 +90,6 @@
 |---|---|---|
 | `ui-page` | 内容容器 | 最大宽 / gutter / 顶部偏移 |
 | `ui-breadcrumb` | 面包屑 | 12px、分隔符、`aria-current` |
-| `ui-toc` | 右栏目录 | 242px、缩进、scroll-spy、节流 166ms |
 | `ui-code` | 代码块 | 深色底、400px 上限、复制按钮 |
 | `ui-kbd` | 快捷键 | 11px mono、6px 圆角 |
 | `ui-search` | 搜索 | 640px 上限、52px 命中行 |

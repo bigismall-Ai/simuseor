@@ -23,6 +23,7 @@ import { ProtoPageHeaderComponent } from './prototypes/components/page-header/pa
 import { ProtoScrollbarComponent } from './prototypes/components/scrollbar/scrollbar';
 import { ProtoStructureComponent } from './prototypes/components/structure/structure';
 import { ProtoSidebarComponent } from './prototypes/components/sidebar/sidebar';
+import { ProtoTocComponent } from './prototypes/components/toc/toc';
 import { ProtoDownloadsComponent } from './prototypes/pages/downloads/downloads';
 import { ProtoErrorStatesComponent } from './prototypes/pages/error-states/error-states';
 import { ProtoSettingsComponent } from './prototypes/pages/settings/settings';
@@ -88,6 +89,11 @@ export const VIS_ROUTES: Routes = [
         path: 'prototypes/components/page-header',
         component: ProtoPageHeaderComponent,
         title: 'VIS 原型组件 · 页头',
+      },
+      {
+        path: 'prototypes/components/toc',
+        component: ProtoTocComponent,
+        title: 'VIS 原型组件 · 目录',
       },
       {
         path: 'prototypes/components/notice',

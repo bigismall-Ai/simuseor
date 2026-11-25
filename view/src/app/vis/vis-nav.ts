@@ -82,6 +82,7 @@ export const NAV_TREE: NavNode[] = [
           { key: 'page-header', label: '页头', route: '/vis/prototypes/components/page-header', icon: 'menu' },
           { key: 'structure', label: '结构件', route: '/vis/prototypes/components/structure', icon: 'library' },
           { key: 'scrollbar', label: '滚动条', route: '/vis/prototypes/components/scrollbar', icon: 'sort' },
+          { key: 'toc', label: '目录', route: '/vis/prototypes/components/toc', icon: 'menu' },
         ],
       },
       {
