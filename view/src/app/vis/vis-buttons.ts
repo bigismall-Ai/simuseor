@@ -5,13 +5,14 @@ import { TableComponent } from '../ui/table';
 import { TooltipComponent } from '../ui/tooltip';
 import { VisualPageComponent } from './visual-page';
 import { RulesComponent } from '../ui/rules';
+import { TextButtonComponent } from '../ui/text-button';
 
-/** 按钮：主 / 次 / 弱 / 危险四层语义，玻璃表面 + 1px 描边 + 轻投影。 */
+/** 按钮：主 / 次 / 弱 / 危险四层语义，玻璃表面 + 1px 描边 + 轻投影；行内动作走 ui-text-button。 */
 @Component({
   selector: 'app-vis-buttons',
   standalone: true,
   imports: [
-    RulesComponent, UiButtonComponent, SectionBlockComponent, TableComponent, TooltipComponent, VisualPageComponent],
+    RulesComponent, UiButtonComponent, TextButtonComponent, SectionBlockComponent, TableComponent, TooltipComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -83,6 +84,47 @@ import { RulesComponent } from '../ui/rules';
         <div class="action-row">
           <ui-button variant="primary" [block]="true">安装到实例 A</ui-button>
         </div>
+      </ui-section>
+
+      <ui-section title="文字按钮" pill="ui-text-button">
+        <div class="row">
+          <span class="row-label">Plain</span>
+          <ui-text-button>查看全部</ui-text-button>
+          <ui-text-button>打开原站</ui-text-button>
+          <ui-text-button [disabled]="true">不可用</ui-text-button>
+        </div>
+
+        <div class="row">
+          <span class="row-label">Underline</span>
+          <ui-text-button variant="underline">许可条款</ui-text-button>
+          <ui-text-button variant="underline">版本说明</ui-text-button>
+          <ui-text-button variant="underline" [disabled]="true">已停用</ui-text-button>
+        </div>
+
+        <div class="row">
+          <span class="row-label">Danger</span>
+          <ui-text-button variant="danger">删除任务</ui-text-button>
+          <ui-text-button variant="danger">清空队列</ui-text-button>
+        </div>
+
+        <div class="row">
+          <span class="row-label">Small</span>
+          <ui-text-button size="sm">详情</ui-text-button>
+          <ui-text-button variant="underline" size="sm">查看日志</ui-text-button>
+          <ui-text-button variant="danger" size="sm">移除</ui-text-button>
+        </div>
+
+        <div class="row">
+          <span class="row-label">X-Small</span>
+          <ui-text-button size="xs">编辑</ui-text-button>
+          <ui-text-button variant="underline" size="xs">复制链接</ui-text-button>
+          <ui-text-button variant="danger" size="xs">移除记录</ui-text-button>
+        </div>
+
+        <p class="hint table-note">
+          行内动作只换文字：无内边距、无边框、无底色。需要描边或胶囊表面时仍用 <code>ui-button</code>；
+          悬停只加下划线或加深颜色，焦点框走 <code>--ui-primary</code>。
+        </p>
       </ui-section>
 
       <ui-section title="悬浮提示" pill="ui-tooltip">
