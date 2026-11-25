@@ -25,6 +25,7 @@
 | 圆角阶梯 | 6 / 8 / 10 / 12 / 16 / 24 / 999 | MUI shape + 自有分层 | `--ui-radius-xs..2xl`，语义 token 映射到阶梯 |
 | 阴影 | 两档 | 自有 | `--ui-shadow` / `--ui-shadow-md`，只表达层级距离 |
 | 层级 | 10 / 20 / 60 / 80 / 90 / 1000 | 自有 | 不在页面写魔数 |
+| 动效 | 0.14 / 0.18 / 0.34 + 单条 ease | 自有，MUI 过渡时长参考 | `--ui-duration-fast/base/slow`、`--ui-ease`；reduced-motion 一律 none |
 | 内容宽 | 1320 → 1480 → 1680 → 1880 → 2040 | 自有 | 按 1600 / 1920 / 2560 / 3440 逐级放大 |
 | 正文阅读宽 | 72ch | MUI 105ch，收窄 | `--layout-prose-measure`，只用于正文段落 |
 | 断点 | 768 / 1024 / 1440 / 1920 / 2560 / 3440 | 自有 | 映射 MUI 的 sm/md/lg/xl 语义，但不改档位 |
@@ -69,6 +70,8 @@
 | reduced-motion 抑制动效 | 组件内部统一处理 |
 | 面包屑末项 `aria-current="page"` | `ui-breadcrumb`（12.5px、`›` 分隔、长标签中间截断） |
 | 内容区固定最大宽与 gutter | `ui-page`（`--layout-content-max` / `--layout-gutter`，可 `wide`） |
+| 动效时长三档与单条缓动 | `--ui-duration-fast/base/slow` + `--ui-ease`；按钮 / 悬停先落地，其余组件逐步收敛 |
+| 主题 token 两端对照 | `/vis/theme-tokens`（浅色 / 深色按 token 并排列值，不切主题也能核对） |
 
 ## 有意差异
 
@@ -93,14 +96,17 @@
 
 ## 待补组件
 
-| 组件 | 用途 | 关键约束 |
-|---|---|---|
-| `ui-page` | 内容容器 | 最大宽 / gutter / 顶部偏移 |
-| `ui-breadcrumb` | 面包屑 | 12.5px、分隔符、`aria-current` |
-| `ui-toc` | 右栏目录 / 速览条 | 242px、缩进、scroll-spy、节流 166ms |
-| `ui-code` | 代码块 | 深色底、400px 上限、复制按钮 |
-| `ui-kbd` | 快捷键 | 11px mono、6px 圆角 |
-| `ui-search` | 搜索 | 640px 上限、52px 命中行 |
+已补：`ui-page`、`ui-breadcrumb`、`ui-toc`、`ui-code`、`ui-kbd`、`ui-search`（06 起全部落地，约束见「组件约束」）。
+
+以下为页面级 token 说明，不是组件，只登记在 VIS 路由里：
+
+| 页面 | 说明 |
+|---|---|
+| `/vis/typography` | 五档字号、行高配对、mono / body、72ch、标题层级 |
+| `/vis/spacing` | 4 基数的八档刻度、padding / gap 用法 |
+| `/vis/elevation` | 六层 z-index 叠放图 + 两档阴影 |
+| `/vis/motion` | 三档时长、单条缓动、reduced-motion 与实样 |
+| `/vis/theme-tokens` | 核心 token 的浅色 / 深色并排取值 |
 
 ## 验证
 

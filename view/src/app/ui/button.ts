@@ -71,10 +71,10 @@ export type ButtonSize = 'md' | 'sm' | 'xs' | 'icon';
       cursor: pointer;
       backdrop-filter: blur(12px) saturate(1.04);
       transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        color 0.18s ease;
+        background var(--ui-duration-base) var(--ui-ease),
+        border-color var(--ui-duration-base) var(--ui-ease),
+        box-shadow var(--ui-duration-base) var(--ui-ease),
+        color var(--ui-duration-base) var(--ui-ease);
     }
 
     .btn:hover {

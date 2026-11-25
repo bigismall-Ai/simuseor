@@ -67,6 +67,18 @@ export const NAV_TREE: NavNode[] = [
           { key: 'modals', label: '模态框', route: '/vis/modals', icon: 'modal' },
         ],
       },
+      {
+        key: 'custom',
+        label: '定制',
+        subheader: true,
+        children: [
+          { key: 'typography', label: '字体与排版', route: '/vis/typography', icon: 'type' },
+          { key: 'spacing', label: '间距', route: '/vis/spacing', icon: 'spacing' },
+          { key: 'elevation', label: '层级与阴影', route: '/vis/elevation', icon: 'elevation' },
+          { key: 'motion', label: '动效', route: '/vis/motion', icon: 'motion' },
+          { key: 'theme-tokens', label: '主题 Token', route: '/vis/theme-tokens', icon: 'tokens' },
+        ],
+      },
     ],
   },
   {

@@ -15,6 +15,11 @@ import { VisRadiusComponent } from './vis-radius';
 import { VisRegistryComponent } from './vis-registry';
 import { VisShellComponent } from './vis-shell';
 import { VisTablesComponent } from './vis-tables';
+import { VisTypographyComponent } from './vis-typography';
+import { VisSpacingComponent } from './vis-spacing';
+import { VisElevationComponent } from './vis-elevation';
+import { VisMotionComponent } from './vis-motion';
+import { VisThemeTokensComponent } from './vis-theme-tokens';
 import { ProtoCardsComponent } from './prototypes/cards';
 import { ProtoCodeComponent } from './prototypes/components/code/code';
 import { ProtoFamiliesComponent } from './prototypes/components/families/families';
@@ -51,6 +56,11 @@ export const VIS_ROUTES: Routes = [
       { path: 'buttons', component: VisButtonsComponent, title: 'VIS · 按钮' },
       { path: 'inputs', component: VisInputsComponent, title: 'VIS · 输入框' },
       { path: 'radius', component: VisRadiusComponent, title: 'VIS · 圆角' },
+      { path: 'typography', component: VisTypographyComponent, title: 'VIS · 字体与排版' },
+      { path: 'spacing', component: VisSpacingComponent, title: 'VIS · 间距' },
+      { path: 'elevation', component: VisElevationComponent, title: 'VIS · 层级与阴影' },
+      { path: 'motion', component: VisMotionComponent, title: 'VIS · 动效' },
+      { path: 'theme-tokens', component: VisThemeTokensComponent, title: 'VIS · 主题 Token' },
       { path: 'pills', component: VisPillsComponent, title: 'VIS · 胶囊' },
       { path: 'empty', component: VisEmptyComponent, title: 'VIS · 空状态' },
       { path: 'tables', component: VisTablesComponent, title: 'VIS · 表格' },
