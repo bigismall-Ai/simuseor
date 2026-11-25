@@ -18,6 +18,15 @@ import { Component } from '@angular/core';
       display: block;
       min-width: 0;
     }
+
+    .list-card {
+      overflow: hidden;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-list);
+      background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
+      box-shadow: var(--ui-shadow);
+      backdrop-filter: blur(14px);
+    }
   `,
 })
 export class ListCardComponent {}

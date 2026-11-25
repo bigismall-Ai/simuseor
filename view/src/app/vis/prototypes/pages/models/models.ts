@@ -14,6 +14,7 @@ import { PageHeaderComponent } from '../../../../ui/page-header';
 import { SectionBlockComponent } from '../../../../ui/section-block';
 import { TableComponent } from '../../../../ui/table';
 import { ProtoShellComponent } from '../../proto-shell';
+import { RulesComponent } from '../../../../ui/rules';
 import type { BadgeTone } from '../../../../ui/badge';
 import type {
   FilterFacetChange,
@@ -457,6 +458,7 @@ function fmtWhen(iso: string): string {
 @Component({
   selector: 'app-proto-models',
   imports: [
+    RulesComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     FilterBarComponent,
@@ -588,7 +590,7 @@ function fmtWhen(iso: string): string {
         </ui-section>
 
         <ui-section title="这页的规则" pill="Rules" [plain]="true">
-          <ul class="rules">
+          <ui-rules>
             <li>
               <b>一套筛选，两个数据集</b>：「本地库 / 发现」只在页头切换；搜索、站点、分面、排序、
               网格 / 列表的位置不动，换视图不用重新找控件。
@@ -613,7 +615,7 @@ function fmtWhen(iso: string): string {
               <b>本轮边界</b>：卡片上的导入 / 下载 / 删除只做形态，不执行；页面里的体积、
               时间与站点计数都是示意值，不向后端或站点发请求。
             </li>
-          </ul>
+          </ui-rules>
         </ui-section>
       </div>
     </app-proto-shell>

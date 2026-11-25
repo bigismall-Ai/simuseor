@@ -1,6 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { UiIconModule } from '../../../../ui/material';
 import { NAV_SECTIONS } from '../../../vis-nav';
+import { LabelComponent } from '../../../../ui/label';
 import type { NavLink } from '../../../vis-nav';
 
 /**
@@ -12,10 +13,13 @@ import type { NavLink } from '../../../vis-nav';
 @Component({
   selector: 'app-proto-sidebar',
   standalone: true,
-  imports: [UiIconModule],
+  imports: [
+    LabelComponent,
+    UiIconModule,
+  ],
   styleUrl: './sidebar.scss',
   template: `
-    <p class="set-label">侧边导航</p>
+    <ui-label>侧边导航</ui-label>
 
     <div class="rail-grid">
       <section class="rail-case">
@@ -80,7 +84,7 @@ import type { NavLink } from '../../../vis-nav';
       </section>
     </div>
 
-    <p class="set-label">约束</p>
+    <ui-label>约束</ui-label>
     <ul class="rail-rules">
       <li>展开 224px，收起 64px；收起后只保留图标，分组标题隐藏。</li>
       <li>侧栏贴视口边缘、全高显示，不是圆角卡片；圆角只属于内容卡。</li>

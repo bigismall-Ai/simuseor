@@ -71,6 +71,9 @@ const localTable = /class="(?:table-wrap|list-card)"/;
 const localChip = /class="(?:filter-chip|segmented)"/;
 const localEmpty = /class="empty[\s"]/;
 const localBadge = /class="badge[\s"]/;
+/** 组件已经收口的表面：页面不得再直接用类名，也不得自己定义同名样式 */
+const ownedClass = /class="[^"]*(?:list-card|table-wrap|inner-card|acard-menu|section-block|section-head|section-body|section-pill)/;
+const localOwnedStyle = /^\.(?:list-card|table-wrap|inner-card|acard-menu|section-block|section-head|section-body|section-pill|set-label|set-lead|mono|rules|hint)\s*(?:[,.{:]|$)/;
 
 for (const file of walk(visDir)) {
   const rel = path.relative(root, file);
@@ -102,6 +105,9 @@ for (const file of walk(visDir)) {
       if (localBadge.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  本地状态徽标，请改用 <ui-badge>  ${trimmed}`);
       }
+      if (ownedClass.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  使用了已收口的表面类，请改用对应组件  ${trimmed}`);
+      }
       if (/class="notice/.test(trimmed) && !trimmed.includes('mock-notice')) {
         violations.push(`${rel}:${index + 1}  本地提示条，请改用 <ui-notice>  ${trimmed}`);
       }
@@ -129,6 +135,10 @@ for (const file of walk(visDir)) {
 
     if (isStyle && /outline:\s*(?:none|0)/.test(trimmed)) {
       violations.push(`${rel}:${index + 1}  可见焦点被抹掉，请改用 :focus-visible + --ui-ring  ${trimmed}`);
+    }
+
+    if (isStyle && localOwnedStyle.test(trimmed)) {
+      violations.push(`${rel}:${index + 1}  本地重复定义已收口样式，请改用组件  ${trimmed}`);
     }
 
     if (isStyle && localSurface.test(trimmed)) {

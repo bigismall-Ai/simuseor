@@ -2,6 +2,9 @@ import { Component, computed, inject } from '@angular/core';
 import { ThemeService } from '../core/theme.service';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { TextComponent } from '../ui/text';
+import { RulesComponent } from '../ui/rules';
+import { ListCardComponent } from '../ui/list-card';
 
 interface Layer {
   token: string;
@@ -14,7 +17,10 @@ interface Layer {
 @Component({
   selector: 'app-vis-background',
   standalone: true,
-  imports: [SectionBlockComponent, VisualPageComponent],
+  imports: [
+    ListCardComponent,
+    RulesComponent,
+    TextComponent,SectionBlockComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -22,17 +28,17 @@ interface Layer {
       hint="背景不是一种颜色，而是从页面、侧栏到面板、卡片与浮层的多层表面。"
     >
       <ui-section title="body 背景" pill="Page">
-          <p class="hint">
+          <ui-text variant="hint">
             <code>html</code> 保持透明，避免双层底色叠色；<code>body</code> 同时承担底色与光晕，
             光晕固定，不随内容滚动。
-          </p>
+          </ui-text>
           <pre class="code-block"><code>{{ bodyCss }}</code></pre>
           <div class="body-preview" aria-label="body 背景预览"></div>
         </ui-section>
 
       <ui-section title="当前背景层" pill="Surface">
           <div class="bg-grid single">
-            <div class="list-card bg-list-card">
+            <ui-list-card class="bg-list-card">
               <div class="bg-list-head">
                 <b>{{ isDark() ? '极光视界' : '晨雾朦胧' }}</b>
                 <span>{{ isDark() ? 'Aurora UI' : 'Glass' }}</span>
@@ -52,19 +58,19 @@ interface Layer {
                   <code>≈ {{ layer.hex }}</code>
                 </div>
               }
-            </div>
+            </ui-list-card>
           </div>
         </ui-section>
 
       <ui-section title="规则" pill="Rules" [plain]="true">
-          <ul class="color-rules">
+          <ui-rules>
             <li><b>body 背景</b>只铺一次：<code>body</code> 用 <code>--ui-bg</code> 打底、<code>--ui-glow</code> 叠光晕，<code>html</code> 保持透明；浅色是晨雾 <code>#E5E1FF</code> 加桃 / 紫 / 薄荷三团柔光，深色是极光底加蓝 / 品红 / 薄荷光带。</li>
             <li><b>侧栏 / 顶栏</b>用 rail：浅色是 42% 玻璃白，深色是深海军蓝；都配 <code>backdrop-filter</code>。</li>
             <li><b>面板</b>用 surface；<b>卡片与浮层</b>用 raised；<b>表头、输入框、代码块</b>用 inset。</li>
             <li>浅色面板是半透明的，必须叠在彩色底上才有“玻璃”质感；不要给单个面板铺实心纸色。</li>
             <li>不用纯白 <code>#FFF</code> 或纯黑 <code>#000</code>；浅色文字用墨紫 <code>#242143</code>，深色文字用雪青 <code>#F6F4FF</code>。</li>
             <li>分隔只靠 1px 玻璃边或一档色差，不用大面积阴影填缝。</li>
-          </ul>
+          </ui-rules>
         </ui-section>
     </app-visual-page>
   `,

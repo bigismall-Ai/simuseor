@@ -5,11 +5,15 @@ import { NoticeComponent } from '../ui/notice';
 import { SectionBlockComponent } from '../ui/section-block';
 import { SkeletonComponent } from '../ui/skeleton';
 import { VisualPageComponent } from './visual-page';
+import { TextComponent } from '../ui/text';
+import { RulesComponent } from '../ui/rules';
 
 /** 空状态与行内反馈：ui-empty / ui-notice 的实际表现。 */
 @Component({
   selector: 'app-vis-empty',
   imports: [
+    RulesComponent,
+    TextComponent,
     EmptyComponent,
     NoticeComponent,
     SectionBlockComponent,
@@ -46,9 +50,9 @@ import { VisualPageComponent } from './visual-page';
           <ui-skeleton [lines]="3" label="正在读取模型列表" />
           <div class="progress"><div style="width: 34%"></div></div>
         </div>
-        <p class="hint">
+        <ui-text variant="hint">
           首屏首次加载用骨架；已经有内容时只做局部刷新，用进度条或行内提示，不要整块重画。
-        </p>
+        </ui-text>
       </ui-section>
 
       <ui-section title="搜索无匹配" pill="No result">
@@ -60,11 +64,11 @@ import { VisualPageComponent } from './visual-page';
       </ui-section>
 
       <ui-section title="层级" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>集合为空</b>：给一个主操作，说清下一步；不要只写「暂无数据」。</li>
           <li><b>搜索无匹配</b>：保留当前筛选条件，给「清除筛选」而不是「新建」。</li>
           <li><b>行内提示</b>：影响一块区域、页面仍可用；要用户做决定就走 ui-dialog。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,

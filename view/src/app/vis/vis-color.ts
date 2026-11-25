@@ -4,11 +4,15 @@ import { ThemeService } from '../core/theme.service';
 import { AURORA_COLORS, COLOR_ROLES, INK_COLORS } from './visual-data';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { RulesComponent } from '../ui/rules';
+import { InnerCardComponent } from '../ui/inner-card';
 
 @Component({
   selector: 'app-vis-color',
   standalone: true,
-  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [
+    InnerCardComponent,
+    RulesComponent,SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="色彩">
@@ -17,13 +21,13 @@ import { VisualPageComponent } from './visual-page';
             <div class="color-list">
               @for (c of colors(); track c.token) {
                 <article class="color-row">
-                  <div class="color-card inner-card" [style.background]="c.hex">
+                  <ui-inner-card class="color-card" [style.background]="c.hex">
                     <span
                       class="color-rgb-badge"
                       [class.on-light]="badgeTone(c.hex) === 'on-light'"
                       [class.on-dark]="badgeTone(c.hex) === 'on-dark'"
                     >{{ rgb(c.hex) }}</span>
-                  </div>
+                  </ui-inner-card>
                   <div class="color-meta">
                     <b>{{ c.name }}</b>
                     <span>{{ c.role }}</span>
@@ -56,7 +60,7 @@ import { VisualPageComponent } from './visual-page';
 
             <div class="color-rules-block">
               <h3 class="rules-title">规则 <span>Rules</span></h3>
-              <ul class="color-rules">
+              <ui-rules>
                 @if (isDark()) {
                   <li><b>深色：</b>极光底铺页面，深海军蓝做玻璃面板；极光蓝只给主操作/选中，品红与薄荷只做氛围和辅助强调，不做正文、不做危险。</li>
                 } @else {
@@ -64,7 +68,7 @@ import { VisualPageComponent } from './visual-page';
                 }
                 <li><b>危险：</b>两套主题都用赭石，不让品红或蜜桃承担错误语义。</li>
                 <li><b>对比度：</b>浅色墨紫 / 玻璃白、深色雪青 / 极光底承载正文；雾紫与玻璃边框不承载正文。</li>
-              </ul>
+              </ui-rules>
             </div>
           </ui-section>
       </div>

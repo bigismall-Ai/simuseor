@@ -16,6 +16,8 @@ import { TableComponent } from '../../ui/table';
 import type { NodeCardItem } from '../../ui/node-card';
 import { WorkflowCardComponent } from '../../ui/workflow-card';
 import { LIBRARY_MODELS, SEARCH_ITEMS, WORKFLOWS } from '../visual-data';
+import { TextComponent } from '../../ui/text';
+import { LabelComponent } from '../../ui/label';
 import type { SearchItem, WorkflowItem } from '../../core/types';
 
 /**
@@ -27,6 +29,8 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
 @Component({
   selector: 'app-proto-cards',
   imports: [
+    LabelComponent,
+    TextComponent,
     CardActionComponent,
     CardBodyComponent,
     CardKebabComponent,
@@ -44,10 +48,10 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
   ],
   styleUrl: './cards.scss',
   template: `
-    <p class="set-label">资产矩阵</p>
-    <p class="set-lead">
+    <ui-label>资产矩阵</ui-label>
+    <ui-text variant="lead">
       2 个状态 × 3 种资产。每格直接渲染产品组件，组件名标在卡下；共用层与差异层拆在下面。
-    </p>
+    </ui-text>
 
     <div class="state-row">
       <p class="state-label">本地</p>
@@ -85,7 +89,7 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       </ui-grid>
     </div>
 
-    <p class="set-label">共用与差异</p>
+    <ui-label>共用与差异</ui-label>
     <ui-table>
       <table class="layers">
         <thead>
@@ -114,11 +118,11 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       建议后续把前两者也并成 mode，少维护一份外壳；这轮先不动数据契约。
     </p>
 
-    <p class="set-label">展开态 · hover / focus</p>
-    <p class="set-lead">
+    <ui-label>展开态 · hover / focus</ui-label>
+    <ui-text variant="lead">
       hover 或键盘 focus 后，acard-body 向上展开：类别、状态槽、分类标签、动作行（原站图标 + 主按钮）。
       下面是同一套展开结果的静态样张，不依赖鼠标。
-    </p>
+    </ui-text>
     <div class="card-row card-expanded">
       <div class="card-cell">
         <p class="cell-label">本地库卡</p>
@@ -137,16 +141,16 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       </div>
     </div>
 
-    <p class="set-label">⋯ 弹出菜单 · 只定义容器与条目样式</p>
-    <p class="set-lead">
+    <ui-label>⋯ 弹出菜单 · 只定义容器与条目样式</ui-label>
+    <ui-text variant="lead">
       <code>ui-card-menu</code> 不规定条目内容：卡片把 items 传进来（普通操作、外链、危险项），
       组件只负责浮层容器、条目高度、悬停与危险配色。下面是三种条目样式的静态样张。
-    </p>
+    </ui-text>
     <div class="menu-demo">
       <ui-card-menu [items]="menuSamples" [static]="true" />
     </div>
 
-    <p class="set-label">身份行 · 厂牌位</p>
+    <ui-label>身份行 · 厂牌位</ui-label>
     <div class="ident-demo">
       <ui-card-mark model="flux1-dev.safetensors" />
       <span class="ident-text">
@@ -156,11 +160,11 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       <span class="ident-tip">32 × 32，与 /vis/prototypes/components/families 同一个 ui-card-mark</span>
     </div>
 
-    <p class="set-label">卡片零件 · 信息区 / ⋯ / 原站</p>
-    <p class="set-lead">
+    <ui-label>卡片零件 · 信息区 / ⋯ / 原站</ui-label>
+    <ui-text variant="lead">
       <code>ui-card-body</code> 只有「标题输入 + 详情容器」，详情里放类别、状态、标签还是动作，
       由每张卡自己投影。右侧是去掉卡片后的信息区样张。
-    </p>
+    </ui-text>
     <div class="part-row">
       <div class="part-stage">
         <ui-card-kebab />
@@ -180,7 +184,7 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       </div>
     </div>
 
-    <p class="set-label">结构六层</p>
+    <ui-label>结构六层</ui-label>
     <ol class="spec-list">
       <li><b>① 封面</b><span>家族色 + 点阵 + 家族码水印；有真实照片时铺图并隐藏纹样。</span></li>
       <li><b>② 身份行</b><span>32 × 32 厂牌位（ui-card-mark）+ 右侧两行：名称在上、作者/来源在下。</span></li>
@@ -190,7 +194,7 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       <li><b>⑥ 动作行</b><span>原站标签在左、唯一主按钮在右；右上角 ⋯ 的菜单承载次要与危险动作。</span></li>
     </ol>
 
-    <p class="set-label">尺寸与 token</p>
+    <ui-label>尺寸与 token</ui-label>
     <ui-table>
       <table class="tokens">
         <thead>
@@ -350,7 +354,7 @@ export class ProtoCardsComponent {
     { layer: '封面', shared: 'app-cover-plate', byKind: '纹样 / 家族色 / 节点铭牌', byState: '有图 / 无图' },
     { layer: '身份行', shared: 'ui-card-mark + 两行 + ui-card-kebab', byKind: '第一行内容', byState: '—' },
     { layer: '标题 / 详情', shared: 'ui-card-body', byKind: '标题与 meta', byState: '—' },
-    { layer: '状态槽', shared: '.acard-slot 几何', byKind: '左右字段', byState: '磁盘 vs 下载' },
+    { layer: '状态槽', shared: 'ui-card-slot', byKind: '左右字段', byState: '磁盘 vs 下载' },
     { layer: '标签', shared: 'ui-badge（sm）', byKind: '文件类型 / 分组 / 节点类', byState: '—' },
     { layer: '动作行', shared: 'ui-card-origin + ui-card-action', byKind: '主按钮文案', byState: '打开 / 下载 / 安装' },
     { layer: '菜单', shared: 'ui-card-kebab + ui-card-menu', byKind: '条目内容', byState: '删除 / 运行 / 卸载' },

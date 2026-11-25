@@ -37,6 +37,7 @@
 - 页面只从 `src/app/ui/material.ts` 导入：`UiMaterialModule`、`MatDialog`、`MatSnackBar`
 - **不要**直接 import `@angular/material/*`
 - 不要改 `styles.scss` 里的主题 token 来局部修一个页面；页面级覆盖写在自己的样式里
+- 全局样式只留品牌层：token、字体、滚动条；其余视觉件（区块、表格、列表、卡片、菜单、内层卡、文档排版）一律是组件，`styles.scss` 不再新增页面级类
 - 颜色只用 `--ui-*` / `--ink-*` / `--aurora-*` token，不写死十六进制
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
 - 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；面板 28px，卡片 24px，列表 16px
@@ -98,6 +99,8 @@
 - 厂牌位、⋯、原站图标都固定 `card-solid` 80% 底，不随照片切换皮肤；照片上也不做深色方块
 - `ui-card-kebab` / `ui-card-origin` / `ui-card-menu` 是卡片动作的固定组合，卡片内不许手写 `.acard-kebab` / `.acard-origin`
 - 卡片设计与五类卡片同页：`/vis/prototypes/components/cards`（5 类清单 + 收起/展开/菜单/身份行/token），新增卡片必须同时出现在这里并跑 `npm run cards:guard`
+- 五张卡必须用 `ui-card-shell`：封面 / 身份行 / 状态槽 / 标签 / 动作行只通过槽位投影，不在卡里重写 `.acard-head` / `.acard-foot`
+- 状态槽只用 `ui-card-slot`，主按钮只用 `ui-card-action`；⋯ 的开合、点外收起与 Esc 由外壳统一处理
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 
 ## 组件注册（Material 方式）
@@ -110,15 +113,17 @@
 - **展示页必须真实**：登记的 `demoFile` 必须实际渲染该选择器，`page` 必须是 `vis.routes.ts` 里存在的路由；只写文档不渲染样张不算。
 - **页面样式只做布局**：grid / flex / gap / 位置 / 断点；颜色、圆角、阴影、字号、控件高度一律用 token。VIS 样式里禁止写死 `border-radius: 16px / 24px / 28px`（卡 / 列表 / 面板级圆角必须走 `--ui-radius-*`）。
 - **新增组件的顺序**：① 写组件与 token → ② 在 VIS 加真实样张（含浅色 / 深色）→ ③ 登记 `registry.json` → ④ 跑 `node scripts/card-guard.mjs` 和 `npm run build` → ⑤ 页面才允许引用。
-- **待补展示页**：`ui-section` / `ui-panel` / `ui-field` 已在 registry 登记但还没有独立样张页，守卫会以「提示」列出，不阻塞构建。
+- **全局边界**：`styles.scss` 只允许品牌 token、字体与滚动条；`.section-*`、`.table-wrap`、`.list-card`、`.inner-card`、`.acard-menu`、`.mono`、`.set-label` 等页面级类不得再新增或本地重定义。
+- **守卫**：除未登记组件外，VIS 里直接使用已收口表面类、或本地重定义这些选择器，也会失败。
 
 ## 共享组件（`src/app/ui/`）
 
-- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-grid`、`ui-card-mark`、`app-cover-plate`
+- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
 - 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-skeleton`
-- 卡片：`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
+- 卡片：`ui-card-shell`（外壳）、`ui-card-slot`（状态槽）、`ui-card-action`（主按钮）、`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
+- 文档：`ui-label`（小标题）、`ui-text`（引言 / 提示）、`ui-rules`（规则清单）
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移
 - 原生 `<input type="text">` 一律用 `ui-input`；checkbox / radio / file / Material `matInput` 例外
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致

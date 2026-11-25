@@ -4,6 +4,8 @@ import { UiButtonComponent } from '../ui/button';
 import { DialogComponent } from '../ui/dialog';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { TextComponent } from '../ui/text';
+import { RulesComponent } from '../ui/rules';
 
 /**
  * 模态框：一个 VIS 页面统一三种形态。
@@ -15,6 +17,8 @@ import { VisualPageComponent } from './visual-page';
 @Component({
   selector: 'app-vis-modals',
   imports: [
+    RulesComponent,
+    TextComponent,
     DialogComponent,
     SectionBlockComponent,
     UiButtonComponent,
@@ -39,19 +43,19 @@ import { VisualPageComponent } from './visual-page';
       </ui-section>
 
       <ui-section title="生产用 MatDialog" pill="Material">
-        <p class="hint">
+        <ui-text variant="hint">
           MatDialog 负责完整焦点圈闭与滚动锁定；内容表面仍用同一套面板令牌，两边的外观应一致。
-        </p>
+        </ui-text>
         <ui-button variant="primary" type="button" (click)="open()">打开安装对话框</ui-button>
       </ui-section>
 
       <ui-section title="规格与规则" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>宽度</b>：440px 上限，内容再长就分步，不把弹层拖成全屏。</li>
           <li><b>动作</b>：最多一主一次，右对齐；破坏性操作放最右，用 danger。</li>
           <li><b>关闭</b>：Esc 与点遮罩都关；不可逆确认可以把 <code>dismissible</code> 设 false。</li>
           <li><b>选择</b>：原型 / 轻量确认用 <code>ui-dialog</code>，需要完整焦点圈闭用 MatDialog。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
 
       <ui-dialog [(open)]="confirmOpen" title="删除下载任务？" [destructive]="true">
@@ -70,7 +74,7 @@ import { VisualPageComponent } from './visual-page';
         <h2 mat-dialog-title>安装环境</h2>
         <mat-dialog-content>
           <p>将安装 ComfyUI v0.45.0 到 <span class="mono">envs/comfy-a</span>。</p>
-          <p class="hint">安装过程中可以继续使用其他实例。</p>
+          <ui-text variant="hint">安装过程中可以继续使用其他实例。</ui-text>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
           <button mat-button mat-dialog-close type="button">取消</button>

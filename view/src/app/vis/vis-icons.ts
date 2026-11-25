@@ -4,12 +4,14 @@ import { UiMaterialModule } from '../ui/material';
 import { VisualPageComponent } from './visual-page';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
+import { TextComponent } from '../ui/text';
 
 /** 图标：项目自有 24px 描边图标集与 MatIcon 使用方式。 */
 @Component({
   selector: 'app-vis-icons',
   standalone: true,
-  imports: [UiMaterialModule, SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [
+    TextComponent,UiMaterialModule, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="图标">
@@ -84,10 +86,10 @@ import { TableComponent } from '../ui/table';
               </table>
 </ui-table>
             <pre class="code-block"><code>{{ usage }}</code></pre>
-            <p class="hint">
+            <ui-text variant="hint">
               装饰性图标加 <code>aria-hidden="true"</code>；有语义的图标放进可访问名明确的按钮，
               图标本身不再重复播报。
-            </p>
+            </ui-text>
           </div>
       </ui-section>
     </app-visual-page>

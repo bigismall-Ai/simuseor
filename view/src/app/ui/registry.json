@@ -451,6 +451,56 @@
         "--card-action-height",
         "--ui-radius-pill"
       ]
+    },
+    {
+      "selector": "ui-text",
+      "name": "文档段落",
+      "category": "content",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": [
+        "lead",
+        "hint"
+      ],
+      "tokens": [
+        "--ui-text-lg",
+        "--ui-text-sm",
+        "--ui-muted"
+      ]
+    },
+    {
+      "selector": "ui-label",
+      "name": "文档小标题",
+      "category": "content",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": [
+        "--ui-text-lg",
+        "--ui-space-6"
+      ]
+    },
+    {
+      "selector": "ui-rules",
+      "name": "规则清单",
+      "category": "content",
+      "page": "/vis/prototypes/components/structure",
+      "demoFile": "src/app/vis/prototypes/components/structure/structure.ts",
+      "tokens": [
+        "--ui-text-sm",
+        "--ui-muted"
+      ]
+    },
+    {
+      "selector": "ui-inner-card",
+      "name": "内层卡片",
+      "category": "surface",
+      "page": "/vis/layout",
+      "demoFile": "src/app/vis/vis-layout.ts",
+      "tokens": [
+        "--ui-inner-border",
+        "--ui-radius-card",
+        "--ui-shadow"
+      ]
     }
   ]
 }

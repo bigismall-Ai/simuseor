@@ -2,27 +2,6 @@
   display: block;
 }
 
-.set-label {
-  margin: 0 0 12px;
-  color: var(--ui-text);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-}
-
-.set-label:not(:first-child) {
-  margin-top: 32px;
-}
-
-.set-lead {
-  max-width: 72ch;
-  margin: -6px 0 14px;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  line-height: 1.6;
-}
-
 .ident-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

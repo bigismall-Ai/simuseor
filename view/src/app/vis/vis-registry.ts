@@ -4,6 +4,7 @@ import registry from '../ui/registry.json';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
+import { RulesComponent } from '../ui/rules';
 
 interface RegistryEntry {
   selector: string;
@@ -16,7 +17,7 @@ interface RegistryEntry {
   tokens?: string[];
 }
 
-const CATEGORY_ORDER = ['shell', 'action', 'form', 'feedback', 'surface', 'card'];
+const CATEGORY_ORDER = ['shell', 'action', 'form', 'feedback', 'surface', 'content', 'card'];
 
 /**
  * 组件注册表：自定义样式的唯一入口。
@@ -26,7 +27,8 @@ const CATEGORY_ORDER = ['shell', 'action', 'form', 'feedback', 'surface', 'card'
  */
 @Component({
   selector: 'app-vis-registry',
-  imports: [RouterLink, SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [
+    RulesComponent,RouterLink, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-registry.scss',
   template: `
     <app-visual-page
@@ -72,13 +74,13 @@ const CATEGORY_ORDER = ['shell', 'action', 'form', 'feedback', 'surface', 'card'
       </ui-section>
 
       <ui-section title="注册规则" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>先注册</b>：新增视觉件先写进 <code>ui/registry.json</code>，再在页面里使用；未登记会在守卫阶段失败。</li>
           <li><b>组件化</b>：一个选择器对应一个组件，变体走 <code>variant</code> / <code>size</code> 输入，不在页面里重写。</li>
           <li><b>Token</b>：颜色、圆角、间距、字号只走 token；页面样式只允许 grid / flex / 位置。</li>
           <li><b>展示页</b>：登记时同时给展示页；没有展示页的内置结构件标记「—」。</li>
           <li><b>Material 对齐</b>：API 形态参考 Material（appearance / variant / size / density + 内容投影），不自造第二套按钮或卡片。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,
@@ -102,6 +104,7 @@ export class VisRegistryComponent {
       form: '表单',
       feedback: '反馈',
       surface: '表面',
+      content: '内容排版',
       card: '卡片',
     };
     return labels[category] ?? category;

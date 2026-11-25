@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
+import { LabelComponent } from '../../../../ui/label';
 
 /** 原型组件：滚动条。导航 / 页面 / 表格横向共用一套样式，只改宽度。 */
 @Component({
   selector: 'app-proto-scrollbar',
   standalone: true,
+  imports: [
+    LabelComponent],
   styleUrl: './scrollbar.scss',
   template: `
-    <p class="set-label">滚动条</p>
+    <ui-label>滚动条</ui-label>
 
     <div class="sb-grid">
       <section class="sb-case">
@@ -56,7 +59,7 @@ import { Component } from '@angular/core';
       </section>
     </div>
 
-    <p class="set-label">约束</p>
+    <ui-label>约束</ui-label>
     <ul class="sb-rules">
       <li><b>一套样式</b>：页面、导航和横向滚动都用 <code>.ui-scrollbar</code>，只改 <code>--scrollbar-size</code>。</li>
       <li><b>滚动条属于容器</b>：导航 / 页面保持全宽、无圆角卡框；横向滚动放在表格卡片里。</li>

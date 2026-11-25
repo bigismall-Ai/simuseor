@@ -187,11 +187,6 @@
 }
 
 /* ---- 已安装清单 -------------------------------------------------- */
-.mono {
-  font-family: var(--ui-font-mono);
-  font-size: 10.5px;
-}
-
 .muted {
   color: var(--ui-muted);
 }
@@ -240,20 +235,7 @@
 }
 
 /* ---- 规则 -------------------------------------------------------- */
-.rules {
-  max-width: 92ch;
-  margin: 0;
-  padding-left: 18px;
-  color: var(--ui-muted);
-  font-size: 12px;
-  line-height: 1.75;
-}
-
 .rules li + li {
   margin-top: 6px;
 }
 
-.rules b {
-  color: var(--ui-text);
-  font-weight: 600;
-}

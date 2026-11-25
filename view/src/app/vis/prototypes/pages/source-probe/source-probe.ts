@@ -149,11 +149,11 @@ interface ProbeSource {
             </div>
 
             <div class="cols2 hint-row">
-              <div class="hint">
+              <div class="probe-hint">
                 <b>字段各回答一个问题：</b>源名与接口 = 这是谁；通路列 = 直连 / 代理 / 镜像各自的结果；
                 结论 = 当前生效通路能不能用；延迟 = 用的是哪条路径的数；时间 = 这个结论有多旧。
               </div>
-              <div class="hint">
+              <div class="probe-hint">
                 <b>为什么不通行只给一列：</b>用户要的是「现在能不能用」，不是「八种可能里中了哪一种」。
                 失败分类（DNS / 超时 / TLS / 4xx / 5xx）留在详情与规格里，界面上只留一句人话 + 一个可执行动作。
               </div>
@@ -479,7 +479,7 @@ interface ProbeSource {
                 </tbody>
               </table>
 </ui-table>
-            <p class="hint">
+            <p class="probe-hint">
               <b>一句话口径：</b>默认走代理的两个源，是「失败代价最高」的那两个；默认直连的，是「直连本来就通」的那些。
               默认不是猜的，是按<b>失败代价</b>排的。
             </p>
@@ -572,7 +572,7 @@ interface ProbeSource {
             </div>
           </div>
 
-          <div class="hint">
+          <div class="probe-hint">
             <b>推荐 Option B。</b>理由：设置页这一轮的主题是「减负」，把 7 条诊断信息塞回 4 张源卡里，
             等于把刚减下去的复杂度换个地方再加回来。体检面板让「状态」和「配置」各占一页各说一件事；
             设置页只留一行摘要 + 入口，不丢信息。

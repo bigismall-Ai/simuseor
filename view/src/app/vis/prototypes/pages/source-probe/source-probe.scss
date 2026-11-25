@@ -30,10 +30,6 @@
   color: var(--ui-muted);
 }
 
-.mono {
-  font-family: var(--ui-font-mono);
-}
-
 .page-notice {
   margin: 0 0 24px;
 }
@@ -271,7 +267,7 @@ ui-panel {
   margin-top: 14px;
 }
 
-.hint {
+.probe-hint {
   margin: 12px 0 0;
   padding: 8px 12px;
   border-left: 2px solid var(--accent-line);
@@ -281,7 +277,7 @@ ui-panel {
   color: var(--ui-muted);
 }
 
-.hint-row .hint {
+.hint-row .probe-hint {
   margin: 0;
 }
 
@@ -692,7 +688,7 @@ ui-panel {
   font-weight: 600;
 }
 
-.table-card .hint {
+.table-card .probe-hint {
   margin: 12px 0 0;
 }
 

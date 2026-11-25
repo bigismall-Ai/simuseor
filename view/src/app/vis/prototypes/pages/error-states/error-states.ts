@@ -11,6 +11,7 @@ import { EmptyComponent } from '../../../../ui/empty';
 import { PageHeaderComponent } from '../../../../ui/page-header';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
+import { TextComponent } from '../../../../ui/text';
 
 interface ToastItem {
   id: number;
@@ -44,6 +45,7 @@ interface SpecRow {
 @Component({
   selector: 'app-proto-error-states',
   imports: [
+    TextComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     BadgeComponent,
@@ -250,10 +252,10 @@ interface SpecRow {
               <ui-button variant="secondary" type="button" (click)="useValidRepo()">
                 改用 Comfy-Org/MiniMax-H3-Image
               </ui-button>
-              <p class="hint">
+              <ui-text variant="hint">
                 字段错误不弹 Toast、不占页面顶部；输入框加 <code>aria-invalid</code> 与
                 <code>aria-describedby</code>，失焦或提交时出现，修正后立即消失。
-              </p>
+              </ui-text>
             </div>
           </div>
 
@@ -305,12 +307,12 @@ interface SpecRow {
           <h3>L4 阻断弹层 · 必须由用户做决定</h3>
           <div class="card">
             <div class="card-body dialog-body">
-              <p class="hint">
+              <ui-text variant="hint">
                 弹层统一用 <code>ui-dialog</code>：Esc / 点遮罩关闭，打开时焦点进弹层，关闭后还给触发按钮。
                 不可撤销的操作只在这里出现；普通失败不要用弹层。
-              </p>
+              </ui-text>
               @if (dialogNote()) {
-                <p class="hint" role="status">{{ dialogNote() }}</p>
+                <ui-text variant="hint" role="status">{{ dialogNote() }}</ui-text>
               }
               <ui-button class="trigger" variant="secondary" size="sm" type="button" (click)="openDialog()">
                 打开删除确认弹层
@@ -343,10 +345,10 @@ interface SpecRow {
                     (picked)="gate.set('ModelScope')"
                   />
                 </div>
-                <p class="hint">
+                <ui-text variant="hint">
                   当前入口：{{ gate() }}。不可达的源不提供入口，原因只进 hover
                   提示；页面不出现一整块红色说明。
-                </p>
+                </ui-text>
               </div>
             </div>
 
@@ -434,10 +436,10 @@ interface SpecRow {
               </tbody>
             </table>
 </ui-table>
-          <p class="hint forbid">
+          <ui-text variant="hint" class="forbid">
             <strong>禁止：</strong>把原始异常 / 堆栈 / URL 直接印在页面上；同一错误在顶部和弹层各出现一次；用
             Toast 承载需要用户决策的错误；用红色表达「没有结果」；同时给两个主按钮。
-          </p>
+          </ui-text>
         </section>
 
         <!-- 真实 Toast 栈：原型里用来验证触发/关闭/自动消失 -->

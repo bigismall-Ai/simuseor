@@ -2,6 +2,7 @@ import { UiButtonComponent } from '../../../../ui/button';
 import { Component, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../../../ui/page-header';
 import { UiMaterialModule } from '../../../../ui/material';
+import { LabelComponent } from '../../../../ui/label';
 
 /**
  * 原型组件：页面页头。
@@ -12,10 +13,15 @@ import { UiMaterialModule } from '../../../../ui/material';
 @Component({
   selector: 'app-proto-page-header',
   standalone: true,
-  imports: [PageHeaderComponent, UiButtonComponent, UiMaterialModule],
+  imports: [
+    LabelComponent,
+    PageHeaderComponent,
+    UiButtonComponent,
+    UiMaterialModule,
+  ],
   styleUrl: './page-header.scss',
   template: `
-    <p class="set-label">标准页头</p>
+    <ui-label>标准页头</ui-label>
     <div class="demo">
       <ui-page-header
         kicker="ASSETS · RESOURCES"
@@ -28,7 +34,7 @@ import { UiMaterialModule } from '../../../../ui/material';
       <div class="demo-body" aria-hidden="true"></div>
     </div>
 
-    <p class="set-label">带视图切换</p>
+    <ui-label>带视图切换</ui-label>
     <div class="demo">
       <ui-page-header
         kicker="MODELS · LIBRARY"
@@ -44,7 +50,7 @@ import { UiMaterialModule } from '../../../../ui/material';
       <div class="demo-body" aria-hidden="true"></div>
     </div>
 
-    <p class="set-label">无操作页头</p>
+    <ui-label>无操作页头</ui-label>
     <div class="demo">
       <ui-page-header
         kicker="SETTINGS"
@@ -53,7 +59,7 @@ import { UiMaterialModule } from '../../../../ui/material';
       />
     </div>
 
-    <p class="set-label">约束</p>
+    <ui-label>约束</ui-label>
     <ul class="ph-rules">
       <li><b>四区</b>：kicker、标题（可带 segmented）、一句 hint、右侧主操作。</li>
       <li><b>标题</b> 22px / 600，不用展示型衬线大字；页头不放大。</li>

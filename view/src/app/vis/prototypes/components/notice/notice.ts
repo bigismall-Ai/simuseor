@@ -3,6 +3,8 @@ import { UiButtonComponent } from '../../../../ui/button';
 import { NoticeComponent } from '../../../../ui/notice';
 import { SectionBlockComponent } from '../../../../ui/section-block';
 import { VisualPageComponent } from '../../../visual-page';
+import { TextComponent } from '../../../../ui/text';
+import { RulesComponent } from '../../../../ui/rules';
 
 /**
  * 原型组件：行内提示。
@@ -12,7 +14,9 @@ import { VisualPageComponent } from '../../../visual-page';
  */
 @Component({
   selector: 'app-proto-notice',
-  imports: [NoticeComponent, SectionBlockComponent, UiButtonComponent, VisualPageComponent],
+  imports: [
+    RulesComponent,
+    TextComponent,NoticeComponent, SectionBlockComponent, UiButtonComponent, VisualPageComponent],
   styleUrl: './notice.scss',
   template: `
     <app-visual-page
@@ -67,19 +71,19 @@ import { VisualPageComponent } from '../../../visual-page';
           <ui-notice tone="ok" icon="✓">下载源已切换到 Hugging Face。</ui-notice>
           <ui-notice tone="info" icon="i">上次探测在 3 分钟前，数据可能已过期。</ui-notice>
         </div>
-        <p class="hint">
+        <ui-text variant="hint">
           单行只放一句事实；要解释「为什么 / 下一步」就加标题，不要堆成一段长文本。
-        </p>
+        </ui-text>
       </ui-section>
 
       <ui-section title="分工" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>in-page notice</b>：影响一块区域、页面仍可用；位置在内容流里，不自动消失。</li>
           <li><b>toast</b>：临时结果，不阻断操作；由页面容器定位，3–6 秒自动收起。</li>
           <li><b>dialog</b>：需要用户做决定，或操作不可撤销。</li>
           <li><b>语气</b>：error 用 <code>role=alert</code>，其余用 <code>role=status</code>；颜色只表达严重程度。</li>
           <li><b>动作</b>：至多两个，放在正文下方；不要在主提示里塞第三个按钮。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,

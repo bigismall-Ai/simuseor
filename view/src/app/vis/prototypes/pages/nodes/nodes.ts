@@ -18,6 +18,7 @@ import { PanelComponent } from '../../../../ui/panel';
 import { ToastComponent } from '../../../../ui/toast';
 import { NodeCardComponent } from '../../../../ui/node-card';
 import { UiMaterialModule } from '../../../../ui/material';
+import { RulesComponent } from '../../../../ui/rules';
 
 /** 包从哪来：GitHub 仓库、Comfy Registry、本地 zip。 */
 type PackSource = 'github' | 'registry' | 'zip';
@@ -74,6 +75,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
 @Component({
   selector: 'app-proto-nodes',
   imports: [
+    RulesComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     SectionBlockComponent,
@@ -313,7 +315,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
         </ui-section>
 
         <ui-section title="这页的规则" pill="Rules" [plain]="true">
-          <ul class="rules">
+          <ui-rules>
             <li>
               <b>一个包只有一条状态</b>：未安装 / 安装中 / 已安装 / 可更新 / 缺依赖 互斥，卡片只报当下的事实。
             </li>
@@ -332,7 +334,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
             <li>
               <b>筛选不藏信息</b>：状态、来源、搜索叠加后没有结果时给清空入口，而不是把整块内容藏掉。
             </li>
-          </ul>
+          </ui-rules>
         </ui-section>
       </div>
     </app-proto-shell>

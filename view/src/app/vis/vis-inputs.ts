@@ -4,12 +4,14 @@ import { InputComponent } from '../ui/input';
 import { UiMaterialModule } from '../ui/material';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { TextComponent } from '../ui/text';
 
 /** 输入框：Material form-field / input / select / checkbox / radio。 */
 @Component({
   selector: 'app-vis-inputs',
   standalone: true,
   imports: [
+    TextComponent,
     InputComponent,
     ReactiveFormsModule,
     SectionBlockComponent,
@@ -48,7 +50,7 @@ import { VisualPageComponent } from './visual-page';
         </div>
       </ui-section>
       <ui-section title="Material 补充" pill="Form field">
-          <p class="hint">仅在选择、多行、勾选这类 Material 原生控件上使用；文本输入不要再走这里。</p>
+          <ui-text variant="hint">仅在选择、多行、勾选这类 Material 原生控件上使用；文本输入不要再走这里。</ui-text>
 
           <div class="field-grid">
             <mat-form-field appearance="outline" subscriptSizing="dynamic">

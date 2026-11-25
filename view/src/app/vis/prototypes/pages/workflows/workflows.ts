@@ -15,6 +15,7 @@ import { UiMaterialModule } from '../../../../ui/material';
 import { WorkflowCardComponent } from '../../../../ui/workflow-card';
 import { ProtoShellComponent } from '../../proto-shell';
 import { WORKFLOWS } from '../../../visual-data';
+import { RulesComponent } from '../../../../ui/rules';
 import type { LocalWorkflow } from '../../../../core/types';
 
 type WorkflowTask = 'txt2img' | 'img2img' | 'video' | 'upscale';
@@ -46,6 +47,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
 @Component({
   selector: 'app-proto-workflows',
   imports: [
+    RulesComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     SectionBlockComponent,
@@ -349,7 +351,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
         </div>
 
         <ui-section title="这页的规则" [plain]="true">
-          <ol class="rules">
+          <ui-rules>
             <li>
               <b>卡片只说资产。</b>卡片负责「这是什么、缺什么依赖」，运行状态放在卡片下方的
               状态带里，不往卡片里再塞一个徽标。
@@ -373,7 +375,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
             <li>
               <b>空结果留在内容区。</b>筛选条始终保留，用户可以在原地放宽条件，而不是回到页首。
             </li>
-          </ol>
+          </ui-rules>
         </ui-section>
       </div>
     </app-proto-shell>

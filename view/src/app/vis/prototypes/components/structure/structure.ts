@@ -5,6 +5,7 @@ import { InputComponent } from '../../../../ui/input';
 import { PanelComponent } from '../../../../ui/panel';
 import { SectionBlockComponent } from '../../../../ui/section-block';
 import { VisualPageComponent } from '../../../visual-page';
+import { RulesComponent } from '../../../../ui/rules';
 
 /**
  * 原型组件：结构件。
@@ -15,6 +16,7 @@ import { VisualPageComponent } from '../../../visual-page';
 @Component({
   selector: 'app-proto-structure',
   imports: [
+    RulesComponent,
     FieldComponent,
     InputComponent,
     PanelComponent,
@@ -100,12 +102,12 @@ import { VisualPageComponent } from '../../../visual-page';
       </ui-section>
 
       <ui-section title="分工" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>ui-section</b>：页面级分区，标题在内容外；不用于弹层内部。</li>
           <li><b>ui-panel</b>：一块完整内容的面板；同屏可并列，最多两层。</li>
           <li><b>ui-field</b>：表单一行；控件由调用方投影，视觉原语不在这里重画。</li>
           <li><b>顺序</b>：页面 → ui-section → ui-panel / 表格 / 列表 → 控件。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,

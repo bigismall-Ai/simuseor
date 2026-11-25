@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { TextComponent } from '../ui/text';
 
 /** 圆角与阴影：面板 28 / 区块 24 / 卡片与列表 16 / 按钮 18 / 胶囊 999。 */
 @Component({
   selector: 'app-vis-radius',
   standalone: true,
-  imports: [SectionBlockComponent, VisualPageComponent],
+  imports: [
+    TextComponent,SectionBlockComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -44,9 +46,9 @@ import { VisualPageComponent } from './visual-page';
         </ui-section>
 
       <ui-section title="阴影" pill="Elevation">
-          <p class="hint">
+          <ui-text variant="hint">
             浅色用纸面投影，深色用更深的黑投影；两者都只做“离页面的距离”，不做发光。
-          </p>
+          </ui-text>
           <div class="shadow-grid">
             <div class="shadow-box" style="box-shadow: var(--ui-shadow)"><span>--ui-shadow</span></div>
             <div class="shadow-box" style="box-shadow: var(--ui-shadow-md)"><span>--ui-shadow-md</span></div>

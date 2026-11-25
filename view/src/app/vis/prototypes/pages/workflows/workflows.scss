@@ -219,10 +219,6 @@
   white-space: nowrap;
 }
 
-.mono {
-  font-family: var(--ui-font-mono);
-}
-
 .muted {
   color: var(--ui-muted);
 }
@@ -315,17 +311,6 @@
 }
 
 /* —— 规则 —— */
-.rules {
-  display: grid;
-  gap: 9px;
-  max-width: 92ch;
-  margin: 0;
-  padding-left: 20px;
-  color: var(--ui-text-2);
-  font-size: 12.5px;
-  line-height: 1.65;
-}
-
 .rules li {
   padding-left: 2px;
 }
@@ -334,11 +319,6 @@
   color: var(--ui-muted);
   font-family: var(--ui-font-mono);
   font-size: 10.5px;
-}
-
-.rules b {
-  color: var(--ui-text);
-  font-weight: 600;
 }
 
 /* —— 窄屏 —— */

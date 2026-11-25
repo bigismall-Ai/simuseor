@@ -27,9 +27,64 @@ import { Component, input } from '@angular/core';
       display: block;
     }
 
+    .section-block {
+      margin-bottom: 28px;
+    }
+
+    :host(:last-child) .section-block {
+      margin-bottom: 0;
+    }
+
     :host-context(.icon-spec-grid) .section-block,
     :host-context(.layout-split) .section-block {
       margin-bottom: 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: var(--ui-text-lg);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .section-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 9px;
+      border: 1px solid var(--ui-border-2);
+      border-radius: var(--ui-radius-pill);
+      background: var(--ui-raised);
+      color: var(--ui-muted);
+      font: 600 9.5px/1 var(--ui-font-mono);
+      letter-spacing: 0.06em;
+    }
+
+    .section-body {
+      padding: var(--ui-space-5) var(--ui-space-6);
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-card);
+      background: var(--ui-card-solid);
+      box-shadow: var(--ui-shadow);
+    }
+
+    /* 列表 / 表格 / 规则清单不套外层卡；文字区用 plain 显式关掉 */
+    :host ::ng-deep .section-body:has(ui-table),
+    :host ::ng-deep .section-body:has(ui-list-card),
+    :host ::ng-deep .section-body:has(.color-rules),
+    .section-body.plain {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
   `,
 })

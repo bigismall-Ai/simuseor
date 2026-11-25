@@ -5,11 +5,13 @@ import { SectionBlockComponent } from '../ui/section-block';
 import { SegmentedComponent } from '../ui/segmented';
 import type { SegmentedOption } from '../ui/segmented';
 import { VisualPageComponent } from './visual-page';
+import { RulesComponent } from '../ui/rules';
 
 /** 胶囊：badge 表达状态（语义色），chip 表达筛选（可点），pill 表达分类（只读中性）。 */
 @Component({
   selector: 'app-vis-pills',
   imports: [
+    RulesComponent,
     BadgeComponent,
     ChipComponent,
     SectionBlockComponent,
@@ -62,12 +64,12 @@ import { VisualPageComponent } from './visual-page';
       </ui-section>
 
       <ui-section title="选哪一个" pill="Rules" [plain]="true">
-        <ul class="rules">
+        <ui-rules>
           <li><b>Badge</b>：只读状态，必须带语义色；不要给分类用红黄绿。</li>
           <li><b>Chip</b>：可点的筛选，最多一行；带计数放右侧，等宽字体。</li>
           <li><b>Pill</b>：只读分类，一律中性；超过 5 个收成「+N」。</li>
           <li><b>Segmented</b>：少量互斥视图（≤3 项）；再多就换 chip 行。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,

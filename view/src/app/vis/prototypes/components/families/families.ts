@@ -3,6 +3,8 @@ import { FAMILIES } from '../../../../core/cover';
 import { CardMarkComponent } from '../../../../ui/card-mark';
 import { ModelCardComponent } from '../../../../ui/model-card';
 import { SEARCH_ITEMS } from '../../../visual-data';
+import { TextComponent } from '../../../../ui/text';
+import { LabelComponent } from '../../../../ui/label';
 
 /**
  * 原型组件：厂牌资产。
@@ -13,14 +15,19 @@ import { SEARCH_ITEMS } from '../../../visual-data';
  */
 @Component({
   selector: 'app-proto-families',
-  imports: [CardMarkComponent, ModelCardComponent],
+  imports: [
+    LabelComponent,
+    TextComponent,
+    CardMarkComponent,
+    ModelCardComponent,
+  ],
   styleUrl: './families.scss',
   template: `
-    <p class="set-label">身份行 · 卡内表现</p>
-    <p class="set-lead">
+    <ui-label>身份行 · 卡内表现</ui-label>
+    <ui-text variant="lead">
       厂牌位固定 32 × 32，右侧两行：名称在上、作者 / 来源在下。三种卡面各取一次样，
       组件、尺寸、对齐都相同，厂牌底始终是同一块 80% 底色。
-    </p>
+    </ui-text>
 
     <div class="ident-row">
       <div class="ident-strip on-paper">
@@ -51,7 +58,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
       </div>
     </div>
 
-    <p class="set-label">真实卡片刻</p>
+    <ui-label>真实卡片刻</ui-label>
     <div class="card-slice">
       <md-model-card [items]="[flux]" cover="/samples/shot-4.jpg" />
       <div class="slice-note">
@@ -60,7 +67,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
       </div>
     </div>
 
-    <p class="set-label">官方厂牌</p>
+    <ui-label>官方厂牌</ui-label>
     <div class="mark-grid">
       @for (family of families; track family.id) {
         <div class="mark-item">
@@ -77,7 +84,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
       }
     </div>
 
-    <p class="set-label">兜底形式</p>
+    <ui-label>兜底形式</ui-label>
     <div class="mark-grid fallback">
       <div class="mark-item">
         <ui-card-mark code="HF" tone="blue" title="发布方缩写" />
@@ -101,7 +108,7 @@ import { SEARCH_ITEMS } from '../../../visual-data';
       </div>
     </div>
 
-    <p class="set-label">尺寸与约束</p>
+    <ui-label>尺寸与约束</ui-label>
     <div class="spec">
       <div class="spec-cell">
         <b>32 × 32</b>

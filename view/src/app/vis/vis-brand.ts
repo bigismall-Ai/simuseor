@@ -3,6 +3,7 @@ import { ThemeService } from '../core/theme.service';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
+import { InnerCardComponent } from '../ui/inner-card';
 
 interface MarkVariant {
   key: string;
@@ -16,7 +17,8 @@ interface MarkVariant {
 @Component({
   selector: 'app-vis-brand',
   standalone: true,
-  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [
+    InnerCardComponent,SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -26,7 +28,7 @@ interface MarkVariant {
       <div class="brand-page">
         <ui-section title="组合标" pill="Brand">
             <div class="lockup-row">
-              <div class="brand-lockup inner-card">
+              <ui-inner-card class="brand-lockup">
                 <span class="brand-logo" aria-hidden="true">
                   <img src="/brand/cicada-max.svg" alt="" />
                 </span>
@@ -34,7 +36,7 @@ interface MarkVariant {
                   SiMuseor
                   <small>剧集导演台</small>
                 </span>
-              </div>
+              </ui-inner-card>
 
               <p class="lockup-note">
                 蝉形只做辅助图形，不进入页头、空状态、弹层与错误态。字标固定
@@ -47,9 +49,9 @@ interface MarkVariant {
             <div class="mark-list">
               @for (v of variants; track v.key) {
                 <article class="mark-row">
-                  <div class="variant-art inner-card">
+                  <ui-inner-card class="variant-art">
                     <img [src]="v.file" [alt]="v.name" />
-                  </div>
+                  </ui-inner-card>
                   <div class="variant-meta">
                     <b>{{ v.name }}</b>
                     <span>{{ v.size }}</span>
@@ -59,12 +61,12 @@ interface MarkVariant {
               }
 
               <article class="mark-row">
-                <div class="line-art-card inner-card">
+                <ui-inner-card class="line-art-card">
                   <img
                     [src]="isDark() ? '/brand/cicada-white-line.svg' : '/brand/cicada-black-line.svg'"
                     [alt]="(isDark() ? 'white-line' : 'black-line') + ' 线稿'"
                   />
-                </div>
+                </ui-inner-card>
                 <div class="variant-meta">
                   <b>{{ isDark() ? 'white-line' : 'black-line' }}</b>
                   <span>{{ isDark() ? '单色线稿 · 深色主题' : '单色线稿 · 浅色主题' }}</span>

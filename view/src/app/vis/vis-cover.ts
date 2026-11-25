@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CoverPlateComponent } from '../ui/cover-plate';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
+import { RulesComponent } from '../ui/rules';
 
 /**
  * 视觉设计：封面与纹样。
@@ -12,7 +13,8 @@ import { VisualPageComponent } from './visual-page';
 @Component({
   selector: 'app-vis-cover',
   standalone: true,
-  imports: [CoverPlateComponent, SectionBlockComponent, VisualPageComponent],
+  imports: [
+    RulesComponent,CoverPlateComponent, SectionBlockComponent, VisualPageComponent],
   styleUrl: './vis-cover.scss',
   template: `
     <app-visual-page title="封面与纹样">
@@ -52,12 +54,12 @@ import { VisualPageComponent } from './visual-page';
       </ui-section>
 
       <ui-section title="说明" pill="Notes" [plain]="true">
-        <ul class="color-rules">
+        <ui-rules>
           <li><b>统一来源</b>：封面、纹样与家族码全部来自 <code>app-cover-plate</code>，卡片不再自绘封面。</li>
           <li><b>两种状态</b>：没有真实图时用家族色 + 纹样 + 家族码兜底；有图时铺图并隐藏纹样。</li>
           <li><b>卡片封面</b>使用点阵 + 家族码水印；列表缩略图保留原纹样，不缩放同一套构图。</li>
           <li><b>颜色</b>只取家族色板；同一家族在浅色 / 深色主题各有一套底与文字色。</li>
-        </ul>
+        </ui-rules>
       </ui-section>
     </app-visual-page>
   `,

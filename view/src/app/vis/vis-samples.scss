@@ -38,15 +38,6 @@
   padding: 14px 0 0;
 }
 
-.hint {
-  margin: 0 0 14px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-}
-
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -1223,12 +1214,3 @@ html[data-theme='dark'] .bg-swatch {
 .demo-row span { color: var(--ui-muted); }
 
 /* 视觉页最后一块的规则清单 */
-.rules {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  line-height: 1.75;
-}
-
-.rules b { color: var(--ui-text); }

@@ -2,19 +2,6 @@
   display: block;
 }
 
-.set-label {
-  margin: 0 0 12px;
-  color: var(--ui-text);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -.01em;
-}
-
-.set-label:not(:first-child) {
-  margin-top: 28px;
-}
-
 .demo {
   padding: 18px 20px 20px;
   border: 1px solid var(--ui-border);

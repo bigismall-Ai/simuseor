@@ -3,12 +3,16 @@ import { GridComponent } from '../ui/grid';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
+import { RulesComponent } from '../ui/rules';
+import { InnerCardComponent } from '../ui/inner-card';
 
 /** 布局：页面骨架、两栏拆分与全局 layout token。 */
 @Component({
   selector: 'app-vis-layout',
   standalone: true,
-  imports: [GridComponent, SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [
+    InnerCardComponent,
+    RulesComponent,GridComponent, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="布局">
@@ -37,64 +41,64 @@ import { VisualPageComponent } from './visual-page';
             <div class="split-demo-block">
               <span class="split-label">MIN · 360px</span>
               <div class="layout-split layout-split-demo split-min">
-                <div class="layout-pane inner-card">
+                <ui-inner-card class="layout-pane">
                   <b>左栏 360</b>
                   <span>--layout-split-left-min</span>
                   <small>最小宽度</small>
-                </div>
-                <div class="layout-pane inner-card">
+                </ui-inner-card>
+                <ui-inner-card class="layout-pane">
                   <b>右栏</b>
                   <span>1fr</span>
                   <small>填充剩余空间</small>
-                </div>
+                </ui-inner-card>
               </div>
             </div>
 
             <div class="split-demo-block">
               <span class="split-label">MAX · 420px</span>
               <div class="layout-split layout-split-demo">
-                <div class="layout-pane inner-card">
+                <ui-inner-card class="layout-pane">
                   <b>左栏 420</b>
                   <span>--layout-split-left</span>
                   <small>最大宽度</small>
-                </div>
-                <div class="layout-pane inner-card">
+                </ui-inner-card>
+                <ui-inner-card class="layout-pane">
                   <b>右栏</b>
                   <span>1fr</span>
                   <small>填充剩余空间</small>
-                </div>
+                </ui-inner-card>
               </div>
             </div>
 
             <div class="split-demo-block">
               <span class="split-label">等分 · 1fr / 1fr</span>
               <div class="layout-split-even">
-                <div class="layout-pane inner-card">
+                <ui-inner-card class="layout-pane">
                   <b>左栏</b>
                   <span>1fr</span>
                   <small>对等分栏</small>
-                </div>
-                <div class="layout-pane inner-card">
+                </ui-inner-card>
+                <ui-inner-card class="layout-pane">
                   <b>右栏</b>
                   <span>1fr</span>
                   <small>对等分栏</small>
-                </div>
+                </ui-inner-card>
               </div>
             </div>
 
             <div class="split-demo-block">
               <span class="split-label">固定右 · 1fr / 300–360px</span>
               <div class="layout-split-end">
-                <div class="layout-pane inner-card">
+                <ui-inner-card class="layout-pane">
                   <b>内容</b>
                   <span>1fr</span>
                   <small>主区自适应</small>
-                </div>
-                <div class="layout-pane inner-card">
+                </ui-inner-card>
+                <ui-inner-card class="layout-pane">
                   <b>详情</b>
                   <span>--layout-split-right</span>
                   <small>360px</small>
-                </div>
+                </ui-inner-card>
               </div>
             </div>
           </div>
@@ -104,21 +108,21 @@ import { VisualPageComponent } from './visual-page';
           <div class="split-demo-block">
             <span class="split-label">导航 208 / 内容 1fr / 详情 262</span>
             <div class="layout-three">
-              <div class="layout-pane inner-card">
+              <ui-inner-card class="layout-pane">
                 <b>导航</b>
                 <span>--layout-three-left</span>
                 <small>208px</small>
-              </div>
-              <div class="layout-pane inner-card">
+              </ui-inner-card>
+              <ui-inner-card class="layout-pane">
                 <b>内容</b>
                 <span>1fr</span>
                 <small>主工作区</small>
-              </div>
-              <div class="layout-pane inner-card">
+              </ui-inner-card>
+              <ui-inner-card class="layout-pane">
                 <b>详情</b>
                 <span>--layout-three-right</span>
                 <small>262px</small>
-              </div>
+              </ui-inner-card>
             </div>
           </div>
         </ui-section>
@@ -127,18 +131,18 @@ import { VisualPageComponent } from './visual-page';
           <div class="split-demo-block">
             <span class="split-label">页头 / 内容 / 页脚</span>
             <div class="layout-stack">
-              <div class="layout-pane inner-card compact">
+              <ui-inner-card class="layout-pane compact">
                 <b>页头</b>
                 <span>标题 · 视图切换 · 主操作</span>
-              </div>
-              <div class="layout-pane inner-card compact">
+              </ui-inner-card>
+              <ui-inner-card class="layout-pane compact">
                 <b>内容</b>
                 <span>表格 / 卡片 / 表单</span>
-              </div>
-              <div class="layout-pane inner-card compact">
+              </ui-inner-card>
+              <ui-inner-card class="layout-pane compact">
                 <b>页脚</b>
                 <span>状态 · 计数 · 辅助操作</span>
-              </div>
+              </ui-inner-card>
             </div>
           </div>
         </ui-section>
@@ -148,11 +152,11 @@ import { VisualPageComponent } from './visual-page';
             <span class="split-label">卡片 · minmax(250px, 1fr)</span>
             <ui-grid max="1fr">
               @for (item of gridItems; track item) {
-                <div class="layout-pane inner-card">
+                <ui-inner-card class="layout-pane">
                   <b>卡片 {{ item }}</b>
                   <span>--layout-grid-min</span>
                   <small>250px 起</small>
-                </div>
+                </ui-inner-card>
               }
             </ui-grid>
           </div>
@@ -182,7 +186,7 @@ import { VisualPageComponent } from './visual-page';
         </ui-section>
 
       <ui-section title="说明" pill="Notes" [plain]="true">
-          <ul class="color-rules">
+          <ui-rules>
             <li><b>变量驱动</b>：侧栏宽度、内容最大宽度、页面留白全部用 <code>--layout-*</code> 控制，改一处即可全局变化。</li>
             <li><b>两栏</b>：固定左（360–420px + 1fr）、等分（1fr + 1fr）、固定右（1fr + 300–360px）。</li>
             <li><b>三栏</b>：导航 208px + 内容 1fr + 详情 262px，适合资源管理器这类主从结构。</li>
@@ -192,7 +196,7 @@ import { VisualPageComponent } from './visual-page';
             <li><b>最多两层</b>：section 卡（不透明）→ inner-card（透明 + 描边 + 阴影），到此为止。</li>
             <li><b>列表独立</b>：表格 / 列表用 list-card，直接放进 section-body，不再套 section 卡。</li>
             <li><b>文字不单独成卡</b>：说明与规则使用 section-body.plain，并集中在页面最后。</li>
-          </ul>
+          </ui-rules>
         </ui-section>
     </app-visual-page>
   `,
