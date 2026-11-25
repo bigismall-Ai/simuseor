@@ -2,44 +2,55 @@ name: API Contract
 
 on:
   push:
-    paths:
-      - 'backend/openapi.json'
-      - 'backend/app/api/**'
-      - 'backend/scripts/dump_openapi.py'
-      - 'tests/e2e/gen-api-types.mjs'
-      - 'view/src/app/core/api-types.ts'
-      - 'view/src/app/core/api-contract.ts'
-      - '.github/workflows/api-contract.yml'
+    branches: [main]
   pull_request:
-    paths:
-      - 'backend/openapi.json'
-      - 'backend/app/api/**'
-      - 'backend/scripts/dump_openapi.py'
-      - 'tests/e2e/gen-api-types.mjs'
-      - 'view/src/app/core/api-types.ts'
-      - 'view/src/app/core/api-contract.ts'
-      - '.github/workflows/api-contract.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: api-contract-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
+  api-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: 判断契约文件是否变更
+        id: changes
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            api:
+              - 'backend/openapi.json'
+              - 'backend/app/api/**'
+              - 'backend/scripts/dump_openapi.py'
+              - 'tests/e2e/gen-api-types.mjs'
+              - 'view/src/app/core/api-types.ts'
+              - 'view/src/app/core/api-contract.ts'
+              - '.github/workflows/api-contract.yml'
+
+      - name: 跳过说明
+        if: github.event_name != 'workflow_dispatch' && steps.changes.outputs.api != 'true'
+        run: echo "本次变更不涉及 API 契约，跳过。"
+
       - uses: actions/setup-node@v4
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.api == 'true'
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: tests/package-lock.json
+
       - name: 安装生成器
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.api == 'true'
         run: cd tests && npm ci --no-audit --no-fund
+
       - name: 校验前端类型与 OpenAPI 一致
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.api == 'true'
         run: node tests/e2e/gen-api-types.mjs --check
