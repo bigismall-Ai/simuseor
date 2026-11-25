@@ -1468,6 +1468,48 @@ export interface components {
             /** Web */
             web: boolean;
         };
+        /**
+         * LibraryFacet
+         * @description 筛选面板的一个分面桶：条数与占用体积。
+         */
+        LibraryFacet: {
+            /**
+             * Count
+             * @default 0
+             */
+            count: number;
+            /** Id */
+            id: string;
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /**
+             * Sizetext
+             * @default
+             */
+            sizeText: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** LibraryFacets */
+        LibraryFacets: {
+            /** Allfolders */
+            allFolders?: components["schemas"]["FolderOption"][];
+            /** Alltasks */
+            allTasks?: components["schemas"]["FolderOption"][];
+            /** Folder */
+            folder?: components["schemas"]["LibraryFacet"][];
+            /** Publisher */
+            publisher?: components["schemas"]["LibraryFacet"][];
+            /** Source */
+            source?: components["schemas"]["LibraryFacet"][];
+            /** Task */
+            task?: components["schemas"]["LibraryFacet"][];
+        } & {
+            [key: string]: unknown;
+        };
         /** LibraryFile */
         LibraryFile: {
             /** Id */
@@ -1571,6 +1613,77 @@ export interface components {
             /** Tags */
             tags?: string[] | null;
         };
+        /**
+         * NodeCatalogItem
+         * @description 节点清单里的一条扩展；`installed` 只在搜索结果里补上。
+         */
+        NodeCatalogItem: {
+            /**
+             * Author
+             * @default
+             */
+            author: string;
+            /**
+             * Category
+             * @default utility
+             */
+            category: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Id */
+            id: string;
+            /**
+             * Install Type
+             * @default
+             */
+            install_type: string;
+            /**
+             * Installable
+             * @default false
+             */
+            installable: boolean;
+            /**
+             * Installed
+             * @default false
+             */
+            installed: boolean;
+            /** Name */
+            name: string;
+            /**
+             * Node Count
+             * @default 0
+             */
+            node_count: number;
+            /** Nodes */
+            nodes?: string[];
+            /**
+             * Repo
+             * @default
+             */
+            repo: string;
+            /** Tags */
+            tags?: string[];
+        } & {
+            [key: string]: unknown;
+        };
+        /** NodeFacet */
+        NodeFacet: {
+            /**
+             * Count
+             * @default 0
+             */
+            count: number;
+            /** Id */
+            id: string;
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+        };
         /** NodeInstallRequest */
         NodeInstallRequest: {
             /** Id */
@@ -1643,6 +1756,183 @@ export interface components {
         NodeInstalledList: {
             /** Items */
             items?: components["schemas"]["NodeInstalledItem"][];
+        };
+        /**
+         * NodeMissingProvider
+         * @description 一个能补上缺口的扩展；`files` / `covers` 是聚合后的统计。
+         */
+        NodeMissingProvider: {
+            /**
+             * Author
+             * @default
+             */
+            author: string;
+            /** Covers */
+            covers?: string[];
+            /**
+             * Files
+             * @default 0
+             */
+            files: number;
+            /** Id */
+            id: string;
+            /**
+             * Installable
+             * @default false
+             */
+            installable: boolean;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Node Count
+             * @default 0
+             */
+            node_count: number;
+            /**
+             * Repo
+             * @default
+             */
+            repo: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** NodeMissingResponse */
+        NodeMissingResponse: {
+            /**
+             * Core Nodes
+             * @default 0
+             */
+            core_nodes: number;
+            /**
+             * Installed Nodes
+             * @default 0
+             */
+            installed_nodes: number;
+            /**
+             * Missing Files
+             * @default 0
+             */
+            missing_files: number;
+            /** Providers */
+            providers?: components["schemas"]["NodeMissingProvider"][];
+            /**
+             * Scanned
+             * @default 0
+             */
+            scanned: number;
+            /** Workflows */
+            workflows?: components["schemas"]["NodeMissingWorkflow"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /** NodeMissingWorkflow */
+        NodeMissingWorkflow: {
+            /**
+             * File
+             * @default
+             */
+            file: string;
+            /**
+             * Missing
+             * @default 0
+             */
+            missing: number;
+            /** Name */
+            name: string;
+            /**
+             * Path
+             * @default
+             */
+            path: string;
+            /** Providers */
+            providers?: components["schemas"]["NodeMissingProvider"][];
+            /** Unknown */
+            unknown?: string[];
+            /**
+             * Used
+             * @default 0
+             */
+            used: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** NodeSearchResponse */
+        NodeSearchResponse: {
+            /** Categories */
+            categories?: components["schemas"]["NodeFacet"][];
+            /**
+             * Category
+             * @default
+             */
+            category: string;
+            /**
+             * Done
+             * @default false
+             */
+            done: boolean;
+            /** Errors */
+            errors?: {
+                [key: string]: string;
+            };
+            /**
+             * Installed Count
+             * @default 0
+             */
+            installed_count: number;
+            /** Items */
+            items?: components["schemas"]["NodeCatalogItem"][];
+            /** Sorts */
+            sorts?: string[];
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** NodeStatsResponse */
+        NodeStatsResponse: {
+            /**
+             * Catalog
+             * @default 0
+             */
+            catalog: number;
+            /**
+             * Core Nodes
+             * @default 0
+             */
+            core_nodes: number;
+            /**
+             * Dir
+             * @default
+             */
+            dir: string;
+            /**
+             * Disabled
+             * @default 0
+             */
+            disabled: number;
+            /**
+             * Installed
+             * @default 0
+             */
+            installed: number;
+            /**
+             * Node Classes
+             * @default 0
+             */
+            node_classes: number;
+            /**
+             * Runtime
+             * @default
+             */
+            runtime: string;
+        } & {
+            [key: string]: unknown;
         };
         /** ProbePath */
         ProbePath: {
@@ -1767,6 +2057,28 @@ export interface components {
              */
             url: string;
         };
+        /**
+         * ResolveFile
+         * @description 仓库里的一个文件；folder 是后端算出的建议落盘目录。
+         */
+        ResolveFile: {
+            /** Candidates */
+            candidates?: string[];
+            /**
+             * Folder
+             * @default
+             */
+            folder: string;
+            /** Path */
+            path: string;
+            /**
+             * Size
+             * @default 0
+             */
+            size: number;
+        } & {
+            [key: string]: unknown;
+        };
         /** ResolveRequest */
         ResolveRequest: {
             /** Repo Id */
@@ -1783,6 +2095,32 @@ export interface components {
              * @default
              */
             task: string;
+        };
+        /** ResolveResponse */
+        ResolveResponse: {
+            /**
+             * Display Name
+             * @default
+             */
+            display_name: string;
+            /** Files */
+            files?: components["schemas"]["ResolveFile"][];
+            /** Repo Id */
+            repo_id: string;
+            /**
+             * Revision
+             * @default
+             */
+            revision: string;
+            /** Source */
+            source: string;
+            /**
+             * Target Folder
+             * @default
+             */
+            target_folder: string;
+        } & {
+            [key: string]: unknown;
         };
         /** ScanRequest */
         ScanRequest: {
@@ -2951,9 +3289,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["LibraryFacets"];
                 };
             };
         };
@@ -3138,9 +3474,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["NodeSearchResponse"];
                 };
             };
             /** @description Validation Error */
@@ -3349,9 +3683,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["NodeMissingResponse"];
                 };
             };
         };
@@ -3393,9 +3725,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["NodeStatsResponse"];
                 };
             };
         };
@@ -3496,9 +3826,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ResolveResponse"];
                 };
             };
             /** @description Validation Error */

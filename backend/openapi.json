@@ -306,6 +306,85 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "LibraryFacet": {
+        "additionalProperties": true,
+        "description": "筛选面板的一个分面桶：条数与占用体积。",
+        "properties": {
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "sizeText": {
+            "default": "",
+            "title": "Sizetext",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "LibraryFacet",
+        "type": "object"
+      },
+      "LibraryFacets": {
+        "additionalProperties": true,
+        "properties": {
+          "allFolders": {
+            "items": {
+              "$ref": "#/components/schemas/FolderOption"
+            },
+            "title": "Allfolders",
+            "type": "array"
+          },
+          "allTasks": {
+            "items": {
+              "$ref": "#/components/schemas/FolderOption"
+            },
+            "title": "Alltasks",
+            "type": "array"
+          },
+          "folder": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryFacet"
+            },
+            "title": "Folder",
+            "type": "array"
+          },
+          "publisher": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryFacet"
+            },
+            "title": "Publisher",
+            "type": "array"
+          },
+          "source": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryFacet"
+            },
+            "title": "Source",
+            "type": "array"
+          },
+          "task": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryFacet"
+            },
+            "title": "Task",
+            "type": "array"
+          }
+        },
+        "title": "LibraryFacets",
+        "type": "object"
+      },
       "LibraryFile": {
         "additionalProperties": true,
         "properties": {
@@ -463,6 +542,103 @@
         "title": "LibraryPatch",
         "type": "object"
       },
+      "NodeCatalogItem": {
+        "additionalProperties": true,
+        "description": "节点清单里的一条扩展；`installed` 只在搜索结果里补上。",
+        "properties": {
+          "author": {
+            "default": "",
+            "title": "Author",
+            "type": "string"
+          },
+          "category": {
+            "default": "utility",
+            "title": "Category",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "install_type": {
+            "default": "",
+            "title": "Install Type",
+            "type": "string"
+          },
+          "installable": {
+            "default": false,
+            "title": "Installable",
+            "type": "boolean"
+          },
+          "installed": {
+            "default": false,
+            "title": "Installed",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "node_count": {
+            "default": 0,
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "nodes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "repo": {
+            "default": "",
+            "title": "Repo",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "NodeCatalogItem",
+        "type": "object"
+      },
+      "NodeFacet": {
+        "properties": {
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "NodeFacet",
+        "type": "object"
+      },
       "NodeInstallRequest": {
         "properties": {
           "id": {
@@ -568,6 +744,244 @@
           }
         },
         "title": "NodeInstalledList",
+        "type": "object"
+      },
+      "NodeMissingProvider": {
+        "additionalProperties": true,
+        "description": "一个能补上缺口的扩展；`files` / `covers` 是聚合后的统计。",
+        "properties": {
+          "author": {
+            "default": "",
+            "title": "Author",
+            "type": "string"
+          },
+          "covers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Covers",
+            "type": "array"
+          },
+          "files": {
+            "default": 0,
+            "title": "Files",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "installable": {
+            "default": false,
+            "title": "Installable",
+            "type": "boolean"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "node_count": {
+            "default": 0,
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "repo": {
+            "default": "",
+            "title": "Repo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "NodeMissingProvider",
+        "type": "object"
+      },
+      "NodeMissingResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "core_nodes": {
+            "default": 0,
+            "title": "Core Nodes",
+            "type": "integer"
+          },
+          "installed_nodes": {
+            "default": 0,
+            "title": "Installed Nodes",
+            "type": "integer"
+          },
+          "missing_files": {
+            "default": 0,
+            "title": "Missing Files",
+            "type": "integer"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/NodeMissingProvider"
+            },
+            "title": "Providers",
+            "type": "array"
+          },
+          "scanned": {
+            "default": 0,
+            "title": "Scanned",
+            "type": "integer"
+          },
+          "workflows": {
+            "items": {
+              "$ref": "#/components/schemas/NodeMissingWorkflow"
+            },
+            "title": "Workflows",
+            "type": "array"
+          }
+        },
+        "title": "NodeMissingResponse",
+        "type": "object"
+      },
+      "NodeMissingWorkflow": {
+        "additionalProperties": true,
+        "properties": {
+          "file": {
+            "default": "",
+            "title": "File",
+            "type": "string"
+          },
+          "missing": {
+            "default": 0,
+            "title": "Missing",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "path": {
+            "default": "",
+            "title": "Path",
+            "type": "string"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/NodeMissingProvider"
+            },
+            "title": "Providers",
+            "type": "array"
+          },
+          "unknown": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unknown",
+            "type": "array"
+          },
+          "used": {
+            "default": 0,
+            "title": "Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "NodeMissingWorkflow",
+        "type": "object"
+      },
+      "NodeSearchResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/NodeFacet"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "done": {
+            "default": false,
+            "title": "Done",
+            "type": "boolean"
+          },
+          "errors": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "object"
+          },
+          "installed_count": {
+            "default": 0,
+            "title": "Installed Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NodeCatalogItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "sorts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sorts",
+            "type": "array"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "title": "NodeSearchResponse",
+        "type": "object"
+      },
+      "NodeStatsResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "catalog": {
+            "default": 0,
+            "title": "Catalog",
+            "type": "integer"
+          },
+          "core_nodes": {
+            "default": 0,
+            "title": "Core Nodes",
+            "type": "integer"
+          },
+          "dir": {
+            "default": "",
+            "title": "Dir",
+            "type": "string"
+          },
+          "disabled": {
+            "default": 0,
+            "title": "Disabled",
+            "type": "integer"
+          },
+          "installed": {
+            "default": 0,
+            "title": "Installed",
+            "type": "integer"
+          },
+          "node_classes": {
+            "default": 0,
+            "title": "Node Classes",
+            "type": "integer"
+          },
+          "runtime": {
+            "default": "",
+            "title": "Runtime",
+            "type": "string"
+          }
+        },
+        "title": "NodeStatsResponse",
         "type": "object"
       },
       "ProbePath": {
@@ -768,6 +1182,38 @@
         "title": "ProxyTestRequest",
         "type": "object"
       },
+      "ResolveFile": {
+        "additionalProperties": true,
+        "description": "仓库里的一个文件；folder 是后端算出的建议落盘目录。",
+        "properties": {
+          "candidates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "folder": {
+            "default": "",
+            "title": "Folder",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "size": {
+            "default": 0,
+            "title": "Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "ResolveFile",
+        "type": "object"
+      },
       "ResolveRequest": {
         "properties": {
           "repo_id": {
@@ -794,6 +1240,47 @@
           "repo_id"
         ],
         "title": "ResolveRequest",
+        "type": "object"
+      },
+      "ResolveResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "display_name": {
+            "default": "",
+            "title": "Display Name",
+            "type": "string"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ResolveFile"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "repo_id": {
+            "title": "Repo Id",
+            "type": "string"
+          },
+          "revision": {
+            "default": "",
+            "title": "Revision",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target_folder": {
+            "default": "",
+            "title": "Target Folder",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_id",
+          "source"
+        ],
+        "title": "ResolveResponse",
         "type": "object"
       },
       "ScanRequest": {
@@ -2537,9 +3024,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Library Facets Api Library Facets Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/LibraryFacets"
                 }
               }
             },
@@ -2809,9 +3294,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Search Nodes Api Nodes Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/NodeSearchResponse"
                 }
               }
             },
@@ -3060,9 +3543,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Missing Nodes Api Nodes Missing Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/NodeMissingResponse"
                 }
               }
             },
@@ -3100,9 +3581,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Node Stats Api Nodes Stats Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/NodeStatsResponse"
                 }
               }
             },
@@ -3210,9 +3689,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Resolve Api Resolve Post",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ResolveResponse"
                 }
               }
             },

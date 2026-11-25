@@ -1,3 +1,5 @@
+import type { ApiSchemas } from './api-contract';
+
 export interface SourceConfig {
   label: string;
   token: string;
@@ -148,11 +150,7 @@ export interface Task {
   error?: string;
 }
 
-export interface LibraryFile {
-  id: string;
-  path: string;
-  size: number;
-}
+export type LibraryFile = ApiSchemas['LibraryFile'];
 
 export interface LibraryModel {
   id: string;

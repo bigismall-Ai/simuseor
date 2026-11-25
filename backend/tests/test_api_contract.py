@@ -159,7 +159,8 @@ def test_error_envelope_for_unknown_source(monkeypatch):
     monkeypatch.setattr(routes, "load_settings", lambda: {"sources": {}})
     res = client.post("/api/resolve", json={"source": "nope", "repo_id": "a/b"})
     assert res.status_code == 400
-    assert set(res.json()) == {"detail"}
+    assert set(res.json()) == {"detail", "code"}
+    assert res.json()["code"] == "invalid_source"
     assert "nope" in res.json()["detail"]
 
 
@@ -170,7 +171,224 @@ def test_error_envelope_for_missing_workflow_file(monkeypatch):
     monkeypatch.setattr(routes.workflow_edit, "load", boom)
     res = client.get("/api/workflows/file", params={"path": "/tmp/none.json"})
     assert res.status_code == 400
-    assert res.json() == {"detail": "工作流不存在"}
+    assert res.json() == {"detail": "工作流不存在", "code": "invalid_request"}
+
+
+def test_error_code_for_missing_node_job(monkeypatch):
+    def boom(_job_id, _since):
+        raise SourceError("任务不存在")
+
+    monkeypatch.setattr(routes.node_service, "job", boom)
+    res = client.get("/api/nodes/job/nope")
+    assert res.status_code == 404
+    assert res.json()["code"] == "not_found"
+    assert res.json()["detail"] == "任务不存在"
+
+
+def test_error_code_for_stale_workflow(monkeypatch):
+    def boom(_path, _data, _mtime):
+        raise routes.workflow_edit.StaleWorkflow("文件已被其他程序修改")
+
+    monkeypatch.setattr(routes.workflow_edit, "save", boom)
+    res = client.put("/api/workflows/file", json={"path": "/tmp/a.json", "data": {}})
+    assert res.status_code == 409
+    assert res.json() == {"detail": "文件已被其他程序修改", "code": "conflict"}
+
+
+def test_legacy_http_exception_still_detail_only(monkeypatch):
+    """没迁移的端点（仍抛普通 HTTPException）只返回 detail，旧客户端不受影响。"""
+
+    def boom(_source, _repo_id, _revision):
+        raise SourceError("仓库不存在")
+
+    monkeypatch.setattr(routes.workflow_service, "resolve", boom)
+    res = client.post("/api/workflows/resolve", json={"source": "huggingface", "repo_id": "a/b"})
+    assert res.status_code == 400
+    assert res.json() == {"detail": "仓库不存在"}
+
+
+def test_resolve_contract(monkeypatch):
+    class FakeRepo:
+        files = [type("F", (), {"path": "a.safetensors"})()]
+
+        def to_dict(self):
+            return {
+                "repo_id": "org/model",
+                "display_name": "model",
+                "revision": "main",
+                "source": "huggingface",
+                "files": [{"path": "a.safetensors", "size": 10, "candidates": ["https://x/a"]}],
+            }
+
+    monkeypatch.setattr(routes, "load_settings", lambda: {"sources": {"huggingface": {"enabled": True}}})
+    monkeypatch.setattr(routes, "get_adapter", lambda _name: type("A", (), {"resolve": lambda *a: FakeRepo()})())
+    monkeypatch.setattr(routes, "plan_folders", lambda paths: {"a.safetensors": "diffusion_models"})
+    monkeypatch.setattr(routes, "infer_folder", lambda *a: "diffusion_models")
+    res = client.post("/api/resolve", json={"source": "huggingface", "repo_id": "org/model"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["repo_id"] == "org/model"
+    assert body["files"][0]["folder"] == "diffusion_models"
+    assert body["files"][0]["candidates"] == ["https://x/a"]
+    assert body["target_folder"] == "diffusion_models"
+
+
+def test_library_facets_contract(monkeypatch):
+    rows = [
+        {
+            "local_path": "/tmp/a.safetensors",
+            "name": "a.safetensors",
+            "tags": "[]",
+            "size_bytes": 1024,
+            "source": "huggingface",
+            "repo_id": "Org/model",
+        },
+        {
+            "local_path": "/tmp/b.safetensors",
+            "name": "b.safetensors",
+            "tags": '["flux"]',
+            "size_bytes": 2048,
+            "source": "huggingface",
+            "repo_id": "Org/other",
+        },
+    ]
+    monkeypatch.setattr(routes, "query", lambda sql, params=(): rows)
+    monkeypatch.setattr(
+        routes,
+        "describe_model",
+        lambda *args: {"folder": "diffusion_models", "folderLabel": "扩散模型", "task": "text_to_image", "taskLabel": "文生图"},
+    )
+    monkeypatch.setattr(routes, "flush_meta_cache", lambda: None)
+    monkeypatch.setattr(routes, "all_folders", lambda: [{"id": "loras", "label": "LoRA"}])
+    monkeypatch.setattr(routes, "all_tasks", lambda: [{"id": "text_to_image", "label": "文生图"}])
+    res = client.get("/api/library/facets")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["folder"][0] == {"id": "diffusion_models", "label": "扩散模型", "count": 2, "sizeText": "3.0 KB"}
+    assert body["publisher"][0]["id"] == "org"
+    assert body["publisher"][0]["label"] == "Org"
+    assert body["source"][0]["count"] == 2
+    assert body["allFolders"] == [{"id": "loras", "label": "LoRA"}]
+    assert body["allTasks"] == [{"id": "text_to_image", "label": "文生图"}]
+
+
+def test_nodes_search_contract(monkeypatch):
+    payload = {
+        "items": [
+            {
+                "id": "org/pack",
+                "name": "Pack",
+                "author": "org",
+                "repo": "https://github.com/org/pack",
+                "description": "",
+                "category": "sampling",
+                "tags": [],
+                "nodes": ["A"],
+                "node_count": 1,
+                "install_type": "git-clone",
+                "installable": True,
+                "installed": False,
+                "mirror": "https://mirror/org/pack",
+            }
+        ],
+        "total": 1,
+        "done": True,
+        "errors": {},
+        "sorts": ["nodes", "name", "default"],
+        "categories": [{"id": "sampling", "label": "采样", "count": 1}],
+        "category": "",
+        "installed_count": 0,
+    }
+    monkeypatch.setattr(routes.node_service, "search", lambda *a: payload)
+    # 热力榜可能已经从 var/data 读到真实缓存，测试里绕开它
+    monkeypatch.setattr(routes.hot_board, "matches", lambda *a, **kw: False)
+    res = client.get("/api/nodes")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["items"][0]["node_count"] == 1
+    assert body["items"][0]["mirror"].endswith("/pack")
+    assert body["sorts"] == ["nodes", "name", "default"]
+    assert body["installed_count"] == 0
+
+
+def test_nodes_stats_contract(monkeypatch):
+    monkeypatch.setattr(
+        routes.node_service,
+        "stats",
+        lambda: {
+            "catalog": 10,
+            "installed": 3,
+            "disabled": 1,
+            "node_classes": 99,
+            "core_nodes": 42,
+            "dir": "/tmp/custom_nodes",
+            "runtime": "env",
+        },
+    )
+    res = client.get("/api/nodes/stats")
+    assert res.status_code == 200
+    assert res.json()["catalog"] == 10
+    assert res.json()["core_nodes"] == 42
+    assert res.json()["runtime"] == "env"
+
+
+def test_nodes_missing_contract(monkeypatch):
+    monkeypatch.setattr(
+        routes.node_service,
+        "missing",
+        lambda: {
+            "workflows": [
+                {
+                    "name": "wf",
+                    "file": "wf.json",
+                    "path": "/tmp/wf.json",
+                    "used": 3,
+                    "missing": 1,
+                    "providers": [
+                        {
+                            "id": "org/pack",
+                            "name": "Pack",
+                            "author": "org",
+                            "repo": "https://github.com/org/pack",
+                            "node_count": 1,
+                            "installable": True,
+                            "covers": ["A"],
+                        }
+                    ],
+                    "unknown": [],
+                }
+            ],
+            "providers": [
+                {
+                    "id": "org/pack",
+                    "name": "Pack",
+                    "author": "org",
+                    "repo": "https://github.com/org/pack",
+                    "node_count": 1,
+                    "installable": True,
+                    "covers": ["A"],
+                    "files": 1,
+                }
+            ],
+            "scanned": 1,
+            "missing_files": 1,
+            "core_nodes": 42,
+            "installed_nodes": 3,
+        },
+    )
+    res = client.get("/api/nodes/missing")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["workflows"][0]["providers"][0]["covers"] == ["A"]
+    assert body["providers"][0]["files"] == 1
+    assert body["missing_files"] == 1
+
+
+def test_error_code_for_missing_library_model(monkeypatch):
+    monkeypatch.setattr(routes, "query", lambda sql, params=(): [])
+    res = client.patch("/api/library/nope", json={"tags": []})
+    assert res.status_code == 404
+    assert res.json() == {"detail": "模型不存在", "code": "not_found"}
 
 
 def test_openapi_snapshot_is_current():
@@ -192,6 +410,11 @@ def test_openapi_locks_core_paths_and_models():
         ("/api/library", "get"),
         ("/api/probe", "get"),
         ("/api/device", "get"),
+        ("/api/resolve", "post"),
+        ("/api/library/facets", "get"),
+        ("/api/nodes", "get"),
+        ("/api/nodes/stats", "get"),
+        ("/api/nodes/missing", "get"),
     ]:
         assert method in schema["paths"][path]
 
@@ -204,6 +427,21 @@ def test_openapi_locks_core_paths_and_models():
     assert "LibraryItem" in names
     assert "ProbeResponse" in names
     assert "DeviceInfo" in names
+    assert "ResolveResponse" in names
+    assert "ResolveFile" in names
+    assert "LibraryFacets" in names
+    assert "LibraryFacet" in names
+    assert "NodeSearchResponse" in names
+    assert "NodeCatalogItem" in names
+    assert "NodeStatsResponse" in names
+    assert "NodeMissingResponse" in names
+    # 这五个端点必须真的挂了 response_model，而不是只存在于 paths
+    ref = lambda path, method: schema["paths"][path][method]["responses"]["200"]["content"]["application/json"]["schema"]["$ref"]
+    assert ref("/api/resolve", "post").endswith("/ResolveResponse")
+    assert ref("/api/library/facets", "get").endswith("/LibraryFacets")
+    assert ref("/api/nodes", "get").endswith("/NodeSearchResponse")
+    assert ref("/api/nodes/stats", "get").endswith("/NodeStatsResponse")
+    assert ref("/api/nodes/missing", "get").endswith("/NodeMissingResponse")
 
 
 def test_search_contract(monkeypatch):

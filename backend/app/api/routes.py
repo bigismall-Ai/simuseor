@@ -34,13 +34,19 @@ from ..db import execute, new_id, now_iso, query
 from ..download.manager import manager
 from ..sources import get_adapter
 from ..sources.base import SourceError
+from .errors import ApiError, ErrorCode
 from .schemas import (
     DeviceInfo,
     FolderOption,
     GpuInfo,
     HealthResponse,
+    LibraryFacets,
     LibraryItem,
+    NodeMissingResponse,
+    NodeSearchResponse,
+    NodeStatsResponse,
     ProbeResponse,
+    ResolveResponse,
     SearchResponse,
     NodeInstalledList,
     TaskItem,
@@ -256,12 +262,12 @@ def probe_refresh() -> dict:
 
 
 # ---------------- 解析 ----------------
-@router.post("/resolve")
+@router.post("/resolve", response_model=ResolveResponse)
 def resolve(body: ResolveRequest) -> dict:
     settings = load_settings()
     cfg = settings["sources"].get(body.source)
     if not cfg:
-        raise HTTPException(status_code=400, detail=f"未配置的下载源: {body.source}")
+        raise ApiError(400, f"未配置的下载源: {body.source}", ErrorCode.INVALID_SOURCE)
     adapter = get_adapter(body.source)
     repo = adapter.resolve(body.repo_id, body.revision, cfg)
     payload = repo.to_dict()
@@ -316,7 +322,7 @@ def read_workflow_file(path: str) -> dict:
     try:
         return workflow_edit.load(path)
     except SourceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
 @router.put("/workflows/file")
@@ -325,9 +331,9 @@ def write_workflow_file(body: WorkflowFileRequest) -> dict:
     try:
         return workflow_edit.save(body.path, body.data, body.mtime)
     except workflow_edit.StaleWorkflow as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
+        raise ApiError(409, str(exc), ErrorCode.CONFLICT) from exc
     except SourceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
 @router.get("/workflows/object-info")
@@ -350,9 +356,9 @@ def local_workflow_cover(path: str) -> FileResponse:
     try:
         file = wf_covers.serve_file(path)
     except PermissionError as exc:
-        raise HTTPException(status_code=403, detail="只能读取工作流目录里的图片") from exc
+        raise ApiError(403, "只能读取工作流目录里的图片", ErrorCode.FORBIDDEN) from exc
     except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="图片不存在") from exc
+        raise ApiError(404, "图片不存在", ErrorCode.NOT_FOUND) from exc
     return FileResponse(file, headers={"Cache-Control": "public, max-age=86400"})
 
 
@@ -490,7 +496,7 @@ def import_workflow(body: WorkflowImportRequest) -> dict:
 
 
 # ---------------- 节点发现 / 节点管理 ----------------
-@router.get("/nodes")
+@router.get("/nodes", response_model=NodeSearchResponse)
 def search_nodes(
     q: str = "",
     sort: str = "nodes",
@@ -506,15 +512,15 @@ def search_nodes(
     try:
         return node_service.search(q, sort, scope, limit, page, category)
     except SourceError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise ApiError(503, str(exc), ErrorCode.SOURCE_UNAVAILABLE) from exc
 
 
-@router.get("/nodes/stats")
+@router.get("/nodes/stats", response_model=NodeStatsResponse)
 def node_stats() -> dict:
     try:
         return node_service.stats()
     except SourceError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise ApiError(503, str(exc), ErrorCode.SOURCE_UNAVAILABLE) from exc
 
 
 @router.post("/nodes/refresh")
@@ -522,9 +528,9 @@ def refresh_nodes() -> dict:
     try:
         return node_service.fetch_catalog(force=True)
     except SourceError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise ApiError(503, str(exc), ErrorCode.SOURCE_UNAVAILABLE) from exc
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=503, detail=f"节点清单刷新失败: {exc}") from exc
+        raise ApiError(503, f"节点清单刷新失败: {exc}", ErrorCode.SOURCE_UNAVAILABLE) from exc
 
 
 @router.get("/nodes/installed", response_model=NodeInstalledList)
@@ -532,7 +538,7 @@ def installed_nodes() -> dict:
     try:
         return {"items": node_service.installed()}
     except SourceError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise ApiError(503, str(exc), ErrorCode.SOURCE_UNAVAILABLE) from exc
 
 
 @router.post("/nodes/install")
@@ -540,7 +546,7 @@ def install_node(body: NodeInstallRequest) -> dict:
     try:
         return node_service.install(body.id)
     except SourceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
 @router.get("/nodes/job")
@@ -553,7 +559,7 @@ def node_job(job_id: str, since: int = 0) -> dict:
     try:
         return node_service.job(job_id, since)
     except SourceError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise ApiError(404, str(exc), ErrorCode.NOT_FOUND) from exc
 
 
 @router.post("/nodes/installed/{name}/toggle")
@@ -561,9 +567,9 @@ def toggle_node(name: str) -> dict:
     try:
         return node_service.toggle(name)
     except SourceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
     except OSError as exc:
-        raise HTTPException(status_code=500, detail=f"改名失败: {exc}") from exc
+        raise ApiError(500, f"改名失败: {exc}", ErrorCode.FILESYSTEM_ERROR) from exc
 
 
 @router.delete("/nodes/installed/{name}")
@@ -571,15 +577,15 @@ def remove_node(name: str, stop: bool = False) -> dict:
     try:
         return node_service.remove(name, stop=stop)
     except SourceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
-@router.get("/nodes/missing")
+@router.get("/nodes/missing", response_model=NodeMissingResponse)
 def missing_nodes() -> dict:
     try:
         return node_service.missing()
     except SourceError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        raise ApiError(503, str(exc), ErrorCode.SOURCE_UNAVAILABLE) from exc
 
 
 # ---------------- 任务 ----------------
@@ -597,7 +603,7 @@ def create_task(body: CreateTaskRequest) -> dict:
             body.task,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
 @router.get("/tasks", response_model=list[TaskItem])
@@ -607,7 +613,10 @@ def list_tasks() -> list[dict]:
 
 @router.get("/tasks/{task_id}", response_model=TaskItem)
 def get_task(task_id: str) -> dict:
-    return manager.get_task(task_id)
+    try:
+        return manager.get_task(task_id)
+    except SourceError as exc:
+        raise ApiError(404, str(exc), ErrorCode.NOT_FOUND) from exc
 
 
 @router.post("/tasks/{task_id}/pause")
@@ -627,7 +636,11 @@ def cancel_task(task_id: str) -> dict:
 
 @router.delete("/tasks/{task_id}")
 def delete_task(task_id: str) -> dict:
-    return manager.delete_task(task_id)
+    try:
+        return manager.delete_task(task_id)
+    except SourceError as exc:
+        # 保持旧状态码（400）：调用方可能是按状态码分支的
+        raise ApiError(400, str(exc), ErrorCode.INVALID_REQUEST) from exc
 
 
 # ---------------- 本地模型库 ----------------
@@ -729,7 +742,7 @@ def library_gpu() -> dict:
     return gpu_snapshot()
 
 
-@router.get("/library/facets")
+@router.get("/library/facets", response_model=LibraryFacets)
 def library_facets() -> dict:
     """筛选面板用的分面：存放类型 / 任务类型 / 发布方 / 来源，各带条数与占用体积。
 
@@ -788,7 +801,7 @@ def _library_item(model_id: str) -> dict:
 
     rows = query("SELECT * FROM library_models WHERE id=?", (model_id,))
     if not rows:
-        raise HTTPException(status_code=404, detail="模型不存在")
+        raise ApiError(404, "模型不存在", ErrorCode.NOT_FOUND)
     item = rows[0]
     item["tags"] = _json.loads(item.get("tags") or "[]")
     item["files"] = query("SELECT id, path, size FROM library_files WHERE model_id=? ORDER BY path", (model_id,))
@@ -799,7 +812,7 @@ def _library_item(model_id: str) -> dict:
 def patch_library(model_id: str, body: LibraryPatch) -> dict:
     rows = query("SELECT * FROM library_models WHERE id=?", (model_id,))
     if not rows:
-        raise HTTPException(status_code=404, detail="模型不存在")
+        raise ApiError(404, "模型不存在", ErrorCode.NOT_FOUND)
     import json as _json
 
     fields, params = [], []
@@ -823,7 +836,7 @@ def delete_library(model_id: str) -> dict:
 def scan_library(body: ScanRequest) -> dict:
     root = Path(body.path)
     if not root.is_dir():
-        raise HTTPException(status_code=400, detail=f"目录不存在: {body.path}")
+        raise ApiError(400, f"目录不存在: {body.path}", ErrorCode.FILESYSTEM_ERROR)
     created = []
     matched = 0
     for child in sorted(root.iterdir()):
@@ -885,10 +898,10 @@ def scan_library(body: ScanRequest) -> dict:
 def open_library(model_id: str) -> dict:
     rows = query("SELECT local_path FROM library_models WHERE id=?", (model_id,))
     if not rows:
-        raise HTTPException(status_code=404, detail="模型不存在")
+        raise ApiError(404, "模型不存在", ErrorCode.NOT_FOUND)
     path = Path(rows[0]["local_path"])
     if not path.exists():
-        raise HTTPException(status_code=400, detail=f"路径已不存在: {path}")
+        raise ApiError(400, f"路径已不存在: {path}", ErrorCode.FILESYSTEM_ERROR)
     if os.name == "nt":
         os.startfile(str(path))  # noqa: S606
     else:

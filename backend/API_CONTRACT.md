@@ -39,17 +39,45 @@ cd tests && npm run api:types:check
 | `GET /api/library` | `list[LibraryItem]` | 本地模型库 |
 | `GET /api/probe` | `ProbeResponse` | 源探针四态与通路 |
 | `GET /api/device` | `DeviceInfo` | 硬件与下载目录余量 |
+| `POST /api/resolve` | `ResolveResponse` | 仓库解析结果与逐文件 `folder` |
+| `GET /api/library/facets` | `LibraryFacets` | 模型库筛选分面（含 `allFolders` / `allTasks`） |
+| `GET /api/nodes` | `NodeSearchResponse` | 节点发现列表、分面与 `installed_count` |
+| `GET /api/nodes/stats` | `NodeStatsResponse` | 节点清单 / 已装 / 核心节点计数 |
+| `GET /api/nodes/missing` | `NodeMissingResponse` | 工作流缺节点报告与可安装扩展 |
 
-历史字段较多的对象（任务、工作流、节点包）使用 `extra="allow"`：
+历史字段较多的对象（任务、工作流、节点包、节点清单条目）使用 `extra="allow"`：
 新增字段不会被过滤，但上表里的必填字段不能改名或删除。
 
 ## 错误信封
 
-所有 API 错误统一为：
+错误响应至少包含 `detail`（人类可读的中文原因）。迁移过的端点额外带一个
+稳定的机器可读 `code`：
 
 ```json
-{ "detail": "人类可读的中文原因" }
+{ "detail": "未配置的下载源: nope", "code": "invalid_source" }
 ```
+
+仍使用普通 `HTTPException` / 全局 `SourceError` 处理的旧端点保持原样，只有
+`detail`，不会凭空多出 `code`：
+
+```json
+{ "detail": "仓库不存在" }
+```
+
+### 错误码
+
+| `code` | 典型状态码 | 语义 |
+|---|---|---|
+| `invalid_source` | 400 | 下载源未配置 / 不可识别 |
+| `invalid_request` | 400 | 参数不合法（格式、状态不允许等） |
+| `not_found` | 404 | 模型 / 图片 / 节点任务 / 下载任务不存在 |
+| `conflict` | 409 | 并发冲突，例如工作流 `mtime` 已变化 |
+| `forbidden` | 403 | 路径或目录越界 |
+| `source_unavailable` | 503 | 节点清单、发现源等外部依赖不可达 |
+| `filesystem_error` | 500 / 400 | 本机文件系统错误（改名失败、路径已消失等） |
+
+错误码定义在 `backend/app/api/errors.py`；新增端点抛 `ApiError`，不要自己拼
+`{"code": ...}`。没迁移的端点会集中在下面这一节跟踪。
 
 | 状态码 | 语义 | 触发场景 |
 |---|---|---|
@@ -62,6 +90,19 @@ cd tests && npm run api:types:check
 
 `SourceError` 由全局处理器统一转成 `400`；新增端点如果抛它，不要再手动包一层
 不同状态码。
+
+### 仍只返回 `detail` 的端点（待迁移）
+
+- 工作流：`/api/workflows/resolve`、`/api/workflows/local/*`、`/api/workflows/groups*`、
+  `/api/workflows/covers/*`、`/api/workflows/import`
+- 封面代理：`/api/cover`
+- `comfy` 路由（`backend/app/comfy/api.py`）全部仍是普通 `HTTPException`
+
+## 错误处理器
+
+`ApiError`（`backend/app/api/errors.py`）由 `backend/app/main.py` 的
+`api_error_handler` 渲染成 `{"detail", "code"}`；`HTTPException` 与 `SourceError`
+沿用 FastAPI / 现有处理器，只输出 `{"detail"}`。
 
 ## 不放进 OpenAPI 的字段
 

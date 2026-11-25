@@ -245,3 +245,135 @@ class DeviceInfo(BaseModel):
     gpu: GpuInfo | None = None
     save_dir: str = ""
     save_disk: dict = Field(default_factory=dict)
+
+
+class ResolveFile(BaseModel):
+    """仓库里的一个文件；folder 是后端算出的建议落盘目录。"""
+
+    model_config = ConfigDict(extra="allow")
+
+    path: str
+    size: int = 0
+    candidates: list[str] = Field(default_factory=list)
+    folder: str = ""
+
+
+class ResolveResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    repo_id: str
+    display_name: str = ""
+    revision: str = ""
+    source: str
+    files: list[ResolveFile] = Field(default_factory=list)
+    target_folder: str = ""
+
+
+class LibraryFacet(BaseModel):
+    """筛选面板的一个分面桶：条数与占用体积。"""
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    label: str = ""
+    count: int = 0
+    sizeText: str = ""
+
+
+class LibraryFacets(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    folder: list[LibraryFacet] = Field(default_factory=list)
+    task: list[LibraryFacet] = Field(default_factory=list)
+    source: list[LibraryFacet] = Field(default_factory=list)
+    publisher: list[LibraryFacet] = Field(default_factory=list)
+    allFolders: list[FolderOption] = Field(default_factory=list)
+    allTasks: list[FolderOption] = Field(default_factory=list)
+
+
+class NodeFacet(BaseModel):
+    id: str
+    label: str = ""
+    count: int = 0
+
+
+class NodeCatalogItem(BaseModel):
+    """节点清单里的一条扩展；`installed` 只在搜索结果里补上。"""
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    name: str
+    author: str = ""
+    repo: str = ""
+    description: str = ""
+    category: str = "utility"
+    tags: list[str] = Field(default_factory=list)
+    nodes: list[str] = Field(default_factory=list)
+    node_count: int = 0
+    install_type: str = ""
+    installable: bool = False
+    installed: bool = False
+
+
+class NodeSearchResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    items: list[NodeCatalogItem] = Field(default_factory=list)
+    total: int = 0
+    done: bool = False
+    errors: dict[str, str] = Field(default_factory=dict)
+    sorts: list[str] = Field(default_factory=list)
+    categories: list[NodeFacet] = Field(default_factory=list)
+    category: str = ""
+    installed_count: int = 0
+
+
+class NodeStatsResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    catalog: int = 0
+    installed: int = 0
+    disabled: int = 0
+    node_classes: int = 0
+    core_nodes: int = 0
+    dir: str = ""
+    runtime: str = ""
+
+
+class NodeMissingProvider(BaseModel):
+    """一个能补上缺口的扩展；`files` / `covers` 是聚合后的统计。"""
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    name: str = ""
+    author: str = ""
+    repo: str = ""
+    node_count: int = 0
+    installable: bool = False
+    covers: list[str] = Field(default_factory=list)
+    files: int = 0
+
+
+class NodeMissingWorkflow(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    name: str
+    file: str = ""
+    path: str = ""
+    used: int = 0
+    missing: int = 0
+    providers: list[NodeMissingProvider] = Field(default_factory=list)
+    unknown: list[str] = Field(default_factory=list)
+
+
+class NodeMissingResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    workflows: list[NodeMissingWorkflow] = Field(default_factory=list)
+    providers: list[NodeMissingProvider] = Field(default_factory=list)
+    scanned: int = 0
+    missing_files: int = 0
+    core_nodes: int = 0
+    installed_nodes: int = 0

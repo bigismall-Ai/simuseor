@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import type { Observable } from 'rxjs';
+import type { FolderOption, GpuInfo, HealthResponse } from './api-contract';
 import type {
   AppSettings,
   ComfyEnv,
@@ -42,8 +43,8 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly base = '/api';
 
-  health(): Observable<{ status: string; web: boolean }> {
-    return this.http.get<{ status: string; web: boolean }>(`${this.base}/health`);
+  health(): Observable<HealthResponse> {
+    return this.http.get<HealthResponse>(`${this.base}/health`);
   }
 
   getSettings(): Observable<AppSettings> {
@@ -321,8 +322,8 @@ export class ApiService {
   }
 
   /** 本机独显显存 —— 权重压力标志的分母 */
-  libraryGpu(): Observable<{ name: string; vramMb: number; vramGb: number; vramText: string }> {
-    return this.http.get<{ name: string; vramMb: number; vramGb: number; vramText: string }>(
+  libraryGpu(): Observable<GpuInfo> {
+    return this.http.get<GpuInfo>(
       `${this.base}/library/gpu`
     );
   }
@@ -492,8 +493,8 @@ export class ApiService {
     );
   }
 
-  folders(): Observable<{ id: string; label: string }[]> {
-    return this.http.get<{ id: string; label: string }[]>(`${this.base}/folders`);
+  folders(): Observable<FolderOption[]> {
+    return this.http.get<FolderOption[]>(`${this.base}/folders`);
   }
 
   nodeStats(): Observable<NodeStats> {

@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
 from . import hot_board
+from .api.errors import ApiError
 from .api.routes import router, warm_discover, warm_workflows
 from .comfy.api import router as comfy_router
 from .comfy.probe import warm_hardware
@@ -67,8 +68,15 @@ app.include_router(router)
 app.include_router(comfy_router)
 
 
+@app.exception_handler(ApiError)
+async def api_error_handler(_request, exc: ApiError):
+    """带错误码的异常：detail 保文案，code 给程序判断。"""
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail, "code": exc.code})
+
+
 @app.exception_handler(SourceError)
 async def source_error_handler(_request, exc: SourceError):
+    # 旧路径保持不带 code，兼容只读 detail 的客户端
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 DIST = get_web_dist()
