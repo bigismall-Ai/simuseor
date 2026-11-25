@@ -57,14 +57,14 @@ export interface SvgStats {
   texts: number;
   unsafe: number;
   viewBox: string | null;
-  tags: Array<{ tag: string; count: number }>;
+  tags: { tag: string; count: number }[];
 }
 
 export interface DigestNode {
   tag: string;
   id: string | null;
   classes: string[];
-  attrs: Array<[string, string]>;
+  attrs: [string, string][];
   childCount: number;
   shownChildren: number;
   note: string;
@@ -474,8 +474,8 @@ function escapeText(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function rootExtras(root: Element): Array<[string, string]> {
-  const extras: Array<[string, string]> = [];
+function rootExtras(root: Element): [string, string][] {
+  const extras: [string, string][] = [];
   if (!root.hasAttribute('xmlns')) extras.push(['xmlns', SVG_NS]);
   const usesXlink = allElements(root).some((el) =>
     Array.from(el.attributes).some((a) => a.name.startsWith('xlink:')),
@@ -487,9 +487,9 @@ function rootExtras(root: Element): Array<[string, string]> {
 function attributesOf(
   el: Element,
   options: CanonicalOptions,
-  extras: Array<[string, string]> = [],
+  extras: [string, string][] = [],
 ): string {
-  const entries: Array<[string, string]> = [];
+  const entries: [string, string][] = [];
   for (const attr of Array.from(el.attributes)) {
     entries.push([attr.name, normalizeAttrValue(attr.name, attr.value, options)]);
   }
@@ -521,7 +521,7 @@ function serializeElement(
   options: CanonicalOptions,
   depth: number,
   out: string[],
-  extras: Array<[string, string]> = [],
+  extras: [string, string][] = [],
 ): void {
   const pad = options.indent.repeat(depth);
   const open = `${pad}<${el.tagName}${attributesOf(el, options, extras)}`;
@@ -704,7 +704,7 @@ export function buildDigest(el: Element, depth = 0, maxDepth = 4, maxChildren = 
   const tag = el.localName;
   const id = el.getAttribute('id');
   const classes = (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean);
-  const attrs: Array<[string, string]> = [];
+  const attrs: [string, string][] = [];
   for (const name of DIGEST_KEY_ATTRS) {
     const v = el.getAttribute(name);
     if (v !== null) attrs.push([name, truncate(v, 48)]);

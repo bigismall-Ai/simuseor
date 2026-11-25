@@ -91,7 +91,7 @@ export interface NodeDef {
   title: string;
   category: string;
   inputs: DefInput[];
-  outputs: Array<{ name: string; type: string }>;
+  outputs: { name: string; type: string }[];
 }
 
 export type DefMap = Record<string, NodeDef>;
@@ -805,7 +805,7 @@ export function removeNode(graph: WorkflowGraph, id: number): void {
 
 /* ---------------------------------------------------------------- 排版 */
 
-export function visibleInputs(node: GraphNode): Array<{ input: GraphInput; index: number }> {
+export function visibleInputs(node: GraphNode): { input: GraphInput; index: number }[] {
   return node.inputs
     .map((input, index) => ({ input, index }))
     .filter((row) => !row.input.widget);

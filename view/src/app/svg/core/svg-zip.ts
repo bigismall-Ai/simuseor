@@ -24,8 +24,8 @@ const CRC_TABLE = (() => {
 
 export function crc32(data: Uint8Array): number {
   let crc = 0xffffffff;
-  for (let i = 0; i < data.length; i += 1) {
-    crc = CRC_TABLE[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+  for (const byte of data) {
+    crc = CRC_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
   }
   return (crc ^ 0xffffffff) >>> 0;
 }
@@ -50,7 +50,7 @@ class ByteWriter {
   }
 
   bytes(data: Uint8Array): void {
-    for (let i = 0; i < data.length; i += 1) this.parts.push(data[i]);
+    for (const byte of data) this.parts.push(byte);
   }
 
   finish(): Uint8Array {
@@ -66,7 +66,7 @@ export function createZip(entries: ZipEntry[]): Blob {
   const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
 
   const writer = new ByteWriter();
-  const central: Array<{ name: Uint8Array; crc: number; size: number; offset: number }> = [];
+  const central: { name: Uint8Array; crc: number; size: number; offset: number }[] = [];
 
   for (const entry of entries) {
     const name = encoder.encode(entry.name);

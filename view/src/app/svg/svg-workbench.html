@@ -452,6 +452,9 @@
                   (click)="selectLayer(row)"
                 >
                   @if (row.hasChildren) {
+                    <!-- 箭头在 <button> 行里，不能再套可聚焦控件；展开/收起只作鼠标便利，
+                         键盘用户走行按钮 + 「展开 / 收起」批量按钮 -->
+                    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
                     <span
                       class="layer-caret"
                       (click)="toggleLayer(row, $event)"

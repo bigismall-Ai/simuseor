@@ -29,6 +29,8 @@ node_modules/
 web/dist/
 web/dist-tmp/
 web/.angular/
+view/dist/
+view/.angular/
 *.tsbuildinfo
 # 构建窗口期挪 dist 的临时位置
 web/dist-old/

@@ -352,6 +352,8 @@ export class NodeCardComponent {
   readonly busy = input(false);
 
   readonly install = output<void>();
+  // 卡片 API 沿用 toggle / remove；模板里只有 (toggle) / (remove) 绑定，改名会波及调用点。
+  // eslint-disable-next-line @angular-eslint/no-output-native
   readonly toggle = output<void>();
   readonly remove = output<void>();
 

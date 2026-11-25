@@ -231,7 +231,7 @@ interface CssRule {
   classes: string[];
   spec: number;
   order: number;
-  props: Array<[string, string]>;
+  props: [string, string][];
 }
 
 interface CssParse {
@@ -264,7 +264,7 @@ function parseCss(css: string): CssParse {
       continue;
     }
 
-    const props: Array<[string, string]> = [];
+    const props: [string, string][] = [];
     for (const decl of body.split(';')) {
       const part = decl.trim();
       if (!part) continue;
@@ -384,7 +384,7 @@ function expandStyleAttrs(root: Element): PassOutcome {
       notes.push('保留 style：元素同时带 class，搬移会改变优先级');
       continue;
     }
-    const props: Array<[string, string]> = [];
+    const props: [string, string][] = [];
     let unsupported = false;
     for (const decl of raw.split(';')) {
       const part = decl.trim();
@@ -676,7 +676,7 @@ function assignIds(root: Element): PassOutcome {
     if (!ID_TARGETS.has(el.localName)) continue;
     const tag = el.localName;
     let n = counters.get(tag) ?? 0;
-    let id = '';
+    let id: string;
     do {
       n += 1;
       id = `${tag}-${n}`;
@@ -786,26 +786,6 @@ function elementSignature(el: Element): string {
   return `${el.localName}:${attrs}|${children}`;
 }
 
-function slugName(raw: string | null): string {
-  if (!raw) return '';
-  const trimmed = raw.trim();
-  const slug = trimmed
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  if (/^[a-z][a-z0-9-]*$/.test(slug) && slug.length >= 2) return slug;
-  const numeric = /(\d+)\s*$/.exec(trimmed)?.[1];
-  return numeric ? `layer-${numeric}` : '';
-}
-
-function stableBase(el: Element): string {
-  const named = slugName(el.getAttribute('data-name'));
-  if (named) return named;
-  return `${HASH_PREFIX[el.localName] ?? el.localName.toLowerCase()}-${shortHash(elementSignature(el))}`;
-}
-
 /** 把随机/位置 id 换成语义名或几何哈希，并改写所有引用。 */
 function stableIds(root: Element): PassOutcome {
   const elements = allElements(root);
@@ -823,7 +803,7 @@ function stableIds(root: Element): PassOutcome {
     if (id && !unstable(el)) used.add(id);
   }
 
-  const plans: Array<{ el: Element; old: string | null; next: string }> = [];
+  const plans: { el: Element; old: string | null; next: string }[] = [];
   const reserve = (el: Element, base?: string) => {
     const prefix = HASH_PREFIX[el.localName] ?? el.localName.toLowerCase();
     let id = base || `${prefix}-${shortHash(elementSignature(el))}`;

@@ -21,7 +21,7 @@ export interface ContextOptions {
     tag: string;
     id: string | null;
     selector: string;
-    attrs: Array<[string, string]>;
+    attrs: [string, string][];
   } | null;
   constraints?: {
     palette?: string[];

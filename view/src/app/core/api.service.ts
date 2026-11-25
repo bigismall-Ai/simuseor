@@ -156,7 +156,7 @@ export class ApiService {
 
   /** 批量取远程封面。本地自带出图的条目也传（用 has_local 标出），后端只在钉过图时才覆盖。 */
   workflowCovers(
-    items: Array<{ key: string; name: string; model: string; has_local?: boolean }>,
+    items: { key: string; name: string; model: string; has_local?: boolean }[],
   ): Observable<{ covers: Record<string, string>; pinned?: string[]; custom?: string[] }> {
     return this.http.post<{ covers: Record<string, string>; pinned?: string[]; custom?: string[] }>(
       `${this.base}/workflows/covers`,
@@ -218,14 +218,14 @@ export class ApiService {
     return this.http.post<{ key: string; pinned: boolean }>(`${this.base}/workflows/covers/reset`, { key });
   }
 
-  listWorkflowGroups(): Observable<{ groups: Array<{ name: string; count: number }>; defined: string[] }> {
-    return this.http.get<{ groups: Array<{ name: string; count: number }>; defined: string[] }>(
+  listWorkflowGroups(): Observable<{ groups: { name: string; count: number }[]; defined: string[] }> {
+    return this.http.get<{ groups: { name: string; count: number }[]; defined: string[] }>(
       `${this.base}/workflows/groups`,
     );
   }
 
-  createWorkflowGroup(name: string): Observable<{ groups: Array<{ name: string; count: number }>; defined: string[] }> {
-    return this.http.post<{ groups: Array<{ name: string; count: number }>; defined: string[] }>(
+  createWorkflowGroup(name: string): Observable<{ groups: { name: string; count: number }[]; defined: string[] }> {
+    return this.http.post<{ groups: { name: string; count: number }[]; defined: string[] }>(
       `${this.base}/workflows/groups`,
       { name },
     );

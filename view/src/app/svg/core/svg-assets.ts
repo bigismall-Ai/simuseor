@@ -13,7 +13,7 @@ export interface SvgAsset {
 }
 
 export interface SvgIndex {
-  groups: Array<{ id: string; label: string }>;
+  groups: { id: string; label: string }[];
   assets: SvgAsset[];
 }
 
