@@ -69,6 +69,7 @@
 | reduced-motion 抑制动效 | 组件内部统一处理 |
 | 面包屑末项 `aria-current="page"` | `ui-breadcrumb`（12.5px、`›` 分隔、长标签中间截断） |
 | 内容区固定最大宽与 gutter | `ui-page`（`--layout-content-max` / `--layout-gutter`，可 `wide`） |
+| 外壳装配：面包屑 / 内容区 / 侧栏搜索 | VIS 外壳直接组合 `ui-breadcrumb` + `ui-page` + `ui-search`，条目与搜索数据都来自 `NAV_TREE`；不再有 `app-page-crumb` 与自算 `.page-shell` 留白 |
 
 ## 有意差异
 

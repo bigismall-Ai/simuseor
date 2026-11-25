@@ -53,7 +53,7 @@
 - 说明性文字集中在页面最后一块，不在各区块之间分散
 - 区块内容直接铺在页面；表格/列表用 `.list-card`，圆角用 `--ui-radius-list`
 - 文字说明用普通段落，不要用卡片包；卡片最多两层
-- VIS 页面背景、侧栏、主题切换、收起/展开保持现有实现
+- VIS 页面背景、侧栏、主题切换、收起/展开保持现有实现；侧栏内部件改为复用共享组件（见「VIS 目录」）
 
 ## 尺寸与断点
 
@@ -133,12 +133,14 @@
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致
 - Toast 的自动收起走 `ui-toast` 的 `duration`（默认 0 = 不关；常规 3000、错误 6000），页面不再自己 `setTimeout`
 - 代码面板两套主题都是深色底：静态样例一律用 `ui-code`（标题 / 语言 / `code` 输入，长片段放组件字段，不塞进模板），页面不再手写 `<pre>`；必须保留自定义标记的语法示意块要在代码旁写明为什么不是 `ui-code`；快捷键提示只用 `ui-kbd`（`keys` 输入或投影内容）
-- 搜索用 `ui-search`：只做触发条 + 浮层，数据由页面给、选中结果走 `picked`（`route` 只是随附字段，组件不跳转）
+- 搜索用 `ui-search`：只做触发条 + 浮层，数据由页面给、选中结果走 `picked`（`route` 只是随附字段，组件不跳转）；外壳的搜索取 `NAV_TREE`，由 `Router.navigateByUrl` 跳转
 - 三态规则：首屏首次加载用 `ui-skeleton`；已有内容局部刷新用进度条 / 行内提示；无数据用 `ui-empty`；失败用 `ui-notice error`
 
 ## VIS 目录
 
 - `src/app/vis/`：视觉设计页；导航唯一数据源是 `vis-nav.ts` 的 `NAV_TREE`（递归树 + `subheader` + 状态 chip），外壳用 `ui-nav-tree` 渲染，不再手写导航项
+- **VIS 外壳只做装配**：面包屑用 `ui-breadcrumb`（条目由 `NAV_TREE` 祖先链派生，当前页末项不带路由）、内容区用 `ui-page`（宽度 / gutter / 上下留白不再由 `vis-shell.scss` 自算）、侧栏搜索用 `ui-search`（数据同样来自 `NAV_TREE`，`picked` 由外壳 `navigateByUrl`）；`page-crumb.ts` 仅作兼容保留，外壳不再引用
+- 外壳的 `framed` / `bare` 仍表示「整幅画布」：`ui-page` 用 `wide` + 零 gutter + `flushTop` / `flushBottom`，内缩交给 `.page-frame` 自己控制
 - `src/app/vis/prototypes/`：产品原型，分「组件」（如卡片）与「页面」（如资源管理器）两组
 - `src/app/ui/`：共享组件与 Material 入口
 - `src/app/pages/`：将来的产品页面
