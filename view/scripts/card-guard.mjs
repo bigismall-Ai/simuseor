@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { styleGuard } from './style-guard.mjs';
+import { classGuard } from './class-guard.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const uiDir = path.join(root, 'src/app/ui');
@@ -238,6 +239,7 @@ for (const file of walk(visDir)) {
   });
 }
 
+violations.push(...classGuard(root));
 violations.push(...styleGuard(root));
 
 if (violations.length > 0) {
