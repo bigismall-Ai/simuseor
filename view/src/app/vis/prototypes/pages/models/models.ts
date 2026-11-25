@@ -7,7 +7,6 @@ import { UiButtonComponent } from '../../../../ui/button';
 import { EmptyComponent } from '../../../../ui/empty';
 import { FilterBarComponent } from '../../../../ui/filter-bar';
 import { GridComponent } from '../../../../ui/grid';
-import { LibraryCardComponent } from '../../../../ui/library-card';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ModelCardComponent } from '../../../../ui/model-card';
 import { PageHeaderComponent } from '../../../../ui/page-header';
@@ -469,7 +468,6 @@ function fmtWhen(iso: string): string {
     TableComponent,
     UiButtonComponent,
     UiMaterialModule,
-    LibraryCardComponent,
     ModelCardComponent,
   ],
   styleUrl: './models.scss',
@@ -526,8 +524,9 @@ function fmtWhen(iso: string): string {
               @if (scope() === 'library') {
                 <ui-grid>
                   @for (row of libraryShown(); track row.key) {
-                    <md-library-card
-                      [model]="row.model"
+                    <md-model-card
+                      mode="library"
+                      [item]="row.model"
                       [cover]="$index === 0 ? '/samples/shot-2.jpg' : ''"
                       [vramGb]="16"
                     />
@@ -537,9 +536,9 @@ function fmtWhen(iso: string): string {
                 <ui-grid>
                   @for (row of discoverShown(); track row.key) {
                     <md-model-card
+                      mode="discover"
                       [items]="[row.item]"
                       [cover]="$index === 0 ? '/samples/shot-4.jpg' : ''"
-                      [inLibrary]="row.inLibrary"
                     />
                   }
                 </ui-grid>

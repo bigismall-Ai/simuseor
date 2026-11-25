@@ -180,6 +180,9 @@ for (const file of fs.readdirSync(uiDir).filter((name) => name.endsWith('.ts')))
 // 2) registry 的 demoFile 必须存在并真的渲染该组件；page 必须是可访问路由
 const routesText = fs.readFileSync(path.join(visDir, 'vis.routes.ts'), 'utf8');
 for (const entry of entries) {
+  // 兼容别名（如 md-library-card）只保留选择器给外部 / E2E 用，
+  // 不再在产品与 VIS 页面出现，不要求展示页与样张。
+  if (entry.deprecated) continue;
   if (!entry.demoFile) {
     warnings.push(`${entry.selector}  未指定展示页（demoFile 为空）`);
   } else {

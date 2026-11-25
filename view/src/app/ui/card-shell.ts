@@ -37,7 +37,7 @@ import { CardSlotComponent } from './card-slot';
   imports: [CardBodyComponent, CardKebabComponent, CardMenuComponent, CardSlotComponent],
   styleUrls: ['./asset-card.css'],
   template: `
-    <article class="acard" [class.on-shot]="onShot()">
+    <article class="acard" [class.on-shot]="onShot()" [class.is-broken]="broken()">
       <!-- ① 封面：卡片投影自己的铺图 / 纹样 / 错误层 -->
       <div class="acard-media">
         <ng-content select="[cardMedia]" />
@@ -95,6 +95,8 @@ import { CardSlotComponent } from './card-slot';
 })
 export class CardShellComponent {
   readonly onShot = input(false);
+  /** 权重损坏 / 缺失：外壳给厂牌位一块实底，封面让位给警示层 */
+  readonly broken = input(false);
   readonly title = input('');
   readonly titleClass = input('');
   readonly menuItems = input<CardMenuItem[]>([]);
