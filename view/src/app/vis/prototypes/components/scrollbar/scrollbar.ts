@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
 import { LabelComponent } from '../../../../ui/label';
+import { RulesComponent } from '../../../../ui/rules';
+import { TableComponent } from '../../../../ui/table';
 
 /** 原型组件：滚动条。导航 / 页面 / 表格横向共用一套样式，只改宽度。 */
 @Component({
   selector: 'app-proto-scrollbar',
   standalone: true,
   imports: [
-    LabelComponent],
+    LabelComponent,
+    RulesComponent,
+    TableComponent,
+  ],
   styleUrl: './scrollbar.scss',
   template: `
     <ui-label>滚动条</ui-label>
@@ -39,34 +44,43 @@ import { LabelComponent } from '../../../../ui/label';
       </section>
 
       <section class="sb-case span">
-        <p class="case-label">表格 · 横向 10px</p>
-        <div class="sb-table ui-scrollbar" aria-label="横向滚动示例">
-          <div class="table-inner">
-            <div class="table-row head">
-              @for (col of columns; track col) {
-                <span>{{ col }}</span>
+        <p class="case-label">表格 · 横向 10px · ui-table</p>
+        <ui-table>
+          <table class="scroll-demo">
+            <thead>
+              <tr>
+                @for (col of columns; track col) {
+                  <th scope="col">{{ col }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of pageRows; track row.name) {
+                <tr>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.source }}</td>
+                  <td class="mono">{{ row.size }}</td>
+                  <td>{{ row.status }}</td>
+                  <td class="mono">2026-11-20</td>
+                  <td>{{ row.source }}</td>
+                  <td class="mono">sha256:8f3c…a1d2</td>
+                  <td class="mono">models/diffusion_models</td>
+                </tr>
               }
-            </div>
-            @for (row of pageRows; track row) {
-              <div class="table-row">
-                <span>{{ row.name }}</span><span>{{ row.source }}</span><span>{{ row.size }}</span>
-                <span>{{ row.status }}</span><span>2026-11-20</span><span>{{ row.source }}</span>
-                <span>sha256:8f3c…a1d2</span><span>models/diffusion_models</span>
-              </div>
-            }
-          </div>
-        </div>
+            </tbody>
+          </table>
+        </ui-table>
       </section>
     </div>
 
     <ui-label>约束</ui-label>
-    <ul class="sb-rules">
+    <ui-rules>
       <li><b>一套样式</b>：页面、导航和横向滚动都用 <code>.ui-scrollbar</code>，只改 <code>--scrollbar-size</code>。</li>
-      <li><b>滚动条属于容器</b>：导航 / 页面保持全宽、无圆角卡框；横向滚动放在表格卡片里。</li>
+      <li><b>滚动条属于容器</b>：导航 / 页面保持全宽、无圆角卡框；横向滚动交给 <code>ui-table</code>。</li>
       <li><b>导航</b> 6px、收起 4px；<b>页面</b> 10px；都贴容器右边缘。</li>
       <li><b>滑块</b>用 <code>--scrollbar-thumb</code>，悬停加深；轨道透明。</li>
       <li><b>Firefox</b> 走 <code>scrollbar-width / color</code>，Chromium / Safari 走 WebKit 伪元素。</li>
-    </ul>
+    </ui-rules>
   `,
 })
 export class ProtoScrollbarComponent {
