@@ -11,6 +11,7 @@ import type { NavRowItem } from '../ui/nav-tree';
 import { PageComponent } from '../ui/page';
 import { SearchComponent } from '../ui/search';
 import type { SearchItem } from '../ui/search';
+import { apiRoute, categoryLabel, REGISTRY_ENTRIES } from './registry-data';
 import { NAV_TREE, flattenNav, navPathFor } from './vis-nav';
 import type { NavNode } from './vis-nav';
 
@@ -154,6 +155,17 @@ export class VisShellComponent {
       }
     };
     walk(NAV_TREE, []);
+
+    // 组件也进搜索：光搜页面名，输入 ui-button / toc 时一条都出不来。
+    for (const entry of REGISTRY_ENTRIES) {
+      if (entry.deprecated) continue;
+      items.push({
+        label: entry.name,
+        hint: `组件 · ${entry.selector} · ${categoryLabel(entry.category)}`,
+        route: apiRoute(entry.selector),
+      });
+    }
+
     return items;
   });
 

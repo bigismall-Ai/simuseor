@@ -59,14 +59,14 @@ let seq = 0;
     </button>
 
     @if (open()) {
-      <button
-        class="scrim"
-        type="button"
-        tabindex="-1"
-        aria-label="关闭搜索浮层"
-        (click)="close()"
-      ></button>
-      <div class="panel" role="dialog" aria-modal="false" [attr.aria-label]="label()" (keydown)="onKeydown($event)">
+      <dialog
+        #dlg
+        class="overlay"
+        [attr.aria-label]="label()"
+        (cancel)="onCancel($event)"
+        (mousedown)="onOverlayMouseDown($event)"
+      >
+      <div class="panel" tabindex="-1" (keydown)="onKeydown($event)">
         <div class="field">
           <ui-input
             ariaLabel="搜索内容"
@@ -78,7 +78,7 @@ let seq = 0;
         </div>
 
         @if (filtered().length) {
-          <ul class="rows" [id]="listId" role="listbox" [attr.aria-label]="label()">
+          <ul class="rows ui-scrollbar" [id]="listId" role="listbox" [attr.aria-label]="label()">
             @for (item of filtered(); track item.label + $index) {
               <li role="presentation">
                 <button
@@ -105,6 +105,7 @@ let seq = 0;
           <p class="none">没有匹配「{{ query() }}」的条目，换个关键词试试。</p>
         }
       </div>
+      </dialog>
     }
   `,
   styles: `
@@ -168,22 +169,31 @@ let seq = 0;
       flex: none;
     }
 
-    .scrim {
+    .overlay {
       position: fixed;
       inset: 0;
-      z-index: var(--ui-z-overlay);
-      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 12vh 0 0;
       border: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
       background: transparent;
-      cursor: default;
+      color: inherit;
+    }
+
+    .overlay::backdrop {
+      background: transparent;
     }
 
     .panel {
-      position: absolute;
-      top: calc(100% + var(--ui-space-2));
-      left: 0;
-      z-index: calc(var(--ui-z-overlay) + 1);
-      width: max(100%, min(var(--ui-search-max-w), 80vw));
+      position: relative;
+      z-index: calc(var(--ui-z-dialog) + 1);
+      width: min(var(--ui-search-max-w), 80vw);
       overflow: hidden;
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-card);
@@ -201,8 +211,12 @@ let seq = 0;
       max-height: 320px;
       margin: 0;
       padding: var(--ui-space-1);
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
       list-style: none;
+      /* 浮层里用更细的导航滚动条，不占满 10px 页面滚动条 */
+      --scrollbar-size: 6px;
     }
 
     .rows li {
@@ -281,13 +295,12 @@ let seq = 0;
         padding: 0;
       }
 
-      /* 窄窗浮层改为视口居中的搜索面板，避免贴边溢出 */
+      .overlay {
+        padding-top: 10vh;
+      }
+
       .panel {
-        position: fixed;
-        top: 15vh;
-        left: 50%;
         width: min(92vw, var(--ui-search-max-w));
-        transform: translateX(-50%);
       }
     }
 
@@ -328,6 +341,7 @@ export class SearchComponent {
   readonly listId = `search-list-${++seq}`;
 
   private readonly trigger = viewChild<ElementRef<HTMLButtonElement>>('trigger');
+  private readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('dlg');
   private readonly searchInput = viewChild(InputComponent);
   private readonly injector = inject(Injector);
 
@@ -338,11 +352,17 @@ export class SearchComponent {
       const previous = document.activeElement as HTMLElement | null;
       this.query.set('');
       this.cursor.set(0);
-      afterNextRender(() => this.searchInput()?.focus(), { injector: this.injector });
+      afterNextRender(() => {
+        const el = this.dialog()?.nativeElement;
+        if (el && !el.open) el.showModal();
+        this.searchInput()?.focus();
+      }, { injector: this.injector });
 
       onCleanup(() => {
         // 浮层 DOM 会在本帧结束后移除；等渲染完再把焦点还给触发条，
         // 否则刚聚焦的元素被销毁，焦点掉回 body。
+        const el = this.dialog()?.nativeElement;
+        if (el?.open) el.close();
         const target = this.trigger()?.nativeElement ?? previous;
         afterNextRender(() => target?.focus(), { injector: this.injector });
       });
@@ -369,6 +389,21 @@ export class SearchComponent {
 
   close(): void {
     this.open.set(false);
+  }
+
+  /**
+   * 点在面板外才关闭，点面板内部不关。
+   *
+   * 用 mousedown 而不是 click：按住选中文字再松开时 click 可能落在 overlay 上，
+   * 会把「选择文本」误判成「点空白」。mousedown 的 target 就是按下位置。
+   */
+  onOverlayMouseDown(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.close();
+  }
+
+  onCancel(event: Event): void {
+    event.preventDefault();
+    this.close();
   }
 
   onKeydown(event: KeyboardEvent): void {
