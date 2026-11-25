@@ -12,6 +12,7 @@ import { VisModalsComponent } from './vis-modals';
 import { VisOverviewComponent } from './vis-overview';
 import { VisPillsComponent } from './vis-pills';
 import { VisRadiusComponent } from './vis-radius';
+import { VisRegistryComponent } from './vis-registry';
 import { VisShellComponent } from './vis-shell';
 import { VisTablesComponent } from './vis-tables';
 import { ProtoCardsComponent } from './prototypes/cards';
@@ -49,6 +50,7 @@ export const VIS_ROUTES: Routes = [
       { path: 'pills', component: VisPillsComponent, title: 'VIS · 胶囊' },
       { path: 'empty', component: VisEmptyComponent, title: 'VIS · 空状态' },
       { path: 'tables', component: VisTablesComponent, title: 'VIS · 表格' },
+      { path: 'registry', component: VisRegistryComponent, title: 'VIS · 组件注册表' },
       { path: 'modals', component: VisModalsComponent, title: 'VIS · 模态框' },
       { path: 'cards', redirectTo: 'prototypes/components/cards', pathMatch: 'full' },
       { path: 'prototypes/cards', redirectTo: 'prototypes/components/cards', pathMatch: 'full' },

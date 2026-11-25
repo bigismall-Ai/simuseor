@@ -99,6 +99,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     key: 'tools',
     label: '工具',
-    links: [{ label: 'SVG 工作台', route: '/svg', icon: 'pen' }],
+    links: [{ label: '组件注册表', route: '/vis/registry', icon: 'library' },
+      { label: 'SVG 工作台', route: '/svg', icon: 'pen' }],
   },
 ];

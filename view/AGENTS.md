@@ -100,6 +100,18 @@
 - 卡片设计与五类卡片同页：`/vis/prototypes/components/cards`（5 类清单 + 收起/展开/菜单/身份行/token），新增卡片必须同时出现在这里并跑 `npm run cards:guard`
 - 厂牌位统一用 `ui-card-mark`：32 × 32，支持官方 logo / 反白 logo / 家族码 / 发布方缩写 / 工作流图标；不在卡片里手写标识块
 
+## 组件注册（Material 方式）
+
+参照 Angular Material 的组织方式：**一个视觉原语 = 一个组件 + 一套 token + 若干变体输入**，页面只组合，不重画。
+
+- **唯一登记表**：`src/app/ui/registry.json`。组件、选择器、分类、展示页、demo 文件、变体、尺寸、token 都写在这里；`/vis/registry` 页面直接读它渲染。
+- **先注册再使用**：`src/app/ui/*.ts` 里的组件如果没有登记，`npm run cards:guard` 直接失败；VIS 模板里出现未登记的 `<ui-*>` 也会失败。
+- **变体走输入**：`variant` / `size` / `density` / `tone` 用 `input()`，状态用 signal；不要用页面 class 改组件内部样式。内容差异用 `<ng-content>` 投影，不复制组件。
+- **展示页必须真实**：登记的 `demoFile` 必须实际渲染该选择器，`page` 必须是 `vis.routes.ts` 里存在的路由；只写文档不渲染样张不算。
+- **页面样式只做布局**：grid / flex / gap / 位置 / 断点；颜色、圆角、阴影、字号、控件高度一律用 token。VIS 样式里禁止写死 `border-radius: 16px / 24px / 28px`（卡 / 列表 / 面板级圆角必须走 `--ui-radius-*`）。
+- **新增组件的顺序**：① 写组件与 token → ② 在 VIS 加真实样张（含浅色 / 深色）→ ③ 登记 `registry.json` → ④ 跑 `node scripts/card-guard.mjs` 和 `npm run build` → ⑤ 页面才允许引用。
+- **待补展示页**：`ui-section` / `ui-panel` / `ui-field` 已在 registry 登记但还没有独立样张页，守卫会以「提示」列出，不阻塞构建。
+
 ## 共享组件（`src/app/ui/`）
 
 - 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-card-mark`、`app-cover-plate`

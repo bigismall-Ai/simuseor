@@ -1,0 +1,251 @@
+{
+  "components": [
+    {
+      "selector": "ui-button",
+      "name": "按钮",
+      "category": "action",
+      "page": "/vis/buttons",
+      "demoFile": "src/app/vis/vis-buttons.ts",
+      "variants": ["primary", "secondary", "ghost", "danger", "danger-ghost"],
+      "sizes": ["md", "sm", "xs", "icon"],
+      "tokens": ["--ui-h-*", "--ui-text-*", "--button-shadow"]
+    },
+    {
+      "selector": "ui-chip",
+      "name": "筛选胶囊",
+      "category": "action",
+      "page": "/vis/pills",
+      "demoFile": "src/app/vis/vis-pills.ts",
+      "variants": ["active", "disabled"],
+      "tokens": ["--ui-h-sm", "--ui-radius-pill"]
+    },
+    {
+      "selector": "ui-segmented",
+      "name": "分段控件",
+      "category": "action",
+      "page": "/vis/pills",
+      "demoFile": "src/app/vis/vis-pills.ts",
+      "sizes": ["24px"],
+      "tokens": ["--ui-h-compact", "--ui-radius-pill"]
+    },
+    {
+      "selector": "ui-source-chip",
+      "name": "来源胶囊",
+      "category": "action",
+      "page": "/vis/prototypes/components/feedback",
+      "demoFile": "src/app/vis/prototypes/components/feedback/feedback.ts",
+      "variants": ["ok", "degraded", "down"],
+      "tokens": ["--ui-h-md", "--button-shadow"]
+    },
+    {
+      "selector": "ui-badge",
+      "name": "状态徽标",
+      "category": "feedback",
+      "page": "/vis/pills",
+      "demoFile": "src/app/vis/vis-pills.ts",
+      "variants": ["gray", "blue", "green", "orange", "red"],
+      "sizes": ["md", "sm"],
+      "tokens": ["--badge-*-bg", "--badge-*-ink"]
+    },
+    {
+      "selector": "ui-toast",
+      "name": "Toast",
+      "category": "feedback",
+      "page": "/vis/prototypes/components/feedback",
+      "demoFile": "src/app/vis/prototypes/components/feedback/feedback.ts",
+      "variants": ["neutral", "ok", "error"],
+      "tokens": ["--ui-overlay", "--ui-shadow-md"]
+    },
+    {
+      "selector": "ui-notice",
+      "name": "行内提示",
+      "category": "feedback",
+      "page": "/vis/prototypes/components/notice",
+      "demoFile": "src/app/vis/prototypes/components/notice/notice.ts",
+      "variants": ["info", "ok", "warn", "error"],
+      "tokens": ["--ok", "--warn", "--err", "--accent"]
+    },
+    {
+      "selector": "ui-input",
+      "name": "文本输入",
+      "category": "form",
+      "page": "/vis/inputs",
+      "demoFile": "src/app/vis/vis-inputs.ts",
+      "variants": ["default", "error", "disabled"],
+      "sizes": ["md", "sm"],
+      "tokens": ["--ui-h-md", "--ui-h-sm", "--ui-radius"]
+    },
+    {
+      "selector": "ui-field",
+      "name": "字段容器",
+      "category": "form",
+      "page": "",
+      "demoFile": "",
+      "tokens": ["--ui-text-sm"]
+    },
+    {
+      "selector": "ui-table",
+      "name": "表格表面",
+      "category": "surface",
+      "page": "/vis/tables",
+      "demoFile": "src/app/vis/vis-tables.ts",
+      "tokens": ["--ui-radius-list", "--ui-shadow"]
+    },
+    {
+      "selector": "ui-list-card",
+      "name": "列表卡表面",
+      "category": "surface",
+      "page": "/vis/tables",
+      "demoFile": "src/app/vis/vis-tables.ts",
+      "tokens": ["--ui-radius-list", "--ui-shadow"]
+    },
+    {
+      "selector": "ui-dialog",
+      "name": "弹层",
+      "category": "surface",
+      "page": "/vis/modals",
+      "demoFile": "src/app/vis/vis-modals.ts",
+      "tokens": ["--ui-scrim", "--ui-z-dialog", "--ui-radius-lg"]
+    },
+    {
+      "selector": "ui-empty",
+      "name": "空状态",
+      "category": "surface",
+      "page": "/vis/empty",
+      "demoFile": "src/app/vis/vis-empty.ts",
+      "tokens": ["--ui-text-lg", "--ui-muted"]
+    },
+    {
+      "selector": "ui-skeleton",
+      "name": "骨架屏",
+      "category": "surface",
+      "page": "/vis/empty",
+      "demoFile": "src/app/vis/vis-empty.ts",
+      "tokens": ["--ui-panel-3"]
+    },
+    {
+      "selector": "ui-section",
+      "name": "区块",
+      "category": "shell",
+      "page": "",
+      "demoFile": "",
+      "tokens": ["--ui-radius-card", "--ui-space-5"]
+    },
+    {
+      "selector": "ui-panel",
+      "name": "面板",
+      "category": "shell",
+      "page": "",
+      "demoFile": "",
+      "tokens": ["--ui-radius-panel", "--ui-panel"]
+    },
+    {
+      "selector": "ui-page-header",
+      "name": "页头",
+      "category": "shell",
+      "page": "/vis/prototypes/components/page-header",
+      "demoFile": "src/app/vis/prototypes/components/page-header/page-header.ts",
+      "tokens": ["--ui-text-xl", "--ui-text-sm"]
+    },
+    {
+      "selector": "ui-card-mark",
+      "name": "厂牌位",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "sizes": ["32px"],
+      "tokens": ["--card-mark-size", "--card-mark-radius"]
+    },
+    {
+      "selector": "ui-card-body",
+      "name": "卡片信息区",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--card-title-size", "--card-scrim-ink"]
+    },
+    {
+      "selector": "ui-card-kebab",
+      "name": "卡片更多按钮",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--ui-card-solid", "--radius-sm"]
+    },
+    {
+      "selector": "ui-card-menu",
+      "name": "卡片菜单",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": ["default", "danger"],
+      "tokens": ["--ui-z-toast", "--ui-overlay"]
+    },
+    {
+      "selector": "ui-card-origin",
+      "name": "卡片原站入口",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--ui-card-solid", "--ui-text-xs"]
+    },
+    {
+      "selector": "app-cover-plate",
+      "name": "封面铭牌",
+      "category": "card",
+      "page": "/vis/cover",
+      "demoFile": "src/app/vis/vis-cover.ts",
+      "variants": ["card", "wide", "mini"],
+      "tokens": ["--plate-bg", "--plate-mark"]
+    },
+    {
+      "selector": "md-library-card",
+      "name": "资产卡 · 本地模型",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--card-*"]
+    },
+    {
+      "selector": "md-model-card",
+      "name": "资产卡 · 发现模型",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--card-*"]
+    },
+    {
+      "selector": "app-workflow-card",
+      "name": "资产卡 · 本地工作流",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--card-*"]
+    },
+    {
+      "selector": "md-hub-card",
+      "name": "资产卡 · 发现工作流",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": ["--card-*"]
+    },
+    {
+      "selector": "md-node-card",
+      "name": "资产卡 · 节点",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": ["library", "discover"],
+      "tokens": ["--card-*"]
+    },
+    {
+      "selector": "ui-filter-bar",
+      "name": "列表筛选条",
+      "category": "shell",
+      "page": "/vis/prototypes/pages/models",
+      "demoFile": "src/app/vis/prototypes/pages/models/models.ts",
+      "tokens": ["--ui-h-sm", "--ui-z-sticky"]
+    }
+  ]
+}

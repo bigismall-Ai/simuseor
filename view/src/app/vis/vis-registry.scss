@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.registry th:nth-child(1) {
+  width: 150px;
+}
+
+.registry th:nth-child(2) {
+  width: 190px;
+}
+
+.registry th:nth-child(5) {
+  width: 250px;
+}
+
+.group-row td {
+  padding-top: 16px;
+  padding-bottom: 6px;
+  color: var(--ui-text);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: transparent;
+}
+
+.group-row:first-child td {
+  padding-top: 8px;
+}
+
+.page-link {
+  color: var(--ui-accent);
+  text-decoration: none;
+}
+
+.page-link:hover {
+  text-decoration: underline;
+}
+
+.page-link:focus-visible {
+  outline: 2px solid var(--ui-ring);
+  outline-offset: 2px;
+}
+
+.rules {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ui-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+
+.rules b {
+  color: var(--ui-text);
+}

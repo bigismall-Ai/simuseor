@@ -137,6 +137,82 @@ for (const file of walk(visDir)) {
   });
 }
 
+/* ---- 注册表检查：自定义视觉件必须先登记 ---- */
+
+const registry = JSON.parse(
+  fs.readFileSync(path.join(uiDir, 'registry.json'), 'utf8'),
+);
+const entries = registry.components ?? [];
+const registered = new Set(entries.map((entry) => entry.selector));
+const warnings = [];
+
+// 1) ui/ 下的每个组件都必须在 registry 登记（新增共享件不登记即失败）
+for (const file of fs.readdirSync(uiDir).filter((name) => name.endsWith('.ts'))) {
+  const full = path.join(uiDir, file);
+  const text = fs.readFileSync(full, 'utf8');
+  const selector = text.match(/selector:\s*'([^']+)'/)?.[1];
+  if (!selector) continue;
+  if (!registered.has(selector)) {
+    violations.push(
+      `${path.relative(root, full)}  组件未在 ui/registry.json 登记  ${selector}`,
+    );
+  }
+}
+
+// 2) registry 的 demoFile 必须存在并真的渲染该组件；page 必须是可访问路由
+const routesText = fs.readFileSync(path.join(visDir, 'vis.routes.ts'), 'utf8');
+for (const entry of entries) {
+  if (!entry.demoFile) {
+    warnings.push(`${entry.selector}  未指定展示页（demoFile 为空）`);
+  } else {
+    const demo = path.join(root, entry.demoFile);
+    if (!fs.existsSync(demo)) {
+      violations.push(`${entry.selector}  demoFile 不存在  ${entry.demoFile}`);
+    } else if (!new RegExp(`<${entry.selector}[\\s>/]`).test(fs.readFileSync(demo, 'utf8'))) {
+      violations.push(
+        `${entry.selector}  未在登记的 demoFile 中渲染  ${entry.demoFile}`,
+      );
+    }
+  }
+
+  if (!entry.page) {
+    warnings.push(`${entry.selector}  未指定展示页路由（page 为空）`);
+  } else {
+    const routePath = entry.page.replace(/^\/vis\/?/, '');
+    if (!routesText.includes(`path: '${routePath}'`)) {
+      violations.push(`${entry.selector}  展示页路由不存在  ${entry.page}`);
+    }
+  }
+}
+
+// 3) VIS 模板里出现的 ui-* 标签必须在 registry 登记
+const registeredTags = new Set([...registered].filter((s) => s.startsWith('ui-')));
+for (const file of walk(visDir)) {
+  if (!file.endsWith('.ts')) continue;
+  const rel = path.relative(root, file);
+  const text = fs.readFileSync(file, 'utf8');
+  for (const match of text.matchAll(/<(ui-[a-z0-9-]+)/g)) {
+    if (!registeredTags.has(match[1])) {
+      violations.push(`${rel}  使用了未登记的组件  <${match[1]}>`);
+    }
+  }
+}
+
+// 4) 页面样式不得写死卡 / 列表面板级圆角，必须走 token
+const literalRadius = /border-radius:\s*(?:16|24|28)px/;
+for (const file of walk(visDir)) {
+  if (!file.endsWith('.scss')) continue;
+  const rel = path.relative(root, file);
+  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+  lines.forEach((line, index) => {
+    if (literalRadius.test(line)) {
+      violations.push(
+        `${rel}:${index + 1}  写死圆角，请改用 --ui-radius-list / -card / -panel  ${line.trim()}`,
+      );
+    }
+  });
+}
+
 if (violations.length > 0) {
   console.error('组件漂移：VIS 页面必须复用共享组件。');
   console.error('区块用 <ui-section>，按钮用 <ui-button>，提示用 <ui-toast>，来源用 <ui-source-chip>。');
@@ -148,3 +224,7 @@ if (violations.length > 0) {
 console.log(
   `component-guard: ${files.length} 个卡片组件外壳无本地覆盖；VIS 页面未手写 section / 按钮 / 提示表面。`,
 );
+console.log(
+  `component-guard: ${registered.size} 个组件已登记，展示页与 demoFile 校验通过。`,
+);
+for (const line of warnings) console.log('  提示：' + line);

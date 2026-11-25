@@ -57,5 +57,6 @@ export class VisOverviewComponent {
     { kicker: 'PAGE', label: '错误与反馈', desc: '空态 / 加载 / 错误 / 重试的统一层级', route: '/vis/prototypes/pages/error-states' },
     { kicker: 'PAGE', label: '设置', desc: '外观、路径与运行偏好', route: '/vis/prototypes/pages/settings' },
     { kicker: 'PAGE', label: '源探针', desc: '下载源可达性与测速', route: '/vis/prototypes/pages/source-probe' },
+    { kicker: 'TOOL', label: '组件注册表', desc: '已注册组件、变体、Token 与展示页', route: '/vis/registry' },
   ];
 }

@@ -2,10 +2,6 @@
   display: block;
 }
 
-.card-set + .card-set {
-  margin-top: 28px;
-}
-
 .set-label:not(:first-child) {
   margin-top: 32px;
 }
@@ -123,140 +119,34 @@
   font-size: 10px;
 }
 
-.spec-list {
+.part-row {
   display: grid;
-  gap: 6px;
-  margin: 0;
-  padding-left: 18px;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  line-height: 1.7;
-}
-
-.spec-list b {
-  margin-right: 8px;
-  color: var(--ui-text);
-  font-weight: 600;
-}
-
-.set-note {
-  max-width: 78ch;
-  margin: 14px 0 0;
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  line-height: 1.6;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, var(--card-max)));
+  grid-template-columns: repeat(2, minmax(240px, 340px));
+  gap: 16px;
   justify-content: start;
-  gap: 14px;
-}
-
-@media (max-width: 700px) {
-  .card-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(240px, var(--card-max)));
-  justify-content: start;
-  gap: 20px;
   align-items: start;
 }
 
-.card-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.cell-label {
-  margin: 0;
-  color: var(--ui-text);
-  font-size: 11.5px;
-  font-weight: 600;
-}
-
-.menu-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 240px));
-  gap: 20px;
-  justify-content: start;
-}
-
-.menu-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.menu-stage {
-  display: flex;
-  align-items: flex-start;
-  min-height: 120px;
-  padding: 10px;
-  border: 1px dashed var(--ui-border-2);
-  border-radius: var(--ui-radius-list);
-  background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
-}
-
-.cell-menu {
-  margin: 0;
-  color: var(--ui-muted);
-  font-size: 10.5px;
-  line-height: 1.5;
-}
-
-.cell-menu b {
-  margin-right: 6px;
-  color: var(--ui-text-2);
-  font-weight: 600;
-}
-
-/* 身份行标本：与卡内 .acard-ident 同一套字号 */
-.ident-demo {
+.part-stage {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 16px;
-  border: 1px solid var(--ui-border);
+  min-height: 56px;
+  padding: 12px 14px;
+  border: 1px dashed var(--ui-border-2);
   border-radius: var(--ui-radius-list);
-  background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
+  background: color-mix(in srgb, var(--ui-surface) 60%, transparent);
 }
 
-.ident-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
+.part-body {
+  display: block;
+  padding: 0;
 }
 
-.ident-text b {
-  overflow: hidden;
-  color: var(--ui-text);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ident-text span {
-  overflow: hidden;
+.part-meta {
   color: var(--ui-muted);
-  font-size: 9.5px;
-  font-weight: 500;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ident-tip {
-  margin-left: auto;
-  color: var(--ui-muted);
-  font-family: var(--ui-font-mono);
-  font-size: 10px;
+  font-size: var(--ui-text-xs);
+  line-height: 1.5;
 }
 
 .spec-list {
@@ -281,11 +171,6 @@
   color: var(--ui-muted);
   font-size: 11.5px;
   line-height: 1.6;
-}
-
-.card-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* 2 状态 × 3 资产的矩阵 */
@@ -371,7 +256,8 @@
 
 @media (max-width: 768px) {
   .card-row,
-  .menu-row {
+  .menu-row,
+  .part-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }

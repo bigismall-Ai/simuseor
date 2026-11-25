@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
+import { CardBodyComponent } from '../../ui/card-body';
+import { CardKebabComponent } from '../../ui/card-kebab';
 import { CardMarkComponent } from '../../ui/card-mark';
+import { CardOriginComponent } from '../../ui/card-origin';
 import { CardMenuComponent } from '../../ui/card-menu';
 import type { CardMenuItem } from '../../ui/card-menu';
 import { HubCardComponent } from '../../ui/hub-card';
@@ -21,8 +24,11 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
 @Component({
   selector: 'app-proto-cards',
   imports: [
+    CardBodyComponent,
+    CardKebabComponent,
     CardMarkComponent,
     CardMenuComponent,
+    CardOriginComponent,
     HubCardComponent,
     LibraryCardComponent,
     ModelCardComponent,
@@ -151,6 +157,25 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
         <span>black-forest-labs</span>
       </span>
       <span class="ident-tip">32 × 32，与 /vis/prototypes/components/families 同一个 ui-card-mark</span>
+    </div>
+
+    <p class="set-label">动作零件 · ⋯ / 原站 / 信息区</p>
+    <p class="set-lead">
+      三件套单独渲染也能用：信息区（ui-card-body）、右上角更多（ui-card-kebab）、
+      动作行左侧原站入口（ui-card-origin）。卡片里只是把它们放进固定槽位。
+    </p>
+    <div class="part-row">
+      <div class="part-stage">
+        <ui-card-kebab />
+        <ui-card-origin label="Hugging Face" href="https://huggingface.co" />
+        <ui-card-origin label="本地" />
+      </div>
+      <div class="part-stage part-body card-expanded">
+        <ui-card-body title="FLUX.1-dev">
+          <span class="part-meta">black-forest-labs · safetensors</span>
+          <span class="part-meta">23.8 GB · 在库</span>
+        </ui-card-body>
+      </div>
     </div>
 
     <p class="set-label">结构六层</p>
