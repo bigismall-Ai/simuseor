@@ -8,7 +8,6 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'ui-section',
-  standalone: true,
   template: `
     <section class="section-block">
       <div class="section-head">
@@ -28,7 +27,7 @@ import { Component, input } from '@angular/core';
     }
 
     .section-block {
-      margin-bottom: 28px;
+      margin-bottom: var(--ui-space-7);
     }
 
     :host(:last-child) .section-block {
@@ -43,8 +42,8 @@ import { Component, input } from '@angular/core';
     .section-head {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin: 0 0 10px;
+      gap: var(--ui-space-3);
+      margin: 0 0 var(--ui-space-3);
     }
 
     .section-head h2 {
@@ -52,18 +51,19 @@ import { Component, input } from '@angular/core';
       font-size: var(--ui-text-lg);
       font-weight: 600;
       letter-spacing: -0.01em;
+      scroll-margin-top: var(--ui-scroll-offset);
     }
 
     .section-pill {
       display: inline-flex;
       align-items: center;
-      height: 22px;
-      padding: 0 9px;
+      height: var(--ui-h-compact);
+      padding: 0 var(--ui-space-2);
       border: 1px solid var(--ui-border-2);
       border-radius: var(--ui-radius-pill);
       background: var(--ui-raised);
       color: var(--ui-muted);
-      font: 600 9.5px/1 var(--ui-font-mono);
+      font: 600 var(--ui-text-xs)/1 var(--ui-font-mono);
       letter-spacing: 0.06em;
     }
 

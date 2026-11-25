@@ -62,6 +62,15 @@
   --ui-radius-lg: 16px;
   --ui-radius-pill: 999px;
   --ui-glass-blur: 16px;
+  /* 代码块与旁注：文档页与组件共用，深浅色各自取 --ui-inset / --ui-text-2 */
+  --ui-code-bg: var(--ui-inset);
+  --ui-code-ink: var(--ui-text-2);
+  --ui-code-radius: var(--ui-radius-list);
+  --ui-code-max-h: 480px;
+  --ui-callout-pad: var(--ui-space-4);
+  --ui-callout-gap: var(--ui-space-3);
+  --ui-callout-icon: var(--icon-action);
+  --ui-callout-radius: var(--ui-radius-list);
   /* 间距刻度：4 基，只允许这 8 档 */
   --ui-space-1: 4px;
   --ui-space-2: 8px;
@@ -102,6 +111,9 @@
   --layout-nav: 224px;
   --layout-nav-collapsed: 64px;
   --layout-content-max: 1320px;
+  --layout-prose-measure: 72ch;
+  --layout-toc: 242px;
+  --ui-scroll-offset: calc(var(--layout-header, 56px) + var(--ui-space-4));
   --layout-gutter: 30px;
   --layout-top: 26px;
   --layout-bottom: 48px;
@@ -115,6 +127,7 @@
   --layout-grid-min: 250px;
   --card-radius: var(--ui-radius-list);
   --card-max: 300px;
+  --card-media-ratio: 16 / 9;
   --card-border: var(--ui-border);
   --card-shadow: var(--ui-shadow);
   --card-mark-size: 32px;

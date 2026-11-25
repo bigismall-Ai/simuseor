@@ -45,11 +45,11 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
 
       display: flex;
       align-items: flex-start;
-      gap: var(--ui-space-3);
-      padding: var(--ui-space-3);
+      gap: var(--ui-callout-gap);
+      padding: var(--ui-callout-pad);
       border: 1px solid color-mix(in srgb, var(--tone) 26%, var(--ui-border));
       border-left: 3px solid var(--tone);
-      border-radius: var(--ui-radius);
+      border-radius: var(--ui-callout-radius);
       background: var(--tone-soft);
       color: var(--ui-text-2);
       font-size: var(--ui-text-md);
@@ -74,12 +74,12 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
       flex: none;
       display: grid;
       place-items: center;
-      width: 18px;
-      height: 18px;
+      width: var(--ui-callout-icon);
+      height: var(--ui-callout-icon);
       border-radius: 50%;
       background: color-mix(in srgb, var(--tone) 18%, transparent);
       color: var(--tone);
-      font-size: 11px;
+      font-size: var(--ui-text-sm);
       font-weight: 700;
       line-height: 1;
     }
@@ -101,20 +101,20 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
     }
 
     .text :is(p, ul, ol) {
-      margin: 2px 0 0;
+      margin: var(--ui-space-1) 0 0;
       color: var(--ui-muted);
       line-height: 1.6;
     }
 
     .text :is(ul, ol) {
-      padding-left: 16px;
+      padding-left: var(--ui-space-4);
     }
 
     .acts {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
+      gap: var(--ui-space-1);
+      margin-top: var(--ui-space-2);
     }
 
     .acts:not(:has(*)) {
@@ -123,11 +123,11 @@ export type NoticeTone = 'info' | 'ok' | 'warn' | 'error';
 
     .x {
       flex: none;
-      padding: 0 2px;
+      padding: 0 var(--ui-space-1);
       border: 0;
       background: none;
       color: var(--ui-muted);
-      font-size: 15px;
+      font-size: var(--ui-text-lg);
       line-height: 1;
       cursor: pointer;
     }

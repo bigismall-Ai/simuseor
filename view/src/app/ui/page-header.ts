@@ -56,9 +56,9 @@ export interface PageViewOption {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 16px;
+      gap: var(--ui-space-4);
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: var(--ui-space-5);
     }
 
     .ui-page-heading {
@@ -66,7 +66,7 @@ export interface PageViewOption {
     }
 
     .ui-page-kicker {
-      margin: 0 0 5px;
+      margin: 0 0 var(--ui-space-1);
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
       font-weight: 600;
@@ -80,11 +80,12 @@ export interface PageViewOption {
       font-weight: 600;
       letter-spacing: -0.022em;
       line-height: 1.2;
+      scroll-margin-top: var(--ui-scroll-offset);
     }
 
     .ui-page-hint {
-      max-width: 74ch;
-      margin: 6px 0 0;
+      max-width: var(--layout-prose-measure);
+      margin: var(--ui-space-1) 0 0;
       color: var(--ui-muted);
       font-size: var(--ui-text-md);
     }
@@ -99,7 +100,7 @@ export interface PageViewOption {
     .ph-title-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--ui-space-3);
       flex-wrap: wrap;
     }
 

@@ -164,9 +164,14 @@
       "category": "surface",
       "page": "/vis/tables",
       "demoFile": "src/app/vis/vis-tables.ts",
+      "variants": [
+        "default",
+        "docs"
+      ],
       "tokens": [
         "--ui-radius-list",
-        "--ui-shadow"
+        "--ui-shadow",
+        "--ui-space-5"
       ]
     },
     {
