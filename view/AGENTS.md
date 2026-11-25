@@ -139,6 +139,7 @@
 - `src/app/ui/`：共享组件与 Material 入口
 - `src/app/pages/`：将来的产品页面
 - 品牌资产在 `public/brand/`：MIN / MID / MAX 三种彩色展翅 + black-line / white-line 两种线稿，共 5 个 SVG
+- 外部参考与自有约束的映射在 `docs/design-constraints.md`；新增 token / 组件前先查台账，避免把已定死的决定改回去
 
 ## 可访问性
 

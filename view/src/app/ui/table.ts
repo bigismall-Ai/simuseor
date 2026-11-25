@@ -76,7 +76,7 @@ export type TableDensity = 'default' | 'docs';
     /* ---- docs 密度：阅读优先，行间细线代替斑马底 ---- */
 
     :host ::ng-deep .table-wrap.docs table {
-      font-size: var(--ui-text-lg);
+      font-size: var(--ui-text-md);
     }
 
     :host ::ng-deep .table-wrap.docs th,
@@ -100,7 +100,7 @@ export type TableDensity = 'default' | 'docs';
     :host ::ng-deep .table-wrap.docs th {
       background: transparent;
       color: var(--ui-text);
-      font-size: var(--ui-text-lg);
+      font-size: var(--ui-text-md);
       font-weight: 500;
     }
 

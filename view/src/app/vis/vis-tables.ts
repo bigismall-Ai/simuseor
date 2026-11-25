@@ -78,7 +78,7 @@ interface SampleListRow {
               <tr>
                 <td>字号</td>
                 <td>11.5px 紧凑</td>
-                <td>14px 阅读</td>
+                <td>12.5px 阅读</td>
               </tr>
               <tr>
                 <td>表头</td>
