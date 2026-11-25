@@ -40,6 +40,7 @@
 - 全局样式只留品牌层：token、字体、滚动条；其余视觉件（区块、表格、列表、卡片、菜单、内层卡、文档排版）一律是组件，`styles.scss` 不再新增页面级类
 - 颜色只用 `--ui-*` / `--ink-*` / `--aurora-*` token，不写死十六进制
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
+- 行内文字动作（链接、「查看全部」、「详情」、「编辑」）用 `ui-text-button`，`variant` 分 `plain` / `underline` / `danger`；它没有内边距与边框，不要再手写 `.link-btn` / `.more button` 这类本地按钮
 - 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；圆角阶梯：小件 6 / 控件 8 / 常规 10 / 列表 12 / 卡片 16 / 面板 24 / 胶囊 999；页面只引用 `--ui-radius-*` 语义 token
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
 - 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
@@ -125,7 +126,7 @@
 
 - 外壳：`ui-page`（内容宽与留白）、`ui-page-header`、`ui-breadcrumb`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-toc`（右栏目录 / 窄窗速览条）、`ui-card-mark`、`app-cover-plate`
 - 导航：`ui-tabs`（`underline` / `pill`，可带计数）、`ui-pagination`（上一页 / 下一页 + ≤7 格页码窗口）
-- 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`、`ui-tooltip`（纯 CSS 四向气泡）
+- 动作：`ui-button`、`ui-text-button`（行内文字动作：链接 / 查看全部 / 详情 / 编辑）、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`、`ui-tooltip`（纯 CSS 四向气泡）
 - 表单：`ui-input`（单行文本）、`ui-textarea`（多行文本）、`ui-select`（原生下拉）、`ui-checkbox`（勾选）、`ui-switch`（立即生效的开关）、`ui-field`（外部标签容器）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-divider`（1px 横向 / 竖向 / 缩进）、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
 - 文档面：`ui-code`（深色代码面板）、`ui-kbd`（快捷键）、`ui-search`（触发条 + 结果浮层）

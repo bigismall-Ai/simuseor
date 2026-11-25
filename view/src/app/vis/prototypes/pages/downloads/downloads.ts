@@ -6,6 +6,7 @@ import { SourceChipComponent } from '../../../../ui/source-chip';
 import { ToastComponent } from '../../../../ui/toast';
 import { UiButtonComponent } from '../../../../ui/button';
 import { InputComponent } from '../../../../ui/input';
+import { TextButtonComponent } from '../../../../ui/text-button';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
 import { TagComponent } from '../../../../ui/tag';
@@ -71,6 +72,7 @@ interface TaskItem {
     SourceChipComponent,
     ToastComponent,
     UiButtonComponent,
+    TextButtonComponent,
     InputComponent,
     UiMaterialModule,
   ],
@@ -177,13 +179,13 @@ interface TaskItem {
                     </label>
                   }
                   <div class="more">
-                    <button type="button" (click)="toggleAllWeights()">
+                    <ui-text-button size="sm" (click)="toggleAllWeights()">
                       {{
                         showAllWeights()
                           ? '只看推荐组合'
                           : '查看全部权重 (' + weights().length + ')'
                       }}
-                    </button>
+                    </ui-text-button>
                   </div>
                 </div>
 

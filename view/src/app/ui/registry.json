@@ -26,6 +26,46 @@
       ]
     },
     {
+      "selector": "ui-text-button",
+      "name": "文字按钮",
+      "category": "action",
+      "page": "/vis/buttons",
+      "demoFile": "src/app/vis/vis-buttons.ts",
+      "variants": [
+        "plain",
+        "underline",
+        "danger"
+      ],
+      "sizes": [
+        "md",
+        "sm",
+        "xs"
+      ],
+      "tokens": [
+        "--ui-font-body",
+        "--ui-weight-medium",
+        "--ui-weight-semibold",
+        "--ui-text-sm",
+        "--ui-text-md",
+        "--ui-text-xs",
+        "--ui-muted",
+        "--ui-accent",
+        "--ui-error",
+        "--ui-text",
+        "--ui-leading-tight",
+        "--ui-primary"
+      ],
+      "api": {
+        "inputs": [
+          { "name": "variant", "type": "'plain' | 'underline' | 'danger'", "note": "plain 强调色链接；underline 常驻下划线；danger 赭石" },
+          { "name": "size", "type": "'md' | 'sm' | 'xs'", "note": "12.5 / 11.5 / 10.5" },
+          { "name": "disabled", "type": "boolean", "note": "降到 42% 不透明度，光标 not-allowed" },
+          { "name": "block", "type": "boolean", "note": "铺满一行，文字左对齐" },
+          { "name": "label", "type": "string", "note": "仅图标内容时的 aria-label" }
+        ]
+      }
+    },
+    {
       "selector": "ui-chip",
       "name": "筛选胶囊",
       "category": "action",

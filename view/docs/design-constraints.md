@@ -63,6 +63,7 @@
 | `ui-pagination` | 28px 控件、窗口 ≤7 格（首末页固定 + 省略号）、当前页实心 | MUI Pagination 参考，格数收窄 |
 | `ui-divider` | 1px `--ui-inner-border`；`vertical` / `inset` 两开关；纯装饰对 AT 隐藏 | MUI Divider 参考 |
 | `ui-tooltip` | 12px 圆角 / 8px 内边距 / 8px 间距；纯 CSS 四向，不建浮层、不做边界翻转 | MUI Tooltip 参考，去掉 JS 定位 |
+| `ui-text-button` | 无内边距 / 无边框 / 无底色；`plain` 强调色、`underline` 常驻下划线、`danger` 赭石；12.5 / 11.5 / 10.5 三档；悬停只换下划线或颜色，焦点框走 `--ui-primary` | MUI Link / TextButton 语义参考，表面按自有层级归零 |
 
 ## 已采用的 MUI 约束
 
