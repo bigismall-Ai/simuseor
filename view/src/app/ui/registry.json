@@ -252,6 +252,40 @@
       ]
     },
     {
+      "selector": "ui-page",
+      "name": "页面容器",
+      "category": "shell",
+      "page": "/vis/prototypes/components/shell",
+      "demoFile": "src/app/vis/prototypes/components/shell/shell.ts",
+      "variants": [
+        "normal",
+        "wide",
+        "flush-top",
+        "flush-bottom"
+      ],
+      "tokens": [
+        "--layout-content-max",
+        "--layout-gutter",
+        "--layout-top",
+        "--layout-bottom"
+      ]
+    },
+    {
+      "selector": "ui-breadcrumb",
+      "name": "面包屑",
+      "category": "shell",
+      "page": "/vis/prototypes/components/shell",
+      "demoFile": "src/app/vis/prototypes/components/shell/shell.ts",
+      "sizes": [
+        "12.5px"
+      ],
+      "tokens": [
+        "--ui-text-md",
+        "--ui-muted",
+        "--ui-primary"
+      ]
+    },
+    {
       "selector": "ui-card-mark",
       "name": "厂牌位",
       "category": "card",

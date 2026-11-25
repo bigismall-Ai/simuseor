@@ -46,6 +46,8 @@
 | `ui-text` / `ui-label` / `ui-rules` | 引言 11.5 / 小标题 14 / 规则 11.5；72ch | 自有 + MUI Markdown 参考 |
 | `ui-progress` | 6px / 3px 两档；aria 与 reduced-motion | 自有 |
 | `ui-state-card` | 标题 + 标签/徽标 + 内容投影；bad 变体红描边 | 自有 |
+| `ui-page` | 内容宽 `--layout-content-max`、`--layout-gutter` 留白、顶部 / 底部偏移可单独关；`wide` 放开最大宽；`[page-head]` 只放窄条，不承担页头 | 自有 + MUI 页面壳参考 |
+| `ui-breadcrumb` | 12.5px、`›` 分隔、末项 `aria-current="page"` 不可点、长标签中间截断 | MUI 面包屑参考，字号按我们刻度 |
 | `ui-code` | 两套主题都用深色面；13px mono、400px 上限、标题栏 + 复制（≤640 只留图标） | MUI 代码面板参考，底色调深 |
 | `ui-kbd` | 11px mono、6px 圆角、底部内阴影；`keys` 或投影，深色面板内局部覆盖 `--kbd-*` | MUI `kbd` 参考 |
 | `ui-search` | 触发条 32px（≤768 只留图标）、浮层 640px 上限、命中行 52px；只抛 `picked` | MUI 搜索浮层参考 |
@@ -64,6 +66,8 @@
 | 导航树：分组 / `subheader` / 状态 chip | `NAV_TREE` + `ui-nav-tree` |
 | 标题锚点、滚动监听节流 166ms | `ui-toc`（组件待做） |
 | reduced-motion 抑制动效 | 组件内部统一处理 |
+| 面包屑末项 `aria-current="page"` | `ui-breadcrumb`（12.5px、`›` 分隔、长标签中间截断） |
+| 内容区固定最大宽与 gutter | `ui-page`（`--layout-content-max` / `--layout-gutter`，可 `wide`） |
 
 ## 有意差异
 
@@ -90,8 +94,6 @@
 
 | 组件 | 用途 | 关键约束 |
 |---|---|---|
-| `ui-page` | 内容容器 | 最大宽 / gutter / 顶部偏移 |
-| `ui-breadcrumb` | 面包屑 | 12px、分隔符、`aria-current` |
 | `ui-toc` | 右栏目录 | 242px、缩进、scroll-spy、节流 166ms |
 | `ui-callout` | 旁注 | 12px、图标井 26×26 |
 
@@ -99,7 +101,7 @@
 
 - `npm run lint`：模板 / 无障碍 / 组件登记
 - `node scripts/card-guard.mjs`：样式归属 / token / 视觉债务棘轮
-- `tests/e2e/vis-visual.mjs`：31 页 × 2 宽度 × 双主题像素回归
+- `tests/e2e/vis-visual.mjs`：全部 VIS 页面 × 2 宽度 × 双主题像素回归
 - AXE：可访问性
 
 ## 变更流程

@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+/* 示例框：只为在 VIS 里看清「居中列 / 全幅」，产品页不覆盖这个 token */
+.narrow-canvas {
+  --layout-content-max: 720px;
+}
+
+.frames,
+.crumbs {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+
+.frame-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+
+.body-demo {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+
+.wide-body {
+  min-height: 96px;
+}
+
+.tile {
+  min-height: 64px;
+  padding: var(--ui-space-4);
+}
+
+.crumb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-3);
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .crumb-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+  }
+}

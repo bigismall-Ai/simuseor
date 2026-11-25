@@ -120,7 +120,7 @@
 
 ## 共享组件（`src/app/ui/`）
 
-- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-card-mark`、`app-cover-plate`
+- 外壳：`ui-page`（内容宽与留白）、`ui-page-header`、`ui-breadcrumb`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
