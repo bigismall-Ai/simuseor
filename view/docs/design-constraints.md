@@ -52,6 +52,10 @@
 | `ui-code` | 两套主题都用深色面；13px mono、400px 上限、标题栏 + 复制（≤640 只留图标） | MUI 代码面板参考，底色调深 |
 | `ui-kbd` | 11px mono、6px 圆角、底部内阴影；`keys` 或投影，深色面板内局部覆盖 `--kbd-*` | MUI `kbd` 参考 |
 | `ui-search` | 触发条 32px（≤768 只留图标）、浮层 640px 上限、命中行 52px；只抛 `picked` | MUI 搜索浮层参考 |
+| `ui-select` | 原生 `<select>` 承载体；34/28 高度、10 圆角、右侧 chevron；空值用 disabled 占位项 | 自有 + MUI Select 只参考 |
+| `ui-textarea` | 12 圆角、上下 8 / 左右 12 内边距；高度由 `rows` 定，不自动增高 | 自有 |
+| `ui-checkbox` | 18px 方框、6 圆角、12px 对勾；原生 input 承载体，`indeterminate` 横杠 | 自有 |
+| `ui-switch` | 34 高（sm 28）、10 圆角、轨道 52/44、滑块 26/20；内阴影描边，位移与轨道对齐 | 自有 |
 
 ## 已采用的 MUI 约束
 

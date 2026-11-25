@@ -162,6 +162,99 @@
       ]
     },
     {
+      "selector": "ui-select",
+      "name": "下拉选择",
+      "category": "form",
+      "page": "/vis/inputs",
+      "demoFile": "src/app/vis/vis-inputs.ts",
+      "variants": [
+        "default",
+        "placeholder",
+        "error",
+        "disabled",
+        "leading"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-h-md",
+        "--ui-h-sm",
+        "--ui-radius",
+        "--ui-field-label-gap",
+        "--ui-msg-gap"
+      ]
+    },
+    {
+      "selector": "ui-textarea",
+      "name": "多行文本",
+      "category": "form",
+      "page": "/vis/inputs",
+      "demoFile": "src/app/vis/vis-inputs.ts",
+      "variants": [
+        "default",
+        "error",
+        "disabled"
+      ],
+      "sizes": [
+        "2 rows",
+        "3 rows",
+        "4 rows"
+      ],
+      "tokens": [
+        "--ui-radius-lg",
+        "--ui-space-2",
+        "--ui-space-3",
+        "--ui-field-label-gap",
+        "--ui-msg-gap"
+      ]
+    },
+    {
+      "selector": "ui-checkbox",
+      "name": "勾选",
+      "category": "form",
+      "page": "/vis/inputs",
+      "demoFile": "src/app/vis/vis-inputs.ts",
+      "variants": [
+        "default",
+        "checked",
+        "indeterminate",
+        "disabled"
+      ],
+      "sizes": [
+        "18px"
+      ],
+      "tokens": [
+        "--ui-checkbox-size",
+        "--ui-checkbox-mark",
+        "--ui-radius-xs"
+      ]
+    },
+    {
+      "selector": "ui-switch",
+      "name": "开关",
+      "category": "form",
+      "page": "/vis/inputs",
+      "demoFile": "src/app/vis/vis-inputs.ts",
+      "variants": [
+        "default",
+        "checked",
+        "disabled"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-switch-w",
+        "--ui-switch-knob",
+        "--ui-h-md",
+        "--ui-h-sm",
+        "--ui-radius-md"
+      ]
+    },
+    {
       "selector": "ui-field",
       "name": "字段容器",
       "category": "form",

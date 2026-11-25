@@ -89,6 +89,19 @@
   --ui-kbd-ink: var(--ui-text-2);
   --ui-kbd-line: color-mix(in srgb, var(--ui-text) 22%, transparent);
   --ui-kbd-shadow: 0 -1px 0 color-mix(in srgb, var(--ui-text) 18%, transparent) inset;
+  /*
+   * 表单控件：开关 34 高 / 10 圆角，勾选 18 方框。
+   * 标签与说明间距沿用 ui-input 的同一档，避免各控件自己写 5 / 6px。
+   */
+  --ui-switch-w: 52px;
+  --ui-switch-knob: 26px;
+  --ui-switch-w-sm: 44px;
+  --ui-switch-knob-sm: 20px;
+  --ui-checkbox-size: 18px;
+  --ui-checkbox-mark: 12px;
+  --ui-checkbox-line: 2px;
+  --ui-field-label-gap: 6px;
+  --ui-msg-gap: 5px;
   /* 搜索：触发条 32px、浮层上限 640px、命中行 52px */
   --ui-search-max-w: 640px;
   --ui-search-row-h: 52px;
