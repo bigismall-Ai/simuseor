@@ -280,7 +280,7 @@ interface TaskItem {
 
           <div class="task-list">
             @for (task of shownActive(); track task.id) {
-              <ui-list-row>
+              <ui-list-row sideWidth="260px">
                 <div rowMain class="task-main">
                   <div class="task-name">
                     <b>{{ task.name }}</b>

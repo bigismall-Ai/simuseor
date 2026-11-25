@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 /**
  * 列表行：左主信息、右操作 / 数值。
@@ -12,7 +12,7 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'ui-list-row',
   template: `
-    <div class="list-row">
+    <div class="list-row" [style.grid-template-columns]="columns()">
       <div class="main">
         <ng-content select="[rowMain]" />
       </div>
@@ -29,7 +29,6 @@ import { Component, input } from '@angular/core';
 
     .list-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       gap: var(--ui-space-4);
       padding: var(--ui-space-3) 0;
@@ -50,7 +49,13 @@ import { Component, input } from '@angular/core';
       align-items: center;
       justify-content: flex-end;
       gap: var(--ui-space-2);
+      min-width: 0;
     }
   `,
 })
-export class ListRowComponent {}
+export class ListRowComponent {
+  /** 右侧操作列宽度；auto = 按内容，固定值用于多按钮行（如 260px） */
+  readonly sideWidth = input('auto');
+
+  readonly columns = computed(() => `minmax(0, 1fr) ${this.sideWidth()}`);
+}

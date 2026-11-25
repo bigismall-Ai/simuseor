@@ -28,41 +28,41 @@ import { Component } from '@angular/core';
       backdrop-filter: blur(14px);
     }
 
-    .table-wrap table {
+    :host ::ng-deep .table-wrap table {
       width: 100%;
       border-collapse: collapse;
       font-size: var(--ui-text-sm);
     }
 
-    .table-wrap th,
-    .table-wrap td {
+    :host ::ng-deep .table-wrap th,
+    :host ::ng-deep .table-wrap td {
       padding: var(--ui-space-2);
       border: 0;
       text-align: left;
     }
 
-    .table-wrap th:first-child,
-    .table-wrap td:first-child {
+    :host ::ng-deep .table-wrap th:first-child,
+    :host ::ng-deep .table-wrap td:first-child {
       padding-left: var(--ui-space-6);
     }
 
-    .table-wrap th:last-child,
-    .table-wrap td:last-child {
+    :host ::ng-deep .table-wrap th:last-child,
+    :host ::ng-deep .table-wrap td:last-child {
       padding-right: var(--ui-space-6);
     }
 
-    .table-wrap th {
+    :host ::ng-deep .table-wrap th {
       background: var(--ui-panel-2);
       color: var(--ui-muted);
       font-size: 10.5px;
       font-weight: 500;
     }
 
-    .table-wrap tbody tr:nth-child(even) td {
+    :host ::ng-deep .table-wrap tbody tr:nth-child(even) td {
       background: color-mix(in srgb, var(--ui-inset) 45%, transparent);
     }
 
-    .table-wrap tbody tr:hover td {
+    :host ::ng-deep .table-wrap tbody tr:hover td {
       background: var(--ui-raised);
     }
   `,
