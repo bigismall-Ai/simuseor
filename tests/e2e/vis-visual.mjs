@@ -38,39 +38,45 @@ const ghRepo = process.env.GITHUB_REPOSITORY || 'bigismall-Ai/simuseor';
 const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
 const port = Number(process.env.VIS_PORT || 4399);
 
-const pages = [
-  ['overview', '/vis/overview'],
-  ['brand', '/vis/brand'],
-  ['color', '/vis/color'],
-  ['cover', '/vis/cover'],
-  ['background', '/vis/background'],
-  ['layout', '/vis/layout'],
-  ['icons', '/vis/icons'],
-  ['buttons', '/vis/buttons'],
-  ['inputs', '/vis/inputs'],
-  ['radius', '/vis/radius'],
-  ['pills', '/vis/pills'],
-  ['empty', '/vis/empty'],
-  ['tables', '/vis/tables'],
-  ['registry', '/vis/registry'],
-  ['modals', '/vis/modals'],
-  ['cards', '/vis/prototypes/components/cards'],
-  ['sidebar', '/vis/prototypes/components/sidebar'],
-  ['structure', '/vis/prototypes/components/structure'],
-  ['scrollbar', '/vis/prototypes/components/scrollbar'],
-  ['page-header', '/vis/prototypes/components/page-header'],
-  ['notice', '/vis/prototypes/components/notice'],
-  ['feedback', '/vis/prototypes/components/feedback'],
-  ['families', '/vis/prototypes/components/families'],
-  ['models', '/vis/prototypes/pages/models'],
-  ['workflows', '/vis/prototypes/pages/workflows'],
-  ['nodes', '/vis/prototypes/pages/nodes'],
-  ['resource-manager', '/vis/prototypes/pages/resource-manager'],
-  ['downloads', '/vis/prototypes/pages/downloads'],
-  ['error-states', '/vis/prototypes/pages/error-states'],
-  ['settings', '/vis/prototypes/pages/settings'],
-  ['source-probe', '/vis/prototypes/pages/source-probe'],
-];
+function discoverPages() {
+  const source = readFileSync(join(root, 'view/src/app/vis/vis.routes.ts'), 'utf8');
+  const routes = [];
+  for (let i = 0; i < source.length; i += 1) {
+    if (source[i] !== '{') continue;
+    let depth = 0;
+    let end = i;
+    for (; end < source.length; end += 1) {
+      if (source[end] === '{') depth += 1;
+      else if (source[end] === '}') {
+        depth -= 1;
+        if (depth === 0) {
+          end += 1;
+          break;
+        }
+      }
+    }
+    const block = source.slice(i, end);
+    if (block.includes('children:') || !/component:/.test(block)) continue;
+    const path = block.match(/path:\s*'([^']+)'/)?.[1];
+    if (path) routes.push(path);
+    i = end - 1;
+  }
+  const seen = new Set();
+  return routes.map((route) => {
+    const base = route.split('/').filter(Boolean).pop() || route;
+    let name = base;
+    if (seen.has(name)) name = route.replaceAll('/', '-');
+    seen.add(name);
+    return [name, `/vis/${route}`];
+  });
+}
+
+const pages = discoverPages();
+
+if (process.argv.includes('--list')) {
+  for (const [name, route] of pages) console.log(`${name}	${route}`);
+  process.exit(0);
+}
 
 const widths = [1440, 3440];
 const themes = ['light', 'dark'];
