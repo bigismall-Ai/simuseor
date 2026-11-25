@@ -2,6 +2,7 @@
 # 已被跟踪的 .gitignore / .gitattributes / .env.example / web/.postcssrc.json /
 # web/public/families/.gitkeep 不受影响；以后新增点开头的文件要 git add -f。
 .*
+!.github/
 
 # 运行时状态：不可重建，需要备份
 var/
@@ -37,6 +38,9 @@ artifacts/*
 !artifacts/vis/
 # 例外：VIS 视觉规范是交付物，不是测试产物，必须进版本库
 !artifacts/vis/*.md
+# 例外：SVG 语义层方案与手部测试夹具是交付物
+!artifacts/svg-semantic-plan.md
+!artifacts/semantics-hand-plan.json
 !artifacts/vis/*.html
 !artifacts/vis/*.txt
 # 例外：VIS 目录下的工具脚本与台账同样是交付物（照着规范就能复跑，缺了就跑不了）
@@ -53,6 +57,7 @@ artifacts/vis/assets/cicada/svg/SVG/
 artifacts/vis/_work/
 # 但 tests/artifacts/ 是 E2E 截图产物，仍要忽略
 tests/artifacts/
+tests/e2e/vis-baseline/
 test-results/
 playwright-report/
 # tests/ 根层的一次性调试 / 截图脚本（E2E 用例是 tests/e2e/ 下的 .ts，不受影响）
@@ -85,3 +90,7 @@ Thumbs.db
 .idea/
 .vscode/
 *.log
+
+# SVG 写回备份（本地安全网，不入库）
+*.svg.bak
+*.svg.bak.*

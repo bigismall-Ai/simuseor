@@ -1,0 +1,65 @@
+name: VIS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      update_baseline:
+        description: 重新生成并上传像素基线
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            view/package-lock.json
+            tests/package-lock.json
+
+      - name: 组件守卫 + 构建
+        run: |
+          cd view
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: 测试依赖
+        run: |
+          cd tests
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: 全页面像素回归
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VIS_BASELINE_BOOTSTRAP: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
+        run: |
+          if [ "${{ inputs.update_baseline }}" = "true" ]; then
+            node tests/e2e/vis-visual.mjs --update
+          else
+            node tests/e2e/vis-visual.mjs
+          fi
+
+      - name: 失败现场
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vis-shots
+          path: tests/artifacts/vis-shots
+          retention-days: 7

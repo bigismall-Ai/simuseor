@@ -54,17 +54,13 @@ main:
               fi
               exit "$code"
 
-        - name: View 组件守卫与视觉冒烟
+        - name: View 组件守卫与构建
           image: node:22
           caches:
             - ~/.npm
-            - ~/.cache/ms-playwright
           script:
             - cd view && npm ci --no-audit --no-fund
             - cd view && npm run build
-            - cd tests && npm install --no-audit --no-fund
-            - cd tests && npx playwright install --with-deps chromium
-            - node tests/e2e/vis-visual.mjs
 
 # 临时：探测 CNB Runner 到各家源的连通性（决定抓取端放境内还是境外）。
 # 只在 feat/ 分支跑，不动 main 的不流；结论拿到后连同此段一起删。
