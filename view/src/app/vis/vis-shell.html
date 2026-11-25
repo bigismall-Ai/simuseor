@@ -19,6 +19,19 @@
       </button>
     </div>
 
+    <div class="search-row">
+      <ui-search
+        [block]="true"
+        [items]="searchItems()"
+        [(open)]="searchOpen"
+        [shortcut]="['Ctrl', 'K']"
+        [hotkey]="!collapsed()"
+        label="搜索设计区页面"
+        placeholder="搜索页面 / 组件"
+        (picked)="pick($event)"
+      />
+    </div>
+
     <ui-nav-tree
       [rows]="rows()"
       [collapsed]="collapsed()"
@@ -45,17 +58,22 @@
   </aside>
 
   <main class="main">
-    <div class="page-shell" [class.framed-page]="framed()" [class.bare-page]="bare()">
+    <ui-page
+      [wide]="fillCanvas()"
+      [gutter]="pageGutter()"
+      [flushTop]="fillCanvas()"
+      [flushBottom]="fillCanvas()"
+    >
       <div class="page-frame" [class.is-framed]="framed()">
         @if (!bare()) {
           <header class="page-frame-head">
-            <app-page-crumb [label]="crumb()" />
+            <ui-breadcrumb [items]="crumbs()" />
           </header>
         }
         <div class="page-frame-body">
           <router-outlet />
         </div>
       </div>
-    </div>
+    </ui-page>
   </main>
 </div>
