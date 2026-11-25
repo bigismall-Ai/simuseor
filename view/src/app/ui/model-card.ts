@@ -1,16 +1,15 @@
-import { Component, ElementRef, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { coverMeta } from '../core/cover';
 import { sourceLabel, sourceShort } from '../core/source-links';
 import { SOURCE_TASK_LABELS, sourceTaskLabel } from '../core/task-labels';
 import { ThemeService } from '../core/theme.service';
 import { fmtInt } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardActionComponent } from './card-action';
 import { CardOriginComponent } from './card-origin';
-import { CardBodyComponent } from './card-body';
-import { CardKebabComponent } from './card-kebab';
-import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
+import { CardShellComponent } from './card-shell';
 import { CoverPlateComponent } from './cover-plate';
 import type { CoverInput } from '../core/cover';
 import type { SearchItem } from '../core/types';
@@ -64,20 +63,27 @@ const FILE_TYPES = new Set([
   selector: 'md-model-card',
   imports: [
     BadgeComponent,
-    CardBodyComponent,
-    CardKebabComponent,
+    CardActionComponent,
     CardOriginComponent,
     CardMarkComponent,
-    CardMenuComponent,
+    CardShellComponent,
     CoverPlateComponent,
   ],
   template: `
-    <article class="card acard" [class.on-shot]="photoOk()">
-      <!-- ① 封面：铺满整卡。ratio="fill" 不声明比例，宽高由外层给 ——
-           本卡封面是 position:absolute; inset:0 铺满整卡，正是 fill 的语义。
-           铭牌自带的顶行（厂标 + 家族码 + 规格 + 原站链接）在这里是重复的：
-           身份与原站由 .acard-head 承担，所以整行收掉（与工作流卡同一手法）。 -->
-      <div class="acard-media">
+    <ui-card-shell
+      class="card"
+      [onShot]="photoOk()"
+      [title]="primary()?.name || ''"
+      titleClass="card-name"
+      [menuItems]="menuItems()"
+      [status]="'↓ ' + fmtInt(maxDownloads())"
+      [statusTitle]="'下载量：' + fmtInt(maxDownloads())"
+      [size]="'♥ ' + fmtInt(maxLikes())"
+      [sizeTitle]="'点赞：' + fmtInt(maxLikes())"
+      (menuPicked)="onMenuPick()"
+    >
+      <!-- ① 封面：铺满整卡 -->
+      <div cardMedia class="acard-media">
         <app-cover-plate
           class="card-plate acard-plate"
           ratio="fill"
@@ -86,69 +92,29 @@ const FILE_TYPES = new Set([
         />
       </div>
 
-      <!-- ② 身份行（32×32 标识块 + 厂名 / 作者） + ③ 右上角原站链接 -->
-      <div class="acard-head">
-        <ui-card-mark
-          [logo]="meta().logo || ''"
-          [logoDark]="meta().logoDark || ''"
-          [code]="familyCode() || (meta().publisher?.abbr ?? '')"
-          [scale]="meta().logoScale || 1"
-          [title]="markTitle()"
-        />
+      <!-- ② 身份行：32×32 标识块 + 厂名 / 作者 -->
+      <ui-card-mark
+        cardMark
+        [logo]="meta().logo || ''"
+        [logoDark]="meta().logoDark || ''"
+        [code]="familyCode() || (meta().publisher?.abbr ?? '')"
+        [scale]="meta().logoScale || 1"
+        [title]="markTitle()"
+      />
 
-        <span class="acard-ident">
-          <b [title]="familyName()">{{ familyName() }}</b>
-          <span [title]="authorText()">{{ authorText() || '—' }}</span>
-        </span>
+      <b cardIdent [title]="familyName()">{{ familyName() }}</b>
+      <span cardIdent [title]="authorText()">{{ authorText() || '—' }}</span>
 
+      <!-- 详情：类别行 -->
+      <p cardDetails class="card-meta acard-meta" [title]="metaLine()">{{ metaLine() }}</p>
 
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
+      <!-- ⑤ 分类标签：恰好一枚 -->
+      <ui-badge cardTags size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
 
-        @if (menuOpen()) {
-          <ui-card-menu [items]="menuItems()" (picked)="onMenuPick()" />
-        }
-      </div>
-
-      <ui-card-body [title]="primary()?.name || ''" titleClass="card-name">
-
-        <!-- 类别行：参数 / 量化（原先在铭牌顶行上，那块地归了身份行）。
-             高度固定 —— 规格不是每张卡都有，行高不一致整墙卡片就会参差。 -->
-        <p class="card-meta acard-meta" [title]="metaLine()">{{ metaLine() }}</p>
-
-        <!-- ④ 状态槽：左下载量 · 一根白线 · 右点赞。
-             发现页的搜索接口不返回文件大小，所以右侧不拿「—」占位：
-             换成本页已有的第二个质量信号「点赞」。下载量回答「有多少人用」，
-             点赞回答「用过的人认不认」，两者同一层但不是同一件事。 -->
-        <div class="card-slot acard-slot">
-          <span [title]="'下载量：' + fmtInt(maxDownloads())">↓ {{ fmtInt(maxDownloads()) }}</span>
-          <span class="acard-rule"></span>
-          <span class="card-likes acard-size" [title]="'点赞：' + fmtInt(maxLikes())">
-            ♥ {{ fmtInt(maxLikes()) }}
-          </span>
-        </div>
-
-        <!-- ⑤ 分类标签：恰好一枚。站点入口归右上角与 ⋯ 菜单，不再占标签位。 -->
-        <div class="card-tags acard-tags">
-          <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
-        </div>
-
-        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
-        <div class="card-actions acard-foot">
-          <ui-card-origin [href]="origin().href" [label]="origin().name" />
-
-          <!-- 发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
-               其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：
-               「已在库」由状态条事实槽「已入库 N」与列表视图的徽章报。 -->
-          <button
-            class="acard-primary primary btn-xs"
-            (click)="download.emit()"
-            data-testid="card-download"
-          >
-            下载
-          </button>
-        </div>
-      </ui-card-body>
-    </article>
+      <!-- ⑥ 动作行 -->
+      <ui-card-origin cardFoot [href]="origin().href" [label]="origin().name" />
+      <ui-card-action cardFoot label="下载" testId="card-download" (pressed)="download.emit()" />
+    </ui-card-shell>
   `,
   styleUrls: ['./asset-card.css'],
   styles: [
@@ -168,10 +134,6 @@ const FILE_TYPES = new Set([
          这里只补这张卡特有的：菜单项用胶囊外观、菜单底用双层描边。 */
     `,
   ],
-  host: {
-    '(document:click)': 'onDocumentClick($event)',
-    '(document:keydown.escape)': 'onEscape()',
-  },
 })
 export class ModelCardComponent {
   readonly items = input.required<SearchItem[]>();
@@ -183,13 +145,10 @@ export class ModelCardComponent {
   /** 铭牌通知「照片真的显示出来了」；决定正文用白字还是深色字 */
   readonly photoOk = signal(false);
 
-  /** ⋯ 菜单是否展开 */
-  readonly menuOpen = signal(false);
   readonly menuItems = computed<CardMenuItem[]>(() =>
     this.sourceLinks().map((s) => ({ key: s.key, label: s.text, href: s.href })),
   );
 
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly theme = inject(ThemeService);
 
   readonly primary = computed(() => this.items()[0]);
@@ -378,25 +337,8 @@ export class ModelCardComponent {
   /** 同一模型多来源时取最高点赞：与下载量同口径，不让合并行看起来比单源还冷 */
   readonly maxLikes = computed(() => Math.max(...this.items().map((i) => i.likes || 0), 0));
 
-  /** ⋯ 菜单开关。点外面 / Esc 收起。 */
-  onMenuPick(): void {
-    this.menuOpen.set(false);
-  }
-
-  toggleMenu(event: MouseEvent): void {
-    // 别让「点外面收菜单」的监听器跟着这次点击一起跑
-    event.stopPropagation();
-    this.menuOpen.update((open) => !open);
-  }
-
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.menuOpen()) return;
-    if (!this.host.nativeElement.contains(event.target as Node)) this.menuOpen.set(false);
-  }
-
-  onEscape(): void {
-    this.menuOpen.set(false);
-  }
+  /** ⋯ 菜单选中任一条即收起（外链由菜单自己打开）。 */
+  onMenuPick(): void {}
 
   readonly fmtInt = fmtInt;
 }

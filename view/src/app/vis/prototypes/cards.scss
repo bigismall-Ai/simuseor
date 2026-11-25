@@ -127,6 +127,12 @@
   padding: 0;
 }
 
+.part-column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-space-3);
+}
+
 .part-caption {
   margin: 0;
   padding: var(--ui-space-2) var(--ui-space-3) 0;

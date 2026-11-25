@@ -405,6 +405,52 @@
         "--card-max",
         "--ui-space-4"
       ]
+    },
+    {
+      "selector": "ui-card-shell",
+      "name": "资产卡外壳",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/ui/library-card.ts",
+      "tokens": [
+        "--card-radius",
+        "--card-shadow",
+        "--card-mark-size"
+      ]
+    },
+    {
+      "selector": "ui-card-slot",
+      "name": "卡片状态槽",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": [
+        "ok",
+        "warn",
+        "err"
+      ],
+      "tokens": [
+        "--card-slot-size",
+        "--card-scrim-line"
+      ]
+    },
+    {
+      "selector": "ui-card-action",
+      "name": "卡片主按钮",
+      "category": "card",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": [
+        "solid",
+        "ghost"
+      ],
+      "sizes": [
+        "28px"
+      ],
+      "tokens": [
+        "--card-action-height",
+        "--ui-radius-pill"
+      ]
     }
   ]
 }

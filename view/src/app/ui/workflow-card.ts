@@ -1,11 +1,10 @@
-import { Component, HostListener, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
-import { CardBodyComponent } from './card-body';
-import { CardKebabComponent } from './card-kebab';
+import { CardActionComponent } from './card-action';
 import { CardOriginComponent } from './card-origin';
-import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
+import { CardShellComponent } from './card-shell';
 import { CoverPlateComponent } from './cover-plate';
 import type { LocalWorkflow } from '../core/types';
 
@@ -40,11 +39,10 @@ interface StateView {
   selector: 'app-workflow-card',
   imports: [
     BadgeComponent,
-    CardBodyComponent,
+    CardActionComponent,
     CardOriginComponent,
-    CardKebabComponent,
     CardMarkComponent,
-    CardMenuComponent,
+    CardShellComponent,
     CoverPlateComponent,
   ],
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
@@ -53,19 +51,22 @@ interface StateView {
      互不覆盖。 */
   styleUrls: ['./asset-card.css'],
   template: `
-    <article
-      class="wc acard"
+    <ui-card-shell
+      class="wc"
       [class.broken]="state() === 'broken'"
-      [class.on-shot]="photoOk()"
-     
+      [onShot]="photoOk()"
+      [title]="it().title || it().name"
+      titleClass="wc-name"
+      [menuItems]="menuItems"
+      [status]="slotText()"
+      [statusTone]="slotTone()"
+      [statusIcon]="slotIcon()"
+      [size]="sizeText()"
       [attr.data-name]="it().name"
+      (menuPicked)="onMenuPick($event)"
     >
-      <!-- ① 封面：铺满整卡。外壳几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
-           家族色底 / 几何纹样 / 铺满图 / 蒙版都在共享铭牌里，本卡不再各写一套。
-           ratio="fill"：不再声明 16:10 —— 宽高跟着卡片走，比例由外壳决定。
-           imgClass="wc-cover-img"：E2E 用 img.wc-cover-img 认这张封面
-           （换封面 / 封面管理都断言它），class 必须落在 <img> 本身。 -->
-      <div class="wc-cover acard-media">
+      <!-- ① 封面 -->
+      <div cardMedia class="wc-cover acard-media">
         <div class="acard-plate">
           <app-cover-plate
             class="wc-plate"
@@ -76,8 +77,6 @@ interface StateView {
           />
         </div>
 
-        <!-- 解析失败：说明长在图区里，不弹 toast、不弹模态、不另开错误块 ——
-             坏文件是这条资产自己的属性。 -->
         @if (state() === 'broken') {
           <div class="wc-broken">
             <svg
@@ -102,131 +101,45 @@ interface StateView {
         }
       </div>
 
-      <!-- ② 身份行：左上「标识块 + 工作流名 / 底模」两行。
-           ③ 原站：本地工作流没有来源站（文件就在共享目录里），这一槽留空。 -->
-      <div class="acard-head">
-        <ui-card-mark [model]="it().main_model || ''" icon="workflow" />
-        <span class="acard-ident">
-          <b [title]="it().path">{{ it().name }}</b>
-          <span [title]="it().main_model || ''">{{ it().main_model || '本地工作流' }}</span>
-        </span>
+      <!-- ② 身份行 -->
+      <ui-card-mark cardMark [model]="it().main_model || ''" icon="workflow" />
+      <b cardIdent [title]="it().path">{{ it().name }}</b>
+      <span cardIdent [title]="it().main_model || ''">{{ it().main_model || '本地工作流' }}</span>
 
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
-
-        @if (menuOpen()) {
-          <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />
-        }
-      </div>
-
-      <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
-      <ui-card-body [title]="it().title || it().name" titleClass="wc-name">
-
-        <!-- 类别行：只留文件格式（UI / API）。时间已按原型撤掉 ——
-             它不是「这条资产是什么」，而且每张卡都不同，扫视时只会变成噪声。 -->
-        <p class="wc-meta acard-meta">
-          @if (it().format === 'ui' || it().format === 'api') {
-            <span
-              class="wc-fmt"
-              [class.api]="it().format === 'api'"
-              [title]="
-                it().format === 'api'
-                  ? '只有节点与连线，没有坐标，载不进画布'
-                  : '含节点坐标与连线，可直接载入画布'
-              "
-            >
-              <span class="wc-fmt-o" [class.on]="it().format === 'ui'">UI</span>
-              <span class="wc-fmt-s"></span>
-              <span class="wc-fmt-o" [class.on]="it().format === 'api'">API</span>
-            </span>
-          }
-        </p>
-
-        <!-- ④ 状态槽：左状态 · 半透明白线 · 右大小（工作流看文件大小） -->
-        <div class="acard-slot">
-          @if (view().badge === 'dep') {
-            <span class="wc-dep is-err" [title]="missingTip()">
-              <svg
-                viewBox="0 0 16 16"
-                width="11"
-                height="11"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M8 2.6v6.2" />
-                <circle cx="8" cy="11.9" r="0.85" fill="currentColor" stroke="none" />
-                <path
-                  d="M6.9 2.4 1.5 11.9A1.6 1.6 0 0 0 2.9 14.4h10.2a1.6 1.6 0 0 0 1.4-2.5L9.1 2.4a1.6 1.6 0 0 0-2.2 0z"
-                />
-              </svg>
-              <span>{{ view().badgeText }}</span>
-            </span>
-          } @else if (view().badge === 'count') {
-            <span class="wc-count">{{ it().nodes }} 节点 · {{ totalDeps() }} 依赖</span>
-          } @else if (view().badge === 'note') {
-            <span class="wc-note is-warn">{{ view().badgeText }}</span>
-          } @else {
-            <span class="wc-broken-state is-err">文件格式错误</span>
-          }
-          <span class="acard-rule"></span>
-          <span class="acard-size">{{ sizeText() }}</span>
-        </div>
-
-        <!-- ⑤ 分类标签：只放一枚 —— 工作流的自定义分组（没分组就写「未分组」） -->
-        <div class="acard-tags">
-          <ui-badge size="sm" class="wc-tag" [class.is-none]="!it().group" [attr.title]="it().group || '未分组'">
-            {{ it().group || '未分组' }}
-          </ui-badge>
-        </div>
-
-        <!-- ⑥ 动作行：⋯ 在左，主按钮在右。⋯ 的下拉菜单仍由页面层接管，
-             卡片只负责报出点击坐标（菜单才会贴着按钮弹，而不是回页面顶上去找）。 -->
-        <div class="acard-foot">
-          <ui-card-origin />
-
-          <div class="wc-acts">
-          </div>
-          <button
-            class="wc-primary acard-primary"
-            (click)="primary.emit({ item: it(), act: view().act })"
+      <!-- 详情：文件格式 -->
+      <p cardDetails class="wc-meta acard-meta">
+        @if (it().format === 'ui' || it().format === 'api') {
+          <span
+            class="wc-fmt"
+            [class.api]="it().format === 'api'"
+            [title]="
+              it().format === 'api'
+                ? '只有节点与连线，没有坐标，载不进画布'
+                : '含节点坐标与连线，可直接载入画布'
+            "
           >
-            @if (view().act === 'use') {
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M5.6 3.3 12.4 8l-6.8 4.7z" fill="currentColor" stroke="none" />
-              </svg>
-            } @else if (view().act === 'fix') {
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M8 2.4v7.4" />
-                <path d="M5.1 7.2 8 10.1l2.9-2.9" />
-                <path d="M2.8 12.6h10.4" />
-              </svg>
-            } @else {
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M11.1 2.9 13.1 4.9 6 12 3.5 12.7l.7-2.5z" />
-                <path d="M9.8 4.2 11.8 6.2" />
-              </svg>
-            }
-            <span>{{ view().label }}</span>
-          </button>
-        </div>
-      </ui-card-body>
-    </article>
+            <span class="wc-fmt-o" [class.on]="it().format === 'ui'">UI</span>
+            <span class="wc-fmt-s"></span>
+            <span class="wc-fmt-o" [class.on]="it().format === 'api'">API</span>
+          </span>
+        }
+      </p>
+
+      <!-- ⑤ 分类标签 -->
+      <ui-badge cardTags size="sm" class="wc-tag" [class.is-none]="!it().group" [attr.title]="it().group || '未分组'">
+        {{ it().group || '未分组' }}
+      </ui-badge>
+
+      <!-- ⑥ 动作行 -->
+      <ui-card-origin cardFoot />
+
+      <ui-card-action
+        cardFoot
+        [label]="view().label"
+        [icon]="view().act === 'use' ? 'play' : view().act === 'fix' ? 'fix' : 'edit'"
+        (pressed)="primary.emit({ item: it(), act: view().act })"
+      />
+    </ui-card-shell>
   `,
   styles: [
     `
@@ -330,7 +243,7 @@ interface StateView {
        厂牌位由 ui-card-mark 统一渲染，
        方框就不再另加底色 —— 两层底会打架。 */
       /* ---- ④ 状态槽 -------------------------------------------------------
-       槽位左说状态、右说大小，白线由 .acard-rule 给。
+       槽位左说状态、右说大小，白线由 ui-card-slot 给。
        颜色走共享的 is-ok / is-warn / is-err：槽位在正文层，
        不再自带徽章底色（原来那是压图用的）。 */
       .wc-dep {
@@ -399,25 +312,6 @@ interface StateView {
       /* ---- ⑥ 动作行 -------------------------------------------------------
        ⋯ 在左、主按钮在右由 .acard-foot 给。⋯ 现在压在封面遮罩上，
        底色跟着遮罩走，不能再用浅底（浅底压深色遮罩会发灰）。 */
-      .wc-acts {
-        display: inline-flex;
-        align-items: center;
-        flex: none;
-      }
-      .wc-primary.ghost {
-        background: var(--ui-card-solid);
-        border-color: var(--ui-inner-border);
-        color: var(--ui-text-2);
-      }
-      .wc-primary.ghost:hover {
-        border-color: var(--ui-inner-border);
-        color: var(--ui-text);
-      }
-      .wc-primary svg {
-        width: 13px;
-        height: 13px;
-        flex: none;
-      }
     `,
   ],
 })
@@ -427,7 +321,6 @@ export class WorkflowCardComponent {
   readonly action = output<{ item: LocalWorkflow; act: 'run' | 'edit' | 'delete' }>();
 
   /** ⋯ 菜单：默认收起；设计页用独立的 ui-card-menu 样张展示 */
-  readonly menuOpen = signal(false);
   readonly menuItems: CardMenuItem[] = [
     { key: 'run', label: '运行' },
     { key: 'edit', label: '在编辑器中打开' },
@@ -505,6 +398,22 @@ export class WorkflowCardComponent {
     }
   });
 
+  readonly slotText = computed(() => {
+    const view = this.view();
+    if (view.badge === 'count') return `${this.it().nodes} 节点 · ${this.totalDeps()} 依赖`;
+    if (view.badge === 'none') return '文件格式错误';
+    return view.badgeText;
+  });
+
+  readonly slotTone = computed<'' | 'warn' | 'err'>(() => {
+    const badge = this.view().badge;
+    if (badge === 'dep' || badge === 'none') return 'err';
+    if (badge === 'note') return 'warn';
+    return '';
+  });
+
+  readonly slotIcon = computed<'' | 'warn'>(() => (this.view().badge === 'dep' ? 'warn' : ''));
+
   readonly missingTip = computed(() => {
     const m = this.it().deps?.missing?.length || 0;
     const p = this.it().node_deps?.missing?.length || 0;
@@ -523,18 +432,7 @@ export class WorkflowCardComponent {
     return (b / 1000 / 1000).toFixed(1) + ' MB';
   });
 
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.menuOpen.update((open) => !open);
-  }
-
   onMenuPick(key: string): void {
-    this.menuOpen.set(false);
     this.action.emit({ item: this.it(), act: key as 'run' | 'edit' | 'delete' });
-  }
-
-  @HostListener('document:click')
-  closeMenu(): void {
-    this.menuOpen.set(false);
   }
 }

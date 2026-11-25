@@ -5,12 +5,11 @@ import { folderFileTypeLabel } from '../core/task-labels';
 import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
 import { BadgeComponent } from './badge';
+import { CardActionComponent } from './card-action';
 import { CardOriginComponent } from './card-origin';
-import { CardBodyComponent } from './card-body';
-import { CardKebabComponent } from './card-kebab';
-import { CardMenuComponent } from './card-menu';
 import type { CardMenuItem } from './card-menu';
 import { CardMarkComponent } from './card-mark';
+import { CardShellComponent } from './card-shell';
 import { CoverPlateComponent } from './cover-plate';
 
 /**
@@ -20,7 +19,7 @@ import { CoverPlateComponent } from './cover-plate';
  *   ① 封面     .acard-media / .acard-plate —— 铺满整卡
  *   ② 身份行   .acard-head —— 32×32 标识块 + 厂名 / 作者两行
  *   ③ 原站     ui-card-origin —— 动作行左侧
- *   ④ 状态槽   .acard-slot —— 左状态 · 一根白线 · 右磁盘大小
+ *   ④ 状态槽   ui-card-slot —— 左状态 · 一根白线 · 右磁盘大小
  *   ⑤ 标签     .acard-tags —— 恰好一枚（模型文件类型）
  *   ⑥ 动作行   .acard-foot —— ⋯ 在左，主按钮在右
  *
@@ -39,22 +38,28 @@ import { CoverPlateComponent } from './cover-plate';
   selector: 'md-library-card',
   imports: [
     BadgeComponent,
-    CardBodyComponent,
-    CardKebabComponent,
+    CardActionComponent,
     CardOriginComponent,
     CardMarkComponent,
-    CardMenuComponent,
+    CardShellComponent,
     CoverPlateComponent,
   ],
   template: `
-    <article
-      class="mcard acard"
-      [class.on-shot]="shotOk() && !broken()"
+    <ui-card-shell
+      class="mcard"
       [class.is-broken]="broken()"
-     
+      [onShot]="shotOk() && !broken()"
+      [title]="model().name"
+      titleClass="mname"
+      [menuItems]="menuItems"
+      [status]="statusText()"
+      [statusTitle]="statusTip()"
+      [statusTone]="broken() ? 'err' : 'ok'"
+      [size]="fmtBytes(model().size_bytes)"
+      (menuPicked)="onMenuPick($event)"
     >
       <!-- ① 封面：铺满整卡。壳的几何在 asset-card.css，这里只放封面自己的内容 -->
-      <div class="acard-media">
+      <div cardMedia class="acard-media">
         <app-cover-plate
           class="acard-plate"
           ratio="fill"
@@ -86,70 +91,45 @@ import { CoverPlateComponent } from './cover-plate';
         }
       </div>
 
-      <!-- ② 身份行 + ③ 原站链接。排版在 asset-card.css，这里只给库卡特有的内容 -->
-      <div class="acard-head">
-        <ui-card-mark
-          [logo]="meta().logo || ''"
-          [logoDark]="meta().logoDark || ''"
-          [code]="familyCode() || (meta().publisher?.abbr ?? '')"
-          [scale]="meta().logoScale || 1"
-          [title]="markTitle()"
-        />
+      <!-- ② 身份行：32×32 厂牌位 + 厂名 / 作者两行 -->
+      <ui-card-mark
+        cardMark
+        [logo]="meta().logo || ''"
+        [logoDark]="meta().logoDark || ''"
+        [code]="familyCode() || (meta().publisher?.abbr ?? '')"
+        [scale]="meta().logoScale || 1"
+        [title]="markTitle()"
+      />
 
-        <span class="acard-ident">
-          <b [title]="familyName()">{{ familyName() }}</b>
-          @if (author()) {
-            <span class="pill-author" [title]="'发布者：' + author()">{{ author() }}</span>
-          } @else {
-            <span [title]="originLabel()">{{ originLabel() }}</span>
-          }
-        </span>
+      <b cardIdent [title]="familyName()">{{ familyName() }}</b>
+      @if (author()) {
+        <span cardIdent class="pill-author" [title]="'发布者：' + author()">{{ author() }}</span>
+      } @else {
+        <span cardIdent [title]="originLabel()">{{ originLabel() }}</span>
+      }
 
+      <!-- 详情：类别行 -->
+      <p cardDetails class="acard-meta" [title]="metaLine()">{{ metaLine() }}</p>
 
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
+      <!-- ⑤ 分类标签：恰好一枚 -->
+      <ui-badge
+        cardTags
+        size="sm"
+        [class.pill-demo]="!!model().isDemo"
+        [attr.title]="fileTypeTip()"
+        >{{ fileTypeLabel() }}</ui-badge
+      >
 
-        @if (menuOpen()) {
-          <ui-card-menu [items]="menuItems" (picked)="onMenuPick($event)" />
-        }
-      </div>
-
-      <!-- 底部信息区：压在封面上的遮罩 -->
-      <ui-card-body [title]="model().name" titleClass="mname">
-        <!-- 类别行：任务 + 规格。文件类型已经在标签位，只有回落成任务时才需要在这里说一次 -->
-        <p class="acard-meta" [title]="metaLine()">{{ metaLine() }}</p>
-
-        <!-- ④ 状态槽：左状态 · 半透明白线 · 右磁盘大小 -->
-        <div class="acard-slot">
-          <span [class.is-ok]="!broken()" [class.is-err]="broken()" [title]="statusTip()">{{
-            statusText()
-          }}</span>
-          <span class="acard-rule"></span>
-          <span class="msize acard-size">{{ fmtBytes(model().size_bytes) }}</span>
-        </div>
-
-        <!-- ⑤ 分类标签：恰好一枚 —— 模型文件类型（作者由身份行承担，不再重复） -->
-        <div class="plate-meta acard-tags">
-          <ui-badge size="sm" [class.pill-demo]="!!model().isDemo" [attr.title]="fileTypeTip()">{{
-            fileTypeLabel()
-          }}</ui-badge>
-        </div>
-
-        <!-- ⑥ 动作行：原站图标在左，主按钮在右；⋯ 在右上角 -->
-        <div class="acard-foot">
-          <ui-card-origin [href]="sourceHref()" [label]="sourceName()" />
-
-          <button
-            type="button"
-            class="acard-primary primary btn-xs"
-            data-testid="lib-card-primary"
-            [title]="primaryTip()"
-            (click)="onPrimary()"
-          >
-            {{ primaryLabel() }}
-          </button>
-        </div>
-      </ui-card-body>
-    </article>
+      <!-- ⑥ 动作行：原站在左，主按钮在右 -->
+      <ui-card-origin cardFoot [href]="sourceHref()" [label]="sourceName()" />
+      <ui-card-action
+        cardFoot
+        [label]="primaryLabel()"
+        [title]="primaryTip()"
+        testId="lib-card-primary"
+        (pressed)="onPrimary()"
+      />
+    </ui-card-shell>
   `,
   /* 共享几何走外部样式文件：这份文件的规则会被本组件的作用域改写
      （Emulated 封装），四张卡引用的是同一份源，改一处四张卡一起变。 */
@@ -220,9 +200,6 @@ import { CoverPlateComponent } from './cover-plate';
 
     `,
   ],
-  host: {
-    '(document:click)': 'closeMenu()',
-  },
 })
 export class LibraryCardComponent {
   readonly model = input.required<LibraryModel>();
@@ -237,8 +214,6 @@ export class LibraryCardComponent {
   /** 本地导入条目没有远端仓库：主操作改为打开目录，而不是去发现页瞎搜 */
   readonly open = output<void>();
 
-  /** ⋯ 菜单是否展开 */
-  readonly menuOpen = signal(false);
   readonly menuItems: CardMenuItem[] = [
     { key: 'remove', label: '删除模型', danger: true, testId: 'lib-card-remove' },
   ];
@@ -405,18 +380,7 @@ export class LibraryCardComponent {
 
   /** ⋯ 菜单：破坏性操作（删除模型）收在这里，主按钮位只放正事 */
   onMenuPick(key: string): void {
-    this.menuOpen.set(false);
     if (key === 'remove') this.onRemove();
-  }
-
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.menuOpen.update((open) => !open);
-  }
-
-  /** 点别处收起菜单 */
-  closeMenu(): void {
-    this.menuOpen.set(false);
   }
 
   onPrimary(): void {
@@ -429,7 +393,6 @@ export class LibraryCardComponent {
   }
 
   onRemove(): void {
-    this.menuOpen.set(false);
     this.remove.emit();
   }
 }

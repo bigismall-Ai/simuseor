@@ -1,10 +1,9 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardActionComponent } from './card-action';
 import { CardOriginComponent } from './card-origin';
-import { CardBodyComponent } from './card-body';
-import { CardKebabComponent } from './card-kebab';
-import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
+import { CardShellComponent } from './card-shell';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtInt } from '../core/types';
 import type { WorkflowItem } from '../core/types';
@@ -60,22 +59,25 @@ const SOURCES: Record<string, SourceInfo> = {
   selector: 'md-hub-card',
   imports: [
     BadgeComponent,
-    CardBodyComponent,
-    CardKebabComponent,
+    CardActionComponent,
     CardOriginComponent,
     CardMarkComponent,
-    CardMenuComponent,
+    CardShellComponent,
     CoverPlateComponent,
   ],
   template: `
     <!-- 卡不是行：类名只留 .hub + 共享骨架的 .acard。
          旧列表行用的 .wf-row 类名不带到卡上 —— 「行」「卡」在代码里要分得开，
          列表视图那一行仍然是 .wf-row。 -->
-    <article class="hub acard" [class.on-shot]="photoOk()">
-      <!-- ① 封面：铺满整卡。几何（定位 / 裁切 / 圆角）由 .acard-media + .acard-plate 给，
-           家族色底 / 几何纹样 / 铺满图 / 蒙版都在共享铭牌里。
-           ratio="fill"：不声明比例，宽高跟着卡片走 —— 封面就是铺满整卡。 -->
-      <div class="acard-media">
+    <ui-card-shell
+      class="hub"
+      [onShot]="photoOk()"
+      [status]="'↓ ' + fmtInt(item().downloads)"
+      [statusTitle]="'下载量：' + (item().downloads || 0)"
+      [size]="(item().file_count || 0) + ' 个文件'"
+    >
+      <!-- ① 封面：铺满整卡 -->
+      <div cardMedia class="acard-media">
         <div class="acard-plate">
           <app-cover-plate
             class="hub-plate"
@@ -86,90 +88,54 @@ const SOURCES: Record<string, SourceInfo> = {
         </div>
       </div>
 
-      <!-- ② 身份行：来源徽章 + 工作流名 / 作者。③ 原站链接在右上角。 -->
-      <div class="acard-head">
-        <ui-card-mark [code]="source().code" [tone]="source().tone" [title]="source().name" />
+      <!-- ② 身份行：来源徽章 + 工作流名 / 作者 -->
+      <ui-card-mark cardMark [code]="source().code" [tone]="source().tone" [title]="source().name" />
 
-        <span class="acard-ident">
-          <b class="wf-title" [title]="item().name">{{ item().name }}</b>
-          <span [title]="authorText()">{{ authorText() }}</span>
-        </span>
+      <b cardIdent class="wf-title" [title]="item().name">{{ item().name }}</b>
+      <span cardIdent [title]="authorText()">{{ authorText() }}</span>
 
-
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
-
-        @if (menuOpen()) {
-          <ui-card-menu>
-            @for (r of requires(); track r) {
-              <div class="hub-row">
-                <span class="hub-k">依赖</span>
-                <span class="hub-v" [title]="r">{{ r }}</span>
-              </div>
-            }
-            @if (!requires().length) {
-              <div class="hub-row">
-                <span class="hub-k">依赖</span>
-                <span class="hub-v">无</span>
-              </div>
-            }
-            <div class="hub-row">
-              <span class="hub-k">文件</span>
-              <span class="hub-v" [title]="filesTitle()">{{ filePreview() }}</span>
-            </div>
-            @if (item().url) {
-              <a
-                class="acard-menu-item"
-                role="menuitem"
-                [href]="item().url"
-                target="_blank"
-                rel="noreferrer"
-              >
-                在 {{ source().short }} 打开 ↗
-              </a>
-            }
-          </ui-card-menu>
+      <!-- ⋯ 菜单：依赖与文件预览 -->
+      <div cardMenu class="hub-menu">
+        @for (r of requires(); track r) {
+          <div class="hub-row">
+            <span class="hub-k">依赖</span>
+            <span class="hub-v" [title]="r">{{ r }}</span>
+          </div>
+        }
+        @if (!requires().length) {
+          <div class="hub-row">
+            <span class="hub-k">依赖</span>
+            <span class="hub-v">无</span>
+          </div>
+        }
+        <div class="hub-row">
+          <span class="hub-k">文件</span>
+          <span class="hub-v" [title]="filesTitle()">{{ filePreview() }}</span>
+        </div>
+        @if (item().url) {
+          <a class="acard-menu-item" role="menuitem" [href]="item().url" target="_blank" rel="noreferrer">
+            在 {{ source().short }} 打开 ↗
+          </a>
         }
       </div>
 
-      <!-- 底部信息区：压在封面上的遮罩（几何由 .acard-body 给） -->
-      <ui-card-body>
-        <!-- 类别行：一句说明。描述常常是空的，退到更新时间；
-             行高固定 —— 不是每张卡都有这句，整墙卡片的节奏不能因此参差。 -->
-        <p class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
+      <!-- 详情：类别行 -->
+      <p cardDetails class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
 
-        <!-- ④ 状态槽：左下载量 · 一根白线 · 右文件数。
-             下载量是发现页唯一能证明「有人跑通过」的硬信号，排序也按它排。 -->
-        <div class="acard-slot">
-          <span [title]="'下载量：' + (item().downloads || 0)"
-            >↓ {{ fmtInt(item().downloads) }}</span
-          >
-          <span class="acard-rule"></span>
-          <span class="acard-size">{{ item().file_count || 0 }} 个文件</span>
-        </div>
+      <!-- ⑤ 分类标签：恰好一枚 -->
+      <ui-badge cardTags size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
 
-        <!-- ⑤ 分类标签：恰好一枚 —— 自定义分组。
-             依赖（底模 / 节点）不是分类，收进 ⋯ 菜单，不占这一格。 -->
-        <div class="acard-tags">
-          <ui-badge size="sm" [attr.title]="tagTitle()">{{ tagText() }}</ui-badge>
-        </div>
-
-        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
-        <div class="acard-foot">
-          <ui-card-origin [href]="item().url" [label]="source().name" />
-
-          <button
-            class="acard-primary primary btn-xs"
-            type="button"
-            (click)="download.emit(item())"
-            [disabled]="busy()"
-            title="下载到工作流库，所有 ComfyUI 实例共用"
-            [attr.data-testid]="'wf-download-' + item().source"
-          >
-            {{ busy() ? '正在创建…' : '下载到工作流库' }}
-          </button>
-        </div>
-      </ui-card-body>
-    </article>
+      <!-- ⑥ 动作行 -->
+      <ui-card-origin cardFoot [href]="item().url" [label]="source().name" />
+      <ui-card-action
+        cardFoot
+        [label]="busy() ? '正在创建…' : '下载到工作流库'"
+        [disabled]="busy()"
+        title="下载到工作流库，所有 ComfyUI 实例共用"
+        [testId]="'wf-download-' + item().source"
+        (pressed)="download.emit(item())"
+      />
+    </ui-card-shell>
   `,
   styleUrls: ['./asset-card.css'],
   styles: [
@@ -204,6 +170,10 @@ const SOURCES: Record<string, SourceInfo> = {
          外壳几何（贴边、浮起、描边、圆角）在共享文件里，
          这里只补这张卡特有的：条目用「标签 + 值」两栏，
          值可能很长（文件路径），所以允许折行并封顶高度，免得菜单比卡还高被裁掉。 */
+      .hub-menu {
+        display: contents;
+      }
+
       .hub-row {
         display: flex;
         align-items: baseline;
@@ -225,10 +195,6 @@ const SOURCES: Record<string, SourceInfo> = {
 
     `,
   ],
-  host: {
-    '(document:click)': 'onDocumentClick($event)',
-    '(document:keydown.escape)': 'onEscape()',
-  },
 })
 export class HubCardComponent {
   readonly item = input.required<WorkflowItem>();
@@ -241,8 +207,6 @@ export class HubCardComponent {
   /** 封面图是否真的画出来了（远程图会 401 / 超时）。决定正文用白字还是深色字 */
   readonly photoOk = signal(false);
 
-  /** ⋯ 菜单是否展开 */
-  readonly menuOpen = signal(false);
   /** 来源信息：认不出来的源退到短码 + 灰调，不猜它是谁 */
   readonly source = computed<SourceInfo>(() => {
     const key = this.item().source || '';
@@ -302,23 +266,6 @@ export class HubCardComponent {
     const image = this.item().thumbnail || undefined;
     return { name, tags, image };
   });
-
-  /** ⋯ 菜单开关。点外面 / Esc 收起。 */
-  toggleMenu(event: MouseEvent): void {
-    // 别让「点外面收菜单」的监听器跟着这次点击一起跑
-    event.stopPropagation();
-    this.menuOpen.update((open) => !open);
-  }
-
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.menuOpen()) return;
-    const el = event.target as HTMLElement | null;
-    if (!el?.closest('.acard-menu') && !el?.closest('.acard-kebab')) this.menuOpen.set(false);
-  }
-
-  onEscape(): void {
-    this.menuOpen.set(false);
-  }
 
   readonly fmtInt = fmtInt;
 }

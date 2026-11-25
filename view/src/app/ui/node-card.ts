@@ -1,10 +1,9 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BadgeComponent } from './badge';
+import { CardActionComponent } from './card-action';
 import { CardOriginComponent } from './card-origin';
-import { CardBodyComponent } from './card-body';
-import { CardKebabComponent } from './card-kebab';
-import { CardMenuComponent } from './card-menu';
 import { CardMarkComponent } from './card-mark';
+import { CardShellComponent } from './card-shell';
 import { CoverPlateComponent } from './cover-plate';
 import { fmtSize } from '../core/types';
 
@@ -63,17 +62,23 @@ export interface NodeCardItem {
   selector: 'md-node-card',
   imports: [
     BadgeComponent,
-    CardBodyComponent,
-    CardKebabComponent,
+    CardActionComponent,
     CardOriginComponent,
     CardMarkComponent,
-    CardMenuComponent,
+    CardShellComponent,
     CoverPlateComponent,
   ],
   template: `
-    <article class="nd-card acard" [class.on-shot]="photoOk()">
+    <ui-card-shell
+      class="nd-card"
+      [onShot]="photoOk()"
+      [title]="displayName()"
+      [status]="statusText()"
+      [statusTone]="slotTone()"
+      [size]="sizeText()"
+    >
       <!-- ① 封面：铺满整卡 -->
-      <div class="acard-media">
+      <div cardMedia class="acard-media">
         <div class="acard-plate">
           <app-cover-plate
             class="nd-plate"
@@ -88,155 +93,123 @@ export interface NodeCardItem {
         </div>
       </div>
 
-      <!-- ② 身份行 + ③ 原站链接 -->
-      <div class="acard-head">
-        <ui-card-mark [code]="mark()" [title]="displayName()" />
-        <span class="acard-ident">
-          <!-- ② 身份行：短名 + 作者。全名留给下面的卡片标题 ——
-               两处都写全名，同一张卡上同一个名字出现两次（原型口径：
-               身份行 b=短厂名 / span=作者，标题才是全名）。 -->
-          <b [title]="displayName()">{{ coverName() }}</b>
-          <span [title]="subLine()">{{ subLine() }}</span>
-        </span>
+      <!-- ② 身份行：短名 + 作者；全名留给卡片标题 -->
+      <ui-card-mark cardMark [code]="mark()" [title]="displayName()" />
+      <b cardIdent [title]="displayName()">{{ coverName() }}</b>
+      <span cardIdent [title]="subLine()">{{ subLine() }}</span>
 
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
-
-      <!-- 次要信息与次要操作收进这个菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
-      @if (menuOpen()) {
-        <ui-card-menu>
-          @if (classList().length) {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">节点类</span>
-              <span class="nd-menu-v" [title]="classList().join('、')">{{
-                classList().join('、')
-              }}</span>
-            </div>
-          }
-          @if (needs().length) {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">额外依赖</span>
-              <span class="nd-menu-v">{{ needs().join('、') }}</span>
-            </div>
-          }
-          @if (preemptions().length) {
-            <div class="nd-menu-row is-warn">
-              <span class="nd-menu-k">重名冲突</span>
-              <span class="nd-menu-v">{{ preemptions().join('、') }}</span>
-            </div>
-          }
-          @if (mode() === 'library') {
-            <div class="nd-menu-row">
-              <span class="nd-menu-k">版本 / 大小</span>
-              <span class="nd-menu-v">{{ versionText() }} · {{ sizeText2() }}</span>
-            </div>
-            @if (item().tracked === false) {
-              <div class="nd-menu-row">
-                <span class="nd-menu-k">来源</span>
-                <span class="nd-menu-v">清单未收录</span>
-              </div>
-            }
-            @if (item().requirements) {
-              <div class="nd-menu-row">
-                <span class="nd-menu-k">依赖</span>
-                <span class="nd-menu-v">带 requirements.txt</span>
-              </div>
-            }
-            <button class="nd-menu-act is-danger" type="button" (click)="onRemove()">卸载</button>
-          }
-          @if (item().repo) {
-            <a class="acard-menu-item" [href]="item().repo" target="_blank" rel="noreferrer"
-              >在 GitHub 打开 ↗</a
-            >
-          }
-        </ui-card-menu>
-      }
-      </div>
-
-      <ui-card-body [title]="displayName()">
-        <p class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
-
-        <!-- ④ 状态槽：左状态 · 白线 · 右节点类数 -->
-        <div class="acard-slot">
-          <span [class.is-ok]="statusTone() === 'ok'" [class.is-warn]="statusTone() === 'warn'">{{
-            statusText()
-          }}</span>
-          <span class="acard-rule"></span>
-          <span class="acard-size">{{ sizeText() }}</span>
-        </div>
-
-        <!-- 安装中的实时反馈：百分比 + 阶段（进度条在页面顶部的任务面板里） -->
-        @if (installing()) {
-          <div class="nd-run">
-            <span class="nd-progress">{{ percent() }}%</span>
-            <span class="nd-stage">{{ stage() }}</span>
+      <!-- ⋯ 菜单：节点类清单、额外依赖、重名冲突、卸载、仓库 -->
+      <div cardMenu class="nd-menu">
+        @if (classList().length) {
+          <div class="nd-menu-row">
+            <span class="nd-menu-k">节点类</span>
+            <span class="nd-menu-v" [title]="classList().join('、')">{{ classList().join('、') }}</span>
           </div>
         }
-
-        <!-- ⑤ 分类标签：它提供什么 -->
-        <div class="acard-tags">
-          <ui-badge size="sm" [class.is-mono]="nodeTag().mono" [attr.title]="nodeTagTitle()">{{
-            nodeTag().text
-          }}</ui-badge>
-          @if (nodeTag().more > 0) {
-            <ui-badge size="sm" class="is-more" [attr.title]="nodeTagTitle()">+{{ nodeTag().more }}</ui-badge>
+        @if (needs().length) {
+          <div class="nd-menu-row">
+            <span class="nd-menu-k">额外依赖</span>
+            <span class="nd-menu-v">{{ needs().join('、') }}</span>
+          </div>
+        }
+        @if (preemptions().length) {
+          <div class="nd-menu-row is-warn">
+            <span class="nd-menu-k">重名冲突</span>
+            <span class="nd-menu-v">{{ preemptions().join('、') }}</span>
+          </div>
+        }
+        @if (mode() === 'library') {
+          <div class="nd-menu-row">
+            <span class="nd-menu-k">版本 / 大小</span>
+            <span class="nd-menu-v">{{ versionText() }} · {{ sizeText2() }}</span>
+          </div>
+          @if (item().tracked === false) {
+            <div class="nd-menu-row">
+              <span class="nd-menu-k">来源</span>
+              <span class="nd-menu-v">清单未收录</span>
+            </div>
           }
-        </div>
-
-        <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
-        <div class="acard-foot">
-          <ui-card-origin
-            [href]="item().repo ?? ''"
-            [label]="item().repo ? 'GitHub' : '本地导入'"
-          />
-
-          @if (mode() === 'library') {
-            <button
-              class="acard-primary primary btn-xs"
-              type="button"
-              (click)="toggle.emit()"
-              [disabled]="busy()"
-            >
-              {{ item().disabled ? '启用' : '禁用' }}
-            </button>
-          } @else if (installing()) {
-            <button class="acard-primary primary btn-xs" type="button" disabled>安装中…</button>
-          } @else if (!item().installable) {
-            <button
-              class="acard-primary primary btn-xs"
-              type="button"
-              disabled
-              [title]="
-                item().install_type
-                  ? '安装方式是 ' + item().install_type + '，暂不支持一键安装'
-                  : '暂不支持一键安装'
-              "
-            >
-              不支持一键装
-            </button>
-          } @else if (!item().installed) {
-            <button
-              class="acard-primary primary btn-xs"
-              type="button"
-              (click)="install.emit()"
-              [disabled]="busy()"
-              [attr.data-testid]="'node-install-' + item().id"
-            >
-              安装
-            </button>
-          } @else if (item().repo) {
-            <a
-              class="acard-primary primary btn-xs"
-              [href]="item().repo"
-              target="_blank"
-              rel="noreferrer"
-              >查看</a
-            >
-          } @else {
-            <button class="acard-primary primary btn-xs" type="button" disabled>已安装</button>
+          @if (item().requirements) {
+            <div class="nd-menu-row">
+              <span class="nd-menu-k">依赖</span>
+              <span class="nd-menu-v">带 requirements.txt</span>
+            </div>
           }
+          <button class="nd-menu-act is-danger" type="button" (click)="onRemove()">卸载</button>
+        }
+        @if (item().repo) {
+          <a class="acard-menu-item" [href]="item().repo" target="_blank" rel="noreferrer"
+            >在 GitHub 打开 ↗</a
+          >
+        }
+      </div>
+
+      <!-- 详情：类别行 -->
+      <p cardDetails class="acard-meta" [title]="metaText()">{{ metaText() }}</p>
+
+      <!-- 安装中的实时反馈 -->
+      @if (installing()) {
+        <div cardExtra class="nd-run">
+          <span class="nd-progress">{{ percent() }}%</span>
+          <span class="nd-stage">{{ stage() }}</span>
         </div>
-      </ui-card-body>
-    </article>
+      }
+
+      <!-- ⑤ 分类标签：它提供什么 -->
+      <ui-badge
+        cardTags
+        size="sm"
+        [class.is-mono]="nodeTag().mono"
+        [attr.title]="nodeTagTitle()"
+        >{{ nodeTag().text }}</ui-badge
+      >
+      @if (nodeTag().more > 0) {
+        <ui-badge cardTags size="sm" class="is-more" [attr.title]="nodeTagTitle()"
+          >+{{ nodeTag().more }}</ui-badge
+        >
+      }
+
+      <!-- ⑥ 动作行 -->
+      <ui-card-origin
+        cardFoot
+        [href]="item().repo ?? ''"
+        [label]="item().repo ? 'GitHub' : '本地导入'"
+      />
+
+      @if (mode() === 'library') {
+        <ui-card-action
+          cardFoot
+          [label]="item().disabled ? '启用' : '禁用'"
+          [disabled]="busy()"
+          (pressed)="toggle.emit()"
+        />
+      } @else if (installing()) {
+        <ui-card-action cardFoot label="安装中…" [disabled]="true" />
+      } @else if (!item().installable) {
+        <ui-card-action
+          cardFoot
+          label="不支持一键装"
+          [disabled]="true"
+          [title]="
+            item().install_type
+              ? '安装方式是 ' + item().install_type + '，暂不支持一键安装'
+              : '暂不支持一键安装'
+          "
+        />
+      } @else if (!item().installed) {
+        <ui-card-action
+          cardFoot
+          label="安装"
+          [disabled]="busy()"
+          [testId]="'node-install-' + (item().id ?? '')"
+          (pressed)="install.emit()"
+        />
+      } @else if (item().repo) {
+        <ui-card-action cardFoot label="查看" [href]="item().repo ?? ''" />
+      } @else {
+        <ui-card-action cardFoot label="已安装" [disabled]="true" />
+      }
+    </ui-card-shell>
   `,
   styleUrls: ['./asset-card.css'],
   styles: [
@@ -317,6 +290,10 @@ export interface NodeCardItem {
       /* ---- ⋯ 菜单：次要信息与次要操作 -------------------------------
          挂在卡内（卡有 overflow:hidden），所以高度封顶 + 可滚动，
          免得菜单比卡还高被裁掉。z-index 要高过卡壳的描边（5）与身份行（4）。 */
+      .nd-menu {
+        display: contents;
+      }
+
       .nd-menu-row {
         display: flex;
         align-items: baseline;
@@ -361,7 +338,6 @@ export interface NodeCardItem {
     `,
   ],
   host: {
-    '(document:click)': 'closeMenuOnOutside($event)',
   },
 })
 export class NodeCardComponent {
@@ -383,8 +359,12 @@ export class NodeCardComponent {
   readonly photoOk = signal(false);
 
   /** ⋯ 菜单是否展开 */
-  readonly menuOpen = signal(false);
   readonly displayName = computed(() => this.item().title || this.item().name || '');
+
+  readonly slotTone = computed<'' | 'ok' | 'warn'>(() => {
+    const tone = this.statusTone();
+    return tone === 'none' ? '' : tone;
+  });
 
   /** 身份行第二行：清单条目是作者；已装条目没有作者，用目录名顶上 */
   readonly subLine = computed(() => this.item().author || this.item().dir || '');
@@ -498,19 +478,8 @@ export class NodeCardComponent {
     return { name, image };
   });
 
-  toggleMenu(_event?: MouseEvent): void {
-    this.menuOpen.update((open) => !open);
-  }
-
   onRemove(): void {
-    this.menuOpen.set(false);
     this.remove.emit();
-  }
-
-  closeMenuOnOutside(ev: MouseEvent): void {
-    if (!this.menuOpen()) return;
-    const el = ev.target as HTMLElement | null;
-    if (!el?.closest('.nd-menu') && !el?.closest('.acard-kebab')) this.menuOpen.set(false);
   }
 }
 

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { CardActionComponent } from '../../ui/card-action';
 import { CardBodyComponent } from '../../ui/card-body';
 import { CardKebabComponent } from '../../ui/card-kebab';
 import { CardMarkComponent } from '../../ui/card-mark';
 import { CardOriginComponent } from '../../ui/card-origin';
+import { CardSlotComponent } from '../../ui/card-slot';
 import { CardMenuComponent } from '../../ui/card-menu';
 import type { CardMenuItem } from '../../ui/card-menu';
 import { HubCardComponent } from '../../ui/hub-card';
@@ -25,11 +27,13 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
 @Component({
   selector: 'app-proto-cards',
   imports: [
+    CardActionComponent,
     CardBodyComponent,
     CardKebabComponent,
     CardMarkComponent,
     CardMenuComponent,
     CardOriginComponent,
+    CardSlotComponent,
     HubCardComponent,
     GridComponent,
     LibraryCardComponent,
@@ -168,6 +172,11 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
         <ui-card-body title="标题由调用方传入">
           <span class="part-meta">详情区：内容由卡片投影，组件不规定有什么</span>
         </ui-card-body>
+      </div>
+      <div class="part-stage part-column">
+        <p class="part-caption">ui-card-slot / ui-card-action</p>
+        <ui-card-slot status="在库" size="6.4 GB" tone="ok" />
+        <ui-card-action label="打开" />
       </div>
     </div>
 
@@ -343,7 +352,7 @@ export class ProtoCardsComponent {
     { layer: '标题 / 详情', shared: 'ui-card-body', byKind: '标题与 meta', byState: '—' },
     { layer: '状态槽', shared: '.acard-slot 几何', byKind: '左右字段', byState: '磁盘 vs 下载' },
     { layer: '标签', shared: 'ui-badge（sm）', byKind: '文件类型 / 分组 / 节点类', byState: '—' },
-    { layer: '动作行', shared: 'ui-card-origin + .acard-primary', byKind: '主按钮文案', byState: '打开 / 下载 / 安装' },
+    { layer: '动作行', shared: 'ui-card-origin + ui-card-action', byKind: '主按钮文案', byState: '打开 / 下载 / 安装' },
     { layer: '菜单', shared: 'ui-card-kebab + ui-card-menu', byKind: '条目内容', byState: '删除 / 运行 / 卸载' },
   ];
 

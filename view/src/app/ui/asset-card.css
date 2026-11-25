@@ -16,9 +16,9 @@
  *   ① 封面      .acard-media / .acard-plate   铺满整卡
  *   ② 身份行    .acard-head / .acard-mark / .acard-ident
  *   ③ 原站入口  ui-card-origin                动作行左侧图标，右上角留给 ⋯
- *   ④ 状态槽    .acard-slot / .acard-rule / .acard-size   左状态 · 白线 · 右大小
+ *   ④ 状态槽    ui-card-slot                              左状态 · 白线 · 右大小
  *   ⑤ 分类标签  .acard-tags                    只放一枚
- *   ⑥ 动作行    .acard-foot                    ⋯ 在左，主按钮在右
+ *   ⑥ 动作行    .acard-foot                    ui-card-action 在右
  *
  * 【类名约定】
  *   .acard*    外壳与几何（本文件，共享）
@@ -76,27 +76,6 @@
 /* 卡片内的封面铭牌身份行统一收掉，由 .acard-head 承担 */
 :host ::ng-deep .acard-plate .head { display: none; }
 
-/* 卡片的动作行按钮：所有卡共用一套，禁止在组件里重写 */
-.acard-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--card-action-height, 28px);
-  padding: 0 var(--card-action-padding, 12px);
-  border: 0;
-  border-radius: var(--ui-radius-pill);
-  background: var(--card-scrim-action-bg, var(--ui-primary));
-  color: var(--card-scrim-action-ink, var(--ui-on-primary));
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  text-decoration: none;
-}
-.acard-primary:hover { filter: brightness(1.06); }
-.acard-primary:disabled { opacity: 0.5; cursor: default; filter: none; }
-
 /* ---- ② 身份行：左上「32×32 标识块 + 厂名 / 作者两行」 ---- */
 .acard-head {
   position: absolute;
@@ -117,7 +96,7 @@
   flex-direction: column;
   gap: 1px;
 }
-.acard-ident b {
+.acard-ident ::ng-deep b {
   min-width: 0;
   font-size: 11px;
   font-weight: 600;
@@ -128,7 +107,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.acard-ident span {
+.acard-ident ::ng-deep span {
   min-width: 0;
   font-size: 9.5px;
   font-weight: 500;
@@ -138,8 +117,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.acard.on-shot .acard-ident b { color: #fff; text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
-.acard.on-shot .acard-ident span { color: rgb(255 255 255 / 0.8); text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
+.acard.on-shot .acard-ident ::ng-deep b { color: #fff; text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
+.acard.on-shot .acard-ident ::ng-deep span { color: rgb(255 255 255 / 0.8); text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
 
 /* ---- ③ 原站链接：右上角，本地库与发现页同一位置、同一种样式 ---- */
 
@@ -165,31 +144,6 @@
   text-overflow: ellipsis;
 }
 
-/* ---- ④ 状态槽：左状态 · 半透明白线 · 右大小 ---- */
-.acard-slot {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  font-size: var(--card-slot-size);
-  font-weight: 600;
-  color: var(--card-scrim-ink);
-}
-.acard-slot .is-ok { color: var(--card-scrim-ok); }
-.acard-slot .is-warn { color: var(--card-scrim-warn); }
-.acard-slot .is-err { color: var(--card-scrim-err); }
-.acard-rule {
-  flex: 1 1 auto;
-  min-width: 12px;
-  height: 1px;
-  background: var(--card-scrim-line);
-}
-.acard-size {
-  flex: none;
-  color: var(--card-scrim-muted);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---- ⑤ 分类标签：只放一枚，单行不换行 ---- */
 .acard-tags {
   display: flex;
@@ -198,7 +152,7 @@
   height: 16px;
   overflow: hidden;
 }
-.acard-tags ui-badge {
+.acard-tags ::ng-deep ui-badge {
   display: inline-flex;
   align-items: center;
   flex: 0 1 auto;
@@ -217,7 +171,7 @@
 }
 
 /* 标识类标签（节点类名）：等宽小字，比分类长，单独放宽 */
-.acard-tags ui-badge.is-mono {
+.acard-tags ::ng-deep ui-badge.is-mono {
   max-width: 68%;
 }
 
@@ -227,11 +181,11 @@
   letter-spacing: -0.01em;
 }
 
-.acard-tags ui-badge.is-none {
+.acard-tags ::ng-deep ui-badge.is-none {
   --badge-gray-ink: var(--card-scrim-muted);
 }
 
-.acard-tags ui-badge.is-more {
+.acard-tags ::ng-deep ui-badge.is-more {
   flex: none;
   max-width: none;
 }
@@ -241,10 +195,11 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 5px;
   margin-top: 1px;
 }
-.acard-foot .acard-primary { margin-left: auto; }
+
 
 
 
