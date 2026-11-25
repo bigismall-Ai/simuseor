@@ -50,10 +50,10 @@ import { Component, input } from '@angular/core';
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 16px;
+      gap: var(--ui-space-4);
       flex-wrap: wrap;
-      margin-bottom: 16px;
-      padding-bottom: 13px;
+      margin-bottom: var(--ui-space-4);
+      padding-bottom: var(--ui-space-3);
       border-bottom: 1px solid var(--ui-border-2);
     }
 
@@ -62,9 +62,9 @@ import { Component, input } from '@angular/core';
     }
 
     .ui-page-kicker {
-      margin: 0 0 5px;
+      margin: 0 0 var(--ui-space-1);
       color: var(--ui-muted);
-      font-size: 10px;
+      font-size: var(--ui-text-xs);
       font-weight: 600;
       letter-spacing: 0.11em;
       text-transform: uppercase;
@@ -72,22 +72,23 @@ import { Component, input } from '@angular/core';
 
     .ui-panel-heading h2 {
       margin: 0;
-      font-size: 14px;
+      font-size: var(--ui-text-lg);
       font-weight: 600;
       letter-spacing: -0.01em;
+      scroll-margin-top: var(--ui-scroll-offset);
     }
 
     .ui-panel-hint {
-      max-width: 76ch;
-      margin: 4px 0 0;
+      max-width: var(--layout-prose-measure);
+      margin: var(--ui-space-1) 0 0;
       color: var(--ui-muted);
-      font-size: 12px;
+      font-size: var(--ui-text-md);
     }
 
     .ui-panel-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ui-space-2);
       flex: none;
     }
 

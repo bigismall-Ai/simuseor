@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 
     .rules {
       margin: 0;
-      padding-left: 18px;
+      padding-left: var(--ui-space-5);
       color: var(--ui-muted);
       font-size: var(--ui-text-sm);
       line-height: 1.75;

@@ -64,6 +64,41 @@ interface SampleListRow {
         </p>
       </ui-section>
 
+      <ui-section title="文档密度" pill="density=docs">
+        <ui-table density="docs">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">读法</th>
+                <th scope="col">默认（控制台）</th>
+                <th scope="col">docs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>字号</td>
+                <td>11.5px 紧凑</td>
+                <td>14px 阅读</td>
+              </tr>
+              <tr>
+                <td>表头</td>
+                <td>铺一档底色、次级文字</td>
+                <td>透明底、正文色</td>
+              </tr>
+              <tr>
+                <td>行分隔</td>
+                <td>斑马底</td>
+                <td>单条细线</td>
+              </tr>
+            </tbody>
+          </table>
+        </ui-table>
+        <p class="hint table-note">
+          文档页用 <code>density="docs"</code>：单元格上下留足 16px，行间只画一条细线，
+          悬停轻微提亮；控制台页面保持默认密度。
+        </p>
+      </ui-section>
+
       <ui-section title="列表卡" pill="ui-list-card">
         <ui-list-card>
           @for (row of listRows; track row.name) {

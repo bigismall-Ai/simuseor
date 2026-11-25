@@ -22,12 +22,12 @@ import { Component, input } from '@angular/core';
     }
 
     .lead {
-      max-width: 72ch;
-      margin: -4px 0 var(--ui-space-4);
+      max-width: var(--layout-prose-measure);
+      margin: calc(var(--ui-space-1) * -1) 0 var(--ui-space-4);
     }
 
     .hint {
-      max-width: 640px;
+      max-width: var(--layout-prose-measure);
       margin: var(--ui-space-3) 0 0;
     }
   `,

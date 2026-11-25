@@ -27,6 +27,7 @@ import { Component } from '@angular/core';
       font-weight: 600;
       line-height: 1.4;
       letter-spacing: -0.01em;
+      scroll-margin-top: var(--ui-scroll-offset);
     }
   `,
 })
