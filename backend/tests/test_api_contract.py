@@ -188,6 +188,10 @@ def test_openapi_locks_core_paths_and_models():
         ("/api/workflows/local", "get"),
         ("/api/nodes/installed", "get"),
         ("/api/library/gpu", "get"),
+        ("/api/search", "get"),
+        ("/api/library", "get"),
+        ("/api/probe", "get"),
+        ("/api/device", "get"),
     ]:
         assert method in schema["paths"][path]
 
@@ -196,3 +200,145 @@ def test_openapi_locks_core_paths_and_models():
     assert "TaskFile" in names
     assert "WorkflowLocalList" in names
     assert "NodeInstalledList" in names
+    assert "SearchResponse" in names
+    assert "LibraryItem" in names
+    assert "ProbeResponse" in names
+    assert "DeviceInfo" in names
+
+
+def test_search_contract(monkeypatch):
+    payload = {
+        "items": [
+            {
+                "id": "org/model",
+                "name": "model",
+                "author": "org",
+                "source": "huggingface",
+                "description": "",
+                "downloads": 1,
+                "likes": 2,
+                "tags": ["flux"],
+                "task": "text-to-image",
+                "url": "https://huggingface.co/org/model",
+                "updated_at": "2026-01-01T00:00:00Z",
+                "image": "https://example.com/a.png",
+            }
+        ],
+        "total": 1,
+        "errors": {},
+        "gated": [],
+    }
+    monkeypatch.setattr(routes.cache, "get_search", lambda key: payload)
+    res = client.get("/api/search", params={"q": "flux"})
+    assert res.status_code == 200
+    assert res.json()["items"][0]["image"].endswith("a.png")
+
+
+def test_library_contract(monkeypatch):
+    model = {
+        "id": "m1",
+        "name": "model.safetensors",
+        "repo_id": "org/model",
+        "source": "huggingface",
+        "local_path": "/tmp/model.safetensors",
+        "size_bytes": 10,
+        "file_count": 1,
+        "tags": '["flux"]',
+        "created_at": "2026-01-01T00:00:00Z",
+        "revision": "",
+        "source_url": "",
+        "folder": "diffusion_models",
+        "folderLabel": "扩散模型",
+        "task": "text-to-image",
+        "taskLabel": "文生图",
+        "vram": {"level": "ok", "text": "可运行", "hint": ""},
+    }
+
+    def fake_query(sql, params=()):
+        if "FROM library_models" in sql:
+            return [dict(model)]
+        if "FROM library_files" in sql:
+            return [{"id": "f1", "path": "model.safetensors", "size": 10}]
+        return []
+
+    monkeypatch.setattr(routes, "query", fake_query)
+    monkeypatch.setattr(routes, "describe_model", lambda *args: {})
+    monkeypatch.setattr(routes, "flush_meta_cache", lambda: None)
+    res = client.get("/api/library")
+    assert res.status_code == 200
+    assert res.json()[0]["vram"]["level"] == "ok"
+    assert res.json()[0]["files"][0]["path"] == "model.safetensors"
+
+
+def test_probe_contract(monkeypatch):
+    path = {
+        "path": "direct",
+        "state": "ok",
+        "latency_ms": 100,
+        "speed_mbps": 8.2,
+        "reason": "",
+        "reason_text": "",
+        "detail": "",
+        "skip": "",
+        "restricted": False,
+    }
+    monkeypatch.setattr(
+        routes.probe,
+        "status",
+        lambda: {
+            "sources": [
+                {
+                    "source": "huggingface",
+                    "label": "Hugging Face",
+                    "verdict": "ok",
+                    "paths": {"direct": path, "mirror": path, "proxy": path},
+                    "path": "direct",
+                    "path_text": "直连",
+                    "fallback": False,
+                    "gated": False,
+                    "checked_at": 1,
+                    "age_seconds": 2,
+                }
+            ],
+            "strategy": "direct",
+            "summary": {},
+            "cooldown": {},
+        },
+    )
+    res = client.get("/api/probe")
+    assert res.status_code == 200
+    assert res.json()["sources"][0]["paths"]["direct"]["state"] == "ok"
+
+
+def test_device_contract(monkeypatch):
+    from app.comfy import probe as hw
+
+    class Report:
+        def model_dump(self):
+            return {
+                "os": "windows",
+                "os_version": "11",
+                "os_build": "26100",
+                "arch": "x86_64",
+                "is_wsl": False,
+                "memory_gb": 64,
+                "unified_memory": False,
+                "gpus": [],
+                "primary_gpu": None,
+                "pythons": [],
+                "instances": [],
+                "disks": [],
+                "raw": {},
+            }
+
+    monkeypatch.setattr(hw, "hardware_snapshot", lambda: Report())
+    monkeypatch.setattr(
+        routes,
+        "gpu_snapshot",
+        lambda: {"name": "RTX", "vendor": "nvidia", "vramMb": 16376, "vramGb": 15.99, "vramText": "16 GB"},
+    )
+    monkeypatch.setattr(routes, "load_settings", lambda: {"download": {"save_dir": "/tmp"}})
+    res = client.get("/api/device")
+    assert res.status_code == 200
+    assert res.json()["os"] == "windows"
+    assert res.json()["gpu"]["vramMb"] == 16376

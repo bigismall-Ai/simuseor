@@ -121,3 +121,127 @@ class NodeInstalledItem(BaseModel):
 
 class NodeInstalledList(BaseModel):
     items: list[NodeInstalledItem] = Field(default_factory=list)
+
+
+class SearchItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    name: str
+    author: str = ""
+    source: str
+    description: str = ""
+    downloads: int = 0
+    likes: int = 0
+    tags: list[str] = Field(default_factory=list)
+    task: str = ""
+    url: str = ""
+    updated_at: str = ""
+
+
+class SearchResponse(BaseModel):
+    items: list[SearchItem] = Field(default_factory=list)
+    total: int = 0
+    errors: dict[str, str] = Field(default_factory=dict)
+    gated: list[str] = Field(default_factory=list)
+
+
+class LibraryFile(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    path: str
+    size: int = 0
+
+
+class VramInfo(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    level: str = ""
+    text: str = ""
+    hint: str = ""
+
+
+class LibraryItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    name: str
+    repo_id: str = ""
+    source: str = ""
+    local_path: str = ""
+    size_bytes: int = 0
+    file_count: int = 0
+    tags: list[str] = Field(default_factory=list)
+    created_at: str = ""
+    revision: str = ""
+    source_url: str = ""
+    files: list[LibraryFile] = Field(default_factory=list)
+    folder: str = ""
+    folderLabel: str = ""
+    task: str = ""
+    taskLabel: str = ""
+    isDemo: bool = False
+    hasWeights: bool = False
+    vram: VramInfo | None = None
+
+
+class ProbePath(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    path: str = ""
+    state: str = ""
+    latency_ms: int | float | None = None
+    speed_mbps: int | float | None = None
+    reason: str = ""
+    reason_text: str = ""
+    detail: str = ""
+    skip: str = ""
+    restricted: bool = False
+
+
+class ProbePaths(BaseModel):
+    direct: ProbePath = Field(default_factory=ProbePath)
+    mirror: ProbePath = Field(default_factory=ProbePath)
+    proxy: ProbePath = Field(default_factory=ProbePath)
+
+
+class ProbeSource(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    source: str
+    label: str = ""
+    verdict: str = ""
+    paths: ProbePaths = Field(default_factory=ProbePaths)
+    path: str = ""
+    path_text: str = ""
+    fallback: bool = False
+    gated: bool = False
+    checked_at: int | float = 0
+    age_seconds: int | float | None = None
+
+
+class ProbeResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    sources: list[ProbeSource] = Field(default_factory=list)
+    strategy: str = ""
+    summary: dict = Field(default_factory=dict)
+    cooldown: dict = Field(default_factory=dict)
+
+
+class DeviceInfo(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    os: str = ""
+    os_version: str = ""
+    os_build: str = ""
+    arch: str = ""
+    is_wsl: bool = False
+    memory_gb: int | float = 0
+    unified_memory: bool = False
+    gpus: list[dict] = Field(default_factory=list)
+    primary_gpu: dict | None = None
+    gpu: GpuInfo | None = None
+    save_dir: str = ""
+    save_disk: dict = Field(default_factory=dict)

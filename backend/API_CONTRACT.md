@@ -15,7 +15,14 @@
 ```
 
 改动响应字段后：重新生成 `backend/openapi.json`，同步更新
-`backend/tests/test_api_contract.py` 里的形状断言。
+`backend/tests/test_api_contract.py` 里的形状断言，再生成前端类型：
+
+```bash
+cd tests && npm run api:types
+cd tests && npm run api:types:check
+```
+
+前端只从 `view/src/app/core/api-contract.ts` 取别名，不手写同名字段。
 
 ## 已锁定的响应模型
 
@@ -28,6 +35,10 @@
 | `GET /api/tasks/{id}` | `TaskItem` | 任务详情，含 `files` |
 | `GET /api/workflows/local` | `WorkflowLocalList` | 本地工作流与分组 |
 | `GET /api/nodes/installed` | `NodeInstalledList` | 已装节点包 |
+| `GET /api/search` | `SearchResponse` | 发现列表与来源错误 |
+| `GET /api/library` | `list[LibraryItem]` | 本地模型库 |
+| `GET /api/probe` | `ProbeResponse` | 源探针四态与通路 |
+| `GET /api/device` | `DeviceInfo` | 硬件与下载目录余量 |
 
 历史字段较多的对象（任务、工作流、节点包）使用 `extra="allow"`：
 新增字段不会被过滤，但上表里的必填字段不能改名或删除。

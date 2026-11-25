@@ -1,0 +1,45 @@
+name: API Contract
+
+on:
+  push:
+    paths:
+      - 'backend/openapi.json'
+      - 'backend/app/api/**'
+      - 'backend/scripts/dump_openapi.py'
+      - 'tests/e2e/gen-api-types.mjs'
+      - 'view/src/app/core/api-types.ts'
+      - 'view/src/app/core/api-contract.ts'
+      - '.github/workflows/api-contract.yml'
+  pull_request:
+    paths:
+      - 'backend/openapi.json'
+      - 'backend/app/api/**'
+      - 'backend/scripts/dump_openapi.py'
+      - 'tests/e2e/gen-api-types.mjs'
+      - 'view/src/app/core/api-types.ts'
+      - 'view/src/app/core/api-contract.ts'
+      - '.github/workflows/api-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: 安装生成器
+        run: cd tests && npm ci --no-audit --no-fund
+      - name: 校验前端类型与 OpenAPI 一致
+        run: node tests/e2e/gen-api-types.mjs --check

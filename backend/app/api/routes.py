@@ -35,9 +35,13 @@ from ..download.manager import manager
 from ..sources import get_adapter
 from ..sources.base import SourceError
 from .schemas import (
+    DeviceInfo,
     FolderOption,
     GpuInfo,
     HealthResponse,
+    LibraryItem,
+    ProbeResponse,
+    SearchResponse,
     NodeInstalledList,
     TaskItem,
     WorkflowLocalList,
@@ -235,7 +239,7 @@ def put_settings(body: dict) -> dict:
 
 
 # ---------------- 源探针（可达性 + 测速） ----------------
-@router.get("/probe")
+@router.get("/probe", response_model=ProbeResponse)
 def probe_status() -> dict:
     """全部源的最新探针结论 + 下载策略汇总。
 
@@ -627,7 +631,7 @@ def delete_task(task_id: str) -> dict:
 
 
 # ---------------- 本地模型库 ----------------
-@router.get("/library")
+@router.get("/library", response_model=list[LibraryItem])
 def list_library(
     q: str = "",
     source: str = "",
@@ -681,7 +685,7 @@ def list_library(
     return models
 
 
-@router.get("/device")
+@router.get("/device", response_model=DeviceInfo)
 def device_capabilities() -> dict:
     """本机硬件能力 + 下载目录的实时可用空间。
 
@@ -893,7 +897,7 @@ def open_library(model_id: str) -> dict:
 
 
 # ---------------- 模型搜索（发现列表） ----------------
-@router.get("/search")
+@router.get("/search", response_model=SearchResponse)
 def search_models(q: str = "", source: str = "", sort: str = "downloads", limit: int = 20, page: int = 1, task: str = "") -> dict:
     """跨源搜索。
 

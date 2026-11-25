@@ -7,12 +7,16 @@
     "test:e2e:ui": "playwright test --ui",
     "report": "playwright show-report",
     "vis:shots": "node e2e/vis-visual.mjs",
-    "vis:update": "node e2e/vis-visual.mjs --update"
+    "vis:update": "node e2e/vis-visual.mjs --update",
+    "api:types": "node e2e/gen-api-types.mjs",
+    "api:types:check": "node e2e/gen-api-types.mjs --check"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
+    "openapi-typescript": "^7.13.0",
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
-    "tar": "^7.5.23"
+    "tar": "^7.5.23",
+    "tweetsodium": "^0.0.4"
   }
 }

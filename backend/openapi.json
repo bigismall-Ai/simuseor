@@ -122,6 +122,95 @@
         "title": "CreateTaskRequest",
         "type": "object"
       },
+      "DeviceInfo": {
+        "additionalProperties": true,
+        "properties": {
+          "arch": {
+            "default": "",
+            "title": "Arch",
+            "type": "string"
+          },
+          "gpu": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GpuInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gpus": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Gpus",
+            "type": "array"
+          },
+          "is_wsl": {
+            "default": false,
+            "title": "Is Wsl",
+            "type": "boolean"
+          },
+          "memory_gb": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "default": 0,
+            "title": "Memory Gb"
+          },
+          "os": {
+            "default": "",
+            "title": "Os",
+            "type": "string"
+          },
+          "os_build": {
+            "default": "",
+            "title": "Os Build",
+            "type": "string"
+          },
+          "os_version": {
+            "default": "",
+            "title": "Os Version",
+            "type": "string"
+          },
+          "primary_gpu": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Gpu"
+          },
+          "save_dir": {
+            "default": "",
+            "title": "Save Dir",
+            "type": "string"
+          },
+          "save_disk": {
+            "additionalProperties": true,
+            "title": "Save Disk",
+            "type": "object"
+          },
+          "unified_memory": {
+            "default": false,
+            "title": "Unified Memory",
+            "type": "boolean"
+          }
+        },
+        "title": "DeviceInfo",
+        "type": "object"
+      },
       "FolderOption": {
         "properties": {
           "id": {
@@ -215,6 +304,143 @@
           "web"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "LibraryFile": {
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "size": {
+            "default": 0,
+            "title": "Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ],
+        "title": "LibraryFile",
+        "type": "object"
+      },
+      "LibraryItem": {
+        "additionalProperties": true,
+        "properties": {
+          "created_at": {
+            "default": "",
+            "title": "Created At",
+            "type": "string"
+          },
+          "file_count": {
+            "default": 0,
+            "title": "File Count",
+            "type": "integer"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryFile"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "folder": {
+            "default": "",
+            "title": "Folder",
+            "type": "string"
+          },
+          "folderLabel": {
+            "default": "",
+            "title": "Folderlabel",
+            "type": "string"
+          },
+          "hasWeights": {
+            "default": false,
+            "title": "Hasweights",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "isDemo": {
+            "default": false,
+            "title": "Isdemo",
+            "type": "boolean"
+          },
+          "local_path": {
+            "default": "",
+            "title": "Local Path",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "repo_id": {
+            "default": "",
+            "title": "Repo Id",
+            "type": "string"
+          },
+          "revision": {
+            "default": "",
+            "title": "Revision",
+            "type": "string"
+          },
+          "size_bytes": {
+            "default": 0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "source": {
+            "default": "",
+            "title": "Source",
+            "type": "string"
+          },
+          "source_url": {
+            "default": "",
+            "title": "Source Url",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "task": {
+            "default": "",
+            "title": "Task",
+            "type": "string"
+          },
+          "taskLabel": {
+            "default": "",
+            "title": "Tasklabel",
+            "type": "string"
+          },
+          "vram": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VramInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "LibraryItem",
         "type": "object"
       },
       "LibraryPatch": {
@@ -344,6 +570,193 @@
         "title": "NodeInstalledList",
         "type": "object"
       },
+      "ProbePath": {
+        "additionalProperties": true,
+        "properties": {
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "path": {
+            "default": "",
+            "title": "Path",
+            "type": "string"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "reason_text": {
+            "default": "",
+            "title": "Reason Text",
+            "type": "string"
+          },
+          "restricted": {
+            "default": false,
+            "title": "Restricted",
+            "type": "boolean"
+          },
+          "skip": {
+            "default": "",
+            "title": "Skip",
+            "type": "string"
+          },
+          "speed_mbps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed Mbps"
+          },
+          "state": {
+            "default": "",
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "title": "ProbePath",
+        "type": "object"
+      },
+      "ProbePaths": {
+        "properties": {
+          "direct": {
+            "$ref": "#/components/schemas/ProbePath"
+          },
+          "mirror": {
+            "$ref": "#/components/schemas/ProbePath"
+          },
+          "proxy": {
+            "$ref": "#/components/schemas/ProbePath"
+          }
+        },
+        "title": "ProbePaths",
+        "type": "object"
+      },
+      "ProbeResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "cooldown": {
+            "additionalProperties": true,
+            "title": "Cooldown",
+            "type": "object"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ProbeSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "strategy": {
+            "default": "",
+            "title": "Strategy",
+            "type": "string"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "title": "Summary",
+            "type": "object"
+          }
+        },
+        "title": "ProbeResponse",
+        "type": "object"
+      },
+      "ProbeSource": {
+        "additionalProperties": true,
+        "properties": {
+          "age_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age Seconds"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "default": 0,
+            "title": "Checked At"
+          },
+          "fallback": {
+            "default": false,
+            "title": "Fallback",
+            "type": "boolean"
+          },
+          "gated": {
+            "default": false,
+            "title": "Gated",
+            "type": "boolean"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "path": {
+            "default": "",
+            "title": "Path",
+            "type": "string"
+          },
+          "path_text": {
+            "default": "",
+            "title": "Path Text",
+            "type": "string"
+          },
+          "paths": {
+            "$ref": "#/components/schemas/ProbePaths"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "verdict": {
+            "default": "",
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "ProbeSource",
+        "type": "object"
+      },
       "ProxyTestRequest": {
         "properties": {
           "url": {
@@ -399,6 +812,104 @@
           "path"
         ],
         "title": "ScanRequest",
+        "type": "object"
+      },
+      "SearchItem": {
+        "additionalProperties": true,
+        "properties": {
+          "author": {
+            "default": "",
+            "title": "Author",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "downloads": {
+            "default": 0,
+            "title": "Downloads",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "likes": {
+            "default": 0,
+            "title": "Likes",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "task": {
+            "default": "",
+            "title": "Task",
+            "type": "string"
+          },
+          "updated_at": {
+            "default": "",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "source"
+        ],
+        "title": "SearchItem",
+        "type": "object"
+      },
+      "SearchResponse": {
+        "properties": {
+          "errors": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "object"
+          },
+          "gated": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Gated",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SearchItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "title": "SearchResponse",
         "type": "object"
       },
       "TaskFile": {
@@ -627,6 +1138,28 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VramInfo": {
+        "additionalProperties": true,
+        "properties": {
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "level": {
+            "default": "",
+            "title": "Level",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "title": "VramInfo",
         "type": "object"
       },
       "WorkflowCoverCandidatesRequest": {
@@ -1859,9 +2392,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Device Capabilities Api Device Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/DeviceInfo"
                 }
               }
             },
@@ -1974,8 +2505,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "additionalProperties": true,
-                    "type": "object"
+                    "$ref": "#/components/schemas/LibraryItem"
                   },
                   "title": "Response List Library Api Library Get",
                   "type": "array"
@@ -2591,9 +3121,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Probe Status Api Probe Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/ProbeResponse"
                 }
               }
             },
@@ -2775,9 +3303,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Search Models Api Search Get",
-                  "type": "object"
+                  "$ref": "#/components/schemas/SearchResponse"
                 }
               }
             },

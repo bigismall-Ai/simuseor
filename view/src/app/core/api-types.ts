@@ -1361,6 +1361,64 @@ export interface components {
              */
             task: string;
         };
+        /** DeviceInfo */
+        DeviceInfo: {
+            /**
+             * Arch
+             * @default
+             */
+            arch: string;
+            gpu?: components["schemas"]["GpuInfo"] | null;
+            /** Gpus */
+            gpus?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Is Wsl
+             * @default false
+             */
+            is_wsl: boolean;
+            /**
+             * Memory Gb
+             * @default 0
+             */
+            memory_gb: number;
+            /**
+             * Os
+             * @default
+             */
+            os: string;
+            /**
+             * Os Build
+             * @default
+             */
+            os_build: string;
+            /**
+             * Os Version
+             * @default
+             */
+            os_version: string;
+            /** Primary Gpu */
+            primary_gpu?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Save Dir
+             * @default
+             */
+            save_dir: string;
+            /** Save Disk */
+            save_disk?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Unified Memory
+             * @default false
+             */
+            unified_memory: boolean;
+        } & {
+            [key: string]: unknown;
+        };
         /** FolderOption */
         FolderOption: {
             /** Id */
@@ -1409,6 +1467,104 @@ export interface components {
             status: string;
             /** Web */
             web: boolean;
+        };
+        /** LibraryFile */
+        LibraryFile: {
+            /** Id */
+            id: string;
+            /** Path */
+            path: string;
+            /**
+             * Size
+             * @default 0
+             */
+            size: number;
+        } & {
+            [key: string]: unknown;
+        };
+        /** LibraryItem */
+        LibraryItem: {
+            /**
+             * Created At
+             * @default
+             */
+            created_at: string;
+            /**
+             * File Count
+             * @default 0
+             */
+            file_count: number;
+            /** Files */
+            files?: components["schemas"]["LibraryFile"][];
+            /**
+             * Folder
+             * @default
+             */
+            folder: string;
+            /**
+             * Folderlabel
+             * @default
+             */
+            folderLabel: string;
+            /**
+             * Hasweights
+             * @default false
+             */
+            hasWeights: boolean;
+            /** Id */
+            id: string;
+            /**
+             * Isdemo
+             * @default false
+             */
+            isDemo: boolean;
+            /**
+             * Local Path
+             * @default
+             */
+            local_path: string;
+            /** Name */
+            name: string;
+            /**
+             * Repo Id
+             * @default
+             */
+            repo_id: string;
+            /**
+             * Revision
+             * @default
+             */
+            revision: string;
+            /**
+             * Size Bytes
+             * @default 0
+             */
+            size_bytes: number;
+            /**
+             * Source
+             * @default
+             */
+            source: string;
+            /**
+             * Source Url
+             * @default
+             */
+            source_url: string;
+            /** Tags */
+            tags?: string[];
+            /**
+             * Task
+             * @default
+             */
+            task: string;
+            /**
+             * Tasklabel
+             * @default
+             */
+            taskLabel: string;
+            vram?: components["schemas"]["VramInfo"] | null;
+        } & {
+            [key: string]: unknown;
         };
         /** LibraryPatch */
         LibraryPatch: {
@@ -1488,6 +1644,121 @@ export interface components {
             /** Items */
             items?: components["schemas"]["NodeInstalledItem"][];
         };
+        /** ProbePath */
+        ProbePath: {
+            /**
+             * Detail
+             * @default
+             */
+            detail: string;
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /**
+             * Path
+             * @default
+             */
+            path: string;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /**
+             * Reason Text
+             * @default
+             */
+            reason_text: string;
+            /**
+             * Restricted
+             * @default false
+             */
+            restricted: boolean;
+            /**
+             * Skip
+             * @default
+             */
+            skip: string;
+            /** Speed Mbps */
+            speed_mbps?: number | null;
+            /**
+             * State
+             * @default
+             */
+            state: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** ProbePaths */
+        ProbePaths: {
+            direct?: components["schemas"]["ProbePath"];
+            mirror?: components["schemas"]["ProbePath"];
+            proxy?: components["schemas"]["ProbePath"];
+        };
+        /** ProbeResponse */
+        ProbeResponse: {
+            /** Cooldown */
+            cooldown?: {
+                [key: string]: unknown;
+            };
+            /** Sources */
+            sources?: components["schemas"]["ProbeSource"][];
+            /**
+             * Strategy
+             * @default
+             */
+            strategy: string;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            };
+        } & {
+            [key: string]: unknown;
+        };
+        /** ProbeSource */
+        ProbeSource: {
+            /** Age Seconds */
+            age_seconds?: number | null;
+            /**
+             * Checked At
+             * @default 0
+             */
+            checked_at: number;
+            /**
+             * Fallback
+             * @default false
+             */
+            fallback: boolean;
+            /**
+             * Gated
+             * @default false
+             */
+            gated: boolean;
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /**
+             * Path
+             * @default
+             */
+            path: string;
+            /**
+             * Path Text
+             * @default
+             */
+            path_text: string;
+            paths?: components["schemas"]["ProbePaths"];
+            /** Source */
+            source: string;
+            /**
+             * Verdict
+             * @default
+             */
+            verdict: string;
+        } & {
+            [key: string]: unknown;
+        };
         /** ProxyTestRequest */
         ProxyTestRequest: {
             /**
@@ -1522,6 +1793,70 @@ export interface components {
             match: boolean;
             /** Path */
             path: string;
+        };
+        /** SearchItem */
+        SearchItem: {
+            /**
+             * Author
+             * @default
+             */
+            author: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Downloads
+             * @default 0
+             */
+            downloads: number;
+            /** Id */
+            id: string;
+            /**
+             * Likes
+             * @default 0
+             */
+            likes: number;
+            /** Name */
+            name: string;
+            /** Source */
+            source: string;
+            /** Tags */
+            tags?: string[];
+            /**
+             * Task
+             * @default
+             */
+            task: string;
+            /**
+             * Updated At
+             * @default
+             */
+            updated_at: string;
+            /**
+             * Url
+             * @default
+             */
+            url: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** SearchResponse */
+        SearchResponse: {
+            /** Errors */
+            errors?: {
+                [key: string]: string;
+            };
+            /** Gated */
+            gated?: string[];
+            /** Items */
+            items?: components["schemas"]["SearchItem"][];
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
         };
         /** TaskFile */
         TaskFile: {
@@ -1645,6 +1980,26 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VramInfo */
+        VramInfo: {
+            /**
+             * Hint
+             * @default
+             */
+            hint: string;
+            /**
+             * Level
+             * @default
+             */
+            level: string;
+            /**
+             * Text
+             * @default
+             */
+            text: string;
+        } & {
+            [key: string]: unknown;
         };
         /**
          * WorkflowCoverCandidatesRequest
@@ -2501,9 +2856,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["DeviceInfo"];
                 };
             };
         };
@@ -2569,9 +2922,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    }[];
+                    "application/json": components["schemas"]["LibraryItem"][];
                 };
             };
             /** @description Validation Error */
@@ -3064,9 +3415,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["ProbeResponse"];
                 };
             };
         };
@@ -3185,9 +3534,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["SearchResponse"];
                 };
             };
             /** @description Validation Error */
