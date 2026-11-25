@@ -12,6 +12,8 @@ import { ProtoShellComponent } from '../../proto-shell';
 import { TagComponent } from '../../../../ui/tag';
 import { ListRowComponent } from '../../../../ui/list-row';
 import { ProgressComponent } from '../../../../ui/progress';
+import { TabsComponent } from '../../../../ui/tabs';
+import type { TabItem } from '../../../../ui/tabs';
 
 type SourceState = 'ok' | 'degraded' | 'down';
 
@@ -36,7 +38,6 @@ interface WeightRow {
 
 type TaskState = 'active' | 'paused' | 'done';
 type StrategyKey = 'auto' | 'direct' | 'mirror' | 'proxy';
-type TaskTab = 'all' | 'active' | 'done';
 
 interface TaskItem {
   id: string;
@@ -64,6 +65,7 @@ interface TaskItem {
   imports: [
     ListRowComponent,
     ProgressComponent,
+    TabsComponent,
     TagComponent,
     ProtoShellComponent,
     PageHeaderComponent,
@@ -232,38 +234,13 @@ interface TaskItem {
 
         <section class="panel" aria-label="下载任务">
           <div class="task-toolbar">
-            <div class="tabs" role="tablist" aria-label="任务状态">
-              <button
-                class="tab"
-                type="button"
-                role="tab"
-                [class.on]="tab() === 'all'"
-                [attr.aria-selected]="tab() === 'all'"
-                (click)="tab.set('all')"
-              >
-                全部 <b>{{ allCount() }}</b>
-              </button>
-              <button
-                class="tab"
-                type="button"
-                role="tab"
-                [class.on]="tab() === 'active'"
-                [attr.aria-selected]="tab() === 'active'"
-                (click)="tab.set('active')"
-              >
-                进行中 <b>{{ activeCount() }}</b>
-              </button>
-              <button
-                class="tab"
-                type="button"
-                role="tab"
-                [class.on]="tab() === 'done'"
-                [attr.aria-selected]="tab() === 'done'"
-                (click)="tab.set('done')"
-              >
-                已完成 <b>{{ doneCount() }}</b>
-              </button>
-            </div>
+            <ui-tabs
+              [tabs]="taskTabs()"
+              [(value)]="tab"
+              variant="pill"
+              size="sm"
+              label="下载状态"
+            />
 
             <ui-input
               class="task-search"
@@ -589,7 +566,7 @@ export class ProtoDownloadsComponent {
   readonly showAllWeights = signal(false);
   readonly strategyLocked = signal(true);
   readonly strategyChoice = signal<StrategyKey>('auto');
-  readonly tab = signal<TaskTab>('all');
+  readonly tab = signal('all');
   readonly taskQuery = signal('');
   readonly notice = signal('');
 
@@ -634,6 +611,12 @@ export class ProtoDownloadsComponent {
   readonly allCount = computed(() => this.tasks().length);
   readonly activeCount = computed(() => this.tasks().filter((t) => t.state !== 'done').length);
   readonly doneCount = computed(() => this.tasks().filter((t) => t.state === 'done').length);
+
+  readonly taskTabs = computed<TabItem[]>(() => [
+    { key: 'all', label: '全部', count: this.allCount() },
+    { key: 'active', label: '进行中', count: this.activeCount() },
+    { key: 'done', label: '已完成', count: this.doneCount() },
+  ]);
 
   readonly searchedTasks = computed(() => {
     const q = this.taskQuery().trim().toLowerCase();
