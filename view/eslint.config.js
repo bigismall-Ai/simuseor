@@ -7,7 +7,7 @@ const localRules = require('./eslint-rules');
 
 module.exports = defineConfig([
   {
-    ignores: ['dist/**', '.angular/**', 'node_modules/**'],
+    ignores: ['dist/**', '.angular/**', 'node_modules/**', 'src/app/core/api-types.ts'],
   },
   {
     files: ['**/*.ts'],
