@@ -54,12 +54,18 @@
   --ui-on-primary: #ffffff;
   --ui-accent: #6b79ff;
   --ui-error: var(--ink-accent);
-  --ui-radius: 14px;
-  --ui-radius-panel: 28px;
-  --ui-radius-card: 24px;
-  --ui-radius-list: 16px;
-  --ui-radius-button: 18px;
-  --ui-radius-lg: 16px;
+  /* 圆角阶梯：小件 6 / 控件 8 / 常规 10 / 列表 12 / 卡片 16 / 面板 24 */
+  --ui-radius-xs: 6px;
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 10px;
+  --ui-radius-lg: 12px;
+  --ui-radius-xl: 16px;
+  --ui-radius-2xl: 24px;
+  --ui-radius: var(--ui-radius-md);
+  --ui-radius-panel: var(--ui-radius-2xl);
+  --ui-radius-card: var(--ui-radius-xl);
+  --ui-radius-list: var(--ui-radius-lg);
+  --ui-radius-button: var(--ui-radius-md);
   --ui-radius-pill: 999px;
   --ui-glass-blur: 16px;
   /* 代码块与旁注：文档页与组件共用，深浅色各自取 --ui-inset / --ui-text-2 */
@@ -218,12 +224,18 @@ html[data-theme='dark'] {
   --ui-on-primary: var(--aurora-text);
   --ui-accent: var(--aurora-primary);
   --ui-error: var(--ink-accent);
-  --ui-radius: 14px;
-  --ui-radius-panel: 28px;
-  --ui-radius-card: 24px;
-  --ui-radius-list: 16px;
-  --ui-radius-button: 18px;
-  --ui-radius-lg: 16px;
+  /* 圆角阶梯：小件 6 / 控件 8 / 常规 10 / 列表 12 / 卡片 16 / 面板 24 */
+  --ui-radius-xs: 6px;
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 10px;
+  --ui-radius-lg: 12px;
+  --ui-radius-xl: 16px;
+  --ui-radius-2xl: 24px;
+  --ui-radius: var(--ui-radius-md);
+  --ui-radius-panel: var(--ui-radius-2xl);
+  --ui-radius-card: var(--ui-radius-xl);
+  --ui-radius-list: var(--ui-radius-lg);
+  --ui-radius-button: var(--ui-radius-md);
   --ui-radius-pill: 999px;
   --ui-glass-blur: 18px;
   --ui-font-display: Georgia, 'Times New Roman', 'Songti SC', 'SimSun', serif;
@@ -494,7 +506,7 @@ a {
   --accent-line: color-mix(in srgb, var(--ui-primary) 45%, transparent);
   --accent-soft: color-mix(in srgb, var(--ui-primary) 12%, transparent);
   --radius: var(--ui-radius-card);
-  --radius-sm: var(--ui-radius-list);
+  --radius-sm: var(--ui-radius-xs);
   --track: var(--ui-inset);
   --ok: color-mix(in srgb, var(--ui-glow-mint) 45%, var(--ui-text));
   --ok-soft: color-mix(in srgb, var(--ui-glow-mint) 16%, transparent);

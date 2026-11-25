@@ -32,7 +32,7 @@ export type TableDensity = 'default' | 'docs';
       border-radius: var(--ui-radius-list);
       background: color-mix(in srgb, var(--ui-surface) 72%, transparent);
       box-shadow: var(--ui-shadow);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(var(--ui-glass-blur));
     }
 
     :host ::ng-deep .table-wrap table {

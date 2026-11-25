@@ -41,7 +41,7 @@ import { ThemeService } from '../core/theme.service';
       width: var(--card-mark-size, 32px);
       height: var(--card-mark-size, 32px);
       overflow: hidden;
-      border-radius: var(--card-mark-radius, 8px);
+      border-radius: var(--card-mark-radius, var(--ui-radius-sm));
       background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
       box-shadow: inset 0 0 0 1px var(--ui-inner-border);
       color: var(--ui-text);

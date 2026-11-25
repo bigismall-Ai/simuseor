@@ -19,7 +19,7 @@ let seq = 0;
  *
  * 负责 Esc / 点遮罩关闭、打开时把焦点送进弹层、关闭时还给触发元素、锁滚动。
  * 生产环境需要完整焦点圈闭时仍走 MatDialog；原型与轻量确认场景用这个，
- * 两边的表面样式共用 `--ui-panel` / `--ui-radius-lg` 令牌。
+ * 两边的表面样式共用 `--ui-panel` / `--ui-radius-card` 令牌。
  *
  * 用法：
  *   <ui-dialog [(open)]="open" title="删除任务？">
@@ -71,7 +71,7 @@ let seq = 0;
       overflow: auto;
       padding: var(--ui-space-5);
       border: 1px solid var(--ui-border);
-      border-radius: var(--ui-radius-lg);
+      border-radius: var(--ui-radius-card);
       background: var(--ui-overlay);
       box-shadow: var(--ui-shadow-md);
     }

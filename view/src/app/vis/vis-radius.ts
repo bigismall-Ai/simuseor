@@ -13,34 +13,49 @@ import { TextComponent } from '../ui/text';
   template: `
     <app-visual-page
       title="圆角"
-      hint="面板 28px，区块 24px，卡片与列表同为 16px，按钮 18px，胶囊 999px。"
+      hint="面板 24px，卡片 16px，列表 12px，控件 10px，小件 6 / 8px，胶囊 999px。"
     >
       <ui-section title="圆角五档" pill="Radius">
           <div class="radius-grid">
             <div class="radius-item">
-              <div class="radius-box" style="border-radius: var(--ui-radius-panel)">28px</div>
+              <div class="radius-box" style="border-radius: var(--ui-radius-panel)">24px</div>
               <b>面板</b>
-              <span>panel / 页面区块 / 内容卡</span>
+              <span>dialog / 大容器</span>
             </div>
             <div class="radius-item">
-              <div class="radius-box" style="border-radius: var(--ui-radius-card)">24px</div>
-              <b>区块</b>
-              <span>section 内容卡 / 浮层内容</span>
+              <div class="radius-box" style="border-radius: var(--ui-radius-card)">16px</div>
+              <b>卡片 · 区块</b>
+              <span>资产卡 / section 内容 / 内层卡</span>
             </div>
             <div class="radius-item">
-              <div class="radius-box" style="border-radius: var(--card-radius)">16px</div>
-              <b>卡片 · 列表</b>
-              <span>资产卡 / 表格 / 列表卡</span>
+              <div class="radius-box" style="border-radius: var(--ui-radius-list)">12px</div>
+              <b>列表</b>
+              <span>表格 / 列表卡 / 工具栏</span>
             </div>
             <div class="radius-item">
-              <div class="radius-box" style="border-radius: var(--ui-radius-button)">18px</div>
-              <b>按钮</b>
-              <span>flat / tonal / text / icon</span>
+              <div class="radius-box" style="border-radius: var(--ui-radius-md)">10px</div>
+              <b>控件</b>
+              <span>输入框 / 菜单 / 按钮容器</span>
             </div>
             <div class="radius-item">
               <div class="radius-box" style="border-radius: var(--ui-radius-pill)">999px</div>
               <b>胶囊</b>
               <span>chip、pill、badge、搜索框</span>
+            </div>
+          </div>
+        </ui-section>
+
+      <ui-section title="小件圆角" pill="Small">
+          <div class="radius-grid">
+            <div class="radius-item">
+              <div class="radius-box" style="border-radius: var(--ui-radius-xs)">6px</div>
+              <b>小件</b>
+              <span>菜单项 / 卡片角标 / kbd</span>
+            </div>
+            <div class="radius-item">
+              <div class="radius-box" style="border-radius: var(--ui-radius-sm)">8px</div>
+              <b>控件内件</b>
+              <span>厂牌位 / 图标按钮 / 小徽标</span>
             </div>
           </div>
         </ui-section>

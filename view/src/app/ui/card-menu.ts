@@ -72,7 +72,7 @@ export interface CardMenuItem {
       overflow-y: auto;
       padding: var(--ui-space-1);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: var(--ui-radius-md);
       background: var(--ui-overlay);
       box-shadow:
         inset 0 0 0 1px var(--ui-inner-border),
@@ -91,7 +91,7 @@ export interface CardMenuItem {
       height: 22px;
       padding: 0 7px;
       border: 0;
-      border-radius: 6px;
+      border-radius: var(--ui-radius-xs);
       background: none;
       color: var(--text);
       font-family: var(--ui-font-body);

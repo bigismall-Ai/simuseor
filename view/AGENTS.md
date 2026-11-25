@@ -40,7 +40,7 @@
 - 全局样式只留品牌层：token、字体、滚动条；其余视觉件（区块、表格、列表、卡片、菜单、内层卡、文档排版）一律是组件，`styles.scss` 不再新增页面级类
 - 颜色只用 `--ui-*` / `--ink-*` / `--aurora-*` token，不写死十六进制
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
-- 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；面板 28px，卡片 / 列表 16px
+- 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；圆角阶梯：小件 6 / 控件 8 / 常规 10 / 列表 12 / 卡片 16 / 面板 24 / 胶囊 999；页面只引用 `--ui-radius-*` 语义 token
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
 - 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
 - 字号只用 `--ui-text-xs/sm/md/lg/xl`（10.5/11.5/12.5/14/22），不再自造 13/15/9.5
