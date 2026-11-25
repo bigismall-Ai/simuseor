@@ -525,6 +525,7 @@ def test_github_search_passes_proxy(monkeypatch):
     """该源开了代理，搜仓库这一步就要带上 proxy。"""
     seen = {}
     monkeypatch.setattr(workflows, "source_proxy", lambda cfg: "http://127.0.0.1:7890")
+    monkeypatch.setattr(workflows, "gh_proxy", lambda cfg: "http://127.0.0.1:7890")
     monkeypatch.setattr(workflows, "tree_files", lambda rid, branch, cfg: [])
     monkeypatch.setattr(
         workflows,

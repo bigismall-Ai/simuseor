@@ -34,6 +34,14 @@ from ..db import execute, new_id, now_iso, query
 from ..download.manager import manager
 from ..sources import get_adapter
 from ..sources.base import SourceError
+from .schemas import (
+    FolderOption,
+    GpuInfo,
+    HealthResponse,
+    NodeInstalledList,
+    TaskItem,
+    WorkflowLocalList,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -173,7 +181,7 @@ class BrowseFolderRequest(BaseModel):
     path: str = ""
 
 
-@router.get("/health")
+@router.get("/health", response_model=HealthResponse)
 def health() -> dict:
     from ..config import get_web_dist
     return {"status": "ok", "web": get_web_dist() is not None}
@@ -263,7 +271,7 @@ def resolve(body: ResolveRequest) -> dict:
 
 
 # ---------------- ComfyUI 模型目录 ----------------
-@router.get("/folders")
+@router.get("/folders", response_model=list[FolderOption])
 def folders() -> list[dict]:
     """可选的 ComfyUI 模型目录（核心目录 + 扩展目录）。
 
@@ -292,7 +300,7 @@ def resolve_workflow(body: WorkflowResolveRequest) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.get("/workflows/local")
+@router.get("/workflows/local", response_model=WorkflowLocalList)
 def local_workflows() -> dict:
     """共享工作流目录里的「我的工作流」。依赖解析在下一步，这里只给列表。"""
     return workflow_service.local()
@@ -515,7 +523,7 @@ def refresh_nodes() -> dict:
         raise HTTPException(status_code=503, detail=f"节点清单刷新失败: {exc}") from exc
 
 
-@router.get("/nodes/installed")
+@router.get("/nodes/installed", response_model=NodeInstalledList)
 def installed_nodes() -> dict:
     try:
         return {"items": node_service.installed()}
@@ -588,12 +596,12 @@ def create_task(body: CreateTaskRequest) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.get("/tasks")
+@router.get("/tasks", response_model=list[TaskItem])
 def list_tasks() -> list[dict]:
     return manager.list_tasks()
 
 
-@router.get("/tasks/{task_id}")
+@router.get("/tasks/{task_id}", response_model=TaskItem)
 def get_task(task_id: str) -> dict:
     return manager.get_task(task_id)
 
@@ -708,7 +716,7 @@ def device_capabilities() -> dict:
     return payload
 
 
-@router.get("/library/gpu")
+@router.get("/library/gpu", response_model=GpuInfo)
 def library_gpu() -> dict:
     """本机独显显存 —— 权重压力标志的分母。
 

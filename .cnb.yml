@@ -54,6 +54,15 @@ main:
               fi
               exit "$code"
 
+        - name: 后端 API 契约
+          image: python:3.12
+          caches:
+            - ~/.cache/pip
+          script:
+            - pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+            - cd backend && python scripts/dump_openapi.py --check
+            - cd backend && python -m pytest tests -q
+
         - name: View 组件守卫与构建
           image: node:22
           caches:
