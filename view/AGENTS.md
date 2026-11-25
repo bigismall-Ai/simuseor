@@ -40,7 +40,7 @@
 - 全局样式只留品牌层：token、字体、滚动条；其余视觉件（区块、表格、列表、卡片、菜单、内层卡、文档排版）一律是组件，`styles.scss` 不再新增页面级类
 - 颜色只用 `--ui-*` / `--ink-*` / `--aurora-*` token，不写死十六进制
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
-- 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；面板 28px，卡片 24px，列表 16px
+- 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；面板 28px，卡片 / 列表 16px
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
 - 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
 - 字号只用 `--ui-text-xs/sm/md/lg/xl`（10.5/11.5/12.5/14/22），不再自造 13/15/9.5
@@ -90,11 +90,11 @@
 - 卡片尺寸、字号、按钮高度走 `--card-*` token；改规格先改 token
 - 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印、蒙版都在该组件内维护
 - 卡片内保留默认底部蒙版（正文需要稳定底色）；纯封面展示 / 设计页用 `[scrim]="false"`，照片上不再压半透明模板
-- 动作按钮只用共享 `ui-card-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
+- 动作按钮只用共享 `ui-card-kebab` / `ui-card-action`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
 - 卡片圆角跟随列表：`--card-radius` = `--ui-radius-list`（16px），不要再单独设 24px
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill
 - ⋯ 固定在卡片右上角（`.acard-head` 末尾），用 `ui-card-kebab`；原站入口是动作行左侧的 `ui-card-origin`，右上角不再放链接
-- 菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
+- 菜单用 `ui-card-menu`，几何在组件自身；危险项用 `danger`
 - 卡片最大宽度 `--card-max`（300px），网格统一用 `ui-grid`（默认 `minmax(--layout-grid-min, --card-max)`），不要让卡在宽屏上拉伸
 - 蒙版只留一道：有封面图时用封面自带的中性黑渐变（不拿主题色染照片），文字翻白；没有照片时不叠蒙版，家族色直接做底
 - 厂牌位、⋯、原站图标都固定 `card-solid` 80% 底，不随照片切换皮肤；照片上也不做深色方块
