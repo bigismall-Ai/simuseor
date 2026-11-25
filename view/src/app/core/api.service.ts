@@ -1,7 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import type { Observable } from 'rxjs';
-import type { FolderOption, GpuInfo, HealthResponse } from './api-contract';
+import { map, type Observable } from 'rxjs';
+import type {
+  FolderOption,
+  GpuInfo,
+  HealthResponse,
+  LibraryItem,
+  NodeInstalledList,
+  SearchResponse,
+  TaskItem,
+  WorkflowLocalList,
+} from './api-contract';
 import type {
   AppSettings,
   ComfyEnv,
@@ -84,9 +93,12 @@ export class ApiService {
     if (params.task) httpParams = httpParams.set('task', params.task);
     httpParams = httpParams.set('limit', String(params.limit ?? 20));
     httpParams = httpParams.set('page', String(params.page ?? 1));
-    return this.http.get<{ items: SearchItem[]; total: number; errors?: Record<string, string> }>(
-      `${this.base}/search`,
-      { params: httpParams },
+    return this.http.get<SearchResponse>(`${this.base}/search`, { params: httpParams }).pipe(
+      map((res) => ({
+        items: (res.items ?? []) as unknown as SearchItem[],
+        total: res.total ?? 0,
+        errors: res.errors,
+      })),
     );
   }
 
@@ -115,8 +127,12 @@ export class ApiService {
 
   /** 「我的工作流」：共享目录里的本地文件，按修改时间倒序。 */
   localWorkflows(): Observable<{ dir: string; total: number; items: LocalWorkflow[] }> {
-    return this.http.get<{ dir: string; total: number; items: LocalWorkflow[] }>(
-      `${this.base}/workflows/local`,
+    return this.http.get<WorkflowLocalList>(`${this.base}/workflows/local`).pipe(
+      map((res) => ({
+        dir: res.dir,
+        total: res.total ?? 0,
+        items: (res.items ?? []) as unknown as LocalWorkflow[],
+      })),
     );
   }
 
@@ -295,7 +311,9 @@ export class ApiService {
   }
 
   listTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.base}/tasks`);
+    return this.http
+      .get<TaskItem[]>(`${this.base}/tasks`)
+      .pipe(map((items) => items as unknown as Task[]));
   }
 
   pauseTask(id: string): Observable<Task> {
@@ -318,7 +336,9 @@ export class ApiService {
     let httpParams = new HttpParams();
     if (params.q) httpParams = httpParams.set('q', params.q);
     if (params.source) httpParams = httpParams.set('source', params.source);
-    return this.http.get<LibraryModel[]>(`${this.base}/library`, { params: httpParams });
+    return this.http
+      .get<LibraryItem[]>(`${this.base}/library`, { params: httpParams })
+      .pipe(map((items) => items as unknown as LibraryModel[]));
   }
 
   /** 本机独显显存 —— 权重压力标志的分母 */
@@ -507,7 +527,9 @@ export class ApiService {
   }
 
   installedNodes(): Observable<{ items: InstalledNode[] }> {
-    return this.http.get<{ items: InstalledNode[] }>(`${this.base}/nodes/installed`);
+    return this.http.get<NodeInstalledList>(`${this.base}/nodes/installed`).pipe(
+      map((res) => ({ items: (res.items ?? []) as unknown as InstalledNode[] })),
+    );
   }
 
   installNode(id: string): Observable<{ id: string }> {

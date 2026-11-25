@@ -15,3 +15,18 @@ export type SearchResponse = ApiSchemas['SearchResponse'];
 export type LibraryItem = ApiSchemas['LibraryItem'];
 export type ProbeResponse = ApiSchemas['ProbeResponse'];
 export type DeviceInfo = ApiSchemas['DeviceInfo'];
+
+/** 后端 `ApiError` 的稳定错误码；没有 code 的旧端点只看 detail。 */
+export type ApiErrorCode =
+  | 'invalid_source'
+  | 'invalid_request'
+  | 'not_found'
+  | 'conflict'
+  | 'forbidden'
+  | 'source_unavailable'
+  | 'filesystem_error';
+
+export interface ApiErrorBody {
+  detail: string;
+  code?: ApiErrorCode;
+}
