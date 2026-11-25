@@ -16,6 +16,7 @@ import { VisRegistryComponent } from './vis-registry';
 import { VisShellComponent } from './vis-shell';
 import { VisTablesComponent } from './vis-tables';
 import { ProtoCardsComponent } from './prototypes/cards';
+import { ProtoCodeComponent } from './prototypes/components/code/code';
 import { ProtoFamiliesComponent } from './prototypes/components/families/families';
 import { ProtoFeedbackComponent } from './prototypes/components/feedback/feedback';
 import { ProtoNoticeComponent } from './prototypes/components/notice/notice';
@@ -103,6 +104,11 @@ export const VIS_ROUTES: Routes = [
         path: 'prototypes/components/families',
         component: ProtoFamiliesComponent,
         title: 'VIS 原型组件 · 厂牌',
+      },
+      {
+        path: 'prototypes/components/code',
+        component: ProtoCodeComponent,
+        title: 'VIS 原型组件 · 代码与搜索',
       },
       {
         path: 'prototypes/pages/models',

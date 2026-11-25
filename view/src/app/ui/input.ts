@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { Component, ElementRef, input, model, viewChild } from '@angular/core';
 
 /**
  * 文本输入：标签、控件、说明/错误三件套。
@@ -21,6 +21,7 @@ import { Component, input, model } from '@angular/core';
       <span class="control">
         <span class="lead"><ng-content select="[input-leading]" /></span>
         <input
+          #field
           [type]="type()"
           [value]="value()"
           [attr.placeholder]="placeholder() || null"
@@ -171,6 +172,13 @@ export class InputComponent {
   /** 没有可见标签时（搜索框等）用它给控件一个可访问名。 */
   readonly ariaLabel = input('');
   readonly value = model('');
+
+  private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
+
+  /** 供父组件（搜索浮层、弹层）把焦点送进真实输入框。 */
+  focus(): void {
+    this.field()?.nativeElement.focus();
+  }
 
   onInput(event: Event): void {
     this.value.set((event.target as HTMLInputElement).value);

@@ -46,6 +46,9 @@
 | `ui-text` / `ui-label` / `ui-rules` | 引言 11.5 / 小标题 14 / 规则 11.5；72ch | 自有 + MUI Markdown 参考 |
 | `ui-progress` | 6px / 3px 两档；aria 与 reduced-motion | 自有 |
 | `ui-state-card` | 标题 + 标签/徽标 + 内容投影；bad 变体红描边 | 自有 |
+| `ui-code` | 两套主题都用深色面；13px mono、400px 上限、标题栏 + 复制（≤640 只留图标） | MUI 代码面板参考，底色调深 |
+| `ui-kbd` | 11px mono、6px 圆角、底部内阴影；`keys` 或投影，深色面板内局部覆盖 `--kbd-*` | MUI `kbd` 参考 |
+| `ui-search` | 触发条 32px（≤768 只留图标）、浮层 640px 上限、命中行 52px；只抛 `picked` | MUI 搜索浮层参考 |
 
 ## 已采用的 MUI 约束
 
@@ -56,7 +59,7 @@
 | 正文阅读宽度用 `ch` | `--layout-prose-measure: 72ch` |
 | 表格 docs 密度：行底线、无斑马、14px 级别 | `ui-table density="docs"`，字号按我们刻度收窄到 12.5 |
 | TOC 242px、缩进 12/24/36 | `--layout-toc`（组件待做） |
-| 代码面板：深色底、最高 400px | `--ui-code-*`（组件待做） |
+| 代码面板：深色底、最高 400px | `ui-code` + `--ui-code-*` |
 | Callout：12px、图标井 26×26 | `--ui-callout-*`（组件待做） |
 | 导航树：分组 / `subheader` / 状态 chip | `NAV_TREE` + `ui-nav-tree` |
 | 标题锚点、滚动监听节流 166ms | `ui-toc`（组件待做） |
@@ -90,9 +93,7 @@
 | `ui-page` | 内容容器 | 最大宽 / gutter / 顶部偏移 |
 | `ui-breadcrumb` | 面包屑 | 12px、分隔符、`aria-current` |
 | `ui-toc` | 右栏目录 | 242px、缩进、scroll-spy、节流 166ms |
-| `ui-code` | 代码块 | 深色底、400px 上限、复制按钮 |
-| `ui-kbd` | 快捷键 | 11px mono、6px 圆角 |
-| `ui-search` | 搜索 | 640px 上限、52px 命中行 |
+| `ui-callout` | 旁注 | 12px、图标井 26×26 |
 
 ## 验证
 

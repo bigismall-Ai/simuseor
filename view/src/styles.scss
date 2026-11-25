@@ -68,11 +68,31 @@
   --ui-radius-button: var(--ui-radius-md);
   --ui-radius-pill: 999px;
   --ui-glass-blur: 16px;
-  /* 代码块与旁注：文档页与组件共用，深浅色各自取 --ui-inset / --ui-text-2 */
-  --ui-code-bg: var(--ui-inset);
-  --ui-code-ink: var(--ui-text-2);
+  /*
+   * 代码面板：深浅色主题下都是深色底（对齐 MUI 代码区），只换一档明度。
+   * 正文 13px 等宽、最高 400px；标题栏略亮于正文，复制提示用 kbd。
+   */
+  --ui-code-bg: hsl(210 25% 9%);
+  --ui-code-head-bg: hsl(210 22% 12%);
+  --ui-code-ink: hsl(210 18% 88%);
+  --ui-code-muted: hsl(210 12% 64%);
+  --ui-code-line: hsl(210 20% 20%);
+  --ui-code-size: 13px;
+  --ui-code-head-h: 38px;
   --ui-code-radius: var(--ui-radius-list);
-  --ui-code-max-h: 480px;
+  --ui-code-max-h: 400px;
+  /* 快捷键：11px 等宽、6px 圆角、底部内阴影 */
+  --ui-kbd-size: 11px;
+  --ui-kbd-h: 18px;
+  --ui-kbd-radius: var(--ui-radius-xs);
+  --ui-kbd-bg: var(--ui-inset);
+  --ui-kbd-ink: var(--ui-text-2);
+  --ui-kbd-line: color-mix(in srgb, var(--ui-text) 22%, transparent);
+  --ui-kbd-shadow: 0 -1px 0 color-mix(in srgb, var(--ui-text) 18%, transparent) inset;
+  /* 搜索：触发条 32px、浮层上限 640px、命中行 52px */
+  --ui-search-max-w: 640px;
+  --ui-search-row-h: 52px;
+  --ui-search-trigger-h: 32px;
   --ui-callout-pad: var(--ui-space-4);
   --ui-callout-gap: var(--ui-space-3);
   --ui-callout-icon: var(--icon-action);

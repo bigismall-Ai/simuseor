@@ -623,6 +623,68 @@
         "--ui-h-md",
         "--ui-radius-pill"
       ]
+    },
+    {
+      "selector": "ui-code",
+      "name": "代码块",
+      "category": "content",
+      "page": "/vis/prototypes/components/code",
+      "demoFile": "src/app/vis/prototypes/components/code/code.ts",
+      "variants": [
+        "title",
+        "plain"
+      ],
+      "tokens": [
+        "--ui-code-bg",
+        "--ui-code-head-bg",
+        "--ui-code-ink",
+        "--ui-code-line",
+        "--ui-code-size",
+        "--ui-code-head-h",
+        "--ui-code-radius",
+        "--ui-code-max-h"
+      ]
+    },
+    {
+      "selector": "ui-kbd",
+      "name": "快捷键",
+      "category": "content",
+      "page": "/vis/prototypes/components/code",
+      "demoFile": "src/app/vis/prototypes/components/code/code.ts",
+      "variants": [
+        "single",
+        "combo"
+      ],
+      "tokens": [
+        "--ui-kbd-size",
+        "--ui-kbd-h",
+        "--ui-kbd-radius",
+        "--ui-kbd-bg",
+        "--ui-kbd-ink",
+        "--ui-kbd-line",
+        "--ui-kbd-shadow"
+      ]
+    },
+    {
+      "selector": "ui-search",
+      "name": "搜索",
+      "category": "form",
+      "page": "/vis/prototypes/components/code",
+      "demoFile": "src/app/vis/prototypes/components/code/code.ts",
+      "variants": [
+        "trigger",
+        "overlay"
+      ],
+      "sizes": [
+        "32px"
+      ],
+      "tokens": [
+        "--ui-search-max-w",
+        "--ui-search-row-h",
+        "--ui-search-trigger-h",
+        "--ui-z-overlay",
+        "--ui-radius-pill"
+      ]
     }
   ]
 }
