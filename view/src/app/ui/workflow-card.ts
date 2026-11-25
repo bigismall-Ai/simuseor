@@ -184,7 +184,7 @@ interface StateView {
         <!-- ⑥ 动作行：⋯ 在左，主按钮在右。⋯ 的下拉菜单仍由页面层接管，
              卡片只负责报出点击坐标（菜单才会贴着按钮弹，而不是回页面顶上去找）。 -->
         <div class="acard-foot">
-          <ui-card-origin label="本地" />
+          <ui-card-origin />
 
           <div class="wc-acts">
           </div>

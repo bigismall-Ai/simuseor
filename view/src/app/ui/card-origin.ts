@@ -3,8 +3,9 @@ import { Component, input } from '@angular/core';
 /**
  * 卡片动作行左侧的原站入口。
  *
- * 前面是站点名（HF / ModelScope / GitHub / 本地），后面是外链图标；
- * 没有远端地址时渲染成同尺寸的静态标签，保证每张卡的动作行结构一致。
+ * 有远端地址时必须渲染成链接：站点名（HF / ModelScope / GitHub）+ 外链图标。
+ * 没有远端地址的只有一种语义 —— 本地导入或复制到文件夹，静态文本固定为
+ * 「本地导入」，不再拿来源名冒充可点击入口。
  */
 @Component({
   selector: 'ui-card-origin',
@@ -15,18 +16,18 @@ import { Component, input } from '@angular/core';
         [href]="href()"
         target="_blank"
         rel="noreferrer"
-        [attr.aria-label]="'打开 ' + label() + ' 上的原始页面'"
-        [attr.title]="'打开 ' + label() + ' 上的原始页面'"
+        [attr.aria-label]="'打开 ' + (label() || '源站') + ' 上的原始页面'"
+        [attr.title]="'打开 ' + (label() || '源站') + ' 上的原始页面'"
       >
-        <span class="lbl">{{ label() }}</span>
+        <span class="lbl">{{ label() || '源站' }}</span>
         <svg viewBox="0 0 12 12" aria-hidden="true">
           <path d="M4.5 2.5H2.5v7h7v-2" />
           <path d="M6.5 2.5h3v3M9.5 2.5 5 7" />
         </svg>
       </a>
     } @else {
-      <span class="acard-origin-link is-static" [attr.title]="'来源：' + label()">
-        <span class="lbl">{{ label() }}</span>
+      <span class="acard-origin-link is-static" title="本地导入，没有源站链接">
+        <span class="lbl">本地导入</span>
       </span>
     }
   `,
@@ -88,5 +89,6 @@ import { Component, input } from '@angular/core';
 })
 export class CardOriginComponent {
   readonly href = input('');
-  readonly label = input('本地');
+  /** 链接态展示的站点名；静态态固定显示「本地导入」，不读这个值 */
+  readonly label = input('');
 }

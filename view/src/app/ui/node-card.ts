@@ -186,7 +186,7 @@ export interface NodeCardItem {
         <div class="acard-foot">
           <ui-card-origin
             [href]="item().repo ?? ''"
-            [label]="item().repo ? 'GitHub' : '本地'"
+            [label]="item().repo ? 'GitHub' : '本地导入'"
           />
 
           @if (mode() === 'library') {

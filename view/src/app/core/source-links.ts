@@ -26,7 +26,7 @@ export const SOURCE_SHORT: Record<string, string> = {
   civitai: 'Civitai',
   demo: 'Demo',
   github: 'GitHub',
-  imported: '本地',
+  imported: '本地导入',
   templates: '模板',
 };
 

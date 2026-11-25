@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { coverMeta } from '../core/cover';
-import { sourceAuthor, sourceLabel, sourceShort, sourceUrl } from '../core/source-links';
+import { sourceAuthor, sourceLabel, sourceUrl } from '../core/source-links';
 import { folderFileTypeLabel } from '../core/task-labels';
 import { fmtBytes } from '../core/types';
 import type { LibraryModel } from '../core/types';
@@ -136,7 +136,7 @@ import { CoverPlateComponent } from './cover-plate';
 
         <!-- ⑥ 动作行：原站图标在左，主按钮在右；⋯ 在右上角 -->
         <div class="acard-foot">
-          <ui-card-origin [href]="sourceHref()" [label]="model().source || '本地'" />
+          <ui-card-origin [href]="sourceHref()" [label]="sourceName()" />
 
           <button
             type="button"
@@ -321,11 +321,11 @@ export class LibraryCardComponent {
    * modelVersionId）；老数据没有 source_url 时回退到按 source + repo_id 拼的主页。
    * 本地导入 / Demo 两者都为空，不渲染链接。
    */
+  readonly sourceName = computed(() => sourceLabel(this.model().source));
+
   readonly sourceHref = computed(
     () => this.model().source_url || sourceUrl(this.model().source, this.model().repo_id),
   );
-
-  readonly sourceShortLabel = computed(() => sourceShort(this.model().source));
 
   readonly sourceTitle = computed(() => `在 ${sourceLabel(this.model().source)} 上打开原始仓库`);
 

@@ -134,7 +134,7 @@ const FILE_TYPES = new Set([
 
         <!-- ⑥ 动作行：主按钮在右；⋯ 已移到右上角 -->
         <div class="card-actions acard-foot">
-          <ui-card-origin [href]="origin().href" [label]="origin().name || '本地'" />
+          <ui-card-origin [href]="origin().href" [label]="origin().name" />
 
           <!-- 发现页与本地库**只换 ④ 左侧与 ⑥ 主按钮**，
                其余完全一样（VIS §3.7.3）—— 所以这里不再挂「已在库」标记：

@@ -133,21 +133,13 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       </div>
     </div>
 
-    <p class="set-label">⋯ 弹出菜单 · 独立组件</p>
+    <p class="set-label">⋯ 弹出菜单 · 只定义容器与条目样式</p>
     <p class="set-lead">
-      三种卡片的菜单都渲染同一个 <code>ui-card-menu</code>，只是条目不同；
-      下面是去掉定位后的静态样张。
+      <code>ui-card-menu</code> 不规定条目内容：卡片把 items 传进来（普通操作、外链、危险项），
+      组件只负责浮层容器、条目高度、悬停与危险配色。下面是三种条目样式的静态样张。
     </p>
-    <div class="menu-row">
-      @for (menu of menus; track menu.title) {
-        <div class="menu-cell">
-          <p class="cell-label">{{ menu.title }}</p>
-          <div class="menu-stage">
-            <ui-card-menu [items]="menu.items" [static]="true" />
-          </div>
-          <p class="cell-menu">{{ menu.note }}</p>
-        </div>
-      }
+    <div class="menu-demo">
+      <ui-card-menu [items]="menuSamples" [static]="true" />
     </div>
 
     <p class="set-label">身份行 · 厂牌位</p>
@@ -160,21 +152,21 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       <span class="ident-tip">32 × 32，与 /vis/prototypes/components/families 同一个 ui-card-mark</span>
     </div>
 
-    <p class="set-label">动作零件 · ⋯ / 原站 / 信息区</p>
+    <p class="set-label">卡片零件 · 信息区 / ⋯ / 原站</p>
     <p class="set-lead">
-      三件套单独渲染也能用：信息区（ui-card-body）、右上角更多（ui-card-kebab）、
-      动作行左侧原站入口（ui-card-origin）。卡片里只是把它们放进固定槽位。
+      <code>ui-card-body</code> 只有「标题输入 + 详情容器」，详情里放类别、状态、标签还是动作，
+      由每张卡自己投影。右侧是去掉卡片后的信息区样张。
     </p>
     <div class="part-row">
       <div class="part-stage">
         <ui-card-kebab />
         <ui-card-origin label="Hugging Face" href="https://huggingface.co" />
-        <ui-card-origin label="本地" />
+        <ui-card-origin />
       </div>
       <div class="part-stage part-body card-expanded">
-        <ui-card-body title="FLUX.1-dev">
-          <span class="part-meta">black-forest-labs · safetensors</span>
-          <span class="part-meta">23.8 GB · 在库</span>
+        <p class="part-caption">ui-card-body</p>
+        <ui-card-body title="标题由调用方传入">
+          <span class="part-meta">详情区：内容由卡片投影，组件不规定有什么</span>
         </ui-card-body>
       </div>
     </div>
@@ -328,26 +320,10 @@ export class ProtoCardsComponent {
   };
   readonly specWorkflow = WORKFLOWS[0];
 
-  readonly menus: { title: string; note: string; items: CardMenuItem[] }[] = [
-    {
-      title: '本地库卡',
-      note: '破坏性操作单独一档，用 danger 标色。',
-      items: [{ key: 'remove', label: '删除模型', danger: true }],
-    },
-    {
-      title: '发现卡',
-      note: '每个来源一条外链，原站入口不只放在右上角。',
-      items: [{ key: 'hf', label: 'Hugging Face', href: 'https://huggingface.co/black-forest-labs/FLUX.1-dev' }],
-    },
-    {
-      title: '工作流卡',
-      note: '运行在最上，删除在最下并标红。',
-      items: [
-        { key: 'run', label: '运行' },
-        { key: 'edit', label: '在编辑器中打开' },
-        { key: 'delete', label: '删除工作流', danger: true },
-      ],
-    },
+  readonly menuSamples: CardMenuItem[] = [
+    { key: 'action', label: '按钮条目' },
+    { key: 'link', label: '外链条目', href: 'https://huggingface.co' },
+    { key: 'danger', label: '危险条目', danger: true },
   ];
 
   readonly tokens = [
