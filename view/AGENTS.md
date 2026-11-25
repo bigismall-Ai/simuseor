@@ -125,6 +125,7 @@
 
 - 外壳：`ui-page`（内容宽与留白）、`ui-page-header`、`ui-breadcrumb`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-toc`（右栏目录 / 窄窗速览条）、`ui-card-mark`、`app-cover-plate`
 - 导航：`ui-tabs`（`underline` / `pill`，可带计数）、`ui-pagination`（上一页 / 下一页 + ≤7 格页码窗口）
+- 选项卡一律用 `ui-tabs`：互斥视图切换（如任务状态「全部 / 进行中 / 已完成」）不再手写 `role="tablist"` + `.tab`；计数走 `TabItem.count`，选中值用 `[(value)]` 双向绑定；≤3 项、无计数的紧凑切换仍用 `ui-segmented`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`、`ui-tooltip`（纯 CSS 四向气泡）
 - 表单：`ui-input`（单行文本）、`ui-textarea`（多行文本）、`ui-select`（原生下拉）、`ui-checkbox`（勾选）、`ui-switch`（立即生效的开关）、`ui-field`（外部标签容器）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-divider`（1px 横向 / 竖向 / 缩进）、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
