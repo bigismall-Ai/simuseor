@@ -1,0 +1,45 @@
+name: Sync CNB
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-cnb-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 检查 CNB_TOKEN
+        id: check
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+        run: |
+          if [ -z "$CNB_TOKEN" ]; then
+            echo "CNB_TOKEN 未配置，跳过 CNB 镜像"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 镜像到 CNB
+        if: steps.check.outputs.skip != 'true'
+        uses: docker://tencentcom/git-sync
+        env:
+          PLUGIN_TARGET_URL: https://cnb.cool/bigismall/simuseor.git
+          PLUGIN_AUTH_TYPE: https
+          PLUGIN_USERNAME: cnb
+          PLUGIN_PASSWORD: ${{ secrets.CNB_TOKEN }}
+          PLUGIN_FORCE: "true"
+          PLUGIN_PUSH_TAGS: "true"
