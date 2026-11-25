@@ -192,6 +192,10 @@ const SOURCES: Record<string, SourceInfo> = {
         font-family: var(--ui-font-mono);
         overflow-wrap: anywhere;
       }
+      /* 菜单外链由本卡渲染，字体锁回正文，不跟随菜单里的等宽值 */
+      .acard-menu-item {
+        font-family: var(--ui-font-body);
+      }
 
     `,
   ],

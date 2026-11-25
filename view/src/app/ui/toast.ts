@@ -116,6 +116,7 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
       border: 0;
       background: none;
       color: var(--faint);
+      font-family: var(--ui-font-body);
       font-size: 15px;
       line-height: 1;
       cursor: pointer;

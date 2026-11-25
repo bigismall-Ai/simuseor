@@ -42,6 +42,7 @@
 - 按钮：统一用 `ui-button`，语义靠 `variant`：主操作 `primary`，次操作 `secondary`，弱操作 `ghost`，危险 `danger` / `danger-ghost`
 - 按钮 999px 胶囊、1px 描边 + 内高光 + 轻投影，深浅色只换 token；圆角阶梯：小件 6 / 控件 8 / 常规 10 / 列表 12 / 卡片 16 / 面板 24 / 胶囊 999；页面只引用 `--ui-radius-*` 语义 token
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
+- 交互原语（`button` / `a` / `input` / `select` / `textarea`）在自己组件里显式设置 font family，不依赖全局 `font: inherit`；数字 / 路径这类有意等宽的控件才用 `--ui-font-mono`
 - 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
 - 字号只用 `--ui-text-xs/sm/md/lg/xl`（10.5/11.5/12.5/14/22），不再自造 13/15/9.5
 - 字重只用 `--ui-weight-regular/medium/semibold/bold`（400/500/600/700），行高只用 `--ui-leading-tight/normal/relaxed`（1.25/1.5/1.625），组件里不写数字

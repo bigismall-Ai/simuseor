@@ -257,6 +257,7 @@ const TONE_GLYPH: Record<NoticeTone, string> = { info: 'i', ok: '✓', warn: '!'
       border: 0;
       background: none;
       color: var(--ui-muted);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-lg);
       line-height: 1;
       cursor: pointer;

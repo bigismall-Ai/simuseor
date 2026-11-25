@@ -130,6 +130,7 @@ let seq = 0;
       border-radius: var(--ui-radius-pill);
       background: var(--ui-inset);
       color: var(--ui-muted);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
       text-align: left;
       cursor: pointer;
@@ -234,6 +235,7 @@ let seq = 0;
       border-radius: var(--ui-radius-sm);
       background: none;
       color: var(--ui-text);
+      font-family: var(--ui-font-body);
       text-align: left;
       cursor: pointer;
     }

@@ -88,7 +88,7 @@ export type CardActionIcon = 'play' | 'edit' | 'fix';
       border-radius: var(--ui-radius-pill);
       background: var(--card-scrim-action-bg, var(--ui-primary));
       color: var(--card-scrim-action-ink, var(--ui-on-primary));
-      font-family: inherit;
+      font-family: var(--ui-font-body);
       font-size: 11px;
       font-weight: var(--ui-weight-semibold);
       white-space: nowrap;

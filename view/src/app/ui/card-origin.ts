@@ -47,6 +47,7 @@ import { Component, input } from '@angular/core';
       border-radius: var(--radius-sm);
       background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
       color: var(--ui-text);
+      font-family: var(--ui-font-body);
       text-decoration: none;
       cursor: pointer;
       backdrop-filter: blur(6px);

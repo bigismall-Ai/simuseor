@@ -131,6 +131,7 @@ export interface NavRowItem {
       border-radius: var(--ui-radius);
       background: transparent;
       color: var(--ui-text-2);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
       font-weight: var(--ui-weight-semibold);
       text-align: left;
@@ -166,6 +167,7 @@ export interface NavRowItem {
       padding-right: var(--ui-space-3);
       border-radius: var(--ui-radius-pill);
       color: var(--ui-muted);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
       font-weight: var(--ui-weight-medium);
       transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;

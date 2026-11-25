@@ -124,6 +124,7 @@ function flattenToc(items: readonly TocItem[], level = 0): TocRow[] {
       padding: var(--ui-space-2) var(--ui-space-3) var(--ui-space-2) var(--layout-toc-indent-1);
       border-left: 1px solid transparent;
       color: var(--ui-muted);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
       font-weight: var(--ui-weight-medium);
       line-height: 1.45;
