@@ -109,6 +109,31 @@ export const ICON_GROUPS: AppIconGroup[] = [
         svg: s('<path d="M4 20V9a5 5 0 0 1 5-5h11"/><path d="M4 16v4h4"/>'),
       },
       {
+        name: 'type',
+        label: '字体与排版',
+        svg: s('<path d="M5 5.5h14"/><path d="M12 5.5V19"/><path d="M9 19h6"/>'),
+      },
+      {
+        name: 'spacing',
+        label: '间距',
+        svg: s('<rect x="8" y="8" width="8" height="8" rx="1.5"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2"/>'),
+      },
+      {
+        name: 'elevation',
+        label: '层级与阴影',
+        svg: s('<rect x="5" y="13.5" width="14" height="6" rx="1.5"/><path d="M7 10h10"/><path d="M9 6.5h6"/>'),
+      },
+      {
+        name: 'motion',
+        label: '动效',
+        svg: s('<circle cx="12" cy="12" r="7.5"/><path d="M10.5 9l5 3-5 3z"/>'),
+      },
+      {
+        name: 'tokens',
+        label: '主题 Token',
+        svg: s('<rect x="4" y="6" width="9" height="12" rx="1.5"/><rect x="11" y="9.5" width="9" height="9" rx="1.5"/>'),
+      },
+      {
         name: 'inbox',
         label: '空状态',
         svg: s('<path d="M4 13.5 6.5 5h11L20 13.5V19H4z"/><path d="M4 13.5h5l1 2h4l1-2h5"/>'),

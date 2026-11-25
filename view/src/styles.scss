@@ -148,6 +148,12 @@
   --icon-action: 18px;
   --icon-nav: 20px;
 
+  /* 动效：三档时长 + 统一缓动；只表达状态变化，不做装饰 */
+  --ui-duration-fast: 0.14s;
+  --ui-duration-base: 0.18s;
+  --ui-duration-slow: 0.34s;
+  --ui-ease: ease;
+
   /* 层级：导航 / 吸底 / Toast / 遮罩 / 弹层 / Material */
   --ui-z-nav: 10;
   --ui-z-sticky: 20;

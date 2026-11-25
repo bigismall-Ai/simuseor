@@ -47,6 +47,7 @@
 - 控件高度只用 `--ui-h-compact/sm/md/lg`（24/28/34/38）：表格内 24、筛选 28、常规 34、主操作 38
 - 图标只用 `--icon-inline/control/action/nav`（14/16/18/20）
 - 层级只用 `--ui-z-nav/sticky/toast/overlay/dialog/material`（10/20/60/80/90/1000），不在页面里写魔数
+- 动效只用 `--ui-duration-fast/base/slow`（0.14/0.18/0.34）与 `--ui-ease`；新增带过渡的组件必须同时写 `@media (prefers-reduced-motion: reduce)`
 - 页面结构：面包屑在最外层；不放大标题；每个区块用 `<ui-section title pill>`，标题在内容外，右侧标签用 `pill`
 - 反馈表面：Toast 用 `ui-toast`（位置由页面容器决定），来源通路用 `ui-source-chip`
 - 行内提示用 `ui-notice`：一句话 / 紧凑横条用默认 `inline`；要标题、嵌套列表、`code`、链接或动作时用 `variant="callout"`（12 圆角 / 26×26 图标井）。图标投影走 `[notice-icon]`，动作投影走 `[notice-actions]`（旧）或 `[notice-action]`（新）；关闭按钮会把焦点还给提示外部的触发元素
@@ -144,6 +145,7 @@
 - `src/app/vis/`：视觉设计页；导航唯一数据源是 `vis-nav.ts` 的 `NAV_TREE`（递归树 + `subheader` + 状态 chip），外壳用 `ui-nav-tree` 渲染，不再手写导航项
 - **VIS 外壳只做装配**：面包屑用 `ui-breadcrumb`（条目由 `NAV_TREE` 祖先链派生，当前页末项不带路由）、内容区用 `ui-page`（宽度 / gutter / 上下留白不再由 `vis-shell.scss` 自算）、侧栏搜索用 `ui-search`（数据同样来自 `NAV_TREE`，`picked` 由外壳 `navigateByUrl`）；`page-crumb.ts` 仅作兼容保留，外壳不再引用
 - 外壳的 `framed` / `bare` 仍表示「整幅画布」：`ui-page` 用 `wide` + 零 gutter + `flushTop` / `flushBottom`，内缩交给 `.page-frame` 自己控制
+- 视觉设计分四组：品牌（标识/色彩/封面/背景/图标/布局/圆角）、组件（按钮/输入框/胶囊/表格/空状态/模态框）、定制（字体与排版/间距/层级与阴影/动效/主题 Token）、原型（见下）
 - `src/app/vis/prototypes/`：产品原型，分「组件」（如卡片）与「页面」（如资源管理器）两组
 - `src/app/ui/`：共享组件与 Material 入口
 - `src/app/pages/`：将来的产品页面

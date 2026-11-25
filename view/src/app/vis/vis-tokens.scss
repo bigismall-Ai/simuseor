@@ -1,0 +1,114 @@
+/* 定制类页面（字体 / 间距 / 层级 / 动效 / 主题 Token）共用布局。
+   这里只写布局；颜色、圆角、字号、阴影一律由模板里的 token 绑定或共享组件承担。 */
+
+:host {
+  display: block;
+}
+
+.tok-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--ui-space-4);
+  align-items: start;
+}
+
+.tok-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-3);
+}
+
+.tok-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-3);
+}
+
+/* 字体：阶梯行 */
+.scale-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 232px;
+  align-items: baseline;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-3) 0;
+}
+
+.scale-row + .scale-row {
+  margin-top: var(--ui-space-2);
+}
+
+.scale-sample {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .scale-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ui-space-1);
+  }
+}
+
+/* 间距：刻度条 */
+.spacing-scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ui-space-5);
+}
+
+.spacing-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-space-2);
+}
+
+/* 间距：padding 样张 */
+.pad-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ui-space-4);
+  align-items: start;
+}
+
+/* 层级：图层栈 */
+.z-stage {
+  position: relative;
+  height: calc(var(--ui-space-8) * 6);
+  margin-top: var(--ui-space-2);
+}
+
+.z-card {
+  position: absolute;
+  width: 72%;
+  min-width: 240px;
+  padding: var(--ui-space-2) var(--ui-space-3);
+}
+
+/* 动效：实样 */
+.motion-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ui-space-4);
+  align-items: start;
+}
+
+.motion-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+}
+
+/* 主题：色块对照 */
+.theme-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--ui-space-3);
+}
+
+@media (max-width: 768px) {
+  .theme-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
