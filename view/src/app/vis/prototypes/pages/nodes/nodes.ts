@@ -8,6 +8,7 @@ import { SectionBlockComponent } from '../../../../ui/section-block';
 import { UiButtonComponent } from '../../../../ui/button';
 import { BadgeComponent } from '../../../../ui/badge';
 import { EmptyComponent } from '../../../../ui/empty';
+import { GridComponent } from '../../../../ui/grid';
 import { NoticeComponent } from '../../../../ui/notice';
 import { SegmentedComponent } from '../../../../ui/segmented';
 import { ChipComponent } from '../../../../ui/chip';
@@ -79,6 +80,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
     UiButtonComponent,
     BadgeComponent,
     EmptyComponent,
+    GridComponent,
     NoticeComponent,
     SegmentedComponent,
     ChipComponent,
@@ -173,7 +175,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
 
         <ui-section title="节点包" [pill]="cards().length + ' 个'">
           @if (cards().length) {
-            <div class="pack-grid">
+            <ui-grid min="280px">
               @for (card of cards(); track card.pack.id) {
                 <md-node-card
                   [item]="card.pack"
@@ -185,7 +187,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
                   (install)="startInstall(card.pack)"
                 />
               }
-            </div>
+            </ui-grid>
           } @else {
             <ui-empty icon="⌕" [title]="emptyTitle()" hint="换个关键词、换一个来源，或切回「全部」状态。">
               <div class="empty-actions">

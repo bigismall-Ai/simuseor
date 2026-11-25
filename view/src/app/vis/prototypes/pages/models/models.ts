@@ -6,6 +6,7 @@ import { BadgeComponent } from '../../../../ui/badge';
 import { UiButtonComponent } from '../../../../ui/button';
 import { EmptyComponent } from '../../../../ui/empty';
 import { FilterBarComponent } from '../../../../ui/filter-bar';
+import { GridComponent } from '../../../../ui/grid';
 import { LibraryCardComponent } from '../../../../ui/library-card';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ModelCardComponent } from '../../../../ui/model-card';
@@ -459,6 +460,7 @@ function fmtWhen(iso: string): string {
     ProtoShellComponent,
     PageHeaderComponent,
     FilterBarComponent,
+    GridComponent,
     SectionBlockComponent,
     BadgeComponent,
     EmptyComponent,
@@ -520,7 +522,7 @@ function fmtWhen(iso: string): string {
           @if (resultCount()) {
             @if (layout() === 'grid') {
               @if (scope() === 'library') {
-                <div class="card-grid">
+                <ui-grid>
                   @for (row of libraryShown(); track row.key) {
                     <md-library-card
                       [model]="row.model"
@@ -528,9 +530,9 @@ function fmtWhen(iso: string): string {
                       [vramGb]="16"
                     />
                   }
-                </div>
+                </ui-grid>
               } @else {
-                <div class="card-grid">
+                <ui-grid>
                   @for (row of discoverShown(); track row.key) {
                     <md-model-card
                       [items]="[row.item]"
@@ -538,7 +540,7 @@ function fmtWhen(iso: string): string {
                       [inLibrary]="row.inLibrary"
                     />
                   }
-                </div>
+                </ui-grid>
               }
             } @else {
               <ui-table>

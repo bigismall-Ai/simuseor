@@ -173,17 +173,21 @@
   line-height: 1.6;
 }
 
-.m-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
+.state-row + .state-row {
+  margin-top: var(--ui-space-5);
 }
 
-.m-cell code {
+.state-label {
+  margin: 0 0 var(--ui-space-2);
+  color: var(--ui-text);
+  font-size: var(--ui-text-sm);
+  font-weight: 600;
+}
+
+.card-cell code {
   color: var(--ui-muted);
   font-family: var(--ui-font-mono);
-  font-size: 10px;
+  font-size: var(--ui-text-xs);
 }
 
 .matrix-note {

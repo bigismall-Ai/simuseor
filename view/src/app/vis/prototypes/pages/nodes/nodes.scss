@@ -121,20 +121,6 @@
   pointer-events: none;
 }
 
-/* ---- 卡片网格 ---------------------------------------------------- */
-.pack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(280px, var(--layout-grid-min)), var(--card-max)));
-  justify-content: start;
-  gap: 14px;
-}
-
-@media (max-width: 768px) {
-  .pack-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 .empty-actions {
   display: flex;
   justify-content: center;

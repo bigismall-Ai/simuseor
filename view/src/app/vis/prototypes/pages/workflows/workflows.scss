@@ -101,14 +101,6 @@
   min-width: 0;
 }
 
-/* —— 卡片网格 —— */
-.wf-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(240px, var(--layout-grid-min)), var(--card-max)));
-  justify-content: start;
-  gap: 18px;
-}
-
 .wf-item {
   min-width: 0;
   border-radius: var(--ui-radius-card);
@@ -384,10 +376,5 @@
 
   .viewbar-right {
     margin-left: 0;
-  }
-
-  .wf-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 14px;
   }
 }

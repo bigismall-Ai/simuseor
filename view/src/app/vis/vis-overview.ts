@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { GridComponent } from '../ui/grid';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
 
 @Component({
   selector: 'app-vis-overview',
   standalone: true,
-  imports: [SectionBlockComponent, RouterLink, VisualPageComponent],
+  imports: [GridComponent, SectionBlockComponent, RouterLink, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -14,7 +15,7 @@ import { VisualPageComponent } from './visual-page';
       hint="视觉设计按分类拆页；样张直接渲染产品将使用的 native / Material 组件。"
     >
       <ui-section title="设计区" pill="Overview">
-          <div class="card-grid">
+          <ui-grid min="220px" max="1fr" gap="var(--ui-space-3)">
             @for (c of categories; track c.route) {
               <a class="sample-card" [routerLink]="c.route">
                 <span class="mono">{{ c.kicker }}</span>
@@ -22,7 +23,7 @@ import { VisualPageComponent } from './visual-page';
                 <span>{{ c.desc }}</span>
               </a>
             }
-          </div>
+          </ui-grid>
         </ui-section>
     </app-visual-page>
   `,

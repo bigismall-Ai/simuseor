@@ -6,20 +6,6 @@
   display: block;
 }
 
-/* —— 卡片网格：本地库与发现同一套密度 —— */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(230px, var(--layout-grid-min)), var(--card-max)));
-  justify-content: start;
-  gap: 14px;
-}
-
-@media (max-width: 768px) {
-  .card-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 /* —— 列表视图：五列固定，名称列吃剩余宽度 —— */
 .models-table {
   width: 100%;

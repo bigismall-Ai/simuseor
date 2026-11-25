@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { BadgeComponent } from '../../../../ui/badge';
 import { ChipComponent } from '../../../../ui/chip';
 import { EmptyComponent } from '../../../../ui/empty';
+import { GridComponent } from '../../../../ui/grid';
 import { InputComponent } from '../../../../ui/input';
 import { NoticeComponent } from '../../../../ui/notice';
 import { PageHeaderComponent } from '../../../../ui/page-header';
@@ -52,6 +53,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
     BadgeComponent,
     EmptyComponent,
     ChipComponent,
+    GridComponent,
     NoticeComponent,
     SegmentedComponent,
     TableComponent,
@@ -148,7 +150,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
             @if (mode() === 'grid') {
               <ui-section title="本地工作流" [pill]="sectionPill()" [plain]="true">
                 @if (filtered().length) {
-                  <div class="wf-grid">
+                  <ui-grid>
                     @for (wf of filtered(); track wf.name) {
                       <div
                         class="wf-item"
@@ -193,7 +195,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
                         }
                       </div>
                     }
-                  </div>
+                  </ui-grid>
                 } @else {
                   <ui-empty
                     icon="⌕"

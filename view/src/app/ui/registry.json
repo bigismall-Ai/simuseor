@@ -390,14 +390,20 @@
       ]
     },
     {
-      "selector": "ui-matrix",
-      "name": "矩阵布局",
+      "selector": "ui-grid",
+      "name": "卡片网格",
       "category": "shell",
-      "page": "/vis/prototypes/components/cards",
-      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "page": "/vis/layout",
+      "demoFile": "src/app/vis/vis-layout.ts",
+      "variants": [
+        "min",
+        "max",
+        "gap"
+      ],
       "tokens": [
         "--layout-grid-min",
-        "--card-max"
+        "--card-max",
+        "--ui-space-4"
       ]
     }
   ]

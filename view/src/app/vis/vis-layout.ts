@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GridComponent } from '../ui/grid';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
@@ -7,7 +8,7 @@ import { VisualPageComponent } from './visual-page';
 @Component({
   selector: 'app-vis-layout',
   standalone: true,
-  imports: [SectionBlockComponent, TableComponent, VisualPageComponent],
+  imports: [GridComponent, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page title="布局">
@@ -145,7 +146,7 @@ import { VisualPageComponent } from './visual-page';
       <ui-section title="网格" pill="Grid">
           <div class="split-demo-block">
             <span class="split-label">卡片 · minmax(250px, 1fr)</span>
-            <div class="layout-grid">
+            <ui-grid max="1fr">
               @for (item of gridItems; track item) {
                 <div class="layout-pane inner-card">
                   <b>卡片 {{ item }}</b>
@@ -153,7 +154,7 @@ import { VisualPageComponent } from './visual-page';
                   <small>250px 起</small>
                 </div>
               }
-            </div>
+            </ui-grid>
           </div>
         </ui-section>
 

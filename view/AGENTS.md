@@ -93,7 +93,7 @@
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill
 - ⋯ 固定在卡片右上角（`.acard-head` 末尾），用 `ui-card-kebab`；原站入口是动作行左侧的 `ui-card-origin`，右上角不再放链接
 - 菜单用 `ui-card-menu`，几何只在 `styles.scss` 的 `.acard-menu`；危险项用 `danger`
-- 卡片最大宽度 `--card-max`（300px），网格用 `minmax(…, var(--card-max))`，不要让卡在宽屏上拉伸
+- 卡片最大宽度 `--card-max`（300px），网格统一用 `ui-grid`（默认 `minmax(--layout-grid-min, --card-max)`），不要让卡在宽屏上拉伸
 - 蒙版只留一道：有封面图时用封面自带的中性黑渐变（不拿主题色染照片），文字翻白；没有照片时不叠蒙版，家族色直接做底
 - 厂牌位、⋯、原站图标都固定 `card-solid` 80% 底，不随照片切换皮肤；照片上也不做深色方块
 - `ui-card-kebab` / `ui-card-origin` / `ui-card-menu` 是卡片动作的固定组合，卡片内不许手写 `.acard-kebab` / `.acard-origin`
@@ -114,7 +114,7 @@
 
 ## 共享组件（`src/app/ui/`）
 
-- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-card-mark`、`app-cover-plate`
+- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-grid`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
 - 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-skeleton`
