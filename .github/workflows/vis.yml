@@ -67,8 +67,10 @@ jobs:
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      # push 到 main 只跑守卫 / Lint / 构建，不做像素比较：
+      # 基线要等一批改动稳定后手动 update_baseline，平时推送不再刷红邮件。
       - name: 全页面像素回归
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
+        if: github.event_name != 'push' && (github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIS_BASELINE_BOOTSTRAP: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}

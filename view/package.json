@@ -13,7 +13,8 @@
     "cards:guard": "node scripts/card-guard.mjs",
     "lint": "ng lint",
     "lint:rules": "node --test eslint-rules/no-unregistered-ui-element.test.mjs",
-    "check": "node scripts/svg-index.mjs && node scripts/card-guard.mjs && npm run lint"
+    "check": "node scripts/svg-index.mjs && node scripts/card-guard.mjs && npm run lint",
+    "vis:baseline": "node scripts/vis-baseline.mjs"
   },
   "private": true,
   "packageManager": "npm@11.13.0",
