@@ -8,7 +8,6 @@ import { CardSlotComponent } from '../../ui/card-slot';
 import { CardMenuComponent } from '../../ui/card-menu';
 import type { CardMenuItem } from '../../ui/card-menu';
 import { HubCardComponent } from '../../ui/hub-card';
-import { LibraryCardComponent } from '../../ui/library-card';
 import { GridComponent } from '../../ui/grid';
 import { ModelCardComponent } from '../../ui/model-card';
 import { NodeCardComponent } from '../../ui/node-card';
@@ -40,7 +39,6 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
     CardSlotComponent,
     HubCardComponent,
     GridComponent,
-    LibraryCardComponent,
     ModelCardComponent,
     NodeCardComponent,
     TableComponent,
@@ -57,8 +55,8 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       <p class="state-label">本地</p>
       <ui-grid>
         <div class="card-cell">
-          <md-library-card [model]="libraryModels[0]" cover="/samples/shot-2.jpg" />
-          <code>md-library-card</code>
+          <md-model-card mode="library" [item]="libraryModels[0]" cover="/samples/shot-2.jpg" />
+          <code>md-model-card · mode=library</code>
         </div>
         <div class="card-cell">
           <app-workflow-card [it]="workflows[0]" />
@@ -75,8 +73,8 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       <p class="state-label">发现</p>
       <ui-grid>
         <div class="card-cell">
-          <md-model-card [items]="[searchItems[0]]" cover="/samples/shot-4.jpg" />
-          <code>md-model-card</code>
+          <md-model-card mode="discover" [items]="[searchItems[0]]" cover="/samples/shot-4.jpg" />
+          <code>md-model-card · mode=discover</code>
         </div>
         <div class="card-cell">
           <md-hub-card [item]="hubWorkflows[0]" />
@@ -114,8 +112,9 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
     </ui-table>
 
     <p class="matrix-note">
-      模型与工作流当前是「本地 / 发现各一个组件」，节点已收敛成「一个组件 + mode」。
-      建议后续把前两者也并成 mode，少维护一份外壳；这轮先不动数据契约。
+      模型已收敛成「一个组件 + mode」：本地库与发现页共用 <code>md-model-card</code>，
+      两份差异只在数据来源（<code>item</code> / <code>items</code>）与损坏件 / DEMO / 照片这几处视觉上。
+      工作流仍是「本地 / 发现各一个组件」，这轮先不动。
     </p>
 
     <ui-label>展开态 · hover / focus</ui-label>
@@ -126,12 +125,12 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
     <div class="card-row card-expanded">
       <div class="card-cell">
         <p class="cell-label">本地库卡</p>
-        <md-library-card [model]="specLibrary" cover="/samples/shot-2.jpg" />
+        <md-model-card mode="library" [item]="specLibrary" cover="/samples/shot-2.jpg" />
         <p class="cell-menu">类别 · 在库 · 大小 · 文件类型 · 原站图标</p>
       </div>
       <div class="card-cell">
         <p class="cell-label">发现卡</p>
-        <md-model-card [items]="[specDiscover]" cover="/samples/shot-4.jpg" />
+        <md-model-card mode="discover" [items]="[specDiscover]" cover="/samples/shot-4.jpg" />
         <p class="cell-menu">类别 · 下载/点赞 · 分类 · 原站图标</p>
       </div>
       <div class="card-cell">

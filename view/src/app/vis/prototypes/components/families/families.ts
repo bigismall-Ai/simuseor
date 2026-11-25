@@ -60,7 +60,7 @@ import { LabelComponent } from '../../../../ui/label';
 
     <ui-label>真实卡片刻</ui-label>
     <div class="card-slice">
-      <md-model-card [items]="[flux]" cover="/samples/shot-4.jpg" />
+      <md-model-card mode="discover" [items]="[flux]" cover="/samples/shot-4.jpg" />
       <div class="slice-note">
         <b>同一个组件</b>
         <span>卡里的厂牌位与上面三块都来自 <code>ui-card-mark</code>，没有第二份标识块实现。</span>

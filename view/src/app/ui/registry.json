@@ -325,21 +325,24 @@
       ]
     },
     {
-      "selector": "md-library-card",
-      "name": "资产卡 · 本地模型",
+      "selector": "md-model-card",
+      "name": "资产卡 · 模型（本地库 / 发现）",
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
+      "variants": [
+        "library",
+        "discover"
+      ],
       "tokens": [
         "--card-*"
       ]
     },
     {
-      "selector": "md-model-card",
-      "name": "资产卡 · 发现模型",
+      "selector": "md-library-card",
+      "name": "资产卡 · 本地模型（兼容别名，已废弃）",
       "category": "card",
-      "page": "/vis/prototypes/components/cards",
-      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "deprecated": true,
       "tokens": [
         "--card-*"
       ]
@@ -411,7 +414,7 @@
       "name": "资产卡外壳",
       "category": "card",
       "page": "/vis/prototypes/components/cards",
-      "demoFile": "src/app/ui/library-card.ts",
+      "demoFile": "src/app/ui/model-card.ts",
       "tokens": [
         "--card-radius",
         "--card-shadow",
