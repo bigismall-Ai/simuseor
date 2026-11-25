@@ -77,6 +77,7 @@ export interface CrumbItem {
 
     .link {
       min-width: 0;
+      font-family: var(--ui-font-body);
       border-radius: var(--ui-radius-xs);
       color: inherit;
       text-decoration: none;

@@ -116,6 +116,7 @@
   border: 0;
   background: none;
   color: var(--ui-muted);
+  font-family: var(--ui-font-body);
   cursor: pointer;
 }
 
@@ -195,6 +196,7 @@
   border: 0;
   background: none;
   color: var(--ui-text);
+  font-family: var(--ui-font-body);
   font-size: 12.5px;
   outline: none;
 }
@@ -215,6 +217,7 @@
   border-radius: calc(var(--ui-radius) / 2);
   background: var(--ui-panel-3);
   color: var(--ui-muted);
+  font-family: var(--ui-font-body);
   font-size: 10px;
   line-height: 1;
   cursor: pointer;
@@ -250,6 +253,7 @@
   border-radius: calc(var(--ui-radius) / 2);
   background: none;
   color: var(--ui-muted);
+  font-family: var(--ui-font-body);
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
@@ -312,6 +316,7 @@
   border-radius: var(--ui-radius);
   background: var(--ui-panel);
   color: var(--ui-text-2);
+  font-family: var(--ui-font-body);
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
@@ -325,7 +330,9 @@
   border: 0;
   background: none;
   color: inherit;
+  /* 字号 / 字重 / 行高跟随外壳，字体显式锁回正文 */
   font: inherit;
+  font-family: var(--ui-font-body);
   cursor: pointer;
   outline: none;
   appearance: none;
@@ -381,6 +388,7 @@
   border-radius: calc(var(--ui-radius) / 2);
   background: none;
   color: var(--ui-muted);
+  font-family: var(--ui-font-body);
   font-size: 12px;
   cursor: pointer;
 }
@@ -457,6 +465,7 @@
   border-radius: var(--ui-radius);
   background: var(--ui-panel);
   color: var(--ui-text-2);
+  font-family: var(--ui-font-body);
   font-size: 11.5px;
   font-weight: 500;
   white-space: nowrap;
@@ -537,6 +546,7 @@
   border-radius: calc(var(--ui-radius) / 2);
   background: none;
   color: var(--ui-muted);
+  font-family: var(--ui-font-body);
   font-size: 11px;
   cursor: pointer;
 }
@@ -568,6 +578,7 @@
   border: 0;
   background: none;
   color: var(--fb-accent-ink);
+  font-family: var(--ui-font-body);
   font-size: 11.5px;
   cursor: pointer;
 }

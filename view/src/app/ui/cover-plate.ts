@@ -543,11 +543,8 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
         border-radius: 4px;
         background: color-mix(in oklab, var(--plate-mark) 42%, var(--plate-bg));
         color: var(--plate-strong);
-        font:
-          600 10px/1 'Cascadia Mono',
-          Consolas,
-          'JetBrains Mono',
-          monospace;
+        /* 站点缩写 / 家族码是有意等宽，不跟随正文字体 */
+        font: 600 10px/1 var(--ui-font-mono);
         letter-spacing: 0.04em;
         text-decoration: none;
         white-space: nowrap;

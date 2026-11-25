@@ -38,7 +38,7 @@ import { Component, input, output } from '@angular/core';
       border-radius: var(--radius-sm);
       background: color-mix(in srgb, var(--ui-card-solid) 80%, transparent);
       color: var(--ui-text);
-      font: inherit;
+      font-family: var(--ui-font-body);
       font-size: 11px;
       line-height: 1;
       cursor: pointer;

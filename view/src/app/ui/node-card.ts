@@ -323,7 +323,7 @@ export interface NodeCardItem {
         border-radius: var(--ui-radius);
         background: none;
         color: var(--ui-text);
-        font-family: inherit;
+        font-family: var(--ui-font-body);
         font-size: 11px;
         text-align: left;
         text-decoration: none;
@@ -334,6 +334,10 @@ export interface NodeCardItem {
       }
       .nd-menu-act.is-danger {
         color: var(--ui-error);
+      }
+      /* 菜单外链由本卡渲染，字体锁回正文，不跟随菜单里的等宽值 */
+      .acard-menu-item {
+        font-family: var(--ui-font-body);
       }
     `,
   ],

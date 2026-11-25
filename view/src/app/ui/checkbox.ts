@@ -53,6 +53,7 @@ import { Component, input, model } from '@angular/core';
       padding: 0;
       border: 0;
       opacity: 0;
+      font-family: var(--ui-font-body);
       overflow: hidden;
       white-space: nowrap;
       clip-path: inset(50%);
@@ -101,6 +102,7 @@ import { Component, input, model } from '@angular/core';
       display: inline-flex;
       align-items: center;
       color: var(--ui-text);
+      font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
       line-height: 1.4;
     }
