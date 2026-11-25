@@ -1,4 +1,6 @@
-import { Component, ElementRef, input, model, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, input, model, viewChild } from '@angular/core';
+
+let seq = 0;
 
 /**
  * 多行文本：与 `ui-input` 同一套标签 / 说明 / 错误结构，只是控件换成 textarea。
@@ -21,15 +23,20 @@ import { Component, ElementRef, input, model, viewChild } from '@angular/core';
         #field
         [value]="value()"
         [rows]="rows()"
+        [attr.name]="name() || null"
         [attr.placeholder]="placeholder() || null"
-        [disabled]="disabled()"
         [attr.aria-label]="ariaLabel() || null"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="hasMessage() ? messageId : null"
+        [disabled]="disabled()"
+        [required]="required()"
+        [readOnly]="readOnly()"
         (input)="onInput($event)"
       ></textarea>
       @if (error()) {
-        <span class="msg error" role="alert">{{ error() }}</span>
+        <span class="msg error" [id]="messageId" role="alert">{{ error() }}</span>
       } @else if (hint()) {
-        <span class="msg">{{ hint() }}</span>
+        <span class="msg" [id]="messageId">{{ hint() }}</span>
       }
     </label>
   `,
@@ -119,6 +126,12 @@ export class TextareaComponent {
   readonly disabled = input(false);
   /** 没有可见标签时用它给控件一个可访问名。 */
   readonly ariaLabel = input('');
+  readonly name = input('');
+  readonly required = input(false);
+  readonly readOnly = input(false);
+
+  readonly messageId = `textarea-msg-${++seq}`;
+  readonly hasMessage = computed(() => !!this.error() || !!this.hint());
 
   private readonly field = viewChild<ElementRef<HTMLTextAreaElement>>('field');
 

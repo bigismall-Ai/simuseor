@@ -7,6 +7,8 @@ import { Component, input } from '@angular/core';
  *   - 宽度：默认 `--layout-content-max` 居中；`wide` 放开到 100%（全幅表格 / 多栏工作台）。
  *   - 留白：左右 `gutter`（默认 `--layout-gutter`），上下 `--layout-top` / `--layout-bottom`；
  *     需要贴边时用 `flushTop` / `flushBottom` 单独关掉。
+ *     `flushBottom` 只用于「整幅画布 + 自有页脚」的外壳（VIS `framed`/`bare`），
+ *     普通页面与卡片内示例不要关：关掉后内容会直接贴到容器裁切边。
  *   - 页前槽：`[page-head]` 放面包屑、返回行这类窄条，**不放页头**——
  *     标题与主操作仍由 `ui-page-header` 负责，两者不重叠。
  *

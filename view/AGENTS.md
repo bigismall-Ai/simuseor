@@ -69,7 +69,7 @@
 
 ## 焦点与可访问性
 
-- 弹层（`ui-dialog` / MatDialog）打开把焦点送进去，关闭必须还给触发元素
+- 弹层（`ui-dialog` / MatDialog）打开把焦点送进去，关闭必须还给触发元素；`ui-dialog` 基于原生 `<dialog>` + `showModal()`，焦点圈闭与 Esc 由浏览器提供，不再自搭遮罩
 - 路由切换后焦点回到页面 `h1`
 - Toast / notice 不抢焦点，只用 `role="status"` / `role="alert"` 播报
 - 交互元素必须有可访问名：可见文本、`aria-label`（图标按钮）或外层标签
@@ -96,7 +96,7 @@
 - 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印、蒙版都在该组件内维护
 - 卡片内保留默认底部蒙版（正文需要稳定底色）；纯封面展示 / 设计页用 `[scrim]="false"`，照片上不再压半透明模板
 - 动作按钮只用共享 `ui-card-kebab` / `ui-card-action`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
-- 卡片圆角跟随列表：`--card-radius` = `--ui-radius-list`（16px），不要再单独设 24px
+- 卡片圆角走卡片档：`--card-radius` = `--ui-radius-card`（16px）；列表是 `--ui-radius-list`（12px），两档不要互相借用
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill
 - ⋯ 固定在卡片右上角（`.acard-head` 末尾），用 `ui-card-kebab`；原站入口是动作行左侧的 `ui-card-origin`，右上角不再放链接
 - 菜单用 `ui-card-menu`，几何在组件自身；危险项用 `danger`
@@ -122,13 +122,14 @@
 - **全局边界**：`styles.scss` 只允许品牌 token、字体与滚动条；`.section-*`、`.table-wrap`、`.list-card`、`.inner-card`、`.acard-menu`、`.mono`、`.set-label` 等页面级类不得再新增或本地重定义。
 - **守卫 2.0**：`src/app/pages` 的样式只允许布局属性，视觉值必须走 token；`styles.scss` 只允许品牌层；VIS 现有视觉声明按基线冻结，新增会被拦下。
 - **CI**：`.cnb.yml` 跑组件守卫、构建与 VIS 视觉冒烟（5 页 × 2 宽度 × 双主题，控制台无错误）。
+- **构建基准**：分层与约束对照 MUI 的 API 规则，台账在 `docs/component-architecture.md`。六条硬规则：① 根节点 + 可命名槽位，禁止 `::ng-deep` 改消费者 DOM；② 枚举变体用 `data-*` / `variant`，不叠布尔类；③ 表单控件实现 `ControlValueAccessor`，说明 / 错误接 `aria-describedby`；④ 键盘交互按 WAI-ARIA APG 对应模式；⑤ 组件与 token 都不许停在刻度之外；⑥ 每个交互组件至少 4 条行为测试（默认 / 禁用 / 键盘 / ARIA）。
 
 ## 共享组件（`src/app/ui/`）
 
 - 外壳：`ui-page`（内容宽与留白）、`ui-page-header`、`ui-breadcrumb`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-toc`（右栏目录 / 窄窗速览条）、`ui-card-mark`、`app-cover-plate`
 - 导航：`ui-tabs`（`underline` / `pill`，可带计数）、`ui-pagination`（上一页 / 下一页 + ≤7 格页码窗口）
-- 选项卡一律用 `ui-tabs`：互斥视图切换（如任务状态「全部 / 进行中 / 已完成」）不再手写 `role="tablist"` + `.tab`；计数走 `TabItem.count`，选中值用 `[(value)]` 双向绑定；≤3 项、无计数的紧凑切换仍用 `ui-segmented`
-- 动作：`ui-button`、`ui-text-button`（行内文字动作：链接 / 查看全部 / 详情 / 编辑）、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`、`ui-tooltip`（纯 CSS 四向气泡）
+- 选项卡一律用 `ui-tabs`：互斥视图切换（如任务状态「全部 / 进行中 / 已完成」）不再手写 `role="tablist"` + `.tab`；计数走 `TabItem.count`，选中值用 `[(value)]` 双向绑定；键盘按 APG tabs 模式（roving tabindex、左右键、Home/End）由组件负责；≤3 项、无计数的紧凑切换仍用 `ui-segmented`
+- 动作：`ui-button`、`ui-text-button`（行内文字动作：链接 / 查看全部 / 详情 / 编辑）、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`、`ui-tooltip`（纯 CSS 四向气泡；自动接 `aria-describedby`，Esc 收起）
 - 表单：`ui-input`（单行文本）、`ui-textarea`（多行文本）、`ui-select`（原生下拉）、`ui-checkbox`（勾选）、`ui-switch`（立即生效的开关）、`ui-field`（外部标签容器）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-divider`（1px 横向 / 竖向 / 缩进）、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
 - 文档面：`ui-code`（深色代码面板）、`ui-kbd`（快捷键）、`ui-search`（触发条 + 结果浮层）

@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { Component, ElementRef, computed, inject, input, model } from '@angular/core';
 
 export interface TabItem {
   key: string;
@@ -7,6 +7,8 @@ export interface TabItem {
   disabled?: boolean;
 }
 
+let seq = 0;
+
 /**
  * 选项卡：同一份数据的少量互斥视图。
  *
@@ -14,7 +16,8 @@ export interface TabItem {
  * tabs 是有标题行的视图切换（可带计数），超过 7 项改用导航树。
  *
  * 两种表面：`underline` 用于内容区顶部，`pill` 用于工具条内。
- * 键盘可达性由原生按钮提供（Enter / Space 触发），不拦截方向键。
+ * 键盘遵循 WAI-ARIA APG 的 tabs 模式：只有选中项在 Tab 序列里（roving tabindex），
+ * 左右方向键在页签间移动并立即切换，Home / End 跳到首尾。
  */
 @Component({
   selector: 'ui-tabs',
@@ -25,6 +28,7 @@ export interface TabItem {
       [class.pill]="variant() === 'pill'"
       [class.sm]="size() === 'sm'"
       role="tablist"
+      aria-orientation="horizontal"
       [attr.aria-label]="label() || null"
     >
       @for (tab of tabs(); track tab.key) {
@@ -32,10 +36,14 @@ export interface TabItem {
           type="button"
           class="tab"
           role="tab"
+          [id]="tabId(tab.key)"
+          [attr.data-tab-key]="tab.key"
           [class.on]="tab.key === value()"
           [disabled]="!!tab.disabled"
+          [attr.tabindex]="tab.key === activeKey() ? 0 : -1"
           [attr.aria-selected]="tab.key === value()"
           (click)="value.set(tab.key)"
+          (keydown)="onKeydown($event)"
         >
           <span class="label">{{ tab.label }}</span>
           @if (tab.count !== undefined) {
@@ -96,8 +104,8 @@ export interface TabItem {
       white-space: nowrap;
       cursor: pointer;
       transition:
-        background 0.16s ease,
-        color 0.16s ease;
+        background var(--ui-duration-base) var(--ui-ease),
+        color var(--ui-duration-base) var(--ui-ease);
     }
 
     .tabs.sm .tab {
@@ -193,4 +201,65 @@ export class TabsComponent {
   readonly size = input<'md' | 'sm'>('md');
   /** 辅助技术读到的这组选项卡名称。 */
   readonly label = input('');
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly uid = `tabs-${++seq}`;
+
+  /** 唯一进入 Tab 序列的页签：选中项；未选中时退回第一个可用项。 */
+  readonly activeKey = computed(() => {
+    const tabs = this.tabs();
+    const selected = tabs.find((tab) => tab.key === this.value() && !tab.disabled);
+    return selected?.key ?? tabs.find((tab) => !tab.disabled)?.key ?? '';
+  });
+
+  tabId(key: string): string {
+    return `${this.uid}-${key}`;
+  }
+
+  onKeydown(event: KeyboardEvent): void {
+    const buttons = this.buttons();
+    if (!buttons.length) return;
+
+    const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    const enabled = buttons.filter((button) => !button.disabled);
+    if (!enabled.length) return;
+
+    let target: HTMLButtonElement | undefined;
+    switch (event.key) {
+      case 'ArrowRight':
+        target = this.step(enabled, buttons[current], 1);
+        break;
+      case 'ArrowLeft':
+        target = this.step(enabled, buttons[current], -1);
+        break;
+      case 'Home':
+        target = enabled[0];
+        break;
+      case 'End':
+        target = enabled[enabled.length - 1];
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    target?.focus();
+    const key = target?.dataset['tabKey'];
+    if (key) this.value.set(key);
+  }
+
+  private buttons(): HTMLButtonElement[] {
+    return [...this.host.nativeElement.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+  }
+
+  private step(
+    enabled: HTMLButtonElement[],
+    current: HTMLButtonElement | undefined,
+    delta: number,
+  ): HTMLButtonElement {
+    // 当前项禁用或不在列表里时，从端点进入
+    const index = current && !current.disabled ? enabled.indexOf(current) : -1;
+    if (index < 0) return delta > 0 ? enabled[0] : enabled[enabled.length - 1];
+    return enabled[(index + delta + enabled.length) % enabled.length];
+  }
 }

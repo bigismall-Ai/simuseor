@@ -45,6 +45,8 @@ export class GridComponent {
   readonly gap = input('var(--ui-space-4)');
 
   readonly template = computed(
-    () => `repeat(auto-fill, minmax(${this.min()}, ${this.max()}))`,
+    // min 与 max 可能交叉：≥3440 时 --layout-grid-min(310) 会大于 --card-max(300)，
+    // 原生 minmax 遇到 max < min 会直接忽略 max，把卡拉到 310。这里先把 min 夹住。
+    () => `repeat(auto-fill, minmax(min(${this.min()}, ${this.max()}), ${this.max()}))`,
   );
 }

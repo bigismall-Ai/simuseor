@@ -1,12 +1,5 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, ElementRef, effect, inject, input, output, signal } from '@angular/core';
 import { CardBodyComponent } from './card-body';
 import { CardKebabComponent } from './card-kebab';
 import { CardMenuComponent } from './card-menu';
@@ -49,7 +42,7 @@ import { CardSlotComponent } from './card-slot';
         <span class="acard-ident">
           <ng-content select="[cardIdent]" />
         </span>
-        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu($event)" />
+        <ui-card-kebab [expanded]="menuOpen()" (toggled)="toggleMenu()" />
         @if (menuOpen()) {
           <ui-card-menu
             [items]="menuItems()"
@@ -111,14 +104,39 @@ export class CardShellComponent {
 
   private readonly open = signal(false);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly doc = inject(DOCUMENT);
+
+  constructor() {
+    /*
+     * 每条 document 监听只在菜单真正打开时挂上，关闭即摘。
+     * 之前用 @HostListener('document:…')：页面上 40 张卡就是 80 条常驻监听，
+     * 每次点击都会让每张卡写一次 signal、触发一轮变更检测。
+     */
+    effect((onCleanup) => {
+      if (!this.open()) return;
+
+      const onClick = (event: MouseEvent) => {
+        const target = event.target as Node | null;
+        if (!target || !this.host.nativeElement.contains(target)) this.open.set(false);
+      };
+      const onKeydown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') this.open.set(false);
+      };
+
+      this.doc.addEventListener('click', onClick);
+      this.doc.addEventListener('keydown', onKeydown);
+      onCleanup(() => {
+        this.doc.removeEventListener('click', onClick);
+        this.doc.removeEventListener('keydown', onKeydown);
+      });
+    });
+  }
 
   menuOpen(): boolean {
     return this.open();
   }
 
-  toggleMenu(event: MouseEvent): void {
-    // 别让「点外面收菜单」的 document 监听器跟着这次点击一起跑
-    event.stopPropagation();
+  toggleMenu(): void {
     this.open.update((open) => !open);
   }
 
@@ -129,15 +147,5 @@ export class CardShellComponent {
   pick(key: string): void {
     this.open.set(false);
     this.menuPicked.emit(key);
-  }
-
-  @HostListener('document:click')
-  onDocumentClick(): void {
-    if (this.open()) this.open.set(false);
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    this.open.set(false);
   }
 }

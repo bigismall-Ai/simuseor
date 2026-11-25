@@ -38,7 +38,8 @@
   flex-direction: column;
   min-width: 0;
   min-height: 235px;
-  overflow: hidden;
+  /* clip 比 hidden 精确：不创建滚动容器，也不会在圆角处留下 1px 的白边 */
+  overflow: clip;
   border-radius: var(--card-radius);
   background: var(--panel);
   box-shadow: var(--card-shadow);
@@ -53,13 +54,13 @@
   position: absolute;
   inset: 0;
   z-index: 5;
+  border: 1px solid var(--border);
   border-radius: inherit;
-  box-shadow: inset 0 0 0 1px var(--border);
   pointer-events: none;
-  transition: box-shadow 0.16s ease;
+  transition: border-color 0.16s ease;
 }
-.acard.on-shot::after { box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18); }
-.acard:focus-within::after { box-shadow: inset 0 0 0 2px var(--ui-primary); }
+.acard.on-shot::after { border-color: rgb(0 0 0 / 0.18); }
+.acard:focus-within::after { border: 2px solid var(--ui-primary); }
 
 .acard:focus-visible { outline: 2px solid var(--ui-primary); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
@@ -69,8 +70,16 @@
 }
 
 /* ---- ① 封面：铺满整卡，不再分上下两段 ---- */
-.acard-media { position: absolute; inset: 0; overflow: hidden; }
-.acard-plate { position: absolute; inset: 0; }
+/* 圆角只由 .acard 裁一次；media/plate 不再裁第二遍。
+   clip 与 border-radius 叠在子层上会在弧线处留下 1px 浅色边。 */
+.acard-media {
+  position: absolute;
+  inset: 0;
+}
+.acard-plate {
+  position: absolute;
+  inset: 0;
+}
 .acard-plate > * { position: absolute; inset: 0; }
 
 /* 卡片内的封面铭牌身份行统一收掉，由 .acard-head 承担 */
@@ -127,7 +136,7 @@
 .acard.on-shot {
   --card-scrim-ink: #fff;
   --card-scrim-muted: rgb(255 255 255 / 0.76);
-  --card-scrim-line: rgb(255 255 255 / 0.26);
+  --card-scrim-line: rgb(255 255 255 / 0.30);
   --card-scrim-tag-bg: rgb(255 255 255 / 0.18);
 }
 

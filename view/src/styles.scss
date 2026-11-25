@@ -191,17 +191,19 @@
   --layout-three-left: 208px;
   --layout-three-right: 262px;
   --layout-grid-min: 250px;
-  --card-radius: var(--ui-radius-list);
+  /* 卡片 16 / 列表 12 是两档语义圆角，卡片不能借用列表那一档 */
+  --card-radius: var(--ui-radius-card);
   --card-max: 300px;
   --card-media-ratio: 16 / 9;
   --card-border: var(--ui-border);
   --card-shadow: var(--ui-shadow);
   --card-mark-size: 32px;
-  --card-mark-radius: 8px;
-  --card-title-size: 13px;
-  --card-meta-size: 11px;
-  --card-slot-size: 9.5px;
-  --card-tag-size: 9.5px;
+  --card-mark-radius: var(--ui-radius-sm);
+  --card-title-size: var(--ui-text-md);
+  --card-meta-size: var(--ui-text-sm);
+  --card-slot-size: var(--ui-text-xs);
+  --card-tag-size: var(--ui-text-xs);
+  --card-details-max: 130px;
   --card-action-height: 28px;
   --card-action-padding: 12px;
   --card-kebab-size: 22px;
@@ -236,7 +238,7 @@
   --card-scrim-color: var(--ui-card-solid);
   --card-scrim-ink: var(--ui-text);
   --card-scrim-muted: var(--ui-muted);
-  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 45%, transparent);
+  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 30%, transparent);
   --card-scrim-tag-bg: var(--ui-panel-3);
   --card-scrim-action-bg: var(--ui-primary);
   --card-scrim-action-ink: var(--ui-on-primary);
@@ -324,7 +326,7 @@ html[data-theme='dark'] {
   --card-scrim-color: var(--ui-card-solid);
   --card-scrim-ink: var(--ui-text);
   --card-scrim-muted: var(--ui-muted);
-  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 45%, transparent);
+  --card-scrim-line: color-mix(in srgb, var(--ui-muted) 30%, transparent);
   --card-scrim-tag-bg: var(--ui-panel-3);
   --card-scrim-action-bg: var(--ui-primary);
   --card-scrim-action-ink: var(--ui-on-primary);

@@ -77,8 +77,11 @@ export type CardSlotTone = '' | 'ok' | 'warn' | 'err';
     .acard-rule {
       flex: 1 1 auto;
       min-width: 12px;
-      height: 1px;
-      background: var(--card-scrim-line);
+      /* 用 border 而不是 1px 背景：Chrome 会把 border 吸附到设备像素网格，
+         不会因卡片落在半像素位置而摊成两行。 */
+      align-self: center;
+      height: 0;
+      border-top: 1px solid var(--card-scrim-line);
     }
 
     .acard-size {

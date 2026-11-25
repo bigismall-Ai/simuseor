@@ -18,6 +18,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--ui-space-2);
+  /* 标签会压到内层卡 16px 圆角上：顶部与左右先留出内缩 */
+  padding: var(--ui-space-3) var(--ui-space-4) 0;
 }
 
 .body-demo {

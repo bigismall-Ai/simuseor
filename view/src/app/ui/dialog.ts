@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  HostListener,
   Injector,
   afterNextRender,
   effect,
@@ -15,11 +14,17 @@ import {
 let seq = 0;
 
 /**
- * 弹层：遮罩 + 440px 表面 + 动作行。
+ * 弹层：原生 `<dialog>` + `showModal()`。
  *
- * 负责 Esc / 点遮罩关闭、打开时把焦点送进弹层、关闭时还给触发元素、锁滚动。
- * 生产环境需要完整焦点圈闭时仍走 MatDialog；原型与轻量确认场景用这个，
- * 两边的表面样式共用 `--ui-panel` / `--ui-radius-card` 令牌。
+ * 用原生 dialog 而不是自己搭遮罩，是因为浏览器已经替我们做了三件难做对的事：
+ *   - 焦点圈闭（Tab / Shift+Tab 不会跑出弹层）；
+ *   - top layer：不受祖先 `overflow` / `transform` / `z-index` 影响；
+ *   - Esc 走 `cancel` 事件，可以按 `dismissible` 拦下。
+ * 组件只补焦点首落点、关闭后还给触发元素、锁背景滚动。
+ *
+ * dialog 元素常驻 DOM，只用 `showModal()` / `close()` 控制显隐：
+ * 若跟着 `@if` 一起销毁，浏览器会在节点移除时把焦点丢回 body，
+ * 再想还给触发元素就晚了。
  *
  * 用法：
  *   <ui-dialog [(open)]="open" title="删除任务？">
@@ -33,51 +38,48 @@ let seq = 0;
 @Component({
   selector: 'ui-dialog',
   template: `
-    @if (open()) {
-      <div class="overlay" role="presentation" (click)="onBackdrop($event)">
-        <div
-          #panel
-          class="dialog"
-          [attr.role]="destructive() ? 'alertdialog' : 'dialog'"
-          aria-modal="true"
-          [attr.aria-labelledby]="titleId"
-        >
-          <h2 [id]="titleId">{{ title() }}</h2>
-          <div class="body"><ng-content /></div>
-          <div class="actions"><ng-content select="[dialog-actions]" /></div>
-        </div>
-      </div>
-    }
+    <!-- 遮罩点击是补充操作，键盘等价物是 Esc（原生 cancel 事件）；dialog 本身不是可聚焦控件 -->
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+    <dialog
+      #panel
+      class="dialog"
+      [attr.role]="destructive() ? 'alertdialog' : null"
+      [attr.aria-labelledby]="titleId"
+      (cancel)="onCancel($event)"
+      (click)="onBackdrop($event)"
+    >
+      @if (open()) {
+        <h2 [id]="titleId">{{ title() }}</h2>
+        <div class="body"><ng-content /></div>
+        <div class="actions"><ng-content select="[dialog-actions]" /></div>
+      }
+    </dialog>
   `,
   styles: `
     :host {
       display: contents;
     }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: var(--ui-z-dialog);
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background: var(--ui-scrim);
-      backdrop-filter: blur(2px);
-    }
-
     .dialog {
-      width: min(440px, 100%);
-      max-height: calc(100vh - 48px);
+      /* 原生 dialog 默认 margin:auto 居中；这里只固定尺寸与表面 */
+      width: min(440px, calc(100vw - 48px));
+      max-height: calc(100dvh - 48px);
       overflow: auto;
       padding: var(--ui-space-5);
       border: 1px solid var(--ui-border);
       border-radius: var(--ui-radius-card);
       background: var(--ui-overlay);
       box-shadow: var(--ui-shadow-md);
+      color: var(--ui-text);
+    }
+
+    .dialog::backdrop {
+      background: var(--ui-scrim);
+      backdrop-filter: blur(2px);
     }
 
     h2 {
-      margin: 0 0 6px;
+      margin: 0 0 var(--ui-space-2);
       color: var(--ui-text);
       font-size: var(--ui-text-lg);
       font-weight: var(--ui-weight-semibold);
@@ -86,7 +88,7 @@ let seq = 0;
     .body {
       color: var(--ui-muted);
       font-size: var(--ui-text-md);
-      line-height: 1.6;
+      line-height: var(--ui-leading-relaxed);
     }
 
     .body :is(p, ul, ol) {
@@ -94,7 +96,7 @@ let seq = 0;
     }
 
     .body :is(p + p, p + ul, p + ol) {
-      margin-top: 6px;
+      margin-top: var(--ui-space-2);
     }
 
     .actions {
@@ -119,39 +121,32 @@ export class DialogComponent {
   readonly title = input('');
   /** 破坏性确认：role 用 alertdialog。 */
   readonly destructive = input(false);
-  /** 关闭按钮 / Esc / 点遮罩是否生效；重要确认可设 false。 */
+  /** Esc / 点遮罩是否生效；重要确认可设 false。 */
   readonly dismissible = input(true);
   readonly closed = output<void>();
 
   readonly titleId = `dlg-title-${++seq}`;
 
-  private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
+  private readonly panel = viewChild<ElementRef<HTMLDialogElement>>('panel');
   private readonly injector = inject(Injector);
+  private previous: HTMLElement | null = null;
+  private scrollLock = '';
 
   constructor() {
-    effect((onCleanup) => {
-      if (!this.open()) return;
-
-      const previous = document.activeElement as HTMLElement | null;
-      const overflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-
-      afterNextRender(() => this.focusFirst(), { injector: this.injector });
-
-      onCleanup(() => {
-        document.body.style.overflow = overflow;
-        previous?.focus?.();
-      });
+    effect(() => {
+      const open = this.open();
+      afterNextRender(() => this.sync(open), { injector: this.injector });
     });
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.open()) this.close();
+  /** 原生 Esc：先拦下，再按 dismissible 决定是否真的关。 */
+  onCancel(event: Event): void {
+    event.preventDefault();
+    this.close();
   }
 
   onBackdrop(event: MouseEvent): void {
-    // 只认遮罩本身：点面板内部会冒泡上来，但 event.target 不是遮罩
+    // 模态 dialog 的遮罩点击，target 就是 dialog 元素本身
     if (event.target !== event.currentTarget) return;
     this.close();
   }
@@ -162,13 +157,28 @@ export class DialogComponent {
     this.closed.emit();
   }
 
-  private focusFirst(attempt = 0): void {
-    const root = this.panel()?.nativeElement;
-    if (!root) {
-      // @if 内容可能比 afterNextRender 晚一帧出现
-      if (attempt < 3) requestAnimationFrame(() => this.focusFirst(attempt + 1));
+  private sync(open: boolean): void {
+    const el = this.panel()?.nativeElement;
+    if (!el) return;
+
+    if (open && !el.open) {
+      this.previous = document.activeElement as HTMLElement | null;
+      this.scrollLock = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      el.showModal();
+      this.focusFirst(el);
       return;
     }
+
+    if (!open && el.open) {
+      el.close();
+      document.body.style.overflow = this.scrollLock;
+      this.previous?.focus?.();
+      this.previous = null;
+    }
+  }
+
+  private focusFirst(root: HTMLElement): void {
     const preferred = root.querySelector<HTMLElement>('[data-autofocus]');
     // 优先项可能挂在 ui-button 宿主上，真正可聚焦的是它内部的 button
     const target = preferred

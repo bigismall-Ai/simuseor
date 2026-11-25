@@ -1,10 +1,15 @@
-import { Component, ElementRef, input, model, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, input, model, viewChild } from '@angular/core';
+
+let seq = 0;
 
 /**
  * 文本输入：标签、控件、说明/错误三件套。
  *
  * 标签包住控件（隐式关联），不需要调用方再补 id。
  * 两侧可投影 `[input-leading]` / `[input-trailing]` 放图标或单位。
+ *
+ * 可访问性：错误时控件带 `aria-invalid`，说明 / 错误文字都接在
+ * `aria-describedby` 上，读屏不会只听到一个孤立的红字。
  */
 @Component({
   selector: 'ui-input',
@@ -24,20 +29,25 @@ import { Component, ElementRef, input, model, viewChild } from '@angular/core';
           #field
           [type]="type()"
           [value]="value()"
+          [attr.name]="name() || null"
           [attr.placeholder]="placeholder() || null"
           [attr.inputmode]="inputmode() || null"
           [attr.autocomplete]="autocomplete() || null"
-          [disabled]="disabled()"
-          [class.mono]="mono()"
           [attr.aria-label]="ariaLabel() || null"
+          [attr.aria-invalid]="error() ? 'true' : null"
+          [attr.aria-describedby]="hasMessage() ? messageId : null"
+          [disabled]="disabled()"
+          [required]="required()"
+          [readOnly]="readOnly()"
+          [class.mono]="mono()"
           (input)="onInput($event)"
         />
         <span class="trail"><ng-content select="[input-trailing]" /></span>
       </span>
       @if (error()) {
-        <span class="msg error" role="alert">{{ error() }}</span>
+        <span class="msg error" [id]="messageId" role="alert">{{ error() }}</span>
       } @else if (hint()) {
-        <span class="msg">{{ hint() }}</span>
+        <span class="msg" [id]="messageId">{{ hint() }}</span>
       }
     </label>
   `,
@@ -171,7 +181,14 @@ export class InputComponent {
   readonly size = input<'md' | 'sm'>('md');
   /** 没有可见标签时（搜索框等）用它给控件一个可访问名。 */
   readonly ariaLabel = input('');
+  readonly name = input('');
+  readonly required = input(false);
+  readonly readOnly = input(false);
   readonly value = model('');
+
+  /** 说明 / 错误共用同一个 id：同一时刻只渲染一条，不会出现悬空引用。 */
+  readonly messageId = `input-msg-${++seq}`;
+  readonly hasMessage = computed(() => !!this.error() || !!this.hint());
 
   private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
 

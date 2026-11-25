@@ -10,8 +10,8 @@ import { RulesComponent } from '../ui/rules';
 /**
  * 模态框：一个 VIS 页面统一三种形态。
  *
- *   ui-dialog  —— 页面内弹层，负责 Esc / 焦点 / 锁滚动（原型与轻量确认）
- *   MatDialog  —— 生产环境需要完整焦点圈闭时
+ *   ui-dialog  —— 原生 <dialog>：焦点圈闭 / top layer / Esc 由浏览器提供
+ *   MatDialog  —— 需要 Material 的既有能力（拖拽、复杂内容）时
  *   静态表面    —— 只用于展示规格，不做交互
  */
 @Component({
@@ -38,7 +38,8 @@ import { RulesComponent } from '../ui/rules';
           </ui-button>
         </div>
         <p class="hint table-note">
-          负责 Esc / 点遮罩关闭、打开时把焦点送进弹层、关闭时还给触发按钮、锁页面滚动。
+          基于原生 <code>&lt;dialog&gt;</code> + <code>showModal()</code>：焦点圈闭、top layer、Esc 由浏览器提供；
+          组件只补焦点首落点、关闭后还给触发按钮、锁页面滚动。
         </p>
       </ui-section>
 
@@ -54,7 +55,7 @@ import { RulesComponent } from '../ui/rules';
           <li><b>宽度</b>：440px 上限，内容再长就分步，不把弹层拖成全屏。</li>
           <li><b>动作</b>：最多一主一次，右对齐；破坏性操作放最右，用 danger。</li>
           <li><b>关闭</b>：Esc 与点遮罩都关；不可逆确认可以把 <code>dismissible</code> 设 false。</li>
-          <li><b>选择</b>：原型 / 轻量确认用 <code>ui-dialog</code>，需要完整焦点圈闭用 MatDialog。</li>
+          <li><b>选择</b>：默认用 <code>ui-dialog</code>（原生 dialog，焦点圈闭与 Esc 已具备）；只有需要 Material 既有能力时才换 MatDialog。</li>
         </ui-rules>
       </ui-section>
 

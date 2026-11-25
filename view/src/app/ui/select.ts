@@ -1,4 +1,6 @@
-import { Component, input, model } from '@angular/core';
+import { Component, computed, input, model } from '@angular/core';
+
+let seq = 0;
 
 export interface SelectOption {
   value: string;
@@ -29,19 +31,20 @@ export interface SelectOption {
         <span class="lead"><ng-content select="[select-leading]" /></span>
         <select
           [class.is-placeholder]="!value() && !!placeholder()"
-          [disabled]="disabled()"
+          [value]="value()"
+          [attr.name]="name() || null"
           [attr.aria-label]="ariaLabel() || null"
+          [attr.aria-invalid]="error() ? 'true' : null"
+          [attr.aria-describedby]="hasMessage() ? messageId : null"
+          [disabled]="disabled()"
+          [required]="required()"
           (change)="onChange($event)"
         >
           @if (placeholder()) {
-            <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
+            <option value="" disabled>{{ placeholder() }}</option>
           }
           @for (option of options(); track option.value) {
-            <option
-              [value]="option.value"
-              [disabled]="option.disabled === true"
-              [selected]="option.value === value()"
-            >
+            <option [value]="option.value" [disabled]="option.disabled === true">
               {{ option.label }}
             </option>
           }
@@ -51,9 +54,9 @@ export interface SelectOption {
         </svg>
       </span>
       @if (error()) {
-        <span class="msg error" role="alert">{{ error() }}</span>
+        <span class="msg error" [id]="messageId" role="alert">{{ error() }}</span>
       } @else if (hint()) {
-        <span class="msg">{{ hint() }}</span>
+        <span class="msg" [id]="messageId">{{ hint() }}</span>
       }
     </label>
   `,
@@ -195,6 +198,11 @@ export class SelectComponent {
   readonly size = input<'md' | 'sm'>('md');
   /** 没有可见标签时（筛选条等）用它给控件一个可访问名。 */
   readonly ariaLabel = input('');
+  readonly name = input('');
+  readonly required = input(false);
+
+  readonly messageId = `select-msg-${++seq}`;
+  readonly hasMessage = computed(() => !!this.error() || !!this.hint());
 
   onChange(event: Event): void {
     this.value.set((event.target as HTMLSelectElement).value);

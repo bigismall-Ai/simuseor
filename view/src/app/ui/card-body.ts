@@ -25,9 +25,10 @@ import { Component, input } from '@angular/core';
       z-index: 3;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ui-space-1);
       margin-top: auto;
-      padding: 9px 10px 10px;
+      /* 底部留白跟卡片动作行同一条基准线，内容再多也不会贴到裁切边 */
+      padding: var(--ui-space-2) var(--ui-space-3);
     }
 
     .acard-name {
@@ -47,20 +48,24 @@ import { Component, input } from '@angular/core';
     .acard-details {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ui-space-1);
       max-height: 0;
       overflow: hidden;
+      padding-bottom: 0;
       opacity: 0;
       transform: translateY(5px);
       transition:
         max-height 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+        padding-bottom 0.34s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0.2s ease,
         transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     :host-context(.acard:hover) .acard-details,
     :host-context(.acard:focus-within) .acard-details {
-      max-height: 130px;
+      /* 上限含底部呼吸位：展开后最后一行不贴裁切边 */
+      max-height: var(--card-details-max);
+      padding-bottom: var(--ui-space-1);
       opacity: 1;
       transform: none;
     }
@@ -69,6 +74,7 @@ import { Component, input } from '@angular/core';
     :host-context(.card-expanded) .acard-details {
       max-height: none;
       overflow: visible;
+      padding-bottom: var(--ui-space-1);
       opacity: 1;
       transform: none;
     }
@@ -77,6 +83,7 @@ import { Component, input } from '@angular/core';
       .acard-details {
         max-height: none;
         overflow: visible;
+        padding-bottom: var(--ui-space-1);
         opacity: 1;
         transform: none;
       }

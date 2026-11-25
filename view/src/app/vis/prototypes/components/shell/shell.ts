@@ -70,7 +70,7 @@ import type { CrumbItem } from '../../../../ui/breadcrumb';
               <ui-tag size="sm" [mono]="true">wide</ui-tag>
               <span>[wide]="true" · 铺满可用宽度</span>
             </div>
-            <ui-page [wide]="true" [flushBottom]="true">
+            <ui-page [wide]="true">
               <div page-head>
                 <ui-breadcrumb [items]="crumbs3" />
               </div>
@@ -102,7 +102,9 @@ import type { CrumbItem } from '../../../../ui/breadcrumb';
         </div>
         <ui-text variant="hint">
           顶部 / 底部偏移用 <code>flushTop</code> / <code>flushBottom</code> 单独关掉；
-          页头继续放在 <code>ui-page</code> 里，用 <code>ui-page-header</code>，不复制标题区。
+          <code>flushBottom</code> 只给「整幅画布 + 自有页脚」的外壳用，示例卡片不关，
+          否则最后一段会贴到卡片裁切边。页头继续放在 <code>ui-page</code> 里，
+          用 <code>ui-page-header</code>，不复制标题区。
         </ui-text>
       </ui-section>
 
