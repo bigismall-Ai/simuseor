@@ -56,6 +56,10 @@
 | `ui-textarea` | 12 圆角、上下 8 / 左右 12 内边距；高度由 `rows` 定，不自动增高 | 自有 |
 | `ui-checkbox` | 18px 方框、6 圆角、12px 对勾；原生 input 承载体，`indeterminate` 横杠 | 自有 |
 | `ui-switch` | 34 高（sm 28）、10 圆角、轨道 52/44、滑块 26/20；内阴影描边，位移与轨道对齐 | 自有 |
+| `ui-tabs` | `underline` / `pill` 两表面；`md` 34 / `sm` 28；计数走 10.5px 等宽；选中底线 2px | MUI Tabs 参考，表面按自有层级 |
+| `ui-pagination` | 28px 控件、窗口 ≤7 格（首末页固定 + 省略号）、当前页实心 | MUI Pagination 参考，格数收窄 |
+| `ui-divider` | 1px `--ui-inner-border`；`vertical` / `inset` 两开关；纯装饰对 AT 隐藏 | MUI Divider 参考 |
+| `ui-tooltip` | 12px 圆角 / 8px 内边距 / 8px 间距；纯 CSS 四向，不建浮层、不做边界翻转 | MUI Tooltip 参考，去掉 JS 定位 |
 
 ## 已采用的 MUI 约束
 

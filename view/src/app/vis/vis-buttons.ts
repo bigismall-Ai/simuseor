@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UiButtonComponent } from '../ui/button';
 import { SectionBlockComponent } from '../ui/section-block';
 import { TableComponent } from '../ui/table';
+import { TooltipComponent } from '../ui/tooltip';
 import { VisualPageComponent } from './visual-page';
 import { RulesComponent } from '../ui/rules';
 
@@ -10,7 +11,7 @@ import { RulesComponent } from '../ui/rules';
   selector: 'app-vis-buttons',
   standalone: true,
   imports: [
-    RulesComponent,UiButtonComponent, SectionBlockComponent, TableComponent, VisualPageComponent],
+    RulesComponent, UiButtonComponent, SectionBlockComponent, TableComponent, TooltipComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
     <app-visual-page
@@ -82,6 +83,38 @@ import { RulesComponent } from '../ui/rules';
         <div class="action-row">
           <ui-button variant="primary" [block]="true">安装到实例 A</ui-button>
         </div>
+      </ui-section>
+
+      <ui-section title="悬浮提示" pill="ui-tooltip">
+        <div class="row">
+          <span class="row-label">Top</span>
+          <ui-tooltip text="复制到剪贴板" placement="top">
+            <ui-button variant="secondary">复制</ui-button>
+          </ui-tooltip>
+          <ui-tooltip text="打开原站页面" placement="bottom">
+            <ui-button variant="ghost">原站</ui-button>
+          </ui-tooltip>
+          <ui-tooltip text="返回上一级" placement="left">
+            <ui-button variant="secondary" size="icon" label="返回">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path
+                  d="M14.5 6l-6 6 6 6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </ui-button>
+          </ui-tooltip>
+          <ui-tooltip text="进入下一节" placement="right">
+            <ui-button variant="ghost" size="sm">下一节</ui-button>
+          </ui-tooltip>
+        </div>
+        <p class="hint table-note">
+          悬停或键盘聚焦才浮出，纯 CSS 定位，不建浮层、不做边界翻转；
+          气泡只是补充说明，按钮本身必须有可访问名。
+        </p>
       </ui-section>
 
       <ui-section title="色彩语义" pill="Semantics" [plain]="true">
