@@ -49,6 +49,7 @@
 - 层级只用 `--ui-z-nav/sticky/toast/overlay/dialog/material`（10/20/60/80/90/1000），不在页面里写魔数
 - 页面结构：面包屑在最外层；不放大标题；每个区块用 `<ui-section title pill>`，标题在内容外，右侧标签用 `pill`
 - 反馈表面：Toast 用 `ui-toast`（位置由页面容器决定），来源通路用 `ui-source-chip`
+- 行内提示用 `ui-notice`：一句话 / 紧凑横条用默认 `inline`；要标题、嵌套列表、`code`、链接或动作时用 `variant="callout"`（12 圆角 / 26×26 图标井）。图标投影走 `[notice-icon]`，动作投影走 `[notice-actions]`（旧）或 `[notice-action]`（新）；关闭按钮会把焦点还给提示外部的触发元素
 - 说明性文字集中在页面最后一块，不在各区块之间分散
 - 区块内容直接铺在页面；表格/列表用 `.list-card`，圆角用 `--ui-radius-list`
 - 文字说明用普通段落，不要用卡片包；卡片最多两层

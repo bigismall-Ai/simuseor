@@ -110,21 +110,34 @@
     },
     {
       "selector": "ui-notice",
-      "name": "行内提示",
+      "name": "行内提示 / Callout",
       "category": "feedback",
       "page": "/vis/prototypes/components/notice",
       "demoFile": "src/app/vis/prototypes/components/notice/notice.ts",
       "variants": [
+        "inline",
+        "callout",
         "info",
         "ok",
         "warn",
         "error"
       ],
       "tokens": [
+        "--ui-notice-pad",
+        "--ui-notice-gap",
+        "--ui-notice-icon",
+        "--ui-notice-radius",
+        "--ui-callout-pad",
+        "--ui-callout-gap",
+        "--ui-callout-well",
+        "--ui-callout-well-radius",
+        "--ui-callout-icon",
+        "--ui-callout-indent",
+        "--ui-callout-radius",
         "--ok",
         "--warn",
         "--err",
-        "--accent"
+        "--ui-accent"
       ]
     },
     {

@@ -40,7 +40,7 @@
 | `ui-grid` | `minmax(--layout-grid-min, --card-max)`；窄窗单列 | 自有，MUI `Grid/Stack` 只参考 |
 | `ui-toolbar` | flex + gap + wrap；surface 变体 12px 圆角 | MUI `DemoToolbar` 参考 |
 | `ui-table` | 默认 11.5px 控制台密度；`density="docs"` 12.5px、16/20 内缩、行底线、无斑马 | MUI 文档表格参考，字号收窄 |
-| `ui-notice` | 12px 内边距、8px 图标井、语义色 | MUI `Alert/Callout` 参考 |
+| `ui-notice` | inline：16 内边距、12 间距、18 圆形图标；callout：12 圆角 / 12 内边距 / 26×26 图标井（6 圆角）/ 18 图标 / 嵌套列表缩进 22；语气色推导链接与 strong | MUI `Alert/Callout` 参考 |
 | `ui-card-shell` | 16px 圆角、`.acard` 骨架；状态槽 / 标签 / 动作行只走槽位 | 自有 |
 | `ui-nav-tree` | 递归树、分组展开、`subheader`、状态 chip；展开 224 / 收起 64 | MUI 文档导航结构参考 |
 | `ui-text` / `ui-label` / `ui-rules` | 引言 11.5 / 小标题 14 / 规则 11.5；72ch | 自有 + MUI Markdown 参考 |
@@ -62,7 +62,7 @@
 | 表格 docs 密度：行底线、无斑马、14px 级别 | `ui-table density="docs"`，字号按我们刻度收窄到 12.5 |
 | TOC 242px、缩进 12/24/36 | `--layout-toc`（组件待做） |
 | 代码面板：深色底、最高 400px | `ui-code` + `--ui-code-*` |
-| Callout：12px、图标井 26×26 | `--ui-callout-*`（组件待做） |
+| Callout：12px、图标井 26×26 / 18 图标、嵌套列表 22、code 胶囊 | `--ui-callout-*` + `ui-notice variant="callout"` |
 | 导航树：分组 / `subheader` / 状态 chip | `NAV_TREE` + `ui-nav-tree` |
 | 标题锚点、滚动监听节流 166ms | `ui-toc`（组件待做） |
 | reduced-motion 抑制动效 | 组件内部统一处理 |

@@ -93,10 +93,19 @@
   --ui-search-max-w: 640px;
   --ui-search-row-h: 52px;
   --ui-search-trigger-h: 32px;
-  --ui-callout-pad: var(--ui-space-4);
-  --ui-callout-gap: var(--ui-space-3);
+  /* 行内提示：紧凑横条 */
+  --ui-notice-pad: var(--ui-space-4);
+  --ui-notice-gap: var(--ui-space-3);
+  --ui-notice-icon: var(--icon-action);
+  --ui-notice-radius: var(--ui-radius-list);
+  /* Callout：12 圆角 / 12 内边距 / 8 间距 / 26 图标井，嵌套列表缩进 22 */
+  --ui-callout-pad: var(--ui-space-3);
+  --ui-callout-gap: var(--ui-space-2);
   --ui-callout-icon: var(--icon-action);
-  --ui-callout-radius: var(--ui-radius-list);
+  --ui-callout-well: 26px;
+  --ui-callout-well-radius: var(--ui-radius-xs);
+  --ui-callout-indent: 22px;
+  --ui-callout-radius: var(--ui-radius-lg);
   /* 间距刻度：4 基，只允许这 8 档 */
   --ui-space-1: 4px;
   --ui-space-2: 8px;

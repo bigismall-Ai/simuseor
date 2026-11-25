@@ -4,7 +4,12 @@
 
 .col {
   display: grid;
-  gap: 10px;
-  max-width: 720px;
+  gap: var(--ui-space-3);
+  max-width: var(--layout-prose-measure);
 }
 
+.col-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
