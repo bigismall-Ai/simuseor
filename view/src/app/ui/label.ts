@@ -24,7 +24,7 @@ import { Component } from '@angular/core';
       margin: 0 0 var(--ui-space-2);
       color: var(--ui-text);
       font-size: var(--ui-text-lg);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       line-height: 1.4;
       letter-spacing: -0.01em;
       scroll-margin-top: var(--ui-scroll-offset);

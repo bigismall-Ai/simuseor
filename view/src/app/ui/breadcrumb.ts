@@ -64,7 +64,7 @@ export interface CrumbItem {
       color: var(--ui-muted);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 1.5;
     }
 
@@ -100,7 +100,7 @@ export interface CrumbItem {
 
     .here {
       color: var(--ui-text);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
   `,
 })

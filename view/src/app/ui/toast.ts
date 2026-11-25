@@ -79,7 +79,7 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
       background: var(--err-soft);
       color: var(--err);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: var(--ui-weight-bold);
     }
 
     .toast.ok .ico {
@@ -95,7 +95,7 @@ export type ToastTone = 'neutral' | 'ok' | 'error';
     b {
       display: block;
       font-size: var(--ui-text-md);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       color: var(--ui-text);
     }
 

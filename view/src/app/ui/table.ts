@@ -62,7 +62,7 @@ export type TableDensity = 'default' | 'docs';
       background: var(--ui-panel-2);
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
     }
 
     :host ::ng-deep .table-wrap tbody tr:nth-child(even) td {
@@ -101,7 +101,7 @@ export type TableDensity = 'default' | 'docs';
       background: transparent;
       color: var(--ui-text);
       font-size: var(--ui-text-md);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
     }
 
     :host ::ng-deep .table-wrap.docs tbody tr:nth-child(even) td {

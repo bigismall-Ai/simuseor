@@ -68,14 +68,14 @@
   padding-bottom: 10px;
   border-bottom: 1px solid var(--ui-border);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: -0.02em;
 }
 
 .proto-h2 .num {
   font-family: var(--ui-font-mono);
   font-size: 11px;
-  font-weight: 400;
+  font-weight: var(--ui-weight-regular);
   letter-spacing: 0.09em;
   color: var(--ui-muted);
 }
@@ -83,7 +83,7 @@
 .proto-h3 {
   margin: 26px 0 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: -0.01em;
 }
 
@@ -96,7 +96,7 @@
 
 .lead b {
   color: var(--ui-text-2);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 ui-panel {
@@ -129,7 +129,7 @@ ui-panel {
 
 .tile b {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   color: var(--ui-text);
 }
 
@@ -194,7 +194,7 @@ ui-panel {
 .src-name {
   display: block;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   color: var(--ui-text);
 }
 
@@ -283,7 +283,7 @@ ui-panel {
 
 .hint b {
   color: var(--ui-text-2);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 /* ── 三种时间态 ── */
@@ -303,7 +303,7 @@ ui-panel {
   display: block;
   margin: 0 0 2px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ui-muted);
@@ -311,7 +311,7 @@ ui-panel {
 
 .state-head b {
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .state-body {
@@ -349,7 +349,7 @@ ui-panel {
 
 .state-id b {
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .state-id .mono {
@@ -372,7 +372,7 @@ ui-panel {
 
 .state-body .tiny b {
   color: var(--ui-text-2);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .loading-line {
@@ -392,7 +392,7 @@ ui-panel {
 
 .state-list b {
   color: var(--ui-text-2);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 /* ── 门控对照 ── */
@@ -422,7 +422,7 @@ ui-panel {
 .option-head .kicker {
   margin: 0 0 2px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ui-muted);
@@ -430,7 +430,7 @@ ui-panel {
 
 .option-head b {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .option-body {
@@ -445,7 +445,7 @@ ui-panel {
 }
 
 .option-body .notice b {
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .mock {
@@ -477,7 +477,7 @@ ui-panel {
 
 .mock-count b {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: -0.02em;
 }
 
@@ -506,14 +506,14 @@ ui-panel {
   border-radius: var(--ui-radius);
   color: var(--ui-muted);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   background: var(--ui-inset);
 }
 
 .vis-mock-chip.on {
   background: var(--ui-surface);
   color: var(--ui-accent);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
@@ -552,7 +552,7 @@ ui-panel {
 
 .mock-label {
   font-size: 11.5px;
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   color: var(--ui-muted);
 }
 
@@ -580,7 +580,7 @@ ui-panel {
 
 .mini-head b {
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .mini-panel .tiny {
@@ -634,7 +634,7 @@ ui-panel {
 .mini-row b {
   flex: none;
   min-width: 116px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .option-body .state-list {
@@ -665,7 +665,7 @@ ui-panel {
 
 .table-card th {
   color: var(--ui-muted);
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   font-size: 10.5px;
   letter-spacing: 0.04em;
   background: var(--ui-inset);
@@ -676,7 +676,7 @@ ui-panel {
 }
 
 .table-card table td b {
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .table-foot {
@@ -685,7 +685,7 @@ ui-panel {
 
 .table-foot b {
   color: var(--ui-text-2);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .table-card .probe-hint {

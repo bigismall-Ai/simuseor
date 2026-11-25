@@ -153,7 +153,7 @@ import type { LibraryModel, SearchItem } from '../core/types';
       }
       .broken-title {
         font-size: 11px;
-        font-weight: 700;
+        font-weight: var(--ui-weight-bold);
         letter-spacing: 0.02em;
         background: color-mix(in srgb, var(--ui-error) 14%, transparent);
         color: var(--ui-error);
@@ -162,7 +162,7 @@ import type { LibraryModel, SearchItem } from '../core/types';
       }
       .broken-msg {
         font-size: 10px;
-        font-weight: 500;
+        font-weight: var(--ui-weight-medium);
         color: var(--ui-muted);
         background: var(--ui-card-solid);
         padding: 1px 7px;

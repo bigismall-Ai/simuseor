@@ -69,7 +69,7 @@ export interface PageViewOption {
       margin: 0 0 var(--ui-space-1);
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: 0.11em;
       text-transform: uppercase;
     }
@@ -77,7 +77,7 @@ export interface PageViewOption {
     .ui-page-heading h1 {
       margin: 0;
       font-size: var(--ui-text-xl);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: -0.022em;
       line-height: 1.2;
       scroll-margin-top: var(--ui-scroll-offset);

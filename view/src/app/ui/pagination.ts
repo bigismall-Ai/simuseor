@@ -79,7 +79,7 @@ export type PaginationItem = number | 'gap';
       color: var(--ui-text-2);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 1;
       cursor: pointer;
       transition:
@@ -128,7 +128,7 @@ export type PaginationItem = number | 'gap';
     .page.on:hover {
       background: var(--ui-primary);
       color: var(--ui-on-primary);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .gap {

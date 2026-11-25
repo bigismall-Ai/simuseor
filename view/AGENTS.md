@@ -44,6 +44,7 @@
 - MatDialog 的动作按钮仍用 Material 按钮（需要 `mat-dialog-close`），其余页面不得再用 `mat-flat-button` / `matButton`
 - 间距只用 `--ui-space-1..8`（4/8/12/16/20/24/32/48），不再写 6/10/14/18/22 这类中间值
 - 字号只用 `--ui-text-xs/sm/md/lg/xl`（10.5/11.5/12.5/14/22），不再自造 13/15/9.5
+- 字重只用 `--ui-weight-regular/medium/semibold/bold`（400/500/600/700），行高只用 `--ui-leading-tight/normal/relaxed`（1.25/1.5/1.625），组件里不写数字
 - 控件高度只用 `--ui-h-compact/sm/md/lg`（24/28/34/38）：表格内 24、筛选 28、常规 34、主操作 38
 - 图标只用 `--icon-inline/control/action/nav`（14/16/18/20）
 - 层级只用 `--ui-z-nav/sticky/toast/overlay/dialog/material`（10/20/60/80/90/1000），不在页面里写魔数

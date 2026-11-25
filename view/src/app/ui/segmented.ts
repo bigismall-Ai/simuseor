@@ -52,7 +52,7 @@ export interface SegmentedOption {
       color: var(--ui-muted);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       white-space: nowrap;
       cursor: pointer;
       transition:

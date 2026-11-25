@@ -96,7 +96,7 @@ export interface CardMenuItem {
       color: var(--text);
       font-family: var(--ui-font-body);
       font-size: 11px;
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       text-align: left;
       white-space: nowrap;
       text-decoration: none;

@@ -37,7 +37,7 @@ import { Component, input } from '@angular/core';
       margin: 0 0 4px;
       color: var(--ui-text);
       font-size: var(--ui-text-lg);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .ui-empty-hint {

@@ -46,7 +46,7 @@ import { ThemeService } from '../core/theme.service';
       box-shadow: inset 0 0 0 1px var(--ui-inner-border);
       color: var(--ui-text);
       font-size: 10px;
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: .02em;
       line-height: 1;
     }

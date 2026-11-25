@@ -91,7 +91,7 @@ export interface TabItem {
       color: var(--ui-muted);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 1;
       white-space: nowrap;
       cursor: pointer;
@@ -127,7 +127,7 @@ export interface TabItem {
 
     .tabs.underline .tab.on {
       color: var(--ui-text);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .tabs.underline .tab.on::after {

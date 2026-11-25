@@ -49,7 +49,7 @@ import { Component, input } from '@angular/core';
     .section-head h2 {
       margin: 0;
       font-size: var(--ui-text-lg);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: -0.01em;
       scroll-margin-top: var(--ui-scroll-offset);
     }

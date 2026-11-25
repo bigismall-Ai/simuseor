@@ -59,7 +59,7 @@ import type { BadgeTone } from './badge';
     .state-head h3 {
       margin: 0;
       font-size: var(--ui-text-md);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .state-tag {

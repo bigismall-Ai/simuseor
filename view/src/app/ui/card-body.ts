@@ -33,7 +33,7 @@ import { Component, input } from '@angular/core';
     .acard-name {
       margin: 0;
       font-size: var(--card-title-size);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       line-height: 1.38;
       letter-spacing: -0.008em;
       color: var(--card-scrim-ink);

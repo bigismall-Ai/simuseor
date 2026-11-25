@@ -242,7 +242,7 @@ let seq = 0;
     .row-text b {
       overflow: hidden;
       font-size: var(--ui-text-md);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       white-space: nowrap;
       text-overflow: ellipsis;
     }

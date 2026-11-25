@@ -122,7 +122,7 @@ const TONE_GLYPH: Record<NoticeTone, string> = { info: 'i', ok: '✓', warn: '!'
       background: color-mix(in srgb, var(--tone) 18%, transparent);
       color: var(--tone);
       font-size: var(--ui-text-sm);
-      font-weight: 700;
+      font-weight: var(--ui-weight-bold);
       line-height: 1;
     }
 
@@ -171,7 +171,7 @@ const TONE_GLYPH: Record<NoticeTone, string> = { info: 'i', ok: '✓', warn: '!'
       display: block;
       color: var(--ui-text);
       font-size: var(--ui-text-md);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .text {
@@ -195,7 +195,7 @@ const TONE_GLYPH: Record<NoticeTone, string> = { info: 'i', ok: '✓', warn: '!'
 
     .notice[data-variant='callout'] .text ::ng-deep :is(strong, b) {
       color: var(--tone-strong);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .notice[data-variant='callout'] .text ::ng-deep a {

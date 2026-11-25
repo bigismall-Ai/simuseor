@@ -70,7 +70,7 @@ import { Component, input } from '@angular/core';
       overflow: hidden;
       font-family: var(--ui-font-mono);
       font-size: 9px;
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: 0.04em;
       white-space: nowrap;
       text-overflow: ellipsis;

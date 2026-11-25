@@ -80,7 +80,7 @@ let seq = 0;
       margin: 0 0 6px;
       color: var(--ui-text);
       font-size: var(--ui-text-lg);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .body {

@@ -243,7 +243,7 @@ export interface NodeCardItem {
       }
       .nd-cover strong {
         font-size: 26px;
-        font-weight: 700;
+        font-weight: var(--ui-weight-bold);
         line-height: 1;
         letter-spacing: 0.04em;
         color: var(--ui-text);
@@ -251,7 +251,7 @@ export interface NodeCardItem {
       .nd-cover span {
         max-width: 86%;
         font-size: 10px;
-        font-weight: 600;
+        font-weight: var(--ui-weight-semibold);
         letter-spacing: 0.06em;
         color: var(--ui-muted);
         overflow: hidden;
@@ -274,7 +274,7 @@ export interface NodeCardItem {
       .nd-progress {
         flex: none;
         font-size: 12.5px;
-        font-weight: 600;
+        font-weight: var(--ui-weight-semibold);
         color: var(--ui-text);
         font-variant-numeric: tabular-nums;
       }

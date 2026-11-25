@@ -52,7 +52,7 @@ export type SourceChipState = 'ok' | 'degraded' | 'down';
       backdrop-filter: blur(12px) saturate(1.04);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       line-height: 1;
       white-space: nowrap;
       cursor: pointer;
@@ -118,7 +118,7 @@ export type SourceChipState = 'ok' | 'degraded' | 'down';
       color: var(--ui-muted);
       font-family: var(--ui-font-mono);
       font-size: 10.5px;
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
     }
 
     .chip.on em {

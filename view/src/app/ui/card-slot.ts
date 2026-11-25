@@ -48,7 +48,7 @@ export type CardSlotTone = '' | 'ok' | 'warn' | 'err';
       gap: 7px;
       min-width: 0;
       font-size: var(--card-slot-size);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       color: var(--card-scrim-ink);
     }
 

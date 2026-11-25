@@ -90,7 +90,7 @@ export type CardActionIcon = 'play' | 'edit' | 'fix';
       color: var(--card-scrim-action-ink, var(--ui-on-primary));
       font-family: inherit;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       white-space: nowrap;
       cursor: pointer;
       text-decoration: none;

@@ -43,7 +43,7 @@ export type BadgeTone = 'gray' | 'blue' | 'green' | 'orange' | 'red';
       padding: 1px 8px;
       border-radius: var(--ui-radius-pill);
       font-size: 11px;
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 18px;
       white-space: nowrap;
     }

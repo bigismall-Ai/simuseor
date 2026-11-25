@@ -130,6 +130,14 @@
   --ui-space-8: 48px;
 
   /* 字号阶梯：5 档，页面不再自造中间值 */
+  /* 字重与行高：与字号、字体家族同属品牌层 */
+  --ui-weight-regular: 400;
+  --ui-weight-medium: 500;
+  --ui-weight-semibold: 600;
+  --ui-weight-bold: 700;
+  --ui-leading-tight: 1.25;
+  --ui-leading-normal: 1.5;
+  --ui-leading-relaxed: 1.625;
   --ui-text-xs: 10.5px;
   --ui-text-sm: 11.5px;
   --ui-text-md: 12.5px;

@@ -310,7 +310,7 @@ const PLAN_EXAMPLE = JSON.stringify(
       min-width: 0;
       margin: 0;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .section-pill {
@@ -735,7 +735,7 @@ const PLAN_EXAMPLE = JSON.stringify(
     }
 
     .vocab b {
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .vocab small {

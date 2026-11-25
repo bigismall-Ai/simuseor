@@ -40,7 +40,7 @@ import { Component, input, output } from '@angular/core';
       color: var(--ui-text-2);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 1;
       white-space: nowrap;
       cursor: pointer;

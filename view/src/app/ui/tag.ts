@@ -29,7 +29,7 @@ import { Component, input } from '@angular/core';
       background: var(--ui-panel-2);
       color: var(--ui-muted);
       font-size: var(--ui-text-sm);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

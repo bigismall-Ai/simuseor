@@ -45,7 +45,7 @@ export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
       color: var(--ui-text);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-sm);
-      font-weight: 400;
+      font-weight: var(--ui-weight-regular);
       line-height: 1.45;
       white-space: normal;
       text-align: left;

@@ -91,7 +91,7 @@ import { UiIconModule } from './material';
 
     .title b {
       overflow: hidden;
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       white-space: nowrap;
       text-overflow: ellipsis;
     }

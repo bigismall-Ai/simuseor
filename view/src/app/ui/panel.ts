@@ -65,7 +65,7 @@ import { Component, input } from '@angular/core';
       margin: 0 0 var(--ui-space-1);
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: 0.11em;
       text-transform: uppercase;
     }
@@ -73,7 +73,7 @@ import { Component, input } from '@angular/core';
     .ui-panel-heading h2 {
       margin: 0;
       font-size: var(--ui-text-lg);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: -0.01em;
       scroll-margin-top: var(--ui-scroll-offset);
     }

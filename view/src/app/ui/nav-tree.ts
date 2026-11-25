@@ -115,7 +115,7 @@ export interface NavRowItem {
       padding: 5px 0 3px;
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
@@ -132,7 +132,7 @@ export interface NavRowItem {
       background: transparent;
       color: var(--ui-text-2);
       font-size: var(--ui-text-sm);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       text-align: left;
       cursor: pointer;
       transition: background 0.14s ease, color 0.14s ease;
@@ -167,7 +167,7 @@ export interface NavRowItem {
       border-radius: var(--ui-radius-pill);
       color: var(--ui-muted);
       font-size: var(--ui-text-md);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
     }
 
@@ -179,7 +179,7 @@ export interface NavRowItem {
     .item.active {
       background: var(--ui-raised);
       color: var(--ui-text);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       box-shadow: inset 0 0 0 1px var(--ui-border-2);
     }
 

@@ -195,7 +195,7 @@
 }
 
 .pack-cell b {
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .pack-cell span {
@@ -215,7 +215,7 @@
 
 .ver-new {
   color: var(--ui-text);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .dep-warn {

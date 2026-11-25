@@ -20,6 +20,8 @@
 |---|---|---|---|
 | 间距刻度 | 4 / 8 / 12 / 16 / 20 / 24 / 32 / 48 | 自有，8px 基准 | `--ui-space-1..8`，不允许中间值 |
 | 字号 | 10.5 / 11.5 / 12.5 / 14 / 22 | 自有 | `--ui-text-xs/sm/md/lg/xl` |
+| 字重 | 400 / 500 / 600 / 700 | 自有 | `--ui-weight-regular/medium/semibold/bold` |
+| 行高 | 1.25 / 1.5 / 1.625 | 自有 | `--ui-leading-tight/normal/relaxed` |
 | 控件高度 | 24 / 28 / 34 / 38 | 自有 | `--ui-h-compact/sm/md/lg` |
 | 图标 | 14 / 16 / 18 / 20 | 自有 | `--icon-inline/control/action/nav` |
 | 圆角阶梯 | 6 / 8 / 10 / 12 / 16 / 24 / 999 | MUI shape + 自有分层 | `--ui-radius-xs..2xl`，语义 token 映射到阶梯 |

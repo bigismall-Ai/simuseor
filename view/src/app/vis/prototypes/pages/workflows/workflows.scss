@@ -33,7 +33,7 @@
 .sort-label {
   color: var(--ui-muted);
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -142,7 +142,7 @@
   background: none;
   color: var(--ui-text);
   font: inherit;
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -207,7 +207,7 @@
 
 .sel-name b {
   font-size: 14.5px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   letter-spacing: -0.01em;
 }
 
@@ -248,7 +248,7 @@
 
 .sel-facts dd.warn {
   color: var(--wf-warn);
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
 }
 
 .sel-note {

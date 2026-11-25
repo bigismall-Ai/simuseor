@@ -219,7 +219,7 @@ interface StateView {
       }
       .wc-broken-title {
         font-size: 11px;
-        font-weight: 600;
+        font-weight: var(--ui-weight-semibold);
         background: color-mix(in srgb, var(--ui-error) 14%, transparent);
         color: var(--ui-error);
         padding: 1px 8px;
@@ -293,7 +293,7 @@ interface StateView {
         padding: 0 5px;
         color: var(--ui-muted);
         font-size: 9.5px;
-        font-weight: 600;
+        font-weight: var(--ui-weight-semibold);
         letter-spacing: 0.06em;
       }
       .wc-fmt-o.on {

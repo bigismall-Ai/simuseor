@@ -116,6 +116,40 @@ import { VisualPageComponent } from './visual-page';
         </ui-text>
       </ui-section>
 
+      <ui-section title="字重阶梯" pill="Weight">
+        <div class="tok-cols">
+          <div class="tok-stack">
+            <ui-label>400 · --ui-weight-regular</ui-label>
+            <p style="font-weight: var(--ui-weight-regular); font-size: var(--ui-text-md); margin: 0">
+              正文、表格内容、长段说明。
+            </p>
+          </div>
+          <div class="tok-stack">
+            <ui-label>500 · --ui-weight-medium</ui-label>
+            <p style="font-weight: var(--ui-weight-medium); font-size: var(--ui-text-md); margin: 0">
+              次级标签、表格表头、工具条文字。
+            </p>
+          </div>
+          <div class="tok-stack">
+            <ui-label>600 · --ui-weight-semibold</ui-label>
+            <p style="font-weight: var(--ui-weight-semibold); font-size: var(--ui-text-md); margin: 0">
+              标题、按钮文案、身份行主行。
+            </p>
+          </div>
+          <div class="tok-stack">
+            <ui-label>700 · --ui-weight-bold</ui-label>
+            <p style="font-weight: var(--ui-weight-bold); font-size: var(--ui-text-md); margin: 0">
+              封面水印、极少数强调数字。
+            </p>
+          </div>
+        </div>
+        <ui-text variant="hint">
+          字重只走这四个 token；组件里不再写 500 / 600 / 700 的数字。
+          行高另有三档：<code>--ui-leading-tight</code> 1.25、
+          <code>--ui-leading-normal</code> 1.5、<code>--ui-leading-relaxed</code> 1.625。
+        </ui-text>
+      </ui-section>
+
       <ui-section title="正文阅读宽" pill="72ch">
         <ui-text variant="lead">
           这段引言就是 <code>ui-text</code> 的默认样张：它的宽度上限是
@@ -133,14 +167,14 @@ import { VisualPageComponent } from './visual-page';
           <ui-label>① 页面标题 · h1 · 22 / 1.2 / 600</ui-label>
           <p
             aria-hidden="true"
-            style="font-size: var(--ui-text-xl); font-weight: 600; line-height: 1.2; margin: 0"
+            style="font-size: var(--ui-text-xl); font-weight: var(--ui-weight-semibold); line-height: 1.2; margin: 0"
           >
             资源管理器
           </p>
           <ui-label>② 区块标题 · h2 · 14 / 1.4 / 600（ui-section 自带）</ui-label>
           <p
             aria-hidden="true"
-            style="font-size: var(--ui-text-lg); font-weight: 600; line-height: 1.4; margin: 0"
+            style="font-size: var(--ui-text-lg); font-weight: var(--ui-weight-semibold); line-height: 1.4; margin: 0"
           >
             页面骨架
           </p>

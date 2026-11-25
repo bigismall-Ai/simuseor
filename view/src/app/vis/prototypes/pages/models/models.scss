@@ -14,7 +14,7 @@
 }
 
 .models-table th {
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   color: var(--ui-muted);
 }
 
@@ -45,7 +45,7 @@
 .models-table .t-name b {
   display: block;
   overflow: hidden;
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

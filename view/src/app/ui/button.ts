@@ -65,7 +65,7 @@ export type ButtonSize = 'md' | 'sm' | 'xs' | 'icon';
       box-shadow: var(--btn-shadow);
       font-family: var(--ui-font-body);
       font-size: var(--ui-text-md);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
       line-height: 1;
       white-space: nowrap;
       cursor: pointer;

@@ -125,7 +125,7 @@ function flattenToc(items: readonly TocItem[], level = 0): TocRow[] {
       border-left: 1px solid transparent;
       color: var(--ui-muted);
       font-size: var(--ui-text-md);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       line-height: 1.45;
       text-decoration: none;
       transition: color 0.14s ease, border-color 0.14s ease;
@@ -147,7 +147,7 @@ function flattenToc(items: readonly TocItem[], level = 0): TocRow[] {
     .toc a.on {
       border-left-color: var(--ui-accent);
       color: var(--toc-active-ink);
-      font-weight: 600;
+      font-weight: var(--ui-weight-semibold);
     }
 
     .toc a:focus-visible,

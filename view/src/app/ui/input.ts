@@ -62,7 +62,7 @@ import { Component, ElementRef, input, model, viewChild } from '@angular/core';
       margin-bottom: var(--ui-field-label-gap);
       color: var(--ui-muted);
       font-size: var(--ui-text-sm);
-      font-weight: 500;
+      font-weight: var(--ui-weight-medium);
       letter-spacing: 0.01em;
     }
 

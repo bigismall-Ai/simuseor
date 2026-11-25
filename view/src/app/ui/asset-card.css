@@ -99,7 +99,7 @@
 .acard-ident ::ng-deep b {
   min-width: 0;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: var(--ui-weight-semibold);
   line-height: 1.25;
   letter-spacing: -0.005em;
   color: var(--text);
@@ -110,7 +110,7 @@
 .acard-ident ::ng-deep span {
   min-width: 0;
   font-size: 9.5px;
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   line-height: 1.3;
   color: var(--muted);
   white-space: nowrap;
@@ -177,7 +177,7 @@
 
 :host ::ng-deep .acard-tags ui-badge.is-mono .ui-badge {
   font-family: var(--ui-font-mono);
-  font-weight: 500;
+  font-weight: var(--ui-weight-medium);
   letter-spacing: -0.01em;
 }
 
