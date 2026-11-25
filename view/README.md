@@ -4,6 +4,19 @@ Angular 22 视觉与原型区。包含 `/vis`（视觉规范与原型）与 `/sv
 
 > 本 README 的其余部分是 Angular CLI 默认内容，保留作参考。
 
+## Lint 与组件登记
+
+```bash
+npm run lint        # ng lint：src/**/*.ts + src/**/*.html，含官方 angular-eslint 规则
+npm run lint:rules  # 本地规则 no-unregistered-ui-element 的冒烟测试
+npm run check       # 组件守卫 + lint
+```
+
+`eslint.config.js` 是 flat config；本地插件在 `eslint-rules/`。模板里出现 `ui-*` / `md-*` /
+`app-cover-plate` / `app-workflow-card` 却没写进 `src/app/ui/registry.json` 时，
+`local-ui-registry/no-unregistered-ui-element` 会报「组件未在 ui/registry.json 登记: <selector>」。
+Material、原生标签、`app-vis-*` / `app-proto-*` 与其它自由 `app-*` 组件不拦。
+
 ## SVG 工作台（/svg）
 
 给「现有 SVG 资产优化 + LLM 参与设计」用的最小闭环，不依赖任何后端或第三方编辑器壳。

@@ -758,6 +758,8 @@ export class SvgSemanticsPanelComponent {
 
   readonly applyPlan = output<string>();
   readonly updatePart = output<{ id: string; role?: string; label?: string }>();
+  // 输出名沿用 copy（工作台里 (copy) 绑定它）；与原生事件同名但只在本组件上出现。
+  // eslint-disable-next-line @angular-eslint/no-output-native
   readonly copy = output<string>();
   readonly selectPart = output<string>();
 

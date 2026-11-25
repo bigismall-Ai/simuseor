@@ -10,7 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { SvgBox, SvgPick } from './core/svg-types';
-import type { PathAnchor, ParsedPath, SimplePoint } from './core/svg-path';
+import type { ParsedPath, SimplePoint } from './core/svg-path';
 import { moveAnchor, parsePath, parsePoints, serializePath, serializePoints } from './core/svg-path';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -804,7 +804,7 @@ export class SvgStageComponent implements OnDestroy {
   }
 
   private describe(el: Element): SvgPick {
-    const attrs: Array<[string, string]> = [];
+    const attrs: [string, string][] = [];
     for (const name of PICK_ATTRS) {
       const value = el.getAttribute(name);
       if (value === null || value === '') continue;
@@ -877,7 +877,7 @@ export class SvgStageComponent implements OnDestroy {
       return null;
     }
     const m = rootCtm.inverse().multiply(elCtm);
-    const points: Array<[number, number]> = [
+    const points: [number, number][] = [
       [bbox.x, bbox.y],
       [bbox.x + bbox.width, bbox.y],
       [bbox.x, bbox.y + bbox.height],

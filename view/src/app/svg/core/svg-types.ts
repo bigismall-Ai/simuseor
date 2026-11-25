@@ -4,7 +4,7 @@ export interface SvgPick {
   tag: string;
   id: string | null;
   selector: string;
-  attrs: Array<[string, string]>;
+  attrs: [string, string][];
 }
 
 export interface SvgBox {

@@ -52,11 +52,12 @@ jobs:
             view/package-lock.json
             tests/package-lock.json
 
-      - name: 组件守卫 + 构建
+      - name: 组件守卫 + Lint + 构建
         if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
         run: |
           cd view
           npm ci --no-audit --no-fund
+          npm run lint
           npm run build
 
       - name: 测试依赖

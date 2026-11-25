@@ -199,7 +199,7 @@ export class SvgWorkbenchComponent {
   private readonly stage = viewChild(SvgStageComponent);
 
   /** 右栏按“编辑 → 检查 → AI”三层组织，避免一上来就把七个 tab 摊给人看。 */
-  readonly modes: Array<{ id: Mode; label: string; hint: string; tabs: Array<{ id: Tab; label: string }> }> = [
+  readonly modes: { id: Mode; label: string; hint: string; tabs: { id: Tab; label: string }[] }[] = [
     {
       id: 'edit',
       label: '编辑',
@@ -433,7 +433,7 @@ export class SvgWorkbenchComponent {
   readonly selectedHasClass = computed(() => Boolean(this.selectedElement()?.getAttribute('class')));
   readonly hasStyleBlock = computed(() => (this.stats()?.styleBlocks ?? 0) > 0);
 
-  readonly selectedAttrs = computed<Array<[string, string]>>(() => {
+  readonly selectedAttrs = computed<[string, string][]>(() => {
     const el = this.selectedElement();
     if (!el) return [];
     return Array.from(el.attributes).map((attr) => [

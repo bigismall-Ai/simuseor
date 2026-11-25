@@ -15,6 +15,8 @@ let seq = 0;
   template: `
     <div class="ui-field">
       @if (label()) {
+        <!-- label 的 for 由 ngAfterViewInit 补上（投影控件拿不到静态 id），静态分析看不到 -->
+        <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
         <label class="field-label">{{ label() }}</label>
       }
       <ng-content />

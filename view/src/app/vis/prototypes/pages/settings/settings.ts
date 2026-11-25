@@ -715,7 +715,7 @@ export class ProtoSettingsComponent {
     const cells = PATH_ORDER.map((path) => this.buildCell(site, path, chosen));
 
     let speedText = '还没探过';
-    let speedClass: string = 'unknown';
+    let speedClass = 'unknown';
     if (site.verdict === 'down') {
       speedText = '三条都不通';
       speedClass = 'down';

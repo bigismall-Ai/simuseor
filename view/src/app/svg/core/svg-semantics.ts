@@ -630,7 +630,7 @@ export function findPartsByPhrase(parts: SemanticPartInfo[], phrase: string): Se
   const query = normalizePhrase(phrase);
   if (!query) return [];
 
-  const scored: Array<{ part: SemanticPartInfo; tier: number; score: number; index: number }> = [];
+  const scored: { part: SemanticPartInfo; tier: number; score: number; index: number }[] = [];
   parts.forEach((part, index) => {
     let tier = -1;
     let score = -1;
@@ -763,7 +763,6 @@ export function validateSemantics(root: Element, plan?: SemanticPlan): SemanticI
       geometryChildren(el).length === 0 &&
       !hasRenderableText(el)
     ) {
-      const required = el.getAttribute('data-required') === 'true';
       issues.push(
         semanticIssue(
           'empty-part',

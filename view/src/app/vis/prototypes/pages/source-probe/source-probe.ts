@@ -560,7 +560,7 @@ interface ProbeSource {
                 </div>
                 <div class="mini-panel">
                   <div class="mini-head"><b>设置页里的摘要位</b></div>
-                  <p class="tiny">连接体检 · 5 可用 · 1 不可用（CivitAI）　[打开体检]</p>
+                  <p class="tiny">连接体检 · 5 可用 · 1 不可用（CivitAI） [打开体检]</p>
                 </div>
                 <ul class="state-list tiny">
                   <li>

@@ -60,6 +60,7 @@ main:
             - ~/.npm
           script:
             - cd view && npm ci --no-audit --no-fund
+            - cd view && npm run lint
             - cd view && npm run build
 
 # 临时：探测 CNB Runner 到各家源的连通性（决定抓取端放境内还是境外）。

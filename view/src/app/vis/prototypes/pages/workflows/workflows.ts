@@ -160,6 +160,8 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
                 @if (filtered().length) {
                   <ui-grid>
                     @for (wf of filtered(); track wf.name) {
+                      <!-- 网格卡外层只为「点哪张卡就选中它」；键盘用户走卡下方的「摘要」按钮 -->
+                      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
                       <div
                         class="wf-item"
                         [class.on]="selectedName() === wf.name"

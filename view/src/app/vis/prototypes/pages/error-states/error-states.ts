@@ -5,7 +5,7 @@ import { InputComponent } from '../../../../ui/input';
 import { UiButtonComponent } from '../../../../ui/button';
 import { ToastComponent } from '../../../../ui/toast';
 import { SourceChipComponent } from '../../../../ui/source-chip';
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { EmptyComponent } from '../../../../ui/empty';
 import { PageHeaderComponent } from '../../../../ui/page-header';
 import { UiMaterialModule } from '../../../../ui/material';

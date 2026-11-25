@@ -34,14 +34,13 @@ let seq = 0;
   selector: 'ui-dialog',
   template: `
     @if (open()) {
-      <div class="overlay" (click)="onBackdrop()">
+      <div class="overlay" role="presentation" (click)="onBackdrop($event)">
         <div
           #panel
           class="dialog"
           [attr.role]="destructive() ? 'alertdialog' : 'dialog'"
           aria-modal="true"
           [attr.aria-labelledby]="titleId"
-          (click)="$event.stopPropagation()"
         >
           <h2 [id]="titleId">{{ title() }}</h2>
           <div class="body"><ng-content /></div>
@@ -151,7 +150,9 @@ export class DialogComponent {
     if (this.open()) this.close();
   }
 
-  onBackdrop(): void {
+  onBackdrop(event: MouseEvent): void {
+    // 只认遮罩本身：点面板内部会冒泡上来，但 event.target 不是遮罩
+    if (event.target !== event.currentTarget) return;
     this.close();
   }
 

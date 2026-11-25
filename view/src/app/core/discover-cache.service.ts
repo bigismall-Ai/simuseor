@@ -96,7 +96,7 @@ export class DiscoverCacheService {
   // ---------- 持久化 ----------
 
   private hydrate(): void {
-    let raw: string | null = null;
+    let raw: string | null;
     try {
       raw = localStorage.getItem(LS_KEY);
     } catch {
