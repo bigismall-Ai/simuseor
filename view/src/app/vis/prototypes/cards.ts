@@ -7,6 +7,7 @@ import { CardMenuComponent } from '../../ui/card-menu';
 import type { CardMenuItem } from '../../ui/card-menu';
 import { HubCardComponent } from '../../ui/hub-card';
 import { LibraryCardComponent } from '../../ui/library-card';
+import { MatrixComponent } from '../../ui/matrix';
 import { ModelCardComponent } from '../../ui/model-card';
 import { NodeCardComponent } from '../../ui/node-card';
 import { TableComponent } from '../../ui/table';
@@ -31,6 +32,7 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
     CardOriginComponent,
     HubCardComponent,
     LibraryCardComponent,
+    MatrixComponent,
     ModelCardComponent,
     NodeCardComponent,
     TableComponent,
@@ -43,42 +45,32 @@ import type { SearchItem, WorkflowItem } from '../../core/types';
       2 个状态 × 3 种资产。每格直接渲染产品组件，组件名标在卡下；共用层与差异层拆在下面。
     </p>
 
-    <div class="matrix-wrap">
-      <div class="matrix">
-        <span class="m-corner" aria-hidden="true"></span>
-        <span class="m-col">模型</span>
-        <span class="m-col">工作流</span>
-        <span class="m-col">节点</span>
-
-        <span class="m-row">本地</span>
-        <div class="m-cell">
-          <md-library-card [model]="libraryModels[0]" cover="/samples/shot-2.jpg" />
-          <code>md-library-card</code>
-        </div>
-        <div class="m-cell">
-          <app-workflow-card [it]="workflows[0]" />
-          <code>app-workflow-card</code>
-        </div>
-        <div class="m-cell">
-          <md-node-card [item]="localNode" mode="library" />
-          <code>md-node-card · mode=library</code>
-        </div>
-
-        <span class="m-row">发现</span>
-        <div class="m-cell">
-          <md-model-card [items]="[searchItems[0]]" cover="/samples/shot-4.jpg" />
-          <code>md-model-card</code>
-        </div>
-        <div class="m-cell">
-          <md-hub-card [item]="hubWorkflows[0]" />
-          <code>md-hub-card</code>
-        </div>
-        <div class="m-cell">
-          <md-node-card [item]="nodePacks[1]" mode="discover" />
-          <code>md-node-card · mode=discover</code>
-        </div>
+    <ui-matrix [columns]="matrixColumns" [rows]="matrixRows">
+      <div class="m-cell">
+        <md-library-card [model]="libraryModels[0]" cover="/samples/shot-2.jpg" />
+        <code>md-library-card</code>
       </div>
-    </div>
+      <div class="m-cell">
+        <app-workflow-card [it]="workflows[0]" />
+        <code>app-workflow-card</code>
+      </div>
+      <div class="m-cell">
+        <md-node-card [item]="localNode" mode="library" />
+        <code>md-node-card · mode=library</code>
+      </div>
+      <div class="m-cell">
+        <md-model-card [items]="[searchItems[0]]" cover="/samples/shot-4.jpg" />
+        <code>md-model-card</code>
+      </div>
+      <div class="m-cell">
+        <md-hub-card [item]="hubWorkflows[0]" />
+        <code>md-hub-card</code>
+      </div>
+      <div class="m-cell">
+        <md-node-card [item]="nodePacks[1]" mode="discover" />
+        <code>md-node-card · mode=discover</code>
+      </div>
+    </ui-matrix>
 
     <p class="set-label">共用与差异</p>
     <ui-table>
@@ -319,6 +311,9 @@ export class ProtoCardsComponent {
     requirements: true,
     commit: 'a1b2c3d',
   };
+
+  readonly matrixColumns = ['模型', '工作流', '节点'];
+  readonly matrixRows = ['本地', '发现'];
 
   readonly specLibrary = LIBRARY_MODELS[1];
   readonly specDiscover: SearchItem = {

@@ -21,6 +21,7 @@ import { ProtoFeedbackComponent } from './prototypes/components/feedback/feedbac
 import { ProtoNoticeComponent } from './prototypes/components/notice/notice';
 import { ProtoPageHeaderComponent } from './prototypes/components/page-header/page-header';
 import { ProtoScrollbarComponent } from './prototypes/components/scrollbar/scrollbar';
+import { ProtoStructureComponent } from './prototypes/components/structure/structure';
 import { ProtoSidebarComponent } from './prototypes/components/sidebar/sidebar';
 import { ProtoDownloadsComponent } from './prototypes/pages/downloads/downloads';
 import { ProtoErrorStatesComponent } from './prototypes/pages/error-states/error-states';
@@ -72,6 +73,11 @@ export const VIS_ROUTES: Routes = [
         path: 'prototypes/components/sidebar',
         component: ProtoSidebarComponent,
         title: 'VIS 原型组件 · 侧边导航',
+      },
+      {
+        path: 'prototypes/components/structure',
+        component: ProtoStructureComponent,
+        title: 'VIS · 结构件',
       },
       {
         path: 'prototypes/components/scrollbar',

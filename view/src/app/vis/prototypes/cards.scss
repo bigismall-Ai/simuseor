@@ -173,35 +173,6 @@
   line-height: 1.6;
 }
 
-/* 2 状态 × 3 资产的矩阵 */
-.matrix-wrap {
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.matrix {
-  display: grid;
-  grid-template-columns: 44px repeat(3, minmax(240px, var(--card-max)));
-  gap: 14px 18px;
-  justify-content: start;
-  align-items: start;
-}
-
-.m-col,
-.m-row {
-  color: var(--ui-muted);
-  font-size: 11.5px;
-  font-weight: 600;
-}
-
-.m-col {
-  padding-top: 2px;
-}
-
-.m-row {
-  padding-top: 12px;
-}
-
 .m-cell {
   display: flex;
   flex-direction: column;

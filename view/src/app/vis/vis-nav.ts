@@ -67,6 +67,7 @@ export const NAV_SECTIONS: NavSection[] = [
         links: [
           { label: '侧边导航', route: '/vis/prototypes/components/sidebar', icon: 'panel-left' },
           { label: '页头', route: '/vis/prototypes/components/page-header', icon: 'menu' },
+          { label: '结构件', route: '/vis/prototypes/components/structure', icon: 'library' },
           { label: '滚动条', route: '/vis/prototypes/components/scrollbar', icon: 'sort' },
         ],
       },

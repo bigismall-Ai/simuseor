@@ -6,9 +6,24 @@
       "category": "action",
       "page": "/vis/buttons",
       "demoFile": "src/app/vis/vis-buttons.ts",
-      "variants": ["primary", "secondary", "ghost", "danger", "danger-ghost"],
-      "sizes": ["md", "sm", "xs", "icon"],
-      "tokens": ["--ui-h-*", "--ui-text-*", "--button-shadow"]
+      "variants": [
+        "primary",
+        "secondary",
+        "ghost",
+        "danger",
+        "danger-ghost"
+      ],
+      "sizes": [
+        "md",
+        "sm",
+        "xs",
+        "icon"
+      ],
+      "tokens": [
+        "--ui-h-*",
+        "--ui-text-*",
+        "--button-shadow"
+      ]
     },
     {
       "selector": "ui-chip",
@@ -16,8 +31,14 @@
       "category": "action",
       "page": "/vis/pills",
       "demoFile": "src/app/vis/vis-pills.ts",
-      "variants": ["active", "disabled"],
-      "tokens": ["--ui-h-sm", "--ui-radius-pill"]
+      "variants": [
+        "active",
+        "disabled"
+      ],
+      "tokens": [
+        "--ui-h-sm",
+        "--ui-radius-pill"
+      ]
     },
     {
       "selector": "ui-segmented",
@@ -25,8 +46,13 @@
       "category": "action",
       "page": "/vis/pills",
       "demoFile": "src/app/vis/vis-pills.ts",
-      "sizes": ["24px"],
-      "tokens": ["--ui-h-compact", "--ui-radius-pill"]
+      "sizes": [
+        "24px"
+      ],
+      "tokens": [
+        "--ui-h-compact",
+        "--ui-radius-pill"
+      ]
     },
     {
       "selector": "ui-source-chip",
@@ -34,8 +60,15 @@
       "category": "action",
       "page": "/vis/prototypes/components/feedback",
       "demoFile": "src/app/vis/prototypes/components/feedback/feedback.ts",
-      "variants": ["ok", "degraded", "down"],
-      "tokens": ["--ui-h-md", "--button-shadow"]
+      "variants": [
+        "ok",
+        "degraded",
+        "down"
+      ],
+      "tokens": [
+        "--ui-h-md",
+        "--button-shadow"
+      ]
     },
     {
       "selector": "ui-badge",
@@ -43,9 +76,21 @@
       "category": "feedback",
       "page": "/vis/pills",
       "demoFile": "src/app/vis/vis-pills.ts",
-      "variants": ["gray", "blue", "green", "orange", "red"],
-      "sizes": ["md", "sm"],
-      "tokens": ["--badge-*-bg", "--badge-*-ink"]
+      "variants": [
+        "gray",
+        "blue",
+        "green",
+        "orange",
+        "red"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--badge-*-bg",
+        "--badge-*-ink"
+      ]
     },
     {
       "selector": "ui-toast",
@@ -53,8 +98,15 @@
       "category": "feedback",
       "page": "/vis/prototypes/components/feedback",
       "demoFile": "src/app/vis/prototypes/components/feedback/feedback.ts",
-      "variants": ["neutral", "ok", "error"],
-      "tokens": ["--ui-overlay", "--ui-shadow-md"]
+      "variants": [
+        "neutral",
+        "ok",
+        "error"
+      ],
+      "tokens": [
+        "--ui-overlay",
+        "--ui-shadow-md"
+      ]
     },
     {
       "selector": "ui-notice",
@@ -62,8 +114,18 @@
       "category": "feedback",
       "page": "/vis/prototypes/components/notice",
       "demoFile": "src/app/vis/prototypes/components/notice/notice.ts",
-      "variants": ["info", "ok", "warn", "error"],
-      "tokens": ["--ok", "--warn", "--err", "--accent"]
+      "variants": [
+        "info",
+        "ok",
+        "warn",
+        "error"
+      ],
+      "tokens": [
+        "--ok",
+        "--warn",
+        "--err",
+        "--accent"
+      ]
     },
     {
       "selector": "ui-input",
@@ -71,17 +133,30 @@
       "category": "form",
       "page": "/vis/inputs",
       "demoFile": "src/app/vis/vis-inputs.ts",
-      "variants": ["default", "error", "disabled"],
-      "sizes": ["md", "sm"],
-      "tokens": ["--ui-h-md", "--ui-h-sm", "--ui-radius"]
+      "variants": [
+        "default",
+        "error",
+        "disabled"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-h-md",
+        "--ui-h-sm",
+        "--ui-radius"
+      ]
     },
     {
       "selector": "ui-field",
       "name": "字段容器",
       "category": "form",
-      "page": "",
-      "demoFile": "",
-      "tokens": ["--ui-text-sm"]
+      "page": "/vis/prototypes/components/structure",
+      "demoFile": "src/app/vis/prototypes/components/structure/structure.ts",
+      "tokens": [
+        "--ui-text-sm"
+      ]
     },
     {
       "selector": "ui-table",
@@ -89,7 +164,10 @@
       "category": "surface",
       "page": "/vis/tables",
       "demoFile": "src/app/vis/vis-tables.ts",
-      "tokens": ["--ui-radius-list", "--ui-shadow"]
+      "tokens": [
+        "--ui-radius-list",
+        "--ui-shadow"
+      ]
     },
     {
       "selector": "ui-list-card",
@@ -97,7 +175,10 @@
       "category": "surface",
       "page": "/vis/tables",
       "demoFile": "src/app/vis/vis-tables.ts",
-      "tokens": ["--ui-radius-list", "--ui-shadow"]
+      "tokens": [
+        "--ui-radius-list",
+        "--ui-shadow"
+      ]
     },
     {
       "selector": "ui-dialog",
@@ -105,7 +186,11 @@
       "category": "surface",
       "page": "/vis/modals",
       "demoFile": "src/app/vis/vis-modals.ts",
-      "tokens": ["--ui-scrim", "--ui-z-dialog", "--ui-radius-lg"]
+      "tokens": [
+        "--ui-scrim",
+        "--ui-z-dialog",
+        "--ui-radius-lg"
+      ]
     },
     {
       "selector": "ui-empty",
@@ -113,7 +198,10 @@
       "category": "surface",
       "page": "/vis/empty",
       "demoFile": "src/app/vis/vis-empty.ts",
-      "tokens": ["--ui-text-lg", "--ui-muted"]
+      "tokens": [
+        "--ui-text-lg",
+        "--ui-muted"
+      ]
     },
     {
       "selector": "ui-skeleton",
@@ -121,23 +209,31 @@
       "category": "surface",
       "page": "/vis/empty",
       "demoFile": "src/app/vis/vis-empty.ts",
-      "tokens": ["--ui-panel-3"]
+      "tokens": [
+        "--ui-panel-3"
+      ]
     },
     {
       "selector": "ui-section",
       "name": "区块",
       "category": "shell",
-      "page": "",
-      "demoFile": "",
-      "tokens": ["--ui-radius-card", "--ui-space-5"]
+      "page": "/vis/prototypes/components/structure",
+      "demoFile": "src/app/vis/prototypes/components/structure/structure.ts",
+      "tokens": [
+        "--ui-radius-card",
+        "--ui-space-5"
+      ]
     },
     {
       "selector": "ui-panel",
       "name": "面板",
       "category": "shell",
-      "page": "",
-      "demoFile": "",
-      "tokens": ["--ui-radius-panel", "--ui-panel"]
+      "page": "/vis/prototypes/components/structure",
+      "demoFile": "src/app/vis/prototypes/components/structure/structure.ts",
+      "tokens": [
+        "--ui-radius-panel",
+        "--ui-panel"
+      ]
     },
     {
       "selector": "ui-page-header",
@@ -145,7 +241,10 @@
       "category": "shell",
       "page": "/vis/prototypes/components/page-header",
       "demoFile": "src/app/vis/prototypes/components/page-header/page-header.ts",
-      "tokens": ["--ui-text-xl", "--ui-text-sm"]
+      "tokens": [
+        "--ui-text-xl",
+        "--ui-text-sm"
+      ]
     },
     {
       "selector": "ui-card-mark",
@@ -153,8 +252,13 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "sizes": ["32px"],
-      "tokens": ["--card-mark-size", "--card-mark-radius"]
+      "sizes": [
+        "32px"
+      ],
+      "tokens": [
+        "--card-mark-size",
+        "--card-mark-radius"
+      ]
     },
     {
       "selector": "ui-card-body",
@@ -162,7 +266,10 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--card-title-size", "--card-scrim-ink"]
+      "tokens": [
+        "--card-title-size",
+        "--card-scrim-ink"
+      ]
     },
     {
       "selector": "ui-card-kebab",
@@ -170,7 +277,10 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--ui-card-solid", "--radius-sm"]
+      "tokens": [
+        "--ui-card-solid",
+        "--radius-sm"
+      ]
     },
     {
       "selector": "ui-card-menu",
@@ -178,8 +288,14 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "variants": ["default", "danger"],
-      "tokens": ["--ui-z-toast", "--ui-overlay"]
+      "variants": [
+        "default",
+        "danger"
+      ],
+      "tokens": [
+        "--ui-z-toast",
+        "--ui-overlay"
+      ]
     },
     {
       "selector": "ui-card-origin",
@@ -187,7 +303,10 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--ui-card-solid", "--ui-text-xs"]
+      "tokens": [
+        "--ui-card-solid",
+        "--ui-text-xs"
+      ]
     },
     {
       "selector": "app-cover-plate",
@@ -195,8 +314,15 @@
       "category": "card",
       "page": "/vis/cover",
       "demoFile": "src/app/vis/vis-cover.ts",
-      "variants": ["card", "wide", "mini"],
-      "tokens": ["--plate-bg", "--plate-mark"]
+      "variants": [
+        "card",
+        "wide",
+        "mini"
+      ],
+      "tokens": [
+        "--plate-bg",
+        "--plate-mark"
+      ]
     },
     {
       "selector": "md-library-card",
@@ -204,7 +330,9 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--card-*"]
+      "tokens": [
+        "--card-*"
+      ]
     },
     {
       "selector": "md-model-card",
@@ -212,7 +340,9 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--card-*"]
+      "tokens": [
+        "--card-*"
+      ]
     },
     {
       "selector": "app-workflow-card",
@@ -220,7 +350,9 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--card-*"]
+      "tokens": [
+        "--card-*"
+      ]
     },
     {
       "selector": "md-hub-card",
@@ -228,7 +360,9 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "tokens": ["--card-*"]
+      "tokens": [
+        "--card-*"
+      ]
     },
     {
       "selector": "md-node-card",
@@ -236,8 +370,13 @@
       "category": "card",
       "page": "/vis/prototypes/components/cards",
       "demoFile": "src/app/vis/prototypes/cards.ts",
-      "variants": ["library", "discover"],
-      "tokens": ["--card-*"]
+      "variants": [
+        "library",
+        "discover"
+      ],
+      "tokens": [
+        "--card-*"
+      ]
     },
     {
       "selector": "ui-filter-bar",
@@ -245,7 +384,21 @@
       "category": "shell",
       "page": "/vis/prototypes/pages/models",
       "demoFile": "src/app/vis/prototypes/pages/models/models.ts",
-      "tokens": ["--ui-h-sm", "--ui-z-sticky"]
+      "tokens": [
+        "--ui-h-sm",
+        "--ui-z-sticky"
+      ]
+    },
+    {
+      "selector": "ui-matrix",
+      "name": "矩阵布局",
+      "category": "shell",
+      "page": "/vis/prototypes/components/cards",
+      "demoFile": "src/app/vis/prototypes/cards.ts",
+      "tokens": [
+        "--layout-grid-min",
+        "--card-max"
+      ]
     }
   ]
 }
