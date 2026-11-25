@@ -25,7 +25,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 判断本次变更是否涉及 VIS
+        id: changes
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            vis:
+              - 'view/**'
+              - 'tests/e2e/**'
+              - 'tests/package.json'
+              - 'tests/package-lock.json'
+              - '.github/workflows/vis.yml'
+
+      - name: 跳过说明
+        if: github.event_name != 'workflow_dispatch' && steps.changes.outputs.vis != 'true'
+        run: echo "本次变更不涉及 VIS，跳过构建与像素回归。"
+
       - uses: actions/setup-node@v4
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
         with:
           node-version: 22
           cache: npm
@@ -34,18 +52,21 @@ jobs:
             tests/package-lock.json
 
       - name: 组件守卫 + 构建
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
         run: |
           cd view
           npm ci --no-audit --no-fund
           npm run build
 
       - name: 测试依赖
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
         run: |
           cd tests
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
 
       - name: 全页面像素回归
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.vis == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VIS_BASELINE_BOOTSTRAP: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
