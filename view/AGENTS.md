@@ -120,7 +120,7 @@
 
 ## 共享组件（`src/app/ui/`）
 
-- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-card-mark`、`app-cover-plate`
+- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
@@ -134,7 +134,7 @@
 
 ## VIS 目录
 
-- `src/app/vis/`：视觉设计页
+- `src/app/vis/`：视觉设计页；导航唯一数据源是 `vis-nav.ts` 的 `NAV_TREE`（递归树 + `subheader` + 状态 chip），外壳用 `ui-nav-tree` 渲染，不再手写导航项
 - `src/app/vis/prototypes/`：产品原型，分「组件」（如卡片）与「页面」（如资源管理器）两组
 - `src/app/ui/`：共享组件与 Material 入口
 - `src/app/pages/`：将来的产品页面

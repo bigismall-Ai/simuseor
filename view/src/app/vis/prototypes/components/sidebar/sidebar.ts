@@ -1,13 +1,13 @@
-import { Component, computed } from '@angular/core';
+import { Component } from '@angular/core';
 import { UiIconModule } from '../../../../ui/material';
-import { NAV_SECTIONS } from '../../../vis-nav';
+import { NAV_TREE, flattenNav } from '../../../vis-nav';
 import { LabelComponent } from '../../../../ui/label';
-import type { NavLink } from '../../../vis-nav';
+import type { NavRowItem } from '../../../../ui/nav-tree';
 
 /**
  * 原型组件：侧边导航。
  *
- * 展示 224px 展开与 64px 收起两种形态。导航数据直接取 NAV_SECTIONS，
+ * 展示 224px 展开与 64px 收起两种形态。导航数据直接取 NAV_TREE，
  * 样式与真实 VIS 外壳同源：全高、贴视口边缘、无卡片外框。
  */
 @Component({
@@ -31,26 +31,20 @@ import type { NavLink } from '../../../vis-nav';
           </div>
 
           <nav class="rail-nav ui-scrollbar" aria-label="展开导航示例">
-            @for (section of sections; track section.key) {
-              <p class="rail-section">{{ section.label }}</p>
-
-              @if (section.groups) {
-                @for (group of section.groups; track group.key) {
-                  <p class="rail-group">{{ group.label }}</p>
-                  @for (item of group.links; track item.route) {
-                    <span class="rail-item" [class.active]="item.route === activeRoute">
-                      <mat-icon class="rail-icon" [svgIcon]="'app:' + item.icon" aria-hidden="true"></mat-icon>
-                      {{ item.label }}
-                    </span>
-                  }
-                }
+            @for (row of expandedRows; track row.key) {
+              @if (row.subheader) {
+                <p class="rail-section">{{ row.label }}</p>
+              } @else if (row.group) {
+                <p class="rail-group" [style.padding-left.px]="8 + row.depth * 13">{{ row.label }}</p>
               } @else {
-                @for (item of section.links; track item.route) {
-                  <span class="rail-item" [class.active]="item.route === activeRoute">
-                    <mat-icon class="rail-icon" [svgIcon]="'app:' + item.icon" aria-hidden="true"></mat-icon>
-                    {{ item.label }}
-                  </span>
-                }
+                <span
+                  class="rail-item"
+                  [class.active]="row.route === activeRoute"
+                  [style.padding-left.px]="12 + row.depth * 13"
+                >
+                  <mat-icon class="rail-icon" [svgIcon]="'app:' + row.icon" aria-hidden="true"></mat-icon>
+                  {{ row.label }}
+                </span>
               }
             }
           </nav>
@@ -70,7 +64,7 @@ import type { NavLink } from '../../../vis-nav';
           </div>
 
           <nav class="rail-nav ui-scrollbar" aria-label="收起导航示例">
-            @for (item of collapsedItems(); track item.route) {
+            @for (item of collapsedItems; track item.key) {
               <span class="rail-item" [class.active]="item.route === activeRoute">
                 <mat-icon class="rail-icon" [svgIcon]="'app:' + item.icon" aria-hidden="true"></mat-icon>
               </span>
@@ -95,15 +89,24 @@ import type { NavLink } from '../../../vis-nav';
   `,
 })
 export class ProtoSidebarComponent {
-  readonly sections = NAV_SECTIONS;
   readonly activeRoute = '/vis/prototypes/components/sidebar';
 
-  readonly collapsedItems = computed<NavLink[]>(() => {
-    const items: NavLink[] = [];
-    for (const section of this.sections) {
-      items.push(...section.links);
-      for (const group of section.groups ?? []) items.push(...group.links);
-    }
-    return items;
-  });
+  readonly expandedRows = flattenNav(NAV_TREE, new Set(), false).map<NavRowItem>((row) => ({
+    key: row.node.key,
+    label: row.node.label,
+    route: row.node.route,
+    icon: row.node.icon,
+    subheader: !!row.node.subheader,
+    group: !!row.node.children?.length && !row.node.subheader,
+    depth: row.depth,
+    open: row.open,
+  }));
+
+  readonly collapsedItems = flattenNav(NAV_TREE, new Set(), true).map<NavRowItem>((row) => ({
+    key: row.node.key,
+    label: row.node.label,
+    route: row.node.route,
+    icon: row.node.icon,
+    depth: 0,
+  }));
 }

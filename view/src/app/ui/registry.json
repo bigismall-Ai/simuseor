@@ -605,6 +605,24 @@
         "--ui-space-3",
         "--ui-space-4"
       ]
+    },
+    {
+      "selector": "ui-nav-tree",
+      "name": "导航树",
+      "category": "shell",
+      "page": "/vis/overview",
+      "demoFile": "src/app/vis/vis-shell.html",
+      "variants": [
+        "expanded",
+        "collapsed"
+      ],
+      "tokens": [
+        "--layout-nav",
+        "--layout-nav-collapsed",
+        "--ui-h-compact",
+        "--ui-h-md",
+        "--ui-radius-pill"
+      ]
     }
   ]
 }
