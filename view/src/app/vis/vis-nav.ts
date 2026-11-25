@@ -26,11 +26,13 @@ export interface NavRow {
 /**
  * VIS 侧栏导航的唯一数据源：一棵递归树。
  *
- * 结构对齐 MUI 文档站：
+ * 结构对齐 MUI 文档站的分类模型：
  *   - 有 children 的节点是分组，点击可展开 / 收起；
- *   - `subheader` 节点是大写分组标题，不可点击，子项始终显示；
- *   - 叶子节点才是路由；
- *   - `status` 在右侧渲染状态 chip。
+ *   - `subheader` 节点是大写分类标题，不可点击，子项始终显示；
+ *   - 视觉页按 基础 / 版式 / 动作 / 输入 / 数据展示 分类，
+ *     原型组件页按 导航 / 表面 / 反馈 / 内容 分类，页面与工具保持平铺；
+ *   - 叶子节点才是路由，每个路由在树里只出现一次；
+ *   - `status` 在右侧渲染状态 chip，只标确实未发布的新页面。
  *
  * 外壳、侧边导航原型页、breadcrumb 都从这里取数据，不再各写一份。
  */
@@ -41,30 +43,51 @@ export const NAV_TREE: NavNode[] = [
     label: '视觉设计',
     children: [
       {
-        key: 'brand',
-        label: '品牌',
+        key: 'cat-foundation',
+        label: '基础',
         subheader: true,
         children: [
           { key: 'brand-mark', label: '标识', route: '/vis/brand', icon: 'brand' },
           { key: 'color', label: '色彩', route: '/vis/color', icon: 'palette' },
-          { key: 'cover', label: '封面与纹样', route: '/vis/cover', icon: 'image' },
-          { key: 'background', label: '背景', route: '/vis/background', icon: 'layers' },
           { key: 'icons', label: '图标', route: '/vis/icons', icon: 'library' },
-          { key: 'layout', label: '布局', route: '/vis/layout', icon: 'panel-left' },
           { key: 'radius', label: '圆角', route: '/vis/radius', icon: 'radius' },
         ],
       },
       {
-        key: 'components',
-        label: '组件',
+        key: 'cat-layout',
+        label: '版式',
+        subheader: true,
+        children: [
+          { key: 'layout', label: '布局', route: '/vis/layout', icon: 'panel-left' },
+          { key: 'background', label: '背景', route: '/vis/background', icon: 'layers' },
+          { key: 'cover', label: '封面与纹样', route: '/vis/cover', icon: 'image' },
+        ],
+      },
+      {
+        key: 'cat-action',
+        label: '动作',
         subheader: true,
         children: [
           { key: 'buttons', label: '按钮', route: '/vis/buttons', icon: 'button' },
+        ],
+      },
+      {
+        key: 'cat-inputs',
+        label: '输入',
+        subheader: true,
+        children: [
           { key: 'inputs', label: '输入框', route: '/vis/inputs', icon: 'input' },
           { key: 'pills', label: '胶囊', route: '/vis/pills', icon: 'pill' },
+          { key: 'modals', label: '模态框', route: '/vis/modals', icon: 'modal' },
+        ],
+      },
+      {
+        key: 'cat-data',
+        label: '数据展示',
+        subheader: true,
+        children: [
           { key: 'tables', label: '表格', route: '/vis/tables', icon: 'table' },
           { key: 'empty', label: '空状态', route: '/vis/empty', icon: 'inbox' },
-          { key: 'modals', label: '模态框', route: '/vis/modals', icon: 'modal' },
         ],
       },
     ],
@@ -74,28 +97,42 @@ export const NAV_TREE: NavNode[] = [
     label: '原型组件',
     children: [
       {
-        key: 'shell',
-        label: '外壳',
+        key: 'cat-navigation',
+        label: '导航',
         subheader: true,
         children: [
           { key: 'sidebar', label: '侧边导航', route: '/vis/prototypes/components/sidebar', icon: 'panel-left' },
           { key: 'page-header', label: '页头', route: '/vis/prototypes/components/page-header', icon: 'menu' },
-          { key: 'page-shell', label: '页面壳', route: '/vis/prototypes/components/shell', icon: 'panel-right' },
-          { key: 'structure', label: '结构件', route: '/vis/prototypes/components/structure', icon: 'library' },
+          { key: 'toc', label: '目录', route: '/vis/prototypes/components/toc', icon: 'menu', status: 'new' },
           { key: 'scrollbar', label: '滚动条', route: '/vis/prototypes/components/scrollbar', icon: 'sort' },
-          { key: 'toc', label: '目录', route: '/vis/prototypes/components/toc', icon: 'menu' },
         ],
       },
       {
-        key: 'content',
-        label: '内容',
+        key: 'cat-surfaces',
+        label: '表面',
         subheader: true,
         children: [
           { key: 'cards', label: '资产卡片', route: '/vis/prototypes/components/cards', icon: 'library' },
+          { key: 'page-shell', label: '页面壳', route: '/vis/prototypes/components/shell', icon: 'panel-right', status: 'new' },
+          { key: 'structure', label: '结构件', route: '/vis/prototypes/components/structure', icon: 'library' },
           { key: 'families', label: '厂牌', route: '/vis/prototypes/components/families', icon: 'brand' },
+        ],
+      },
+      {
+        key: 'cat-feedback',
+        label: '反馈',
+        subheader: true,
+        children: [
           { key: 'notice', label: '行内提示', route: '/vis/prototypes/components/notice', icon: 'alert' },
           { key: 'feedback', label: '提示与来源', route: '/vis/prototypes/components/feedback', icon: 'inbox' },
-          { key: 'code', label: '代码与搜索', route: '/vis/prototypes/components/code', icon: 'terminal' },
+        ],
+      },
+      {
+        key: 'cat-content',
+        label: '内容',
+        subheader: true,
+        children: [
+          { key: 'code', label: '代码与搜索', route: '/vis/prototypes/components/code', icon: 'terminal', status: 'new' },
         ],
       },
     ],

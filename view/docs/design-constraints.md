@@ -65,6 +65,7 @@
 | 代码面板：深色底、最高 400px | `ui-code` + `--ui-code-*` |
 | Callout：12px、图标井 26×26 / 18 图标、嵌套列表 22、code 胶囊 | `--ui-callout-*` + `ui-notice variant="callout"` |
 | 导航树：分组 / `subheader` / 状态 chip | `NAV_TREE` + `ui-nav-tree` |
+| 分类分组（基础 / 版式 / 动作 / 输入 / 数据展示；导航 / 表面 / 反馈 / 内容） | `NAV_TREE`：每个路由只在树里出现一次，分类是 `subheader` 而非路由 |
 | 标题锚点、滚动监听节流 166ms | `ui-toc`（顶部 200 内认第一节、阅读线 = 容器高 1/8、距底 50 认末节、点击锁 1s） |
 | reduced-motion 抑制动效 | 组件内部统一处理 |
 | 面包屑末项 `aria-current="page"` | `ui-breadcrumb`（12.5px、`›` 分隔、长标签中间截断） |
