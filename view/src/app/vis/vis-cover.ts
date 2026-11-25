@@ -43,12 +43,12 @@ import { RulesComponent } from '../ui/rules';
       <ui-section title="照片封面" pill="Photo">
         <div class="cover-grid">
           <figure class="cover-demo">
-            <app-cover-plate [model]="photoModel" />
-            <figcaption>真实图压在蒙版下</figcaption>
+            <app-cover-plate [model]="photoModel" [scrim]="false" />
+            <figcaption>真实图 · 独立展示（无蒙版）</figcaption>
           </figure>
           <figure class="cover-demo">
-            <app-cover-plate [model]="photoModel" [motif]="2" />
-            <figcaption>同图 · 纹样已隐藏</figcaption>
+            <app-cover-plate [model]="photoModel" [motif]="2" [scrim]="false" />
+            <figcaption>独立展示 · 纹样与蒙版都关闭</figcaption>
           </figure>
         </div>
       </ui-section>

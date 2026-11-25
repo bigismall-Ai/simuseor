@@ -1,7 +1,9 @@
 import { createServer } from 'node:http';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 import { chromium } from '@playwright/test';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
 /**
  * VIS 视觉冒烟：用构建产物起一个静态服务，逐页截图并检查控制台错误。
@@ -12,6 +14,8 @@ import { chromium } from '@playwright/test';
 const root = resolve(import.meta.dirname, '../..');
 const dist = join(root, 'view/dist/view/browser');
 const outDir = join(import.meta.dirname, '../artifacts/vis-shots');
+const baselineDir = join(import.meta.dirname, 'vis-baseline');
+const update = process.argv.includes('--update');
 const port = Number(process.env.VIS_PORT || 4399);
 
 if (!existsSync(dist)) {
@@ -55,6 +59,7 @@ const pages = [
 const widths = [1440, 3440];
 
 mkdirSync(outDir, { recursive: true });
+mkdirSync(baselineDir, { recursive: true });
 await new Promise((ok) => server.listen(port, '127.0.0.1', ok));
 
 const browser = await chromium.launch();
@@ -75,8 +80,27 @@ for (const width of widths) {
         await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
       }
       await page.waitForTimeout(500);
-      const file = join(outDir, `${target.name}-${theme}-${width}.png`);
-      await page.screenshot({ path: file, fullPage: true });
+      const name = `${target.name}-${theme}-${width}.png`;
+      const file = join(outDir, name);
+      await page.screenshot({ path: file, fullPage: false });
+
+      // 1440 视口参与像素基线；3440 只做冒烟，避免仓库里放大图
+      if (width === 1440) {
+        const baseline = join(baselineDir, name);
+        if (update || !existsSync(baseline)) {
+          copyFileSync(file, baseline);
+        } else {
+          const a = PNG.sync.read(readFileSync(baseline));
+          const b = PNG.sync.read(readFileSync(file));
+          if (a.width !== b.width || a.height !== b.height) {
+            failures.push(`${name}: 尺寸从 ${a.width}×${a.height} 变为 ${b.width}×${b.height}`);
+          } else {
+            const diff = pixelmatch(a.data, b.data, null, a.width, a.height, { threshold: 0.1 });
+            const ratio = diff / (a.width * a.height);
+            if (ratio > 0.002) failures.push(`${name}: 像素差异 ${(ratio * 100).toFixed(2)}%`);
+          }
+        }
+      }
     }
 
     if (errors.length) failures.push(`${width}/${theme}: ${errors.slice(0, 3).join(' | ')}`);
@@ -90,7 +114,8 @@ server.close();
 if (failures.length) {
   console.error('VIS 冒烟失败：');
   for (const line of failures) console.error('  ' + line);
+  console.error('确认是有意改动后运行：cd tests && npm run vis:update');
   process.exit(1);
 }
 
-console.log(`vis-smoke: ${pages.length} 页 × ${widths.length} 宽度 × 2 主题，控制台无错误。`);
+console.log(`vis-smoke: ${pages.length} 页 × ${widths.length} 宽度 × 2 主题，控制台无错误，1440 基线一致。`);

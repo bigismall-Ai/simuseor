@@ -88,7 +88,8 @@
 
 - 所有资产卡共用 `src/app/ui/asset-card.css` 的 `.acard` 外壳，不在组件内重写 `.acard-*` 外壳类
 - 卡片尺寸、字号、按钮高度走 `--card-*` token；改规格先改 token
-- 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印都在该组件内维护
+- 封面只渲染 `app-cover-plate`；纹样、家族色、照片、家族码水印、蒙版都在该组件内维护
+- 卡片内保留默认底部蒙版（正文需要稳定底色）；纯封面展示 / 设计页用 `[scrim]="false"`，照片上不再压半透明模板
 - 动作按钮只用共享 `ui-card-kebab` / `.acard-primary`；组件内只允许状态修饰（如 `.ghost`、`[data-tone]`）
 - 卡片圆角跟随列表：`--card-radius` = `--ui-radius-list`（16px），不要再单独设 24px
 - ⑤ 分类标签只能用 `<ui-badge size="sm" tone="gray">`，禁止在卡里手写 pill

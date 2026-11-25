@@ -57,7 +57,7 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
     '[class.ratio-fixed]': 'ratio() === "fixed"',
   },
   template: `
-    <div [class]="plateClass()" [attr.aria-label]="aria()">
+    <div [class]="plateClass()" [class.no-scrim]="!scrim()" [attr.aria-label]="aria()">
       @if (meta().image; as image) {
         <!-- wide 是工作流列表的 132×88 缩略图：实测 loading="lazy" 时浏览器
              在页面没有滚动前根本不发起请求，首屏一排缩略图全是空白。列表最多
@@ -356,6 +356,10 @@ import { FAMILY_TONE, FAMILY_TONE_DARK, NEUTRAL_TONE, NEUTRAL_TONE_DARK } from '
         --plate-ink: color-mix(in oklab, var(--ui-on-primary) 76%, transparent);
         color: var(--plate-ink);
       }
+      .plate.no-scrim .scrim {
+        display: none;
+      }
+
       .plate.on-shot .scrim {
         /* 只压正文所在的底部；上半张图不动。
            身份行靠文字投影、厂牌投影和原站/⋯ 的玻璃底撑对比度。 */
@@ -1094,6 +1098,8 @@ export class CoverPlateComponent {
 
   /** 卡片尺寸下也显示纹样（视觉规范页与封面展示用） */
   readonly showMotif = input(false);
+  /** 独立展示封面时关掉底部蒙版；卡片里默认保留，正文需要稳定底色 */
+  readonly scrim = input(true);
 
   /**
    * 追加在封面图上的 class 名（空格分隔，可多个）。

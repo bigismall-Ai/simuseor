@@ -6,9 +6,12 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "report": "playwright show-report",
-    "vis:shots": "node e2e/vis-visual.mjs"
+    "vis:shots": "node e2e/vis-visual.mjs",
+    "vis:update": "node e2e/vis-visual.mjs --update"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0"
   }
 }
