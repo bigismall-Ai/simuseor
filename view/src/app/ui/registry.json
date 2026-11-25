@@ -732,6 +732,26 @@
         "--ui-z-overlay",
         "--ui-radius-pill"
       ]
+    },
+    {
+      "selector": "ui-toc",
+      "name": "页内目录",
+      "category": "shell",
+      "page": "/vis/prototypes/components/toc",
+      "demoFile": "src/app/vis/prototypes/components/toc/toc.ts",
+      "variants": [
+        "full",
+        "mini"
+      ],
+      "tokens": [
+        "--layout-toc",
+        "--layout-toc-indent-1",
+        "--layout-toc-indent-2",
+        "--layout-toc-indent-3",
+        "--ui-accent",
+        "--ui-text-md",
+        "--ui-scroll-offset"
+      ]
     }
   ]
 }
