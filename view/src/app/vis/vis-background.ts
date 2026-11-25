@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { ThemeService } from '../core/theme.service';
+import { CodeComponent } from '../ui/code';
 import { SectionBlockComponent } from '../ui/section-block';
 import { VisualPageComponent } from './visual-page';
 import { TextComponent } from '../ui/text';
@@ -19,6 +20,7 @@ interface Layer {
   standalone: true,
   imports: [
     ListCardComponent,
+    CodeComponent,
     RulesComponent,
     TextComponent,SectionBlockComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
@@ -32,8 +34,10 @@ interface Layer {
             <code>html</code> 保持透明，避免双层底色叠色；<code>body</code> 同时承担底色与光晕，
             光晕固定，不随内容滚动。
           </ui-text>
-          <pre class="code-block"><code>{{ bodyCss }}</code></pre>
-          <div class="body-preview" aria-label="body 背景预览"></div>
+          <div class="body-preview-stack">
+            <ui-code title="body 背景" lang="css" [code]="bodyCss" />
+            <div class="body-preview" aria-label="body 背景预览"></div>
+          </div>
         </ui-section>
 
       <ui-section title="当前背景层" pill="Surface">

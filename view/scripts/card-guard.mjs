@@ -70,6 +70,7 @@ const localButton = /class="(?:btn|toggle-chip)[\s"]/;
 const materialButton = /(?:mat-flat-button|matButton=|mat-button\b|mat-stroked-button)/;
 const localSurface = /^\.(?:toast|source|notice|table-wrap|list-card|modal)\s*\{/;
 const localTable = /class="(?:table-wrap|list-card)"/;
+const localCodeBlock = /class="(?:code-block|code-panel)"/;
 const localChip = /class="(?:filter-chip|segmented)"/;
 const localEmpty = /class="empty[\s"]/;
 const localBadge = /class="badge[\s"]/;
@@ -106,6 +107,9 @@ for (const file of walk(appDir)) {
       }
       if (localEmpty.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  手写空状态，请改用 <ui-empty>  ${trimmed}`);
+      }
+      if (localCodeBlock.test(trimmed) && !trimmed.includes('mock-code')) {
+        violations.push(`${rel}:${index + 1}  手写代码块，请改用 <ui-code>  ${trimmed}`);
       }
       if (localBadge.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  本地状态徽标，请改用 <ui-badge>  ${trimmed}`);
@@ -245,7 +249,7 @@ if (violations.length > 0) {
 }
 
 console.log(
-  `component-guard: ${files.length} 个卡片组件外壳无本地覆盖；VIS 页面未手写 section / 按钮 / 提示表面。`,
+  `component-guard: ${files.length} 个卡片组件外壳无本地覆盖；VIS 页面未手写 section / 按钮 / 提示表面 / 代码块。`,
 );
 console.log(
   `component-guard: ${registered.size} 个组件已登记，展示页与 demoFile 校验通过。`,

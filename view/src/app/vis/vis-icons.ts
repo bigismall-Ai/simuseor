@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { APP_ICONS, ICON_GROUPS } from '../ui/icons';
+import { CodeComponent } from '../ui/code';
 import { UiMaterialModule } from '../ui/material';
 import { VisualPageComponent } from './visual-page';
 import { SectionBlockComponent } from '../ui/section-block';
@@ -11,6 +12,7 @@ import { TextComponent } from '../ui/text';
   selector: 'app-vis-icons',
   standalone: true,
   imports: [
+    CodeComponent,
     TextComponent,UiMaterialModule, SectionBlockComponent, TableComponent, VisualPageComponent],
   styleUrl: './vis-samples.scss',
   template: `
@@ -85,7 +87,7 @@ import { TextComponent } from '../ui/text';
                 </tbody>
               </table>
 </ui-table>
-            <pre class="code-block"><code>{{ usage }}</code></pre>
+            <ui-code title="用法" lang="html" [code]="usage" />
             <ui-text variant="hint">
               装饰性图标加 <code>aria-hidden="true"</code>；有语义的图标放进可访问名明确的按钮，
               图标本身不再重复播报。

@@ -469,14 +469,9 @@
 
 
 /* ---- 背景层 ---- */
-.code-block {
-  margin: 0 0 12px;
-  padding: 12px 14px;
-  overflow: auto;
-  border-radius: 10px;
-  background: var(--ui-inset);
-  color: var(--ui-text-2);
-  font: 10.5px/1.65 var(--ui-font-mono);
+.body-preview-stack {
+  display: grid;
+  gap: var(--ui-space-3);
 }
 
 .body-preview {
@@ -696,10 +691,6 @@ html[data-theme='dark'] .bg-swatch {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.notes-stack .code-block {
-  margin: 0;
 }
 
 .icon-size-row,
