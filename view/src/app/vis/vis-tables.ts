@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import type { BadgeTone } from '../ui/badge';
 import { BadgeComponent } from '../ui/badge';
+import { DividerComponent } from '../ui/divider';
 import { ListCardComponent } from '../ui/list-card';
+import { PaginationComponent } from '../ui/pagination';
 import { SectionBlockComponent } from '../ui/section-block';
+import type { TabItem } from '../ui/tabs';
+import { TabsComponent } from '../ui/tabs';
 import { TableComponent } from '../ui/table';
 import { VisualPageComponent } from './visual-page';
 
@@ -25,8 +29,11 @@ interface SampleListRow {
   selector: 'app-vis-tables',
   imports: [
     BadgeComponent,
+    DividerComponent,
     ListCardComponent,
+    PaginationComponent,
     SectionBlockComponent,
+    TabsComponent,
     TableComponent,
     VisualPageComponent,
   ],
@@ -99,6 +106,67 @@ interface SampleListRow {
         </p>
       </ui-section>
 
+      <ui-section title="选项卡" pill="ui-tabs">
+        <div class="row">
+          <span class="row-label">Underline</span>
+          <ui-tabs [tabs]="views" [(value)]="view" label="资产分类" />
+        </div>
+        <div class="row">
+          <span class="row-label">Pill / sm</span>
+          <ui-tabs [tabs]="views" [(value)]="view" variant="pill" size="sm" label="资产分类（胶囊）" />
+        </div>
+        <p class="hint table-note">
+          两种表面只换 <code>variant</code>：内容区顶部用 <code>underline</code>，
+          工具条里用 <code>pill</code>；计数走等宽字体，禁用项降到 45% 不透明度。
+        </p>
+      </ui-section>
+
+      <ui-section title="分页" pill="ui-pagination">
+        <div class="row">
+          <span class="row-label">12 页</span>
+          <ui-pagination
+            [pageCount]="12"
+            [(page)]="page"
+            (pageChange)="changed.set($event)"
+            label="模型列表分页"
+          />
+          <span class="mono">第 {{ page() }} 页 · 最近跳转 {{ changed() }}</span>
+        </div>
+        <div class="row">
+          <span class="row-label">40 页 / s=2</span>
+          <ui-pagination [pageCount]="40" [siblings]="2" [(page)]="farPage" label="下载记录分页" />
+        </div>
+        <p class="hint table-note">
+          页码窗口最多 7 格：首末页固定，当前页左右各展开 <code>siblings</code> 页，其余收成省略号；
+          控件 28px，当前页实心。
+        </p>
+      </ui-section>
+
+      <ui-section title="分隔线" pill="ui-divider">
+        <div class="row">
+          <span class="row-label">通栏</span>
+          <span>模型与 LoRA 分组</span>
+        </div>
+        <ui-divider />
+        <div class="row">
+          <span class="row-label">缩进</span>
+          <span>两端各留 24px</span>
+        </div>
+        <ui-divider [inset]="true" />
+        <div class="row">
+          <span class="row-label">竖向</span>
+          <span>编辑</span>
+          <ui-divider [vertical]="true" />
+          <span>导出</span>
+          <ui-divider [vertical]="true" [inset]="true" />
+          <span>删除</span>
+        </div>
+        <p class="hint table-note">
+          1px 线只用 <code>--ui-inner-border</code>；竖向用于同一行拆两组动作，不带语义，
+          对辅助技术隐藏。
+        </p>
+      </ui-section>
+
       <ui-section title="列表卡" pill="ui-list-card">
         <ui-list-card>
           @for (row of listRows; track row.name) {
@@ -117,6 +185,18 @@ interface SampleListRow {
   `,
 })
 export class VisTablesComponent {
+  readonly view = signal('model');
+  readonly page = signal(3);
+  readonly changed = signal(3);
+  readonly farPage = signal(20);
+
+  readonly views: TabItem[] = [
+    { key: 'model', label: '模型', count: 128 },
+    { key: 'lora', label: 'LoRA', count: 24 },
+    { key: 'vae', label: 'VAE', count: 9 },
+    { key: 'node', label: '节点', disabled: true },
+  ];
+
   readonly rows: SampleRow[] = [
     { name: 'FLUX.1-dev', source: 'Hugging Face', size: '23.8 GB', status: '已安装', tone: 'green' },
     { name: 'SDXL Base 1.0', source: 'ModelScope', size: '6.9 GB', status: '已在库', tone: 'blue' },

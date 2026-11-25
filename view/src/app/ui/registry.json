@@ -55,6 +55,80 @@
       ]
     },
     {
+      "selector": "ui-tabs",
+      "name": "选项卡",
+      "category": "action",
+      "page": "/vis/tables",
+      "demoFile": "src/app/vis/vis-tables.ts",
+      "variants": [
+        "underline",
+        "pill"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-h-md",
+        "--ui-h-sm",
+        "--ui-inner-border",
+        "--ui-radius-sm",
+        "--ui-radius-pill"
+      ]
+    },
+    {
+      "selector": "ui-pagination",
+      "name": "分页",
+      "category": "action",
+      "page": "/vis/tables",
+      "demoFile": "src/app/vis/vis-tables.ts",
+      "sizes": [
+        "28px"
+      ],
+      "tokens": [
+        "--ui-h-sm",
+        "--ui-radius-sm",
+        "--ui-primary",
+        "--ui-on-primary"
+      ]
+    },
+    {
+      "selector": "ui-divider",
+      "name": "分隔线",
+      "category": "surface",
+      "page": "/vis/tables",
+      "demoFile": "src/app/vis/vis-tables.ts",
+      "variants": [
+        "horizontal",
+        "vertical",
+        "inset"
+      ],
+      "tokens": [
+        "--ui-inner-border",
+        "--ui-space-6"
+      ]
+    },
+    {
+      "selector": "ui-tooltip",
+      "name": "悬浮提示",
+      "category": "feedback",
+      "page": "/vis/buttons",
+      "demoFile": "src/app/vis/vis-buttons.ts",
+      "variants": [
+        "top",
+        "bottom",
+        "left",
+        "right"
+      ],
+      "tokens": [
+        "--ui-radius-lg",
+        "--ui-space-2",
+        "--ui-z-toast",
+        "--ui-overlay",
+        "--ui-shadow-md"
+      ]
+    },
+    {
       "selector": "ui-source-chip",
       "name": "来源胶囊",
       "category": "action",

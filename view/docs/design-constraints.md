@@ -52,6 +52,10 @@
 | `ui-code` | 两套主题都用深色面；13px mono、400px 上限、标题栏 + 复制（≤640 只留图标） | MUI 代码面板参考，底色调深 |
 | `ui-kbd` | 11px mono、6px 圆角、底部内阴影；`keys` 或投影，深色面板内局部覆盖 `--kbd-*` | MUI `kbd` 参考 |
 | `ui-search` | 触发条 32px（≤768 只留图标）、浮层 640px 上限、命中行 52px；只抛 `picked` | MUI 搜索浮层参考 |
+| `ui-tabs` | `underline` / `pill` 两表面；`md` 34 / `sm` 28；计数走 10.5px 等宽；选中底线 2px | MUI Tabs 参考，表面按自有层级 |
+| `ui-pagination` | 28px 控件、窗口 ≤7 格（首末页固定 + 省略号）、当前页实心 | MUI Pagination 参考，格数收窄 |
+| `ui-divider` | 1px `--ui-inner-border`；`vertical` / `inset` 两开关；纯装饰对 AT 隐藏 | MUI Divider 参考 |
+| `ui-tooltip` | 12px 圆角 / 8px 内边距 / 8px 间距；纯 CSS 四向，不建浮层、不做边界翻转 | MUI Tooltip 参考，去掉 JS 定位 |
 
 ## 已采用的 MUI 约束
 
