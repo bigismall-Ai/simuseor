@@ -34,9 +34,9 @@ let seq = 0;
 
     .ui-field .field-label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: var(--ui-field-label-gap);
       color: var(--ui-muted);
-      font-size: 11.5px;
+      font-size: var(--ui-text-sm);
       font-weight: 500;
       letter-spacing: 0.01em;
     }

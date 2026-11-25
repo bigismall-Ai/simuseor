@@ -59,7 +59,7 @@ import { Component, ElementRef, input, model, viewChild } from '@angular/core';
 
     .lbl {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: var(--ui-field-label-gap);
       color: var(--ui-muted);
       font-size: var(--ui-text-sm);
       font-weight: 500;
@@ -147,7 +147,7 @@ import { Component, ElementRef, input, model, viewChild } from '@angular/core';
 
     .msg {
       display: block;
-      margin-top: 5px;
+      margin-top: var(--ui-msg-gap);
       color: var(--ui-muted);
       font-size: var(--ui-text-xs);
       line-height: 1.5;

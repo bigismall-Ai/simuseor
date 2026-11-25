@@ -303,6 +303,11 @@
   gap: 6px;
 }
 
+/* 设置行示例：与上方开关列拉开一档 */
+.setting-demo {
+  margin-top: var(--ui-space-4);
+}
+
 /* ---- 新增：圆角 / 阴影 ---- */
 .radius-item {
   display: flex;

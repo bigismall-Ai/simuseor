@@ -123,13 +123,15 @@
 
 - 外壳：`ui-page`（内容宽与留白）、`ui-page-header`、`ui-breadcrumb`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-nav-tree`、`ui-toc`（右栏目录 / 窄窗速览条）、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
-- 表单：`ui-input`（文本）、`ui-field`（包非文本控件）、`ui-setting-row`（设置项）
+- 表单：`ui-input`（单行文本）、`ui-textarea`（多行文本）、`ui-select`（原生下拉）、`ui-checkbox`（勾选）、`ui-switch`（立即生效的开关）、`ui-field`（外部标签容器）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
 - 文档面：`ui-code`（深色代码面板）、`ui-kbd`（快捷键）、`ui-search`（触发条 + 结果浮层）
 - 卡片：`ui-card-shell`（外壳）、`ui-card-slot`（状态槽）、`ui-card-action`（主按钮）、`md-model-card`（`mode="library"` / `mode="discover"`）、`app-workflow-card`、`md-hub-card`、`md-node-card`
 - 文档：`ui-label`（小标题）、`ui-text`（引言 / 提示）、`ui-rules`（规则清单）
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`、`.code-block`；`npm run cards:guard` 会拦下这些漂移
-- 原生 `<input type="text">` 一律用 `ui-input`；checkbox / radio / file / Material `matInput` 例外
+- 原生文本输入一律用 `ui-input`，多行用 `ui-textarea`，下拉用 `ui-select`，勾选用 `ui-checkbox`，立即生效的二态设置用 `ui-switch`；radio / file / Material `matInput` 例外
+- 开关与勾选的分工：改完就生效的设置项用 `ui-switch`，需要点「保存」确认的多选用 `ui-checkbox`；整组未全选时用 `indeterminate`
+- 控件自带标签时不要再包 `ui-field`（会出现两个标签）；`ui-field` 只用于给原生控件补一行外部标签
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致
 - Toast 的自动收起走 `ui-toast` 的 `duration`（默认 0 = 不关；常规 3000、错误 6000），页面不再自己 `setTimeout`
 - 代码面板两套主题都是深色底：静态样例一律用 `ui-code`（标题 / 语言 / `code` 输入，长片段放组件字段，不塞进模板），页面不再手写 `<pre>`；必须保留自定义标记的语法示意块要在代码旁写明为什么不是 `ui-code`；快捷键提示只用 `ui-kbd`（`keys` 输入或投影内容）
