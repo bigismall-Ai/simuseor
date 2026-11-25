@@ -93,6 +93,7 @@ export const NAV_TREE: NavNode[] = [
           { key: 'families', label: '厂牌', route: '/vis/prototypes/components/families', icon: 'brand' },
           { key: 'notice', label: '行内提示', route: '/vis/prototypes/components/notice', icon: 'alert' },
           { key: 'feedback', label: '提示与来源', route: '/vis/prototypes/components/feedback', icon: 'inbox' },
+          { key: 'code', label: '代码与搜索', route: '/vis/prototypes/components/code', icon: 'terminal' },
         ],
       },
     ],

@@ -124,12 +124,15 @@
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）、`ui-setting-row`（设置项）
 - 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
+- 文档面：`ui-code`（深色代码面板）、`ui-kbd`（快捷键）、`ui-search`（触发条 + 结果浮层）
 - 卡片：`ui-card-shell`（外壳）、`ui-card-slot`（状态槽）、`ui-card-action`（主按钮）、`md-model-card`（`mode="library"` / `mode="discover"`）、`app-workflow-card`、`md-hub-card`、`md-node-card`
 - 文档：`ui-label`（小标题）、`ui-text`（引言 / 提示）、`ui-rules`（规则清单）
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移
 - 原生 `<input type="text">` 一律用 `ui-input`；checkbox / radio / file / Material `matInput` 例外
 - 新增共享组件必须同时出现在对应的 VIS 原型页，并保持浅色 / 深色两套表现一致
 - Toast 的自动收起走 `ui-toast` 的 `duration`（默认 0 = 不关；常规 3000、错误 6000），页面不再自己 `setTimeout`
+- 代码面板两套主题都是深色底：标题 / 语言 / 复制按钮走 `ui-code` 的输入，页面不再手写 `<pre>`；快捷键提示只用 `ui-kbd`（`keys` 输入或投影内容）
+- 搜索用 `ui-search`：只做触发条 + 浮层，数据由页面给、选中结果走 `picked`（`route` 只是随附字段，组件不跳转）
 - 三态规则：首屏首次加载用 `ui-skeleton`；已有内容局部刷新用进度条 / 行内提示；无数据用 `ui-empty`；失败用 `ui-notice error`
 
 ## VIS 目录
