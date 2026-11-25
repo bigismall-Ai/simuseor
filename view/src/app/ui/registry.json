@@ -537,6 +537,66 @@
         "--ui-shadow",
         "--ui-surface"
       ]
+    },
+    {
+      "selector": "ui-progress",
+      "name": "进度条",
+      "category": "feedback",
+      "page": "/vis/prototypes/pages/downloads",
+      "demoFile": "src/app/vis/prototypes/pages/downloads/downloads.ts",
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-radius-pill",
+        "--ui-accent",
+        "--ui-primary"
+      ]
+    },
+    {
+      "selector": "ui-list-row",
+      "name": "列表行",
+      "category": "surface",
+      "page": "/vis/prototypes/pages/downloads",
+      "demoFile": "src/app/vis/prototypes/pages/downloads/downloads.ts",
+      "tokens": [
+        "--ui-border-2",
+        "--ui-space-3",
+        "--ui-space-4"
+      ]
+    },
+    {
+      "selector": "ui-toolbar",
+      "name": "工具条",
+      "category": "shell",
+      "page": "/vis/prototypes/pages/workflows",
+      "demoFile": "src/app/vis/prototypes/pages/workflows/workflows.ts",
+      "variants": [
+        "plain",
+        "surface"
+      ],
+      "tokens": [
+        "--ui-raised",
+        "--ui-radius-list",
+        "--ui-space-2"
+      ]
+    },
+    {
+      "selector": "ui-setting-row",
+      "name": "设置行",
+      "category": "form",
+      "page": "/vis/prototypes/pages/settings",
+      "demoFile": "src/app/vis/prototypes/pages/settings/settings.ts",
+      "variants": [
+        "inline",
+        "stack"
+      ],
+      "tokens": [
+        "--ui-border-2",
+        "--ui-space-3",
+        "--ui-space-4"
+      ]
     }
   ]
 }

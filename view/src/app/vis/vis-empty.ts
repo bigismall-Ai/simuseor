@@ -7,11 +7,13 @@ import { SkeletonComponent } from '../ui/skeleton';
 import { VisualPageComponent } from './visual-page';
 import { TextComponent } from '../ui/text';
 import { RulesComponent } from '../ui/rules';
+import { ProgressComponent } from '../ui/progress';
 
 /** 空状态与行内反馈：ui-empty / ui-notice 的实际表现。 */
 @Component({
   selector: 'app-vis-empty',
   imports: [
+    ProgressComponent,
     RulesComponent,
     TextComponent,
     EmptyComponent,
@@ -36,7 +38,7 @@ import { RulesComponent } from '../ui/rules';
       <ui-section title="加载与反馈" pill="ui-notice">
         <div class="stack">
           <div class="loading-line"><span class="dot-spin"></span><span>正在读取模型列表…</span></div>
-          <div class="progress"><div style="width: 62%"></div></div>
+          <ui-progress [value]="62" label="示例下载进度" />
           <ui-notice tone="error" icon="!" title="删除失败">
             目录被占用，关闭占用程序后重试。没有文件被删除。
           </ui-notice>
@@ -48,7 +50,7 @@ import { RulesComponent } from '../ui/rules';
       <ui-section title="加载骨架" pill="ui-skeleton">
         <div class="stack">
           <ui-skeleton [lines]="3" label="正在读取模型列表" />
-          <div class="progress"><div style="width: 34%"></div></div>
+          <ui-progress [value]="34" label="示例加载进度" />
         </div>
         <ui-text variant="hint">
           首屏首次加载用骨架；已经有内容时只做局部刷新，用进度条或行内提示，不要整块重画。

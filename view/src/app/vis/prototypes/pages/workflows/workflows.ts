@@ -16,6 +16,8 @@ import { WorkflowCardComponent } from '../../../../ui/workflow-card';
 import { ProtoShellComponent } from '../../proto-shell';
 import { WORKFLOWS } from '../../../visual-data';
 import { RulesComponent } from '../../../../ui/rules';
+import { ProgressComponent } from '../../../../ui/progress';
+import { ToolbarComponent } from '../../../../ui/toolbar';
 import type { LocalWorkflow } from '../../../../core/types';
 
 type WorkflowTask = 'txt2img' | 'img2img' | 'video' | 'upscale';
@@ -47,6 +49,8 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
 @Component({
   selector: 'app-proto-workflows',
   imports: [
+    ToolbarComponent,
+    ProgressComponent,
     RulesComponent,
     ProtoShellComponent,
     PageHeaderComponent,
@@ -91,14 +95,15 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
           </div>
         }
 
-        <div class="viewbar">
+        <ui-toolbar class="viewbar">
           <ui-segmented
+            toolbar-start
             [options]="statusOptions()"
             [value]="view()"
             (valueChange)="setView($event)"
             label="工作流状态筛选"
           />
-          <div class="viewbar-right">
+          <div toolbar-end class="viewbar-right">
             <span class="viewbar-label">显示方式</span>
             <ui-segmented
               [options]="modeOptions"
@@ -107,10 +112,11 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
               label="显示方式"
             />
           </div>
-        </div>
+        </ui-toolbar>
 
-        <div class="filters" role="group" aria-label="筛选与排序">
+        <ui-toolbar [surface]="true" role="group" ariaLabel="筛选与排序" class="filters">
           <ui-input
+            toolbar-start
             class="search"
             size="sm"
             ariaLabel="搜索工作流"
@@ -136,7 +142,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
             }
           </div>
 
-          <div class="sort">
+          <div toolbar-end class="sort">
             <span class="sort-label" aria-hidden="true">排序</span>
             <ui-segmented
               [options]="sortOptions"
@@ -145,7 +151,7 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
               label="排序方式"
             />
           </div>
-        </div>
+        </ui-toolbar>
 
         <div class="layout">
           <div class="main">
@@ -184,16 +190,12 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
                         </div>
 
                         @if (wf.run === 'running') {
-                          <div
+                          <ui-progress
                             class="wf-progress"
-                            role="progressbar"
-                            [attr.aria-label]="(wf.title || wf.name) + ' 运行进度'"
-                            [attr.aria-valuenow]="wf.progress ?? 0"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          >
-                            <i [style.width.%]="wf.progress ?? 0"></i>
-                          </div>
+                            size="sm"
+                            [value]="wf.progress ?? 0"
+                            [label]="(wf.title || wf.name) + ' 运行进度'"
+                          />
                         }
                       </div>
                     }
@@ -309,16 +311,12 @@ const [VIDEO_BASE, FLUX_BASE, QWEN_BASE, BROKEN_BASE] = WORKFLOWS;
                   }
 
                   @if (wf.run === 'running') {
-                    <div
+                    <ui-progress
                       class="wf-progress"
-                      role="progressbar"
-                      [attr.aria-label]="(wf.title || wf.name) + ' 运行进度'"
-                      [attr.aria-valuenow]="wf.progress ?? 0"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    >
-                      <i [style.width.%]="wf.progress ?? 0"></i>
-                    </div>
+                      size="sm"
+                      [value]="wf.progress ?? 0"
+                      [label]="(wf.title || wf.name) + ' 运行进度'"
+                    />
                   }
 
                   <div class="sel-acts">

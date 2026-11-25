@@ -9,6 +9,8 @@ import { InputComponent } from '../../../../ui/input';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
 import { TagComponent } from '../../../../ui/tag';
+import { ListRowComponent } from '../../../../ui/list-row';
+import { ProgressComponent } from '../../../../ui/progress';
 
 type SourceState = 'ok' | 'degraded' | 'down';
 
@@ -59,6 +61,8 @@ interface TaskItem {
 @Component({
   selector: 'app-proto-downloads',
   imports: [
+    ListRowComponent,
+    ProgressComponent,
     TagComponent,
     ProtoShellComponent,
     PageHeaderComponent,
@@ -276,8 +280,8 @@ interface TaskItem {
 
           <div class="task-list">
             @for (task of shownActive(); track task.id) {
-              <div class="task">
-                <div class="task-main">
+              <ui-list-row>
+                <div rowMain class="task-main">
                   <div class="task-name">
                     <b>{{ task.name }}</b>
                     <ui-tag>{{ task.source }}</ui-tag>
@@ -291,18 +295,13 @@ interface TaskItem {
                     <span>{{ task.remaining }}</span>
                     <span>{{ task.files }} 个文件</span>
                   </div>
-                  <div
-                    class="progress"
-                    role="progressbar"
-                    [attr.aria-label]="task.name + ' 下载进度'"
-                    [attr.aria-valuenow]="pct(task)"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  >
-                    <i [style.width.%]="pct(task)"></i>
-                  </div>
+                  <ui-progress
+                    class="task-progress"
+                    [value]="pct(task)"
+                    [label]="task.name + ' 下载进度'"
+                  />
                 </div>
-                <div class="task-side">
+                <div rowSide class="task-side">
                   <div class="stat">
                     <b>{{ pct(task) }}%</b>
                     <span>已完成</span>
@@ -314,7 +313,7 @@ interface TaskItem {
                     取消
                   </ui-button>
                 </div>
-              </div>
+              </ui-list-row>
             }
 
             @for (task of shownDone(); track task.id) {

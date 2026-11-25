@@ -120,10 +120,10 @@
 
 ## 共享组件（`src/app/ui/`）
 
-- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-card-mark`、`app-cover-plate`
+- 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-toolbar`、`ui-card-mark`、`app-cover-plate`
 - 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
-- 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
-- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-skeleton`
+- 表单：`ui-input`（文本）、`ui-field`（包非文本控件）、`ui-setting-row`（设置项）
+- 表面：`ui-table`、`ui-list-card`、`ui-list-row`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-progress`、`ui-skeleton`
 - 卡片：`ui-card-shell`（外壳）、`ui-card-slot`（状态槽）、`ui-card-action`（主按钮）、`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
 - 文档：`ui-label`（小标题）、`ui-text`（引言 / 提示）、`ui-rules`（规则清单）
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移

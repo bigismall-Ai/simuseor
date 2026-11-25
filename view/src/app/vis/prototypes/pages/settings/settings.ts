@@ -8,6 +8,7 @@ import { PageHeaderComponent } from '../../../../ui/page-header';
 import { PanelComponent } from '../../../../ui/panel';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
+import { SettingRowComponent } from '../../../../ui/setting-row';
 
 type PathKey = 'direct' | 'mirror' | 'proxy';
 type Verdict = 'ok' | 'degraded' | 'down' | 'unknown';
@@ -107,6 +108,7 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
 @Component({
   selector: 'app-proto-settings',
   imports: [
+    SettingRowComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     PanelComponent,
@@ -263,19 +265,20 @@ const VERDICT_TONE: Record<Verdict, BadgeTone> = {
 
                       @if (card.key === 'civitai') {
                         <ui-field label="完整目录（CivitAI Red）">
-                          <div class="check-row">
-                            <input
-                              type="checkbox"
-                              [checked]="draft().fullCatalog"
-                              (change)="setDraftCatalog($event)"
-                            />
-                            <div>
+                          <ui-setting-row>
+                            <div settingText>
                               <strong>含成熟内容（18+，部分地区依法受限）</strong>
                               <div class="muted">
                                 打开后搜索走 civitai.red 的完整目录（后端按 nsfw=true 取参数）。
                               </div>
                             </div>
-                          </div>
+                            <input
+                              settingControl
+                              type="checkbox"
+                              [checked]="draft().fullCatalog"
+                              (change)="setDraftCatalog($event)"
+                            />
+                          </ui-setting-row>
                         </ui-field>
                       }
                     </div>

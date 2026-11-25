@@ -374,19 +374,6 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.progress {
-  height: 6px;
-  border-radius: var(--ui-radius-pill);
-  background: var(--ui-panel-3);
-  overflow: hidden;
-}
-
-.progress > div {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--ui-primary);
-}
-
 /* ---- 新增：资产卡 ---- */
 .asset-grid {
   display: grid;

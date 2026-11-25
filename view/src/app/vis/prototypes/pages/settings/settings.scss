@@ -441,13 +441,6 @@
   color: var(--ui-muted);
 }
 
-.check-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 3px 0;
-}
-
 .check-row > div {
   flex: 1;
   min-width: 0;

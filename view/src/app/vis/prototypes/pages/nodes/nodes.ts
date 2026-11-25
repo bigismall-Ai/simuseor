@@ -19,6 +19,7 @@ import { ToastComponent } from '../../../../ui/toast';
 import { NodeCardComponent } from '../../../../ui/node-card';
 import { UiMaterialModule } from '../../../../ui/material';
 import { RulesComponent } from '../../../../ui/rules';
+import { ToolbarComponent } from '../../../../ui/toolbar';
 
 /** 包从哪来：GitHub 仓库、Comfy Registry、本地 zip。 */
 type PackSource = 'github' | 'registry' | 'zip';
@@ -75,6 +76,7 @@ const SOURCE_LABEL: Record<PackSource, string> = {
 @Component({
   selector: 'app-proto-nodes',
   imports: [
+    ToolbarComponent,
     RulesComponent,
     ProtoShellComponent,
     PageHeaderComponent,
@@ -135,8 +137,9 @@ const SOURCE_LABEL: Record<PackSource, string> = {
           <span class="toolbar-count">{{ summary() }}</span>
         </div>
 
-        <div class="filters">
+        <ui-toolbar class="filters">
           <ui-input
+            toolbar-start
             class="search"
             size="sm"
             ariaLabel="搜索节点包"
@@ -161,10 +164,9 @@ const SOURCE_LABEL: Record<PackSource, string> = {
             }
           </div>
 
-          <span class="grow"></span>
-
-          <span class="sort">
-            <span class="sort-label" aria-hidden="true">排序</span>
+          <div toolbar-end>
+            <span class="sort">
+              <span class="sort-label" aria-hidden="true">排序</span>
             <select aria-label="排序方式" (change)="setSort($event)">
               @for (option of sortOptions; track option.key) {
                 <option [value]="option.key" [selected]="option.key === sort()">
@@ -172,8 +174,9 @@ const SOURCE_LABEL: Record<PackSource, string> = {
                 </option>
               }
             </select>
-          </span>
-        </div>
+            </span>
+          </div>
+        </ui-toolbar>
 
         <ui-section title="节点包" [pill]="cards().length + ' 个'">
           @if (cards().length) {
