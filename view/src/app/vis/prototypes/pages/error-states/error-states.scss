@@ -65,44 +65,6 @@ h3 {
   gap: 14px;
 }
 
-.card {
-  min-width: 0;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-card);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
-  overflow: hidden;
-}
-
-.card-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-bottom: 1px solid var(--ui-border);
-  background: var(--ui-raised);
-}
-
-.card-head h3 {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.card-head .tag {
-  margin-left: auto;
-  font: 10px/1 var(--ui-font-mono);
-  color: var(--faint);
-}
-
-.card-head ui-badge {
-  margin-left: auto;
-}
-
-.card-body {
-  padding: 14px;
-}
-
 .bad {
   border-color: color-mix(in oklab, var(--err) 26%, var(--ui-border));
 }

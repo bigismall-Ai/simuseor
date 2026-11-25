@@ -6,11 +6,13 @@ import { SegmentedComponent } from '../ui/segmented';
 import type { SegmentedOption } from '../ui/segmented';
 import { VisualPageComponent } from './visual-page';
 import { RulesComponent } from '../ui/rules';
+import { TagComponent } from '../ui/tag';
 
 /** 胶囊：badge 表达状态（语义色），chip 表达筛选（可点），pill 表达分类（只读中性）。 */
 @Component({
   selector: 'app-vis-pills',
   imports: [
+    TagComponent,
     RulesComponent,
     BadgeComponent,
     ChipComponent,
@@ -41,11 +43,11 @@ import { RulesComponent } from '../ui/rules';
 
         <div class="row">
           <span class="row-label">Pill</span>
-          <span class="pill">文生图</span>
-          <span class="pill">LoRA</span>
-          <span class="pill">VAE</span>
-          <span class="pill-outlined">HF</span>
-          <span class="pill">+4</span>
+          <ui-tag>文生图</ui-tag>
+          <ui-tag>LoRA</ui-tag>
+          <ui-tag>VAE</ui-tag>
+          <ui-tag [outlined]="true" [mono]="true">HF</ui-tag>
+          <ui-tag>+4</ui-tag>
         </div>
 
         <div class="row">

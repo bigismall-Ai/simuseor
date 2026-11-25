@@ -501,6 +501,42 @@
         "--ui-radius-card",
         "--ui-shadow"
       ]
+    },
+    {
+      "selector": "ui-tag",
+      "name": "分类标签",
+      "category": "content",
+      "page": "/vis/pills",
+      "demoFile": "src/app/vis/vis-pills.ts",
+      "variants": [
+        "default",
+        "outlined"
+      ],
+      "sizes": [
+        "md",
+        "sm"
+      ],
+      "tokens": [
+        "--ui-panel-2",
+        "--ui-radius-pill",
+        "--ui-text-sm"
+      ]
+    },
+    {
+      "selector": "ui-state-card",
+      "name": "状态卡",
+      "category": "surface",
+      "page": "/vis/prototypes/pages/error-states",
+      "demoFile": "src/app/vis/prototypes/pages/error-states/error-states.ts",
+      "variants": [
+        "default",
+        "bad"
+      ],
+      "tokens": [
+        "--ui-radius-card",
+        "--ui-shadow",
+        "--ui-surface"
+      ]
     }
   ]
 }

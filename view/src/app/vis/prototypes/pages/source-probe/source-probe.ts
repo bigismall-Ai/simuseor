@@ -253,9 +253,9 @@ interface ProbeSource {
                     <span class="tiny">来自 2 个源</span>
                   </div>
                   <div class="mock-filters">
-                    <span class="chip on">全部</span>
-                    <span class="chip">Hugging Face</span>
-                    <span class="chip">ModelScope</span>
+                    <span class="vis-mock-chip on">全部</span>
+                    <span class="vis-mock-chip">Hugging Face</span>
+                    <span class="vis-mock-chip">ModelScope</span>
                     <span class="tiny mock-tail">来源筛选</span>
                   </div>
                   <div class="mock-row">
@@ -289,10 +289,10 @@ interface ProbeSource {
                     <span class="tiny">来自 2 个可用源</span>
                   </div>
                   <div class="mock-filters">
-                    <span class="chip on">全部</span>
-                    <span class="chip">Hugging Face</span>
-                    <span class="chip">ModelScope</span>
-                    <span class="chip off" title="直连超时，已停用">CivitAI</span>
+                    <span class="vis-mock-chip on">全部</span>
+                    <span class="vis-mock-chip">Hugging Face</span>
+                    <span class="vis-mock-chip">ModelScope</span>
+                    <span class="vis-mock-chip off" title="直连超时，已停用">CivitAI</span>
                     <span class="tiny mock-tail">来源筛选</span>
                   </div>
                   <p class="mock-notice">

@@ -5,7 +5,8 @@
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "vis:shots": "node e2e/vis-visual.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

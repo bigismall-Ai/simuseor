@@ -8,6 +8,7 @@ import { UiButtonComponent } from '../../../../ui/button';
 import { InputComponent } from '../../../../ui/input';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
+import { TagComponent } from '../../../../ui/tag';
 
 type SourceState = 'ok' | 'degraded' | 'down';
 
@@ -58,6 +59,7 @@ interface TaskItem {
 @Component({
   selector: 'app-proto-downloads',
   imports: [
+    TagComponent,
     ProtoShellComponent,
     PageHeaderComponent,
     BadgeComponent,
@@ -184,7 +186,7 @@ interface TaskItem {
                 <div class="auto-folders">
                   <span>自动归类</span>
                   @for (group of autoFolders(); track group.folder) {
-                    <span class="pill mono">{{ group.folder }} · {{ group.count }}</span>
+                    <ui-tag [mono]="true">{{ group.folder }} · {{ group.count }}</ui-tag>
                   } @empty {
                     <span class="faint">还没有勾选权重</span>
                   }
@@ -278,7 +280,7 @@ interface TaskItem {
                 <div class="task-main">
                   <div class="task-name">
                     <b>{{ task.name }}</b>
-                    <span class="pill">{{ task.source }}</span>
+                    <ui-tag>{{ task.source }}</ui-tag>
                     <ui-badge [tone]="task.state === 'paused' ? 'orange' : 'green'">
                       {{ task.state === 'paused' ? '已暂停' : '下载中' }}
                     </ui-badge>

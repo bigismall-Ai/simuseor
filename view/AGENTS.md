@@ -114,14 +114,15 @@
 - **页面样式只做布局**：grid / flex / gap / 位置 / 断点；颜色、圆角、阴影、字号、控件高度一律用 token。VIS 样式里禁止写死 `border-radius: 16px / 24px / 28px`（卡 / 列表 / 面板级圆角必须走 `--ui-radius-*`）。
 - **新增组件的顺序**：① 写组件与 token → ② 在 VIS 加真实样张（含浅色 / 深色）→ ③ 登记 `registry.json` → ④ 跑 `node scripts/card-guard.mjs` 和 `npm run build` → ⑤ 页面才允许引用。
 - **全局边界**：`styles.scss` 只允许品牌 token、字体与滚动条；`.section-*`、`.table-wrap`、`.list-card`、`.inner-card`、`.acard-menu`、`.mono`、`.set-label` 等页面级类不得再新增或本地重定义。
-- **守卫**：除未登记组件外，VIS 里直接使用已收口表面类、或本地重定义这些选择器，也会失败。
+- **守卫 2.0**：`src/app/pages` 的样式只允许布局属性，视觉值必须走 token；`styles.scss` 只允许品牌层；VIS 现有视觉声明按基线冻结，新增会被拦下。
+- **CI**：`.cnb.yml` 跑组件守卫、构建与 VIS 视觉冒烟（5 页 × 2 宽度 × 双主题，控制台无错误）。
 
 ## 共享组件（`src/app/ui/`）
 
 - 外壳：`ui-page-header`、`ui-section`、`ui-panel`、`ui-inner-card`、`ui-grid`、`ui-card-mark`、`app-cover-plate`
-- 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-empty`
+- 动作：`ui-button`、`ui-chip`、`ui-segmented`、`ui-source-chip`、`ui-toast`、`ui-badge`、`ui-tag`、`ui-empty`
 - 表单：`ui-input`（文本）、`ui-field`（包非文本控件）
-- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-skeleton`
+- 表面：`ui-table`、`ui-list-card`、`ui-dialog`、`ui-notice`、`ui-state-card`、`ui-skeleton`
 - 卡片：`ui-card-shell`（外壳）、`ui-card-slot`（状态槽）、`ui-card-action`（主按钮）、`md-model-card`、`md-library-card`、`app-workflow-card`、`md-hub-card`、`md-node-card`
 - 文档：`ui-label`（小标题）、`ui-text`（引言 / 提示）、`ui-rules`（规则清单）
 - 页面不再手写 `.section-*`、`.btn*`、`.toast`、`.source`、`.notice`、`.table-wrap`、`.list-card`、`.modal`、`.badge`、`.chip`、`.segmented`、`.empty`；`npm run cards:guard` 会拦下这些漂移

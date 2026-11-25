@@ -6,12 +6,12 @@ import { UiButtonComponent } from '../../../../ui/button';
 import { ToastComponent } from '../../../../ui/toast';
 import { SourceChipComponent } from '../../../../ui/source-chip';
 import { Component, inject, signal } from '@angular/core';
-import { BadgeComponent } from '../../../../ui/badge';
 import { EmptyComponent } from '../../../../ui/empty';
 import { PageHeaderComponent } from '../../../../ui/page-header';
 import { UiMaterialModule } from '../../../../ui/material';
 import { ProtoShellComponent } from '../../proto-shell';
 import { TextComponent } from '../../../../ui/text';
+import { StateCardComponent } from '../../../../ui/state-card';
 
 interface ToastItem {
   id: number;
@@ -45,10 +45,10 @@ interface SpecRow {
 @Component({
   selector: 'app-proto-error-states',
   imports: [
+    StateCardComponent,
     TextComponent,
     ProtoShellComponent,
     PageHeaderComponent,
-    BadgeComponent,
     EmptyComponent,
     UiMaterialModule,
       UiButtonComponent,
@@ -77,29 +77,19 @@ interface SpecRow {
           </p>
 
           <div class="grid2">
-            <div class="card bad">
-              <div class="card-head">
-                <h3>当前 · 页面顶部纯文本</h3>
-                <span class="tag">downloads / discover</span>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="当前 · 页面顶部纯文本" [bad]="true" tag="downloads / discover">
+
                 <ui-notice tone="error" icon="!" title="Hugging Face 搜索失败：Client error '401 Unauthorized' for url …">
                   没有任何下一步；原始英文异常直接进页面。
                 </ui-notice>
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card bad">
-              <div class="card-head">
-                <h3>当前 · 含糊的一句话</h3>
-                <span class="tag">resolve</span>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="当前 · 含糊的一句话" [bad]="true" tag="resolve">
+
                 <ui-notice tone="warn" icon="!" title="解析失败，请检查模型 ID / 网络 / token">
                   三个可能原因并列，用户不知道先查哪一个。
                 </ui-notice>
-              </div>
-            </div>
+              </ui-state-card>
           </div>
 
           <ui-table>
@@ -156,12 +146,8 @@ interface SpecRow {
 
           <h3>L1 行内提示 · 影响一块区域，页面仍可继续用</h3>
           <div class="grid2">
-            <div class="card">
-              <div class="card-head">
-                <h3>错误 · 可重试</h3>
-                <ui-badge tone="red">role=alert</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="错误 · 可重试" badge="role=alert" badgeTone="red">
+
                 @if (authInfo()) {
                   <ui-notice tone="info" icon="i" title="{{ authInfo() }}">
                     当前页面状态没有丢失，可以继续操作。
@@ -175,15 +161,10 @@ interface SpecRow {
                     </div>
                   </ui-notice>
                 }
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card">
-              <div class="card-head">
-                <h3>警告 · 可继续</h3>
-                <ui-badge tone="orange">role=status</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="警告 · 可继续" badge="role=status" badgeTone="orange">
+
                 @if (warnInfo()) {
                   <ui-notice tone="info" icon="i" title="{{ warnInfo() }}">
                     这是可继续的提示，不需要用户停下手上的事。
@@ -197,27 +178,17 @@ interface SpecRow {
                     </div>
                   </ui-notice>
                 }
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card">
-              <div class="card-head">
-                <h3>信息 · 不是错误</h3>
-                <ui-badge tone="blue">role=status</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="信息 · 不是错误" badge="role=status" badgeTone="blue">
+
                 <ui-notice tone="info" icon="i" title="已切换到镜像">
                   直连超时，下载自动走 hf-mirror，速度 3.2 MB/s。
                 </ui-notice>
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card">
-              <div class="card-head">
-                <h3>成功 · 可撤销</h3>
-                <ui-badge tone="green">role=status</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="成功 · 可撤销" badge="role=status" badgeTone="green">
+
                 @if (undoDone()) {
                   <ui-notice tone="info" icon="i" title="已恢复 3 个文件 · 14.9 GB">
                     回到原目录，模型库与工作流引用未受影响。
@@ -230,8 +201,7 @@ interface SpecRow {
                     </div>
                   </ui-notice>
                 }
-              </div>
-            </div>
+              </ui-state-card>
           </div>
 
           <div class="l1-reset">
@@ -239,8 +209,8 @@ interface SpecRow {
           </div>
 
           <h3>L2 字段错误 · 只影响一个输入框</h3>
-          <div class="card">
-            <div class="card-body">
+                        <ui-state-card>
+
               <ui-input
                 label="模型 ID"
                 [mono]="true"
@@ -256,17 +226,12 @@ interface SpecRow {
                 字段错误不弹 Toast、不占页面顶部；输入框加 <code>aria-invalid</code> 与
                 <code>aria-describedby</code>，失焦或提交时出现，修正后立即消失。
               </ui-text>
-            </div>
-          </div>
+              </ui-state-card>
 
           <h3>L3 Toast · 非阻断，用户不需要停下手上的事</h3>
           <div class="grid2">
-            <div class="card">
-              <div class="card-head">
-                <h3>错误 Toast · 自动消失但可关闭</h3>
-                <ui-badge tone="red">6s · role=alert</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="错误 Toast · 自动消失但可关闭" badge="6s · role=alert" badgeTone="red">
+
                 @if (demoError()) {
                   <div class="toast-demo">
                     <ui-toast tone="error" title="复制失败" [dismissible]="true" (dismiss)="demoError.set(false)">
@@ -279,15 +244,10 @@ interface SpecRow {
                 <ui-button class="trigger" variant="secondary" size="sm" type="button" (click)="triggerToast('error')">
                   触发错误 Toast
                 </ui-button>
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card">
-              <div class="card-head">
-                <h3>成功 Toast · 不抢焦点</h3>
-                <ui-badge tone="green">3s · role=status</ui-badge>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="成功 Toast · 不抢焦点" badge="3s · role=status" badgeTone="green">
+
                 @if (demoOk()) {
                   <div class="toast-demo">
                     <ui-toast tone="ok" title="已复制路径" [dismissible]="true" (dismiss)="demoOk.set(false)">
@@ -300,13 +260,13 @@ interface SpecRow {
                 <ui-button class="trigger" variant="secondary" size="sm" type="button" (click)="triggerToast('ok')">
                   触发成功 Toast
                 </ui-button>
-              </div>
-            </div>
+              </ui-state-card>
           </div>
 
           <h3>L4 阻断弹层 · 必须由用户做决定</h3>
-          <div class="card">
-            <div class="card-body dialog-body">
+                        <ui-state-card>
+<div class="dialog-body">
+
               <ui-text variant="hint">
                 弹层统一用 <code>ui-dialog</code>：Esc / 点遮罩关闭，打开时焦点进弹层，关闭后还给触发按钮。
                 不可撤销的操作只在这里出现；普通失败不要用弹层。
@@ -317,17 +277,14 @@ interface SpecRow {
               <ui-button class="trigger" variant="secondary" size="sm" type="button" (click)="openDialog()">
                 打开删除确认弹层
               </ui-button>
-            </div>
-          </div>
+            
+</div>
+              </ui-state-card>
 
           <h3>N1 不可用 · 不是错误，是「现在没有这个入口」</h3>
           <div class="grid2">
-            <div class="card">
-              <div class="card-head">
-                <h3>源门控</h3>
-                <span class="tag">灰置 + hover 原因</span>
-              </div>
-              <div class="card-body">
+                          <ui-state-card title="源门控" tag="灰置 + hover 原因">
+
                 <div class="chips">
                   <ui-source-chip
                     label="Hugging Face"
@@ -349,22 +306,19 @@ interface SpecRow {
                   当前入口：{{ gate() }}。不可达的源不提供入口，原因只进 hover
                   提示；页面不出现一整块红色说明。
                 </ui-text>
-              </div>
-            </div>
+              </ui-state-card>
 
-            <div class="card">
-              <div class="card-head">
-                <h3>空状态 / 无结果</h3>
-                <span class="tag">中性 · 不用红</span>
-              </div>
-              <div class="card-body empty-body">
+                          <ui-state-card title="空状态 / 无结果" tag="中性 · 不用红">
+<div class="empty-body">
+
                 <ui-empty
                   icon="⌕"
                   title="没有找到匹配的模型"
                   hint="换个关键词，或切换来源。当前来源里没有符合条件的结果。"
                 />
-              </div>
-            </div>
+              
+</div>
+              </ui-state-card>
           </div>
         </section>
 

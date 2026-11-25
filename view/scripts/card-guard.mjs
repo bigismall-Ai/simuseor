@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleGuard } from './style-guard.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const uiDir = path.join(root, 'src/app/ui');
 const visDir = path.join(root, 'src/app/vis');
+const appDir = path.join(root, 'src/app');
 
 const shellClasses = [
   'head',
@@ -71,11 +73,14 @@ const localTable = /class="(?:table-wrap|list-card)"/;
 const localChip = /class="(?:filter-chip|segmented)"/;
 const localEmpty = /class="empty[\s"]/;
 const localBadge = /class="badge[\s"]/;
+const localPrimitive = /class="(?:pill|chip|card)(?:[\s"])/;
 /** 组件已经收口的表面：页面不得再直接用类名，也不得自己定义同名样式 */
 const ownedClass = /class="[^"]*(?:list-card|table-wrap|inner-card|acard-menu|section-block|section-head|section-body|section-pill)/;
 const localOwnedStyle = /^\.(?:list-card|table-wrap|inner-card|acard-menu|section-block|section-head|section-body|section-pill|set-label|set-lead|mono|rules|hint)\s*(?:[,.{:]|$)/;
 
-for (const file of walk(visDir)) {
+for (const file of walk(appDir)) {
+  if (file.startsWith(uiDir + path.sep)) continue;
+  if (file.startsWith(path.join(appDir, 'svg') + path.sep)) continue;
   const rel = path.relative(root, file);
   const isTemplate = file.endsWith('.ts');
   const isStyle = file.endsWith('.scss');
@@ -104,6 +109,9 @@ for (const file of walk(visDir)) {
       }
       if (localBadge.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  本地状态徽标，请改用 <ui-badge>  ${trimmed}`);
+      }
+      if (localPrimitive.test(trimmed)) {
+        violations.push(`${rel}:${index + 1}  本地标签/卡片原语，请改用 ui-tag / ui-chip / ui-state-card  ${trimmed}`);
       }
       if (ownedClass.test(trimmed)) {
         violations.push(`${rel}:${index + 1}  使用了已收口的表面类，请改用对应组件  ${trimmed}`);
@@ -222,6 +230,8 @@ for (const file of walk(visDir)) {
     }
   });
 }
+
+violations.push(...styleGuard(root));
 
 if (violations.length > 0) {
   console.error('组件漂移：VIS 页面必须复用共享组件。');

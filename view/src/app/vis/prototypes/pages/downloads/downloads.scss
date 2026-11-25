@@ -252,22 +252,6 @@
   color: var(--ui-muted);
 }
 
-.pill {
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 8px;
-  border-radius: var(--ui-radius-pill);
-  background: var(--ui-inset);
-  color: var(--ui-muted);
-  font-size: 10.5px;
-  white-space: nowrap;
-}
-
-.pill.mono {
-  font-family: var(--ui-font-mono);
-}
-
 .action-row {
   display: flex;
   align-items: center;

@@ -1,0 +1,23 @@
+{
+  "src/app/vis/prototypes/cards.scss": 51,
+  "src/app/vis/prototypes/components/families/families.scss": 48,
+  "src/app/vis/prototypes/components/feedback/feedback.scss": 0,
+  "src/app/vis/prototypes/components/notice/notice.scss": 0,
+  "src/app/vis/prototypes/components/page-header/page-header.scss": 8,
+  "src/app/vis/prototypes/components/scrollbar/scrollbar.scss": 41,
+  "src/app/vis/prototypes/components/sidebar/sidebar.scss": 40,
+  "src/app/vis/prototypes/components/structure/structure.scss": 6,
+  "src/app/vis/prototypes/pages/downloads/downloads.scss": 100,
+  "src/app/vis/prototypes/pages/error-states/error-states.scss": 18,
+  "src/app/vis/prototypes/pages/models/models.scss": 6,
+  "src/app/vis/prototypes/pages/nodes/nodes.scss": 40,
+  "src/app/vis/prototypes/pages/settings/settings.scss": 132,
+  "src/app/vis/prototypes/pages/source-probe/source-probe.scss": 164,
+  "src/app/vis/prototypes/pages/workflows/workflows.scss": 59,
+  "src/app/vis/prototypes/proto-shell.scss": 0,
+  "src/app/vis/prototypes/resource-manager.scss": 83,
+  "src/app/vis/vis-cover.scss": 7,
+  "src/app/vis/vis-registry.scss": 9,
+  "src/app/vis/vis-samples.scss": 190,
+  "src/app/vis/vis-shell.scss": 90
+}

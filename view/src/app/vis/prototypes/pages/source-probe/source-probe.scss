@@ -497,7 +497,7 @@ ui-panel {
   flex-wrap: wrap;
 }
 
-.chip {
+.vis-mock-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -510,14 +510,14 @@ ui-panel {
   background: var(--ui-inset);
 }
 
-.chip.on {
+.vis-mock-chip.on {
   background: var(--ui-surface);
   color: var(--ui-accent);
   font-weight: 600;
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
-.chip.off {
+.vis-mock-chip.off {
   color: var(--faint);
   background: var(--ui-raised);
   box-shadow: inset 0 0 0 1px var(--ui-border-2);
