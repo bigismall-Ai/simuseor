@@ -14,6 +14,7 @@ import { VisPillsComponent } from './vis-pills';
 import { VisRadiusComponent } from './vis-radius';
 import { VisRegistryComponent } from './vis-registry';
 import { VisShellComponent } from './vis-shell';
+import { ComponentApiPage } from './component-api';
 import { VisTablesComponent } from './vis-tables';
 import { ProtoCardsComponent } from './prototypes/cards';
 import { ProtoCodeComponent } from './prototypes/components/code/code';
@@ -55,6 +56,7 @@ export const VIS_ROUTES: Routes = [
       { path: 'empty', component: VisEmptyComponent, title: 'VIS · 空状态' },
       { path: 'tables', component: VisTablesComponent, title: 'VIS · 表格' },
       { path: 'registry', component: VisRegistryComponent, title: 'VIS · 组件注册表' },
+      { path: 'components/:selector', component: ComponentApiPage, title: 'VIS · 组件 API' },
       { path: 'modals', component: VisModalsComponent, title: 'VIS · 模态框' },
       { path: 'cards', redirectTo: 'prototypes/components/cards', pathMatch: 'full' },
       { path: 'prototypes/cards', redirectTo: 'prototypes/components/cards', pathMatch: 'full' },

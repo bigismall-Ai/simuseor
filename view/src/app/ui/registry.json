@@ -388,7 +388,22 @@
       ],
       "tokens": [
         "--card-*"
-      ]
+      ],
+      "api": {
+        "inputs": [
+          { "name": "mode", "type": "'library' | 'discover'", "note": "决定动作行与状态槽的语义" },
+          { "name": "item", "type": "LibraryModel | null", "note": "本地库卡的数据；缺省时用 items 走发现卡" },
+          { "name": "items", "type": "SearchItem[]", "note": "发现卡的结果数据，由页面给" },
+          { "name": "cover", "type": "string", "note": "封面图地址；没有时回落到家族纹样" },
+          { "name": "vramGb", "type": "number", "note": "显存占用提示，0 表示不显示" }
+        ],
+        "outputs": [
+          { "name": "download", "type": "void", "note": "发现卡发起下载" },
+          { "name": "remove", "type": "void", "note": "本地库卡移除记录" },
+          { "name": "use", "type": "void", "note": "本地库卡拿去运行" },
+          { "name": "open", "type": "void", "note": "打开详情" }
+        ]
+      }
     },
     {
       "selector": "md-library-card",
@@ -471,7 +486,20 @@
         "--card-radius",
         "--card-shadow",
         "--card-mark-size"
-      ]
+      ],
+      "api": {
+        "inputs": [
+          { "name": "title", "type": "string", "note": "卡片标题，交给信息区渲染" },
+          { "name": "menuItems", "type": "CardMenuItem[]", "note": "⋯ 菜单项；key / label / danger" },
+          { "name": "status", "type": "string", "note": "状态槽文案（在库 / 缺权重）" },
+          { "name": "statusTone", "type": "'' | 'ok' | 'warn' | 'err'", "note": "状态槽语气" },
+          { "name": "size", "type": "string", "note": "状态槽右侧规格 / 体积" },
+          { "name": "broken", "type": "boolean", "note": "权重损坏：厂牌位实底、封面让位给警示层" }
+        ],
+        "outputs": [
+          { "name": "menuPicked", "type": "string", "note": "菜单项被选中，参数是菜单 key" }
+        ]
+      }
     },
     {
       "selector": "ui-card-slot",
@@ -690,7 +718,17 @@
         "--ui-code-head-h",
         "--ui-code-radius",
         "--ui-code-max-h"
-      ]
+      ],
+      "api": {
+        "inputs": [
+          { "name": "title", "type": "string", "note": "标题栏文案（文件名 / 片段名）" },
+          { "name": "lang", "type": "string", "note": "语言标签，如 html / bash / json" },
+          { "name": "code", "type": "string", "note": "代码正文；长片段放组件字段，不塞进模板" },
+          { "name": "copyable", "type": "boolean", "note": "是否显示复制按钮，默认 true" },
+          { "name": "maxHeight", "type": "string", "note": "正文最大高度，默认 var(--ui-code-max-h)" },
+          { "name": "hint", "type": "boolean", "note": "复制按钮旁的 Ctrl/⌘+C 提示" }
+        ]
+      }
     },
     {
       "selector": "ui-kbd",
@@ -731,7 +769,20 @@
         "--ui-search-trigger-h",
         "--ui-z-overlay",
         "--ui-radius-pill"
-      ]
+      ],
+      "api": {
+        "inputs": [
+          { "name": "open", "type": "model(false)", "note": "浮层开合，可双向绑定" },
+          { "name": "items", "type": "SearchItem[]", "note": "结果数据由页面给；route 只是随附字段" },
+          { "name": "query", "type": "model('')", "note": "搜索词，可双向绑定" },
+          { "name": "placeholder", "type": "string", "note": "触发条占位文案" },
+          { "name": "shortcut", "type": "string[]", "note": "快捷键提示，如 ['Ctrl', 'K']" },
+          { "name": "block", "type": "boolean", "note": "触发条铺满一行" }
+        ],
+        "outputs": [
+          { "name": "picked", "type": "SearchItem", "note": "选中结果；组件不跳转，路由交给页面" }
+        ]
+      }
     },
     {
       "selector": "ui-toc",
