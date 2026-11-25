@@ -1,0 +1,20 @@
+/* 组件 API 页只做布局：视觉值全部来自 token 与共享组件。 */
+:host {
+  display: block;
+}
+
+.api-key {
+  width: 120px;
+}
+
+.api-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-1);
+}
+
+.api-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--ui-space-3);
+}

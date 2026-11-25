@@ -58,7 +58,8 @@ function discoverPages() {
     const block = source.slice(i, end);
     if (block.includes('children:') || !/component:/.test(block)) continue;
     const path = block.match(/path:\s*'([^']+)'/)?.[1];
-    if (path) routes.push(path);
+    // 动态路由（`:selector`）不是静态页面，没有固定基线：按参数页自身处理
+    if (path && !path.includes(':')) routes.push(path);
     i = end - 1;
   }
   const seen = new Set();
